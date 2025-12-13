@@ -1,0 +1,31 @@
+# Node, build, and system files
+node_modules/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# VSCode
+.vscode/
+
+# Mac system files
+._*
+
+# No sensitive files in repo
+.env
+.env.*
+
+# Ignore FTP config or deployment scripts
+ftp-config.json
+ftp-*.json
+
+# Ignore personal/backup files
+*~
+*.bak
+*.old
+*.swp
+
+# Ignore OS generated files
+Icon?
