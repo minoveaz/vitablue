@@ -1,18 +1,11 @@
-
 # VitaBlue - Prototipo Web Sanitas
 
-VitaBlue es un prototipo de landing page estática desarrollada para agentes exclusivos de Sanitas, orientada a la captación y gestión de leads de seguros de salud internacionales y nacionales. El proyecto está diseñado como ejemplo educativo y demostrativo, mostrando buenas prácticas de desarrollo web moderno, accesibilidad, SEO y analítica, sin depender de frameworks ni backend.
-
-**Características principales:**
-- Código 100% HTML5, CSS3 y JavaScript vanilla, fácil de adaptar y desplegar en cualquier hosting estático.
-- Integración completa de WhatsApp para contacto directo y seguimiento de formularios.
-- Consentimiento de cookies propio, cumpliendo RGPD.
-- Preparado para Google Tag Manager (GTM) y eventos personalizados de analítica.
-- Estructura modular y reutilizable, con fragmentos HTML y centralización de datos clave (teléfono, enlaces, etc.).
-- Optimización para SEO (meta, OpenGraph, JSON-LD, sitemap, robots.txt) y rendimiento (imágenes WebP/JPG, lazy loading).
-- Accesibilidad mejorada: roles ARIA, contraste, navegación por teclado.
-
-Este repositorio está listo para ser publicado en GitHub y desplegado en producción, sirviendo como base para proyectos reales o pruebas de concepto en el sector asegurador.
+> **Landing page estática para agentes exclusivos Sanitas.**
+>
+> - HTML5, CSS3, JS Vanilla (sin frameworks)
+> - Optimizada para SEO, accesibilidad y rendimiento
+> - Integración WhatsApp, Google Tag Manager (GTM), consentimiento cookies
+> - Prototipo educativo/demostrativo, listo para despliegue y GitHub
 
 ---
 
@@ -127,6 +120,23 @@ Este repositorio está listo para ser publicado en GitHub y desplegado en produc
 
 ---
 
+
+---
+
+## 🆕 Novedades en la versión 1.1.0 (Diciembre 2025)
+
+- **Mejoras de rendimiento:**
+  - Google Tag Manager y Google Analytics ahora se cargan solo tras el primer scroll (no en el head), reduciendo el tiempo de carga y el uso de JS innecesario.
+- **Imágenes responsivas:**
+  - Todas las imágenes principales de productos usan `<picture>` y sirven versiones `-400.webp` en móviles (≤600px), optimizando la experiencia y el peso en dispositivos pequeños.
+- **Botón de WhatsApp accesible:**
+  - El botón de WhatsApp es más visible, tiene mensaje predefinido y ahora incluye `aria-label` para accesibilidad.
+- **Accesibilidad y estructura:**
+  - Se mantienen atributos `alt`, `loading`, `width`, `height` en imágenes y overlays visuales.
+  - Patrón de imagen responsiva y botón WhatsApp unificados en toda la web.
+
+---
+
 **Última actualización:** Diciembre 2025  
-**Versión:** 0.0.1  
+**Versión:** 1.1.0  
 

@@ -28,4 +28,4 @@ ftp-*.json
 *.swp
 
 # Ignore OS generated files
-Icon?
+

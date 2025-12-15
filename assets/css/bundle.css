@@ -1698,6 +1698,8 @@ blockquote footer {
 }
 
 /* WhatsApp button */
+
+/* Botón flotante WhatsApp (solo icono) */
 .whatsapp-btn {
   position: fixed;
   bottom: 5rem;
@@ -1712,16 +1714,54 @@ blockquote footer {
   box-shadow: 0 8px 24px rgba(37, 211, 102, .4);
   z-index: 997;
   transition: var(--transition-fast);
+  color: white;
+  font-size: 0;
 }
-
+.whatsapp-btn span,
+.whatsapp-btn .wa-text {
+  display: none !important;
+}
 .whatsapp-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 12px 32px rgba(37, 211, 102, .5);
 }
-
 .whatsapp-btn svg {
   width: 32px;
   height: 32px;
+  fill: white;
+}
+
+/* Botón WhatsApp en tarjetas (rectangular, visible) */
+.whatsapp-btn.card {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  background: #25D366;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 2px 8px rgba(37,211,102,0.10);
+  border: none;
+  transition: all 0.3s ease;
+  margin-top: 0.5em;
+  margin-left: 1em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.whatsapp-btn.card:hover {
+  background: #1ebe57;
+  color: #fff;
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(37,211,102,0.18);
+}
+.whatsapp-btn.card svg {
+  width: 18px;
+  height: 18px;
   fill: white;
 }
 

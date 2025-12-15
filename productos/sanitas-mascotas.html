@@ -1,23 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5TVLVR64');</script>
-<!-- End Google Tag Manager -->
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCGH16NP2Q"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DCGH16NP2Q');
-</script>
+<!-- Google Tag Manager / Analytics se cargan bajo demanda al hacer scroll (ver script al final) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
@@ -1420,6 +1404,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script src="../assets/js/phone.js?v=20251115-1" defer></script>
   
+  <script>
+    // Carga diferida de GTM y GA en el primer scroll
+    (function() {
+      var loaded = false;
+      function loadAnalytics() {
+        if (loaded) return; loaded = true;
+        var gtm = document.createElement('script');
+        gtm.async = true; gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-5TVLVR64';
+        document.head.appendChild(gtm);
+
+        var ga = document.createElement('script');
+        ga.async = true; ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-DCGH16NP2Q';
+        document.head.appendChild(ga);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-DCGH16NP2Q');
+      }
+      function onFirstScroll() {
+        loadAnalytics();
+        window.removeEventListener('scroll', onFirstScroll);
+      }
+      window.addEventListener('scroll', onFirstScroll, { passive: true });
+    })();
+  </script>
 
   <!-- Banner de Cookies -->
   <div id="cookie-banner" style="position:fixed;bottom:0;left:0;width:100%;background:#fff;border-top:1px solid #ddd;z-index:9999;padding:1.2em .8em;box-shadow:0 -2px 8px rgba(0,0,0,0.07);display:none;align-items:center;justify-content:center;gap:1em;font-size:1em;">
