@@ -1,23 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5TVLVR64');</script>
-<!-- End Google Tag Manager -->
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCGH16NP2Q"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DCGH16NP2Q');
-</script>
+<!-- Google Tag Manager / Analytics se cargan bajo demanda al hacer scroll (ver script al final) -->
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -104,10 +88,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </script>
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5TVLVR64"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
   <!-- Skip to main content for accessibility -->
   <a href="#main" class="skip-link">Saltar al contenido principal</a>
 
@@ -227,7 +207,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="bento2-card bento2-card-max">
             <span class="bento2-badge">Más popular</span>
             <div class="bento2-image-wrapper bento2-image-140">
-              <img src="assets/images/international-students.webp" alt="Sanitas International Students" class="bento2-image" loading="lazy" width="600" height="400">
+              <picture>
+                <source srcset="assets/images/international-students-400.webp" media="(max-width: 600px)">
+                <img src="assets/images/international-students.webp" alt="Sanitas International Students" class="bento2-image" loading="lazy" width="600" height="400">
+              </picture>
               <div class="bento2-image-overlay"></div>
             </div>
             <div class="bento2-content bento2-content-p125">
@@ -237,7 +220,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="bento2-price-amount bento2-price-amount-lg">38,95</span>
                 <span class="bento2-price-period bento2-price-period-sm">/mes</span>
               </div>
-              <a href="productos/international-students.html" class="bento2-cta bento2-cta-block">
+              <a href="productos/international-students.html" class="bento2-cta bento2-cta-block" aria-label="Ver detalles de Sanitas International Students">
                 Ver detalles →
               </a>
             </div>
@@ -247,7 +230,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="bento2-card bento2-card-max">
             <span class="bento2-badge">Más completo</span>
             <div class="bento2-image-wrapper bento2-image-140">
-              <img src="assets/images/sanitas_mas_salud.webp" alt="Sanitas Más Salud" class="bento2-image" loading="lazy" width="600" height="400">
+              <picture>
+                <source srcset="assets/images/sanitas_mas_salud-400.webp" media="(max-width: 600px)">
+                <img src="assets/images/sanitas_mas_salud.webp" alt="Sanitas Más Salud" class="bento2-image" loading="lazy" width="600" height="400">
+              </picture>
               <div class="bento2-image-overlay"></div>
             </div>
             <div class="bento2-content bento2-content-p125">
@@ -257,7 +243,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="bento2-price-amount bento2-price-amount-lg">Consultar</span>
                 <span class="bento2-price-period bento2-price-period-sm"></span>
               </div>
-              <a href="productos/sanitas-mas-salud.html" class="bento2-cta bento2-cta-block">
+              <a href="productos/sanitas-mas-salud.html" class="bento2-cta bento2-cta-block" aria-label="Ver detalles de Sanitas Más Salud">
                 Ver detalles →
               </a>
             </div>
@@ -267,7 +253,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="bento2-card bento2-card-max bento2-card-special">
             <span class="bento2-badge bento2-badge-special">Decesos</span>
             <div class="bento2-image-wrapper bento2-image-140">
-              <img src="assets/images/asistencia-familiar-iplus.webp" alt="Asistencia Familiar iPlus Sanitas" class="bento2-image" loading="lazy" width="600" height="400">
+              <picture>
+                <source srcset="assets/images/asistencia-familiar-iplus-400.webp" media="(max-width: 600px)">
+                <img src="assets/images/asistencia-familiar-iplus.webp" alt="Asistencia Familiar iPlus Sanitas" class="bento2-image" loading="lazy" width="600" height="400">
+              </picture>
               <div class="bento2-image-overlay"></div>
             </div>
             <div class="bento2-content bento2-content-p125">
@@ -277,8 +266,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="bento2-price-amount bento2-price-amount-lg">Consultar</span>
                 <span class="bento2-price-period bento2-price-period-sm"></span>
               </div>
-              <a href="productos/asistencia-familiar-iplus.html" class="bento2-cta bento2-cta-block">
-                Ver detalles → 
+              <a href="productos/asistencia-familiar-iplus.html" class="bento2-cta bento2-cta-block" aria-label="Ver detalles de Asistencia Familiar iPlus">
+                Ver detalles →
               </a>
             </div>
           </div>
@@ -598,7 +587,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-esencial" data-product-id="international-students">
                 <span class="bento2-badge">Más popular</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/international-students.webp" alt="Sanitas International Students" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/international-students-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/international-students.webp" alt="Sanitas International Students" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -615,7 +607,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">38,95</span>
                       <span class="bento2-price-period">/mes</span>
                     </div>
-                    <a href="productos/international-students.html" class="bento2-cta">
+                    <a href="productos/international-students.html" class="bento2-cta" aria-label="Ver detalles de Sanitas International Students">
                       Ver detalles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                   </div>
@@ -624,7 +616,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <div class="bento2-card" data-category="cobertura-esencial" data-product-id="sanitas-accede">
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_accede.webp" alt="Sanitas Accede" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_accede-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_accede.webp" alt="Sanitas Accede" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -641,8 +636,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Accede" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Accede" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Accede">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -650,7 +645,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <div class="bento2-card" data-category="cobertura-esencial" data-product-id="sanitas-avanza">
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_avanza.webp" alt="Sanitas Avanza" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_avanza-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_avanza.webp" alt="Sanitas Avanza" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -667,8 +665,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Avanza" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Avanza" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Avanza">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -677,7 +675,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-esencial" data-product-id="sanitas-unico">
                 <span class="bento2-badge">+60 años</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_unico.webp" alt="Sanitas Único" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_unico-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_unico.webp" alt="Sanitas Único" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -694,8 +695,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Único" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Único" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Único">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -705,7 +706,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-completa" data-product-id="mas-salud">
                 <span class="bento2-badge">Más completo</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_mas_salud.webp" alt="Sanitas Más Salud" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_mas_salud-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_mas_salud.webp" alt="Sanitas Más Salud" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -722,7 +726,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="productos/sanitas-mas-salud.html" class="bento2-cta">
+                    <a href="productos/sanitas-mas-salud.html" class="bento2-cta" aria-label="Ver detalles de Sanitas Más Salud">
                       Ver detalles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                   </div>
@@ -732,7 +736,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-completa" data-product-id="mas-salud-familias">
                 <span class="bento2-badge">Familias</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_mas_salud_familias.webp" alt="Sanitas Más Salud Familias" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_mas_salud_familias-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_mas_salud_familias.webp" alt="Sanitas Más Salud Familias" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -749,8 +756,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Más%20Salud%20Familias" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Más%20Salud%20Familias" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Más Salud Familias">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -759,7 +766,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-completa" data-product-id="profesionales">
                 <span class="bento2-badge">Autónomos</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_profesionales.webp" alt="Sanitas Profesionales" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_profesionales-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_profesionales.webp" alt="Sanitas Profesionales" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -776,8 +786,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Profesionales" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Profesionales" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Profesionales">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -787,7 +797,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-premium" data-product-id="top-quantum">
                 <span class="bento2-badge">Premium</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_top_quantum.webp" alt="Sanitas Top Quantum" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_top_quantum-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_top_quantum.webp" alt="Sanitas Top Quantum" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -804,8 +817,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Top%20Quantum" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20Top%20Quantum" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas Top Quantum">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -814,7 +827,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="cobertura-premium" data-product-id="international-residents">
                 <span class="bento2-badge">Extranjeros</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_international_residents.webp" alt="Sanitas International Residents" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_international_residents-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_international_residents.webp" alt="Sanitas International Residents" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -831,8 +847,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20International%20Residents" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Sanitas%20International%20Residents" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Sanitas International Residents">
+                                          Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -842,7 +858,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="otros-seguros" data-product-id="salud-mascotas">
                 <span class="bento2-badge">Mascotas</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_mascotas.webp" alt="Sanitas Salud Mascotas" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_mascotas-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_mascotas.webp" alt="Sanitas Salud Mascotas" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -859,7 +878,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="productos/sanitas-mascotas.html" class="bento2-cta">
+                    <a href="productos/sanitas-mascotas.html" class="bento2-cta" aria-label="Ver detalles de Sanitas Salud Mascotas">
                       Ver detalles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                   </div>
@@ -869,7 +888,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="otros-seguros" data-product-id="asistencia-familiar-iplus">
                 <span class="bento2-badge">Decesos</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/asistencia-familiar-iplus.webp" alt="Asistencia Familiar iPlus Sanitas" class="bento2-image" loading="lazy" width="600" height="400">
+                  <picture>
+                    <source srcset="assets/images/asistencia-familiar-iplus-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/asistencia-familiar-iplus.webp" alt="Asistencia Familiar iPlus Sanitas" class="bento2-image" loading="lazy" width="600" height="400">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -886,7 +908,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Consultar</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="productos/asistencia-familiar-iplus.html" class="bento2-cta">
+                    <a href="productos/asistencia-familiar-iplus.html" class="bento2-cta" aria-label="Ver detalles de Asistencia Familiar iPlus">
                       Ver detalles <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                   </div>
@@ -896,7 +918,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="bento2-card" data-category="otros-seguros" data-product-id="asistencia-senior-unica">
                 <span class="bento2-badge">+65 años</span>
                 <div class="bento2-image-wrapper">
-                  <img src="assets/images/sanitas_asistencia_senior.webp" alt="Asistencia Senior a Prima Única Sanitas" class="bento2-image" loading="lazy" width="400" height="300">
+                  <picture>
+                    <source srcset="assets/images/sanitas_asistencia_senior-400.webp" media="(max-width: 600px)">
+                    <img src="assets/images/sanitas_asistencia_senior.webp" alt="Asistencia Senior a Prima Única Sanitas" class="bento2-image" loading="lazy" width="400" height="300">
+                  </picture>
                   <div class="bento2-image-overlay"></div>
                 </div>
                 <div class="bento2-content">
@@ -913,8 +938,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <span class="bento2-price-amount">Prima única</span>
                       <span class="bento2-price-period"></span>
                     </div>
-                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Asistencia%20Senior%20a%20Prima%20Única%20Sanitas" class="bento2-cta" target="_blank" rel="noopener" data-event="whatsapp">
-                      Más información <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <a href="https://wa.me/34661498600?text=Hola%2C%20quiero%20mas%20informacion%20sobre%20Asistencia%20Senior%20a%20Prima%20Única%20Sanitas" class="bento2-cta whatsapp-btn card" target="_blank" rel="noopener" data-event="whatsapp" aria-label="Contactar por WhatsApp sobre Asistencia Senior a Prima Única Sanitas">
+                      Contacta Whatsapp
                     </a>
                   </div>
                 </div>
@@ -1318,6 +1343,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Scripts -->
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/index-products.js" defer></script>
+  <script>
+    // Carga diferida de Google Tag Manager y Analytics al primer scroll
+    (function() {
+      var loaded = false;
+
+      function loadAnalytics() {
+        if (loaded) return;
+        loaded = true;
+
+        var gtm = document.createElement('script');
+        gtm.async = true;
+        gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-5TVLVR64';
+        document.head.appendChild(gtm);
+
+        var ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-DCGH16NP2Q';
+        document.head.appendChild(ga);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-DCGH16NP2Q');
+      }
+
+      function onFirstScroll() {
+        loadAnalytics();
+        window.removeEventListener('scroll', onFirstScroll);
+      }
+
+      window.addEventListener('scroll', onFirstScroll, { passive: true });
+    })();
+  </script>
   <!-- Banner de Cookies -->
   <div id="cookie-banner" style="position:fixed;bottom:0;left:0;width:100%;background:#fff;border-top:1px solid #ddd;z-index:9999;padding:1.2em .8em;box-shadow:0 -2px 8px rgba(0,0,0,0.07);display:none;align-items:center;justify-content:center;gap:1em;font-size:1em;">
     <span>Utilizamos cookies propias y de terceros para fines analíticos y para mejorar tu experiencia. Consulta la <a href="politica-cookies.html" target="_blank">Política de Cookies</a>.</span>
