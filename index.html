@@ -5,6 +5,8 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Language" content="es-ES">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <title>VitaBlue - Agente Exclusivo Sanitas | Seguros de Salud para Extranjeros en España</title>
   <meta name="description" content="VitaBlue, agente exclusivo Sanitas. Seguros de salud para extranjeros en España: estudiantes, profesionales, familias. Asesoría personalizada online.">
   <link rel="canonical" href="https://www.vitablue.es/">
@@ -25,6 +27,7 @@
   <meta name="twitter:title" content="VitaBlue - Agente Exclusivo Sanitas | Seguros de Salud">
   <meta name="twitter:description" content="Comercializamos seguros de salud Sanitas con asesoramiento personalizado. Encuentra el plan perfecto para ti.">
   <meta name="twitter:image" content="https://www.vitablue.es/assets/images/sanitas_mas_salud.webp">
+  <meta name="twitter:image:alt" content="VitaBlue - Agente Exclusivo Sanitas | Seguros de Salud para Extranjeros en España">
   
   <meta name="theme-color" content="#00B2E3">
   
@@ -53,7 +56,22 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://www.vitablue.es/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://www.vitablue.es/"
+          }
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.vitablue.es/#organization",
     "name": "VitaBlue",
     "url": "https://www.vitablue.es/",
     "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
@@ -83,6 +101,8 @@
       {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Sanitas Accede", "brand": {"@type": "Brand", "name": "Sanitas"}}},
       {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Sanitas Único", "brand": {"@type": "Brand", "name": "Sanitas"}}},
       {"@type": "Offer", "itemOffered": {"@type": "Product", "name": "Sanitas Top Quantum", "brand": {"@type": "Brand", "name": "Sanitas"}}}
+    ]
+  }
     ]
   }
   </script>
@@ -1237,9 +1257,9 @@
         <h3>Productos Destacados</h3>
         <a href="productos/international-students.html">Sanitas International Students</a>
         <a href="productos/sanitas-mas-salud.html">Sanitas Más Salud</a>
-        <a href="#contacto">Sanitas Top Quantum</a>
-        <a href="#contacto">Sanitas International Residents</a>
-        <a href="#contacto">Sanitas Profesionales</a>
+        <a href="#productos">Sanitas Top Quantum</a>
+        <a href="#productos">Sanitas International Residents</a>
+        <a href="#productos">Sanitas Profesionales</a>
         <a href="#productos">Ver todos los productos</a>
       </div>
 
