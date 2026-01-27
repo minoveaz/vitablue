@@ -2054,7 +2054,199 @@ blockquote footer {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
+/* Paises Section - Long-tail SEO Cards with Visual Hierarchy */
+.paises-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  margin-top: 2rem;
+}
+
+.pais-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0,40,80,0.08);
+  border: 1.5px solid #E5F0F8;
+  padding: 1.5rem;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.pais-card:hover {
+  box-shadow: 0 12px 40px rgba(0,119,200,0.15);
+  border-color: #0077C8;
+  transform: translateY(-4px);
+}
+
+.pais-card:focus-within {
+  box-shadow: 0 12px 40px rgba(0,119,200,0.15);
+  border-color: #0077C8;
+  outline: 2px solid #0077C8;
+  outline-offset: 2px;
+}
+
+/* Header section with flag and badge */
+.pais-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.pais-flag-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pais-flag {
+  width: 2rem;
+  height: auto;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .pais-flag {
+    width: 2.25rem;
+  }
+}
+
+.pais-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #003459;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+.pais-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #F0F8FF 0%, #E5F0F8 100%);
+  color: #0077C8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #D4E8F7;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Content and paragraphs */
+.pais-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.pais-content p {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  color: #4a5f7f;
+  line-height: 1.6;
+}
+
+/* Bullet points for key benefits */
+.pais-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pais-bullets li {
+  font-size: 0.95rem;
+  color: #4a5f7f;
+  line-height: 1.5;
+  padding-left: 1.75rem;
+  position: relative;
+}
+
+.pais-bullets li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #0077C8;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* Hidden text for SEO (not displayed) */
+.pais-hidden-text {
+  display: none;
+}
+
+/* Enhanced CTA Button */
+.cta-country {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0077C8 0%, #006BB3 100%);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  gap: 0.35rem;
+  margin-top: auto;
+  box-shadow: 0 4px 12px rgba(0, 119, 200, 0.2);
+  letter-spacing: -0.3px;
+}
+
+.cta-country:hover {
+  background: linear-gradient(135deg, #006BB3 0%, #00569F 100%);
+  box-shadow: 0 8px 24px rgba(0, 119, 200, 0.3);
+  transform: translateY(-2px);
+}
+
+.cta-country:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 119, 200, 0.2);
+}
+
+.cta-text {
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+}
+
+.cta-subtext {
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.95;
+  display: block;
+}
+
+
+
 @media (min-width: 640px) {
+  .paises-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 980px) {
+  .paises-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
   .also-for-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
