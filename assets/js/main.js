@@ -246,4 +246,33 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // Fragment loader reutilizable para cualquier [data-fragment]
   // Eliminada la carga dinámica de fragmentos HTML. Todo el contenido debe estar en el HTML estático.
+  // --- Scroll Tracking 50% y 75% ---
+  (function setupScrollTracking(){
+    let sent50 = false;
+    let sent75 = false;
+    function checkScroll(){
+      const scrollTop = window.scrollY || window.pageYOffset;
+      const winHeight = window.innerHeight || document.documentElement.clientHeight;
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.body.clientHeight,
+        document.documentElement.clientHeight
+      );
+      const percent = ((scrollTop + winHeight) / docHeight) * 100;
+      if (!sent50 && percent >= 50) {
+        sent50 = true;
+        if (window.dataLayer) window.dataLayer.push({event: 'scroll_50'});
+      }
+      if (!sent75 && percent >= 75) {
+        sent75 = true;
+        if (window.dataLayer) window.dataLayer.push({event: 'scroll_75'});
+      }
+      if (sent50 && sent75) window.removeEventListener('scroll', checkScroll);
+    }
+    window.addEventListener('scroll', checkScroll, {passive:true});
+  })();
+
 });
