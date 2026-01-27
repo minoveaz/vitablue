@@ -1,50 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- URLs principales - Mayor prioridad -->
+
+  <!-- HOME -->
   <url>
     <loc>https://www.vitablue.es/</loc>
     <lastmod>2025-12-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Páginas de productos - Prioridad alta -->
-  <url>
-    <loc>https://www.vitablue.es/productos/sanitas-mas-salud.html</loc>
-    <lastmod>2025-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/sanitas-mascotas.html</loc>
-    <lastmod>2025-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
+
+  <!-- PÁGINA CLAVE SEO -->
   <url>
     <loc>https://www.vitablue.es/productos/international-students.html</loc>
     <lastmod>2025-12-06</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/asistencia-familiar-iplus.html</loc>
-    <lastmod>2025-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <!-- Páginas legales - Prioridad baja -->
+
+  <!-- LEGALES (OK) -->
   <url>
     <loc>https://www.vitablue.es/privacidad.html</loc>
     <lastmod>2025-12-07</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/politica-cookies.html</loc>
     <lastmod>2025-12-07</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.3</priority>
   </url>
+
 </urlset>
