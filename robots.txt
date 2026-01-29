@@ -1,5 +1,4 @@
 User-agent: *
-Disallow: /assets/data/
 Allow: /
 
 Sitemap: https://www.vitablue.es/sitemap.xml
