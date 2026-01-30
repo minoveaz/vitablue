@@ -2263,10 +2263,6 @@ blockquote footer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   
-  .testimonials {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
   .trust-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4632,6 +4628,11 @@ blockquote {
 .testimonials {
   padding: 2.5rem 1.5rem;
   background: var(--light-bg);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .testimonials__container {
@@ -4655,15 +4656,21 @@ blockquote {
   align-items: stretch;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
+  .testimonials {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .testimonials__grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 900px) {
+  .testimonials {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .testimonials__grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
