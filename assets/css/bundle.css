@@ -40,6 +40,13 @@
   margin-bottom: 1.6rem;
 }
 
+@media (max-width: 640px) {
+  .blua-features-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
+
 .blua-feature-card {
   background: #fff;
   border: 1px solid #E5E7EB;
@@ -2119,6 +2126,18 @@ blockquote footer {
 
 .geo-cities {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .resources-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .geo-cities {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 /* Paises Section - Long-tail SEO Cards with Visual Hierarchy */
