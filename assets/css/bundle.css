@@ -1384,20 +1384,19 @@ section {
 	box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 	padding: 1.5rem 2rem;
 	text-align: center;
-	min-width: 180px;
 }
 .trust-stat-icon {
 	margin-bottom: 1rem;
 	color: var(--primary);
 }
 .trust-stat-number {
-	font-size: 1.3rem;
+	font-size: 1.15rem;
 	font-weight: 700;
 	margin-bottom: 0.25rem;
 }
 .trust-stat-label {
 	color: var(--muted);
-	font-size: 0.97rem;
+	font-size: 0.85rem;
 }
 /* --- Clases para sección de confianza (trust) extraídas de index.html --- */
 .trust-banner-m4auto {
@@ -2879,7 +2878,7 @@ input[type="checkbox"]:focus {
 }
 
 .trust-stat-number {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--sanitas-blue-800);
   line-height: 1;
@@ -2887,7 +2886,7 @@ input[type="checkbox"]:focus {
 }
 
 .trust-stat-label {
-  font-size: .85rem;
+  font-size: 0.75rem;
   color: var(--muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -3215,6 +3214,7 @@ input[type="checkbox"]:focus {
   cursor: pointer;
   font-size: 1rem;
   transition: var(--transition-fast);
+  text-align: left;
 }
 .accordion__button:hover {
   background: rgba(0, 178, 227, .05);
@@ -3359,23 +3359,61 @@ nav a:focus-visible {
   border-radius: 6px;
 }
 
+/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Header Navigation Adjustments */
+@media (max-width: 860px) {
+  /* Hide the big CTA in header on mobile since we have sticky-cta */
+  .header-inner .cta-primary {
+    display: none;
+  }
+  
+  /* Make brand logo slightly smaller on mobile to fit */
+  .brand svg {
+    width: 36px;
+    height: 36px;
+  }
+  .brand span {
+    font-size: 0.9rem;
+  }
+}
+
 .menu-toggle {
   background: none;
   border: none;
-  font-size: 1.4rem;
+  padding: 0.5rem;
   color: var(--sanitas-blue-800);
-  display: inline-flex;
-  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
 .menu-toggle:hover {
+  background-color: rgba(0, 178, 227, 0.1);
   color: var(--primary);
 }
 
-.menu-toggle:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-  border-radius: 8px;
+.menu-toggle svg {
+  width: 28px;
+  height: 28px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-links {
@@ -4278,7 +4316,8 @@ blockquote {
 
 /* Hero base */
 .hero { display: grid; gap: 2rem; align-items: center; }
-.hero-visual { border-radius: calc(var(--radius) * 2); padding: 1.5rem; background: linear-gradient(130deg, var(--white), #E8F7FC); box-shadow: var(--shadow); }
+.hero-visual { border-radius: calc(var(--radius) * 2); padding: 1.5rem; background: linear-gradient(130deg, var(--white), #E8F7FC); box-shadow: var(--shadow); max-width: 100%; }
+.hero-visual svg { width: 100%; height: auto; display: block; }
 
 /* FAQ base */
 .faq-item { border-radius: 10px; padding: .75rem; margin-bottom: .5rem; background: transparent; }

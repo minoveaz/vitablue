@@ -397,7 +397,12 @@
         </svg>
         <span><strong>VitaBlue</strong> Agente Exclusivo Sanitas</span>
       </a>
-      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">☰<span class="sr-only">Abrir menú</span></button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="sr-only">Abrir menú</span>
+      </button>
       <nav aria-label="Menú principal">
         <ul id="menu" class="nav-links" data-open="false">
           <li><a href="../index.html">Inicio</a></li>
@@ -729,7 +734,7 @@
             <label for="consentimiento">Acepto el tratamiento de mis datos para recibir información sobre el seguro de salud para extranjeros en España y confirmo haber leído la <a href="../privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</label>
           
           <p class="u-fs-085 u-text-muted u-mt-sm u-mb-md u-lh-150">
-            <strong>Responsable de datos:</strong> VitaBlue. <strong>Destinatario/cesionario:</strong> Sanitas para gestión y emisión de póliza. <strong>Finalidad:</strong> Gestionar tu solicitud de cotización, contacto y contratación de seguro. <strong>Base jurídica:</strong> Consentimiento y medidas precontractuales (art. 6.1 RGPD). <strong>Plazo de conservación:</strong> Durante la vigencia de la póliza y según legalidad aplicable. <strong>Derechos:</strong> Acceso, rectificación, supresión, limitación y portabilidad de tus datos. <strong>Cómo ejercer derechos:</strong> Contacta según <a href="../privacidad.html">política de privacidad</a>. <strong>DPO:</strong> Consúltalo en nuestra política de privacidad.
+            <strong>Información básica protección de datos:</strong> Responsable: VitaBlue. Finalidad: Gestión de solicitud y seguro. Legitimación: Consentimiento. Destinatarios: Sanitas. Derechos: Acceso, rectificación, supresión y otros. <a href="../privacidad.html" target="_blank">Información adicional</a>.
           </p>
         </div>
         <button type="submit" class="cta-primary">Calcular precio</button>
@@ -1425,25 +1430,7 @@
       </div>
     </section>
 
-    <section class="faq-extra" id="faq-extra">
-      <article class="faq-item">
-        <button class="accordion__button" aria-expanded="false" aria-controls="faq-barato" id="faq-barato-label">
-          ¿Es buena idea contratar el seguro más barato para estudiantes?
-          <span class="accordion__icon" aria-hidden="true">+</span>
-        </button>
-        <div id="faq-barato" class="accordion__panel" role="region" aria-labelledby="faq-barato-label" hidden>
-          <p>No siempre. Aunque la cobertura más barata puede parecer atractiva, es importante considerar:</p>
-          <ul style="margin-top: 1rem;">
-            <li><strong>Requisitos de visado:</strong> Un seguro muy barato puede no cumplir los requisitos específicos de tu consulado.</li>
-            <li><strong>Copagos escondidos:</strong> Algunos seguros baratos tienen altos copagos que no aparecen en el precio inicial.</li>
-            <li><strong>Carencias:</strong> Períodos de espera que pueden dejarte sin cobertura cuando más la necesites.</li>
-            <li><strong>Red de hospitales limitada:</strong> Menos centros concertados y acceso a servicios reducido.</li>
-            <li><strong>Riesgo de denegación de visado:</strong> Si tu consulado considera insuficiente el seguro, tu visado puede ser rechazado.</li>
-          </ul>
-          <p style="margin-top: 1rem;"><strong>Nuestro consejo:</strong> Invierte en un seguro que cumpla todos los requisitos desde el principio. Es más barato perder el dinero de la solicitud de visado que contratar un seguro que no te sirva.</p>
-        </div>
-      </article>
-    </section>
+
 
     <!-- FAQ por País -->
     <section id="faq" aria-labelledby="faq-title">
@@ -1505,6 +1492,23 @@
       <div style="margin-top: 2rem; margin-bottom: 2rem;">
         <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #0077C8;">Preguntas generales</h3>
       <div class="accordion accordion--faq faq-list">
+        <article class="faq-item">
+          <button class="accordion__button" aria-expanded="false" aria-controls="faq-barato" id="faq-barato-label">
+            ¿Es buena idea contratar el seguro más barato para estudiantes?
+            <span class="accordion__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="faq-barato" class="accordion__panel" role="region" aria-labelledby="faq-barato-label" hidden>
+            <p>No siempre. Aunque la cobertura más barata puede parecer atractiva, es importante considerar:</p>
+            <ul style="margin-top: 1rem;">
+              <li><strong>Requisitos de visado:</strong> Un seguro muy barato puede no cumplir los requisitos específicos de tu consulado.</li>
+              <li><strong>Copagos escondidos:</strong> Algunos seguros baratos tienen altos copagos que no aparecen en el precio inicial.</li>
+              <li><strong>Carencias:</strong> Períodos de espera que pueden dejarte sin cobertura cuando más la necesites.</li>
+              <li><strong>Red de hospitales limitada:</strong> Menos centros concertados y acceso a servicios reducido.</li>
+              <li><strong>Riesgo de denegación de visado:</strong> Si tu consulado considera insuficiente el seguro, tu visado puede ser rechazado.</li>
+            </ul>
+            <p style="margin-top: 1rem;"><strong>Nuestro consejo:</strong> Invierte en un seguro que cumpla todos los requisitos desde el principio. Es más barato perder el dinero de la solicitud de visado que contratar un seguro que no te sirva.</p>
+          </div>
+        </article>
         <article class="faq-item">
           <button class="accordion__button" aria-expanded="false" aria-controls="faq2" id="faq2-label">
             ¿Puedo contratarlo desde mi país?
