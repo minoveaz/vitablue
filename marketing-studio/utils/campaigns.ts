@@ -13,6 +13,28 @@ export interface CampaignAsset {
   customTagline?: string;
 }
 
+export type CampaignContentType = 'text' | 'video';
+
+export const generateCampaignCopies = (
+  campaignName: string,
+  platforms: SocialPlatformId[],
+): Record<SocialPlatformId, string> => {
+  const subject = campaignName || 'esta campaña';
+  const copies: Record<SocialPlatformId, string> = {
+    facebook: `Presentamos ${subject}: una nueva forma de encontrar el seguro de salud que necesitas. En VitaBlue comparamos opciones de forma clara, gratuita e independiente para que elijas con confianza. Descubre más en vitablue.es.`,
+    instagram: `Conoce ${subject}. 🩺 Comparamos seguros de salud de forma clara, gratuita e independiente para ayudarte a elegir sin complicaciones. Descubre la opción que encaja contigo en vitablue.es. #VitaBlue #SegurosDeSalud #Salud`,
+    tiktok: `${subject}, explicado fácil. 🩺 Comparamos seguros de salud para que encuentres tu opción sin líos ni spam. Descúbrelo en VitaBlue. #VitaBlue #Seguros #Salud`,
+    youtube: `${subject}: descubre cómo encontrar un seguro de salud de forma clara y sencilla. En VitaBlue comparamos diferentes opciones para ayudarte a tomar una decisión informada, sin compromiso y de manera gratuita.`,
+    linkedin: `Presentamos ${subject}, una campaña de VitaBlue centrada en hacer más sencilla la elección de un seguro de salud. Comparamos opciones de forma independiente y transparente para ayudar a personas y familias a decidir con confianza.`,
+    x: `${subject}: comparamos seguros de salud de forma clara, gratuita e independiente. Encuentra una opción que encaje contigo en vitablue.es. #VitaBlue #SegurosDeSalud`,
+  };
+
+  return platforms.reduce<Record<SocialPlatformId, string>>((result, platform) => {
+    result[platform] = copies[platform];
+    return result;
+  }, {} as Record<SocialPlatformId, string>);
+};
+
 export interface Campaign {
   id: string;
   name: string;
@@ -20,6 +42,9 @@ export interface Campaign {
   status: 'draft' | 'scheduled' | 'active' | 'completed';
   startDate: string;
   platforms: SocialPlatformId[];
+  contentTypes: CampaignContentType[];
+  automaticPlatforms?: SocialPlatformId[];
+  automaticPlatformsConfigured?: boolean;
   copies: Record<SocialPlatformId | string, string>;
   assets: CampaignAsset[];
   created_at?: string;
@@ -36,14 +61,8 @@ export const defaultCampaigns: Campaign[] = [
     status: 'draft',
     startDate: new Date().toISOString().split('T')[0],
     platforms: ['facebook', 'instagram', 'linkedin', 'tiktok', 'x', 'youtube'],
-    copies: {
-      facebook: '¡Llegamos para proteger lo que más importa! 💙 VitaBlue es tu nuevo comparador de seguros de salud 100% gratuito e independiente en España. Encuentra la cobertura ideal y olvídate de la letra pequeña.',
-      instagram: '🩺 ¿Buscando seguro médico en España? Te presentamos VitaBlue: tu comparador independiente de seguros de salud. Comparamos más de 20 aseguradoras para darte la opción perfecta. ¡Visita el link de nuestra bio! #VitaBlue #SegurosDeSalud #Expatriados',
-      tiktok: 'Seguro médico sin complicaciones en España 🇪🇸✈️ ¿Estudiante o nómada digital? Te lo explicamos fácil en VitaBlue. ¡Cotiza gratis ya! Link en bio. #Seguros #Estudiantes #NomadasDigitales #Españavisa',
-      youtube: 'Te presentamos VitaBlue, el comparador de seguros de salud diseñado para adaptarse a tu estilo de vida. Comparamos las mejores aseguradoras como Sanitas, Adeslas y más, de manera transparente, gratuita y sin compromiso. ¡Mira nuestro cotizador en la web!',
-      linkedin: 'Nos complace anunciar el lanzamiento de VitaBlue, un comparador independiente de seguros de salud diseñado para simplificar la toma de decisiones para familias, expatriados y profesionales en España. Transparencia y simplicidad en un solo lugar.',
-      x: '¡Hola X! 🩺 Lanzamos VitaBlue, el comparador independiente de seguros de salud en España. 100% gratuito, sin spam y adaptado a ti. Cotiza en menos de 2 minutos: https://vitablue.es/wizard'
-    },
+    contentTypes: ['text'],
+    copies: generateCampaignCopies('Lanzamiento de Marca', ['facebook', 'instagram', 'linkedin', 'tiktok', 'x', 'youtube']),
     assets: [
       {
         id: 'post-lanzamiento-1',
@@ -118,6 +137,9 @@ export const syncCampaignsWithSupabase = async (): Promise<Campaign[]> => {
         status: item.status || 'draft',
         startDate: item.start_date || '',
         platforms: item.platforms || [],
+        contentTypes: item.content_types || ['text'],
+        automaticPlatforms: item.automatic_platforms || [],
+        automaticPlatformsConfigured: item.automatic_platforms_configured || false,
         copies: item.copies || {},
         assets: item.assets || []
       }));
@@ -145,36 +167,21 @@ export const saveCampaignToSupabase = async (campaign: Campaign): Promise<void> 
   try {
     // Database payload structure
     const dbPayload = {
-      id: campaign.id.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/) 
-        ? campaign.id 
-        : undefined, // Let Supabase auto-generate if it's a slug/text ID
+      id: campaign.id,
       name: campaign.name,
       objective: campaign.objective,
       status: campaign.status,
       start_date: campaign.startDate,
       platforms: campaign.platforms,
+      content_types: campaign.contentTypes,
+      automatic_platforms: campaign.automaticPlatforms || [],
+      automatic_platforms_configured: campaign.automaticPlatformsConfigured || false,
       copies: campaign.copies,
       assets: campaign.assets,
       updated_at: new Date().toISOString()
     };
 
-    let query;
-    if (dbPayload.id) {
-      query = supabase.from('marketing_campaigns').upsert(dbPayload);
-    } else {
-      // For slug-based campaigns, match by name or let it insert
-      const { data } = await supabase
-        .from('marketing_campaigns')
-        .select('id')
-        .eq('name', campaign.name)
-        .maybeSingle();
-        
-      if (data?.id) {
-        query = supabase.from('marketing_campaigns').update(dbPayload).eq('id', data.id);
-      } else {
-        query = supabase.from('marketing_campaigns').insert(dbPayload);
-      }
-    }
+    const query = supabase.from('marketing_campaigns').upsert(dbPayload);
 
     const { error } = await query;
     if (error) {
@@ -193,14 +200,8 @@ export const deleteCampaign = async (id: string, allCampaigns: Campaign[]): Prom
   saveCampaigns(nextCampaigns);
   
   try {
-    // Delete from Supabase if it's a UUID
-    if (id.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
-      const { error } = await supabase.from('marketing_campaigns').delete().eq('id', id);
-      if (error) console.warn('Could not delete campaign in Supabase:', error.message);
-    } else {
-      // Slug-based local defaults deleted only locally
-      console.log('Deleted default campaign locally');
-    }
+    const { error } = await supabase.from('marketing_campaigns').delete().eq('id', id);
+    if (error) console.warn('Could not delete campaign in Supabase:', error.message);
   } catch (err) {
     console.warn('Network error deleting campaign in Supabase:', err);
   }

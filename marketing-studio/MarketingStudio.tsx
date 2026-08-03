@@ -14,7 +14,7 @@ import {
   Music2,
   Globe,
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
 import SocialGenerator from '@/marketing-studio/SocialGenerator';
 import { 
@@ -33,6 +33,7 @@ import {
   syncCampaignsWithSupabase 
 } from '@/marketing-studio/utils/campaigns';
 import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
+import { CampaignOverview } from '@/marketing-studio/components/CampaignOverview';
 import { 
   getConnections, 
   startPlatformOAuth, 
@@ -87,6 +88,7 @@ const formatDimensions = (dimensions: { width: number; height: number }) => `${d
 
 const MarketingStudio: React.FC = () => {
   const { pathname } = useLocation();
+  const { campaignId } = useParams<{ campaignId?: string }>();
   
   let section: StudioSection = 'identity';
   if (pathname.includes('/perfiles-sociales')) {
@@ -967,7 +969,11 @@ const MarketingStudio: React.FC = () => {
         {/* CAMPAIGN MANAGER MODULE */}
         {section === 'campaigns' && (
           <div className="animate-fadeIn">
-            <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} />
+            {campaignId ? (
+              <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} campaignId={campaignId} />
+            ) : (
+              <CampaignOverview campaigns={campaigns} setCampaigns={setCampaigns} />
+            )}
           </div>
         )}
 

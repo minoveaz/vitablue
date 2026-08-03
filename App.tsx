@@ -619,6 +619,7 @@ const AppLayout: React.FC = () => {
                 <Route path="/marketing-studio/identidad-de-marca" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/perfiles-sociales" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/campanas" element={<MarketingStudio />} />
+                <Route path="/marketing-studio/campanas/:campaignId" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/conexiones" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/generador-contenido" element={<MarketingStudio />} />
               </>

@@ -28,7 +28,14 @@ export const getConnections = (): SocialConnections => {
   try {
     const stored = window.localStorage.getItem(storageKey);
     if (!stored) return defaultConnections;
-    return { ...defaultConnections, ...JSON.parse(stored) };
+    const connections = { ...defaultConnections, ...JSON.parse(stored) } as SocialConnections;
+
+    if (connections.facebook.connected || connections.instagram.connected) {
+      connections.facebook = { ...connections.facebook, connected: true };
+      connections.instagram = { ...connections.instagram, connected: true };
+    }
+
+    return connections;
   } catch {
     return defaultConnections;
   }
