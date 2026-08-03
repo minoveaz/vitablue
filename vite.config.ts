@@ -81,6 +81,30 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/api/linkedin': {
+        target: 'https://api.linkedin.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/linkedin/, ''),
+      },
+      '/api/facebook': {
+        target: 'https://graph.facebook.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/facebook/, ''),
+      },
+      '/api/twitter': {
+        target: 'https://api.twitter.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/twitter/, ''),
+      },
+      '/api/google': {
+        target: 'https://www.googleapis.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/google/, ''),
+      },
+    },
+  },
   build: {
     target: 'es2018',
     rollupOptions: {

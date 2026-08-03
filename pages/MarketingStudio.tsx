@@ -12,6 +12,7 @@ import {
   Type,
   Youtube,
   Music2,
+  Globe,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
@@ -32,8 +33,15 @@ import {
   syncCampaignsWithSupabase 
 } from '@/utils/campaigns';
 import { CampaignManager } from '@/components/organisms/CampaignManager';
+import { 
+  getConnections, 
+  startPlatformOAuth, 
+  handleOAuthCallback, 
+  disconnectPlatform,
+  SocialConnections
+} from '@/utils/connections';
 
-type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'content';
+type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'connections' | 'content';
 type PlatformId = SocialPlatformId;
 type SocialAssetType = 'profile' | 'cover';
 
@@ -85,6 +93,8 @@ const MarketingStudio: React.FC = () => {
     section = 'profiles';
   } else if (pathname.includes('/campanas')) {
     section = 'campaigns';
+  } else if (pathname.includes('/conexiones')) {
+    section = 'connections';
   } else if (pathname.includes('/generador-contenido')) {
     section = 'content';
   }
@@ -93,6 +103,7 @@ const MarketingStudio: React.FC = () => {
   const [mockupTheme, setMockupTheme] = useState<'light' | 'dark'>('light');
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
   const [campaigns, setCampaigns] = useState<Campaign[]>(getCampaigns);
+  const [connections, setConnections] = useState<SocialConnections>(getConnections);
   const [useDarkBackground, setUseDarkBackground] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
@@ -127,6 +138,41 @@ const MarketingStudio: React.FC = () => {
     return () => {
       window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
     };
+  }, []);
+
+  React.useEffect(() => {
+    // 3. Process OAuth callbacks from redirect query parameters
+    const queryParams = new URLSearchParams(window.location.search);
+    const code = queryParams.get('code');
+    const state = queryParams.get('state');
+
+    if (code && state) {
+      let platform: SocialPlatformId | null = null;
+      if (state.startsWith('linkedin_')) platform = 'linkedin';
+      if (state.startsWith('meta_')) platform = 'facebook';
+      if (state.startsWith('google_')) platform = 'youtube';
+      if (state.startsWith('x_')) platform = 'x';
+      if (state.startsWith('tiktok_')) platform = 'tiktok';
+
+      if (platform) {
+        setIsExporting(true);
+        setExportMessage(`Conectando con ${platform}...`);
+        
+        handleOAuthCallback(platform, code).then((res) => {
+          if (res.success) {
+            setConnections(getConnections());
+            setExportMessage(`¡Cuenta de ${platform} conectada con éxito!`);
+          } else {
+            setExportMessage(`Error al conectar con ${platform}: ${res.error}`);
+          }
+          setIsExporting(false);
+          
+          // Clear URL query parameters
+          const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        });
+      }
+    }
   }, []);
 
   const handleSocialUrlChange = (platform: SocialPlatformId, url: string) => {
@@ -191,6 +237,9 @@ const MarketingStudio: React.FC = () => {
             </Link>
             <Link to="/marketing-studio/campanas" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'campaigns' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Sparkles size={16} className="text-[#94D2BD] shrink-0" /> Gestión de Campañas
+            </Link>
+            <Link to="/marketing-studio/conexiones" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'connections' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <Globe size={16} className="shrink-0" /> Conexiones API
             </Link>
             <Link to="/marketing-studio/generador-contenido" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'content' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Sparkles size={16} /> Generador de contenido
@@ -790,6 +839,89 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
             </section>
+          </div>
+        )}
+
+        {/* CONNECTIONS API MODULE */}
+        {section === 'connections' && (
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6 text-left animate-fadeIn">
+            <div>
+              <h2 className="font-display text-2xl font-black text-slate-800">Conexiones API con Redes Sociales</h2>
+              <p className="text-slate-400 text-xs mt-1">Conecta tus cuentas corporativas de forma segura en local. OAuth 2.0 y Proxy de Vite activos.</p>
+            </div>
+
+            {exportMessage && (
+              <div className="bg-[#EBF7F4] border border-[#94D2BD]/30 py-2.5 px-4 rounded-xl text-center text-xs font-bold text-[#005F73] animate-pulse">
+                {exportMessage}
+              </div>
+            )}
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {platforms.map((plat) => {
+                const conn = connections[plat.id];
+                const isConnected = conn?.connected;
+
+                return (
+                  <div key={plat.id} className="border border-slate-200 rounded-3xl p-5 bg-slate-50/30 flex flex-col justify-between gap-5 hover:shadow-sm transition-all">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <span className="p-2.5 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm" style={{ color: plat.accent }}>
+                          {plat.icon}
+                        </span>
+                        <div>
+                          <span className="block text-sm font-bold text-slate-800">{plat.name}</span>
+                          <span className="block text-[10px] text-slate-400 font-semibold">API OAuth 2.0</span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100/60">
+                        {isConnected ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-emerald-50 border border-emerald-200 text-emerald-700 font-sans">
+                              <span className="size-1.5 rounded-full bg-emerald-500 animate-ping mr-1" />
+                              Conectado
+                            </span>
+                            <span className="block text-xs font-bold text-slate-700 mt-2 truncate">
+                              Usuario: {conn.username}
+                            </span>
+                            <span className="block text-[9px] text-slate-400 font-semibold">
+                              Vinculado: {conn.connectedAt}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-slate-100 border border-slate-200 text-slate-600">
+                              Desconectado
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed mt-2">
+                              Requiere Client ID y Client Secret de desarrollador configurados en tu archivo local <code>.env.local</code>.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-100/60">
+                      {isConnected ? (
+                        <button
+                          onClick={() => setConnections(disconnectPlatform(plat.id))}
+                          className="w-full flex items-center justify-center py-2.5 rounded-xl border border-rose-100 bg-rose-50/50 hover:bg-rose-50 text-rose-600 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Desconectar
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => startPlatformOAuth(plat.id)}
+                          className="w-full flex items-center justify-center py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Conectar cuenta
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
