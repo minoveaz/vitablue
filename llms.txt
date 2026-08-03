@@ -1,0 +1,15 @@
+# VitaBlue
+
+> Comparador independiente de seguros de salud, viaje y asistencia en España.
+
+## Main Pages
+
+- [Inicio](https://www.vitablue.es/)
+- [Seguros de Salud](https://www.vitablue.es/seguros-salud)
+- [Seguro para Visado de Estudiante](https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html)
+- [Seguro para Expatriados y Residencia](https://www.vitablue.es/productos/seguros-salud/seguro-expatriados)
+- [Seguro para Nómadas Digitales](https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales)
+- [Seguro de Mascotas](https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas)
+- [Seguro de Decesos Asistencia Familiar](https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar)
+- [Blog de Guías Oficiales](https://www.vitablue.es/blog)
+- [Cotizador de Seguros Online](https://www.vitablue.es/wizard)
