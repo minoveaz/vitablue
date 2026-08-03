@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /resultados
+Disallow: /resultados/
+Disallow: /wizard
+Disallow: /wizard/
+Disallow: /cotizador.html
+Disallow: /styleguide
+
+Sitemap: https://www.vitablue.es/sitemap.xml
