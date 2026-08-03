@@ -54,10 +54,11 @@ export const Footer: React.FC = () => {
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-1">Síguenos</span>
             
             <a 
-              href="#" 
+              href="https://www.facebook.com/share/1FwKPbX8N7/?mibextid=wwXIfr" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="Facebook"
-              onClick={(e) => e.preventDefault()}
             >
               <FacebookIcon />
             </a>
