@@ -638,16 +638,19 @@ const MarketingStudio: React.FC = () => {
         ) : <SocialGenerator />}
 
         {/* ========================================== */}
-        {/* HIGH-RES EXPORT CANVAS (Rendered Offscreen) */}
+        {/* HIGH-RES EXPORT CANVAS (Rendered Invisibly but fully layouted) */}
         {/* ========================================== */}
-        <div className="absolute left-[-9999px] top-[-9999px] pointer-events-none select-none">
+        <div 
+          className="absolute top-0 left-0 opacity-0 pointer-events-none select-none overflow-hidden z-[-100]"
+          style={{ width: '3200px', height: '1200px' }}
+        >
           {/* Profile photo high-res export canvas (800x800) */}
           <div 
             ref={profileRef}
             className={`relative flex items-center justify-center overflow-hidden ${
               useDarkBackground ? 'bg-[#001219]' : 'bg-white'
             }`}
-            style={{ width: '800px', height: '800px' }}
+            style={{ width: '800px', height: '800px', minWidth: '800px', minHeight: '800px' }}
           >
             <div className="relative z-10 flex items-center justify-center">
               <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
@@ -662,6 +665,8 @@ const MarketingStudio: React.FC = () => {
               style={{
                 width: `${selectedPlatform.coverSize.width}px`,
                 height: `${selectedPlatform.coverSize.height}px`,
+                minWidth: `${selectedPlatform.coverSize.width}px`,
+                minHeight: `${selectedPlatform.coverSize.height}px`,
               }}
             >
               <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />

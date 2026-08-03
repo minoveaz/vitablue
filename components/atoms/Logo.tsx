@@ -201,11 +201,7 @@ export const Logo: React.FC<LogoProps> = ({
   );
 
   if (!showText) {
-    return (
-      <div className={`inline-block ${className}`} style={{ width: iconSize, height: iconSize }}>
-        {svgContent}
-      </div>
-    );
+    return svgContent;
   }
 
   return (
