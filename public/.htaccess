@@ -23,6 +23,18 @@
   ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
+<IfModule mod_headers.c>
+  # Forzar Cache-Control de 1 año en recursos estáticos y archivos de tipografías/imágenes
+  <FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico|webp|svg|woff|woff2|otf|ttf)$">
+    Header set Cache-Control "max-age=31536000, public, no-transform"
+  </FilesMatch>
+  
+  # Evitar almacenamiento en caché del HTML principal (para que los usuarios vean cambios de inmediato)
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
