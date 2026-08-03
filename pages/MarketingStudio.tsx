@@ -13,7 +13,7 @@ import {
   Youtube,
   Music2,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
 import SocialGenerator from '@/pages/SocialGenerator';
 import { getSocialProfiles, saveSocialProfiles, SocialPlatformId, SocialProfiles, extractSocialUser, socialProfilesUpdatedEvent } from '@/utils/socialProfiles';
@@ -50,7 +50,14 @@ const colorTokens = [
 const formatDimensions = (dimensions: { width: number; height: number }) => `${dimensions.width} × ${dimensions.height} px`;
 
 const MarketingStudio: React.FC = () => {
-  const [section, setSection] = useState<StudioSection>('identity');
+  const { pathname } = useLocation();
+  
+  let section: StudioSection = 'identity';
+  if (pathname.includes('/perfiles-sociales')) {
+    section = 'profiles';
+  } else if (pathname.includes('/generador-contenido')) {
+    section = 'content';
+  }
   const [activePlatform, setActivePlatform] = useState<PlatformId>('instagram');
   const [mockupTheme, setMockupTheme] = useState<'light' | 'dark'>('light');
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
@@ -145,9 +152,9 @@ const MarketingStudio: React.FC = () => {
         </div>
 
         <nav className="mb-8 flex gap-1 overflow-x-auto border-b border-slate-200" aria-label="Secciones de Marketing Studio">
-          <button onClick={() => setSection('identity')} className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'identity' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Palette size={17} /> Identidad de marca</button>
-          <button onClick={() => setSection('profiles')} className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'profiles' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><ImageIcon size={17} /> Perfiles sociales</button>
-          <button onClick={() => setSection('content')} className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'content' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Sparkles size={17} /> Generador de contenido</button>
+          <Link to="/marketing-studio/identidad-de-marca" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'identity' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Palette size={17} /> Identidad de marca</Link>
+          <Link to="/marketing-studio/perfiles-sociales" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'profiles' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><ImageIcon size={17} /> Perfiles sociales</Link>
+          <Link to="/marketing-studio/generador-contenido" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'content' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Sparkles size={17} /> Generador de contenido</Link>
         </nav>
 
         {section === 'identity' ? (

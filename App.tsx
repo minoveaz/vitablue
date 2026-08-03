@@ -612,7 +612,14 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
             {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
-            {import.meta.env.DEV && <Route path="/marketing-studio" element={<MarketingStudio />} />}
+            {import.meta.env.DEV && (
+              <>
+                <Route path="/marketing-studio" element={<MarketingStudio />} />
+                <Route path="/marketing-studio/identidad-de-marca" element={<MarketingStudio />} />
+                <Route path="/marketing-studio/perfiles-sociales" element={<MarketingStudio />} />
+                <Route path="/marketing-studio/generador-contenido" element={<MarketingStudio />} />
+              </>
+            )}
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
             <Route path="/productos/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguros-salud/seguro-medico-estudiantes" element={<StudentInsurance />} />
