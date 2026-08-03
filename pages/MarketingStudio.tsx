@@ -52,7 +52,7 @@ const formatDimensions = (dimensions: { width: number; height: number }) => `${d
 const MarketingStudio: React.FC = () => {
   const [section, setSection] = useState<StudioSection>('identity');
   const [activePlatform, setActivePlatform] = useState<PlatformId>('instagram');
-  const [assetType, setAssetType] = useState<SocialAssetType>('profile');
+  const [mockupTheme, setMockupTheme] = useState<'light' | 'dark'>('light');
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
   const [useDarkBackground, setUseDarkBackground] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -63,21 +63,11 @@ const MarketingStudio: React.FC = () => {
   const selectedPlatform = platforms.find((platform) => platform.id === activePlatform) ?? platforms[0];
   const selectedProfile = socialProfiles[activePlatform];
   const hasCover = Boolean(selectedPlatform.coverSize);
-  const activeDimensions = assetType === 'cover' && selectedPlatform.coverSize
-    ? selectedPlatform.coverSize
-    : selectedPlatform.profileSize;
-  const previewScale = Math.min(
-    1,
-    520 / activeDimensions.width,
-    480 / activeDimensions.height,
-  );
-  const previewDimensions = {
-    width: Math.round(activeDimensions.width * previewScale),
-    height: Math.round(activeDimensions.height * previewScale),
-  };
-  const coverLogoSize = activeDimensions.width >= 2000 ? 220 : 150;
-  const coverTitleSize = activeDimensions.width >= 2000 ? 96 : 64;
-  const coverSubtitleSize = activeDimensions.width >= 2000 ? 48 : 32;
+  
+  const coverDimensions = selectedPlatform.coverSize ?? { width: 1640, height: 624 };
+  const coverLogoSize = coverDimensions.width >= 2000 ? 220 : 150;
+  const coverTitleSize = coverDimensions.width >= 2000 ? 96 : 64;
+  const coverSubtitleSize = coverDimensions.width >= 2000 ? 48 : 32;
 
   React.useEffect(() => {
     const handleProfilesUpdate = (event: Event) => {
@@ -102,27 +92,36 @@ const MarketingStudio: React.FC = () => {
     saveSocialProfiles(nextProfiles);
   };
 
-  const handleProfileExport = async () => {
-    const assetRef = assetType === 'cover' ? coverRef.current : profileRef.current;
+  const handleSocialExport = async (type: SocialAssetType) => {
+    const assetRef = type === 'cover' ? coverRef.current : profileRef.current;
     if (!assetRef) return;
 
     setIsExporting(true);
     setExportMessage(null);
 
+    const dims = type === 'cover' && selectedPlatform.coverSize
+      ? selectedPlatform.coverSize
+      : selectedPlatform.profileSize;
+
     try {
       const dataUrl = await toPng(assetRef, {
         cacheBust: true,
-        skipFonts: true,
-        pixelRatio: 2,
-        width: activeDimensions.width,
-        height: activeDimensions.height,
-        style: { width: `${activeDimensions.width}px`, height: `${activeDimensions.height}px`, transform: 'scale(1)' },
+        skipFonts: false,
+        pixelRatio: 1, // Full size is already set explicitly in style dimensions
+        width: dims.width,
+        height: dims.height,
+        style: { 
+          width: `${dims.width}px`, 
+          height: `${dims.height}px`, 
+          transform: 'scale(1)',
+          transformOrigin: 'top left'
+        },
       });
       const link = document.createElement('a');
-      link.download = `vitablue_${activePlatform}_${assetType}_${Date.now()}.png`;
+      link.download = `vitablue_${activePlatform}_${type}_${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
-      setExportMessage(`${assetType === 'cover' ? 'Portada' : 'Perfil'} de ${selectedPlatform.name} descargado.`);
+      setExportMessage(`${type === 'cover' ? 'Portada' : 'Foto de perfil'} descargada en alta resolución.`);
     } catch (error) {
       console.error('Error generating profile image:', error);
       setExportMessage('No se pudo descargar la imagen. Inténtalo de nuevo.');
@@ -197,59 +196,486 @@ const MarketingStudio: React.FC = () => {
           </div>
         ) : section === 'profiles' ? (
           <div className="grid items-start gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-              <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#005F73]">Asset builder</p>
-              <h3 className="font-display text-2xl font-black">Activos sociales</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">Previsualiza y descarga el activo con el formato real de cada plataforma.</p>
-              <div className="mt-7 space-y-2">
-                {platforms.map((platform) => <button key={platform.id} onClick={() => { setActivePlatform(platform.id); setAssetType(platform.coverSize ? assetType : 'profile'); setExportMessage(null); }} className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${activePlatform === platform.id ? 'border-[#005F73] bg-[#EBF7F4]' : 'border-slate-200 hover:border-slate-300'}`}><span className="flex items-center gap-3"><span style={{ color: platform.accent }}>{platform.icon}</span><span><span className="block text-sm font-bold text-slate-800">{platform.name}</span><span className="block text-[11px] text-slate-400">Perfil {formatDimensions(platform.profileSize)}</span></span></span>{activePlatform === platform.id && <Check size={17} className="text-[#005F73]" />}</button>)}
+            {/* Left Column: Asset Builder Controls */}
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 space-y-6">
+              <div>
+                <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#005F73]">Asset builder</p>
+                <h3 className="font-display text-2xl font-black">Activos sociales</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">Configura y descarga los activos vectoriales de marca a resoluciones ultra altas.</p>
               </div>
-              <div className="mt-7 space-y-4 border-t border-slate-100 pt-6">
-                <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-50 p-1.5">
-                  <button onClick={() => setAssetType('profile')} className={`rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${assetType === 'profile' ? 'bg-white text-[#005F73] shadow-sm' : 'text-slate-400 hover:text-slate-700'}`}>Foto de perfil</button>
-                  <button onClick={() => hasCover && setAssetType('cover')} disabled={!hasCover} className={`rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${assetType === 'cover' ? 'bg-white text-[#005F73] shadow-sm' : 'text-slate-400 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50'}`}>Portada / banner</button>
-                </div>
-                <p className="text-[11px] leading-relaxed text-slate-400">{hasCover ? `${assetType === 'cover' ? 'Portada' : 'Perfil'} recomendada para ${selectedPlatform.name}: ${formatDimensions(activeDimensions)}.` : `${selectedPlatform.name} no utiliza una portada independiente. La vista muestra cómo aparece su foto de perfil.`}</p>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-400">URL oficial de {selectedPlatform.name}<input type="url" value={selectedProfile.url} onChange={(event) => handleSocialUrlChange(activePlatform, event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-[#005F73]" placeholder={`https://${activePlatform}.com/...`} /></label>
-                <div className="rounded-xl bg-[#EBF7F4] px-3.5 py-3"><p className="text-[10px] font-black uppercase tracking-wider text-[#005F73]">Usuario detectado</p><p className="mt-1 text-sm font-bold text-[#001219]">{selectedProfile.user || 'Añade una URL para detectarlo'}</p></div>
-                <label className="flex cursor-pointer items-center justify-between rounded-xl bg-slate-50 px-3.5 py-3 text-sm font-bold text-slate-700"><span>Fondo oscuro</span><input type="checkbox" checked={useDarkBackground} onChange={(event) => setUseDarkBackground(event.target.checked)} className="h-4 w-4 accent-[#005F73]" /></label>
-              </div>
-              <button onClick={handleProfileExport} disabled={isExporting} className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#005F73] px-5 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#004f5e] disabled:cursor-wait disabled:opacity-60"><Download size={18} />{isExporting ? 'Preparando PNG...' : `Descargar ${assetType === 'cover' ? 'portada' : 'perfil'} de ${selectedPlatform.name}`}</button>
-              {exportMessage && <p className="mt-3 text-center text-xs font-semibold text-[#005F73]">{exportMessage}</p>}
-            </section>
 
-            <section className="flex min-h-[620px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-[#e8edef] p-6 shadow-sm sm:p-10">
-              <div className="mb-5 flex w-full items-center justify-between"><div><p className="text-xs font-black uppercase tracking-wider text-slate-400">Vista previa contextual</p><p className="mt-1 text-sm font-bold text-slate-700">{selectedPlatform.name} · {assetType === 'cover' ? 'Portada' : 'Perfil'}</p></div><span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-slate-500 shadow-sm">{formatDimensions(activeDimensions)}</span></div>
-              <div className="w-full max-w-[520px] overflow-hidden rounded-3xl bg-white shadow-2xl">
-                <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-3 text-xs font-bold text-slate-500"> <span style={{ color: selectedPlatform.accent }}>{selectedPlatform.icon}</span> Así se verá en {selectedPlatform.name}</div>
-                {assetType === 'cover' && hasCover ? (
-                  <div className="bg-white p-4">
-                    <div className="overflow-hidden rounded-xl border border-slate-100 bg-[#001219]">
-                      <div className="relative overflow-hidden" style={{ width: `${previewDimensions.width}px`, height: `${previewDimensions.height}px` }}>
-                        <div ref={coverRef} className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]" style={{ width: `${activeDimensions.width}px`, height: `${activeDimensions.height}px`, transform: `scale(${previewScale})`, transformOrigin: 'top left' }}>
-                        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" /><div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
-                        <div className="relative z-10 flex flex-col items-center text-center"><Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" /><p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p><p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>Protección que se adapta a tu vida</p></div>
-                        </div>
-                        {activePlatform === 'youtube' && <div className="pointer-events-none absolute left-1/2 top-1/2 h-[29.38%] w-[60.39%] -translate-x-1/2 -translate-y-1/2 rounded border border-dashed border-white/70" aria-hidden="true" />}
-                      </div>
-                    </div>
+              {/* Platform Selector buttons */}
+              <div className="space-y-2">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-400">Seleccionar plataforma</p>
+                <div className="space-y-1.5">
+                  {platforms.map((platform) => (
+                    <button
+                      key={platform.id}
+                      onClick={() => {
+                        setActivePlatform(platform.id);
+                        setExportMessage(null);
+                      }}
+                      className={`flex w-full items-center justify-between rounded-2xl border p-3 text-left transition-all cursor-pointer ${
+                        activePlatform === platform.id
+                          ? 'border-[#005F73] bg-[#EBF7F4]'
+                          : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span style={{ color: platform.accent }}>{platform.icon}</span>
+                        <span>
+                          <span className="block text-sm font-bold text-slate-800">{platform.name}</span>
+                          <span className="block text-[10px] text-slate-400">
+                            Perfil: {formatDimensions(platform.profileSize)}
+                            {platform.coverSize && ` | Portada: ${formatDimensions(platform.coverSize)}`}
+                          </span>
+                        </span>
+                      </span>
+                      {activePlatform === platform.id && <Check size={16} className="text-[#005F73]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Configuration parameters */}
+              <div className="space-y-4 border-t border-slate-100 pt-5">
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-400">
+                  URL oficial de {selectedPlatform.name}
+                  <input
+                    type="url"
+                    value={selectedProfile.url}
+                    onChange={(event) => handleSocialUrlChange(activePlatform, event.target.value)}
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-[#005F73]"
+                    placeholder={`https://${activePlatform}.com/...`}
+                  />
+                </label>
+
+                <div className="rounded-xl bg-[#EBF7F4] px-3.5 py-2.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-[#005F73]">Usuario detectado</p>
+                  <p className="mt-0.5 text-sm font-bold text-[#001219]">{selectedProfile.user || 'Añade una URL para detectarlo'}</p>
+                </div>
+
+                {/* Profile Photo Export Background Options */}
+                <div className="space-y-2 border-t border-slate-100 pt-4">
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-400">Estilo de descarga (Perfil)</p>
+                  <label className="flex cursor-pointer items-center justify-between rounded-xl bg-slate-50 px-3.5 py-3 text-sm font-bold text-slate-700">
+                    <span>Fondo oscuro (Midnight)</span>
+                    <input
+                      type="checkbox"
+                      checked={useDarkBackground}
+                      onChange={(event) => setUseDarkBackground(event.target.checked)}
+                      className="h-4 w-4 accent-[#005F73] cursor-pointer"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* High Resolution Asset Download Panel */}
+              <div className="space-y-3 border-t border-slate-100 pt-5">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-400">Descargar en Alta Definición (PNG)</p>
+                
+                <button
+                  onClick={() => handleSocialExport('profile')}
+                  disabled={isExporting}
+                  className="w-full flex items-center justify-between rounded-2xl border border-slate-200 p-3.5 hover:border-[#005F73] hover:bg-[#005F73]/5 transition-all text-left cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <div>
+                    <span className="block text-xs font-bold text-slate-800">Foto de Perfil</span>
+                    <span className="block text-[10px] text-slate-400">Alta resolución: 800 × 800 px</span>
                   </div>
-                ) : (
-                  <div className="bg-[#f8fafb] p-5">
-                    {activePlatform === 'instagram' && <div className="mb-4 flex items-center gap-4 border-b border-slate-200 pb-5"><div className="rounded-full bg-gradient-to-br from-[#EE9B00] via-[#D946EF] to-[#005F73] p-1"><div className="rounded-full bg-white p-1"><Logo iconSize={68} showText={false} showTagline={false} /></div></div><div><p className="font-bold text-slate-800">VitaBlue</p><p className="text-xs text-slate-400">{selectedProfile.user || 'Usuario pendiente'}</p><p className="mt-2 text-xs font-bold text-slate-600">Seguros que se adaptan a ti</p></div></div>}
-                    {activePlatform !== 'instagram' && <div className={`mb-4 flex flex-col items-center rounded-2xl px-5 py-6 text-center ${activePlatform === 'tiktok' ? 'bg-[#111827] text-white' : 'bg-white text-slate-800'}`}><Logo iconSize={activePlatform === 'youtube' ? 92 : 78} showText={false} showTagline={false} variant={activePlatform === 'tiktok' ? 'colored-on-dark' : 'default'} /><p className="mt-3 font-display text-2xl font-black">VitaBlue</p><p className={`text-xs ${activePlatform === 'tiktok' ? 'text-[#94D2BD]' : 'text-slate-400'}`}>{selectedProfile.user || 'Usuario pendiente'}</p></div>}
-                    <div className="overflow-hidden" style={{ width: `${previewDimensions.width}px`, height: `${previewDimensions.height}px` }}>
-                      <div ref={profileRef} className={`relative flex items-center justify-center overflow-hidden ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`} style={{ width: `${activeDimensions.width}px`, height: `${activeDimensions.height}px`, transform: `scale(${previewScale})`, transformOrigin: 'top left' }}>
-                        <div className="relative z-10 flex items-center justify-center"><Logo iconSize={Math.min(activeDimensions.width, activeDimensions.height) * 0.52} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} /></div>
-                      </div>
+                  <Download size={18} className="text-[#005F73]" />
+                </button>
+
+                {hasCover && (
+                  <button
+                    onClick={() => handleSocialExport('cover')}
+                    disabled={isExporting}
+                    className="w-full flex items-center justify-between rounded-2xl border border-slate-200 p-3.5 hover:border-[#005F73] hover:bg-[#005F73]/5 transition-all text-left cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    <div>
+                      <span className="block text-xs font-bold text-slate-800">Portada / Banner</span>
+                      <span className="block text-[10px] text-slate-400">
+                        Resolución retina: {formatDimensions(selectedPlatform.coverSize!)}
+                      </span>
                     </div>
-                  </div>
+                    <Download size={18} className="text-[#005F73]" />
+                  </button>
                 )}
               </div>
-              <p className="mt-7 max-w-lg text-center text-xs leading-relaxed text-slate-500">La vista adapta el encuadre al comportamiento habitual de cada red. La descarga conserva las dimensiones oficiales del activo, sin la interfaz de esta maqueta.</p>
+
+              {exportMessage && (
+                <p className="text-center text-xs font-semibold text-[#005F73] bg-[#EBF7F4] py-2 rounded-xl border border-[#94D2BD]/30 animate-pulse">
+                  {exportMessage}
+                </p>
+              )}
+            </section>
+
+            {/* Right Column: Visual Mockup Previews */}
+            <section className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-[#e8edef] p-6 shadow-sm sm:p-8">
+              
+              {/* Mockup Header: Toggle theme */}
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-400">Vista previa contextual real</p>
+                  <p className="mt-0.5 text-sm font-bold text-slate-700">Canal: {selectedPlatform.name}</p>
+                </div>
+                
+                {/* Mockup Light/Dark mode switcher */}
+                <div className="flex items-center gap-1.5 bg-slate-300/50 p-1 rounded-xl">
+                  <button
+                    onClick={() => setMockupTheme('light')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      mockupTheme === 'light' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    Modo Claro
+                  </button>
+                  <button
+                    onClick={() => setMockupTheme('dark')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      mockupTheme === 'dark' ? 'bg-[#0f0f0f] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    Modo Oscuro
+                  </button>
+                </div>
+              </div>
+
+              {/* Realistic mockup canvas */}
+              <div className={`w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl border transition-colors shadow-2xl ${
+                mockupTheme === 'dark' ? 'border-[#3e4042] bg-[#18191A]' : 'border-slate-200 bg-white'
+              }`}>
+                {/* Simulated browser/network top info bar */}
+                <div className={`flex items-center gap-2 border-b px-4 py-2.5 text-[11px] font-bold tracking-wide select-none ${
+                  mockupTheme === 'dark' ? 'border-white/10 text-white/50 bg-[#242526]' : 'border-slate-100 text-slate-400 bg-slate-50'
+                }`}>
+                  <span style={{ color: selectedPlatform.accent }}>{selectedPlatform.icon}</span>
+                  <span>Previsualización de Perfil Oficial en {selectedPlatform.name}</span>
+                </div>
+
+                {/* Platform specific mockup renders */}
+                <div className="p-0">
+                  {/* FACEBOOK MOCKUP */}
+                  {activePlatform === 'facebook' && (
+                    <div className="relative">
+                      {/* Banner */}
+                      <div className="w-full aspect-[2.63/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
+                        <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#94D2BD]/20 blur-xl" />
+                        <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-[#94D2BD]/10 blur-xl" />
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-3 select-none">
+                          <Logo iconSize={40} showText={false} showTagline={false} variant="colored-on-dark" />
+                          <p className="mt-2.5 font-display font-black text-white text-lg leading-none">VitaBlue</p>
+                          <p className="mt-1.5 font-semibold text-[#94D2BD] text-[10px] leading-tight max-w-[220px]">
+                            Protección que se adapta a tu vida
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Avatar container */}
+                      <div className="px-6 pb-6 pt-16 relative">
+                        <div 
+                          className={`absolute left-6 top-[-36px] rounded-full border-[4px] w-20 h-20 shadow-md overflow-hidden flex items-center justify-center select-none ${
+                            mockupTheme === 'dark' ? 'border-[#18191A]' : 'border-white'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <Logo iconSize={40} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                        </div>
+
+                        {/* Name and actions */}
+                        <div className="text-left space-y-1">
+                          <h4 className={`text-xl font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                            VitaBlue
+                          </h4>
+                          <p className="text-xs text-slate-400 font-medium">
+                            {selectedProfile.user || 'Página · Correduría de seguros'}
+                          </p>
+                          <div className="flex gap-2 pt-3">
+                            <button className="px-4 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-bold shadow-sm">
+                              Enviar mensaje
+                            </button>
+                            <button className={`px-4 py-1.5 rounded-lg text-xs font-bold ${
+                              mockupTheme === 'dark' ? 'bg-[#3A3B3C] text-white hover:bg-[#4E4F50]' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                            }`}>
+                              Te gusta
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* LINKEDIN MOCKUP */}
+                  {activePlatform === 'linkedin' && (
+                    <div className="relative text-left">
+                      {/* Cover */}
+                      <div className="w-full aspect-[4/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
+                        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#94D2BD]/20 blur-xl" />
+                        <div className="absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-[#94D2BD]/10 blur-xl" />
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-3 select-none">
+                          <Logo iconSize={36} showText={false} showTagline={false} variant="colored-on-dark" />
+                          <p className="mt-1 font-display font-black text-white text-base leading-none">VitaBlue</p>
+                          <p className="mt-0.5 font-semibold text-[#94D2BD] text-[9px] leading-tight max-w-[200px]">
+                            Protección que se adapta a tu vida
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="px-6 pb-6 pt-16 relative">
+                        {/* Avatar */}
+                        <div 
+                          className={`absolute left-6 top-[-44px] rounded-full border-[4px] w-22 h-22 shadow-md overflow-hidden flex items-center justify-center select-none ${
+                            mockupTheme === 'dark' ? 'border-[#18191A]' : 'border-white'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <Logo iconSize={44} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                        </div>
+
+                        {/* LinkedIn Company Bio Details */}
+                        <div className="space-y-1">
+                          <h4 className={`text-xl font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                            VitaBlue
+                          </h4>
+                          <p className={`text-xs font-semibold ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                            Asesoría de Seguros Independiente y Gratuita en España
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            Servicios financieros · Madrid, Comunidad de Madrid · 1,240 seguidores
+                          </p>
+                          <div className="flex gap-2 pt-4">
+                            <button className="px-4 py-1.5 rounded-full bg-[#0A66C2] text-white text-xs font-bold shadow-sm">
+                              + Seguir
+                            </button>
+                            <button className={`px-4 py-1.5 rounded-full text-xs font-bold border ${
+                              mockupTheme === 'dark' ? 'border-white/20 text-[#0A66C2] hover:bg-white/5' : 'border-[#0A66C2] text-[#0A66C2] hover:bg-[#0A66C2]/5'
+                            }`}>
+                              Visitar sitio web
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* YOUTUBE MOCKUP */}
+                  {activePlatform === 'youtube' && (
+                    <div className="relative text-left">
+                      {/* YouTube Slim Banner */}
+                      <div className="w-full aspect-[6/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
+                        <div className="absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#94D2BD]/20 blur-xl" />
+                        <div className="absolute -bottom-28 -left-20 h-48 w-48 rounded-full bg-[#94D2BD]/10 blur-xl" />
+                        <div className="relative z-10 flex items-center justify-between h-full px-12 select-none">
+                          <div className="flex items-center gap-4">
+                            <Logo iconSize={40} showText={false} showTagline={false} variant="colored-on-dark" />
+                            <div className="text-left">
+                              <p className="font-display font-black text-white text-lg leading-none">VitaBlue</p>
+                              <p className="mt-1 font-semibold text-[#94D2BD] text-[10px] leading-tight">
+                                Protección que se adapta a tu vida
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* YouTube Profile Details Row */}
+                      <div className="p-6 flex gap-4 items-start">
+                        {/* Circular Avatar */}
+                        <div 
+                          className={`rounded-full border w-16 h-16 shrink-0 overflow-hidden flex items-center justify-center select-none ${
+                            mockupTheme === 'dark' ? 'border-white/10' : 'border-slate-100'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <Logo iconSize={36} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                        </div>
+
+                        {/* Title and stats */}
+                        <div className="space-y-1.5">
+                          <h4 className={`text-xl font-bold font-display leading-tight ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                            VitaBlue
+                          </h4>
+                          <p className="text-xs text-slate-400 font-semibold">
+                            {selectedProfile.user || '@VitaBlue-seguros'} · 10.4K suscriptores · 78 vídeos
+                          </p>
+                          <p className="text-[10px] text-slate-400 line-clamp-1 max-w-[340px]">
+                            El comparador independiente de seguros de salud, viaje y asistencia en España...
+                          </p>
+                          <button className={`mt-2.5 px-4 py-2 rounded-full text-xs font-bold shadow-sm ${
+                            mockupTheme === 'dark' ? 'bg-white text-black hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'
+                          }`}>
+                            Suscribirse
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* INSTAGRAM MOCKUP */}
+                  {activePlatform === 'instagram' && (
+                    <div className="p-6 text-left">
+                      {/* Grid Header Info */}
+                      <div className="flex items-center justify-between gap-6 pb-6 border-b border-white/5">
+                        {/* Circular Avatar with Instagram story gradient */}
+                        <div className="rounded-full bg-gradient-to-tr from-[#EE9B00] via-[#D946EF] to-[#005F73] p-[2.5px] select-none shadow-sm">
+                          <div className="rounded-full bg-white p-[2px]">
+                            <div 
+                              className={`rounded-full border w-16 h-16 overflow-hidden flex items-center justify-center ${
+                                useDarkBackground ? 'bg-[#001219]' : 'bg-white'
+                              }`}
+                            >
+                              <Logo iconSize={34} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Statistics count */}
+                        <div className="flex gap-6 pr-4">
+                          <div className="text-center">
+                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>24</span>
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Posts</span>
+                          </div>
+                          <div className="text-center">
+                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>1.5K</span>
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Seguidores</span>
+                          </div>
+                          <div className="text-center">
+                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>110</span>
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Seguidos</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bio Details */}
+                      <div className="pt-4 space-y-1 text-xs">
+                        <h4 className={`text-sm font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                          VitaBlue
+                        </h4>
+                        <p className="text-[11px] text-slate-400 font-semibold">Correduría de seguros</p>
+                        <p className={`${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed max-w-[420px]`}>
+                          Comparador independiente de seguros en España. Sin spam y 100% gratuito. Hablamos en idioma humano. 💬 Asistencia en vivo 👇
+                        </p>
+                        <a href="https://www.vitablue.es" target="_blank" rel="noreferrer" className="block text-[#005F73] font-bold pt-1 hover:underline">
+                          linktr.ee/vitablue
+                        </a>
+                        
+                        <div className="grid grid-cols-3 gap-2 pt-4">
+                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
+                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            Seguir
+                          </button>
+                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
+                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            Mensaje
+                          </button>
+                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
+                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            Contacto
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TIKTOK MOCKUP */}
+                  {activePlatform === 'tiktok' && (
+                    <div className="p-6 text-center space-y-4">
+                      {/* Avatar Centered */}
+                      <div className="flex flex-col items-center select-none">
+                        <div 
+                          className={`rounded-full border-2 w-20 h-20 overflow-hidden shadow-md flex items-center justify-center ${
+                            mockupTheme === 'dark' ? 'border-[#3e4042]' : 'border-slate-100'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <Logo iconSize={42} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                        </div>
+                        
+                        <h4 className={`text-lg font-bold font-display mt-3 leading-none ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                          VitaBlue
+                        </h4>
+                        <p className="text-xs text-slate-400 font-semibold mt-1">
+                          {selectedProfile.user || '@vitablueseguros'}
+                        </p>
+                        
+                        <button className="mt-3.5 px-8 py-1.5 rounded bg-[#FE2C55] text-white text-xs font-bold shadow-sm">
+                          Seguir
+                        </button>
+                      </div>
+
+                      {/* Statistics */}
+                      <div className="flex justify-center gap-6 text-xs font-bold pt-2 border-t border-b border-white/5 py-3">
+                        <div>
+                          <span className={`mr-1 ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>14</span>
+                          <span className="text-slate-400 font-semibold">Siguiendo</span>
+                        </div>
+                        <div>
+                          <span className={`mr-1 ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>980</span>
+                          <span className="text-slate-400 font-semibold">Seguidores</span>
+                        </div>
+                        <div>
+                          <span className={`mr-1 ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>4.2K</span>
+                          <span className="text-slate-400 font-semibold">Me gusta</span>
+                        </div>
+                      </div>
+
+                      {/* Bio */}
+                      <p className={`text-xs max-w-sm mx-auto leading-relaxed ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        El comparador independiente de seguros de salud, estudios y asistencia en España. Sin spam.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Informative text below mockup */}
+              <p className="mt-6 max-w-lg mx-auto text-center text-xs leading-relaxed text-slate-500">
+                La vista simula la composición real y recortes de cada red en modo {mockupTheme === 'light' ? 'claro' : 'oscuro'}. 
+                Las descargas conservan el tamaño nativo y formato oficial en alta definición.
+              </p>
             </section>
           </div>
         ) : <SocialGenerator />}
+
+        {/* ========================================== */}
+        {/* HIGH-RES EXPORT CANVAS (Rendered Offscreen) */}
+        {/* ========================================== */}
+        <div className="absolute left-[-9999px] top-[-9999px] pointer-events-none select-none">
+          {/* Profile photo high-res export canvas (800x800) */}
+          <div 
+            ref={profileRef}
+            className={`relative flex items-center justify-center overflow-hidden ${
+              useDarkBackground ? 'bg-[#001219]' : 'bg-white'
+            }`}
+            style={{ width: '800px', height: '800px' }}
+          >
+            <div className="relative z-10 flex items-center justify-center">
+              <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+            </div>
+          </div>
+
+          {/* Cover banner high-res export canvas */}
+          {selectedPlatform.coverSize && (
+            <div 
+              ref={coverRef}
+              className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]"
+              style={{
+                width: `${selectedPlatform.coverSize.width}px`,
+                height: `${selectedPlatform.coverSize.height}px`,
+              }}
+            >
+              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
+              <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" />
+                <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
+                <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
+                  Protección que se adapta a tu vida
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
