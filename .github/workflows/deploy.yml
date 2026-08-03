@@ -28,6 +28,32 @@ jobs:
       - name: Build Project (SSG)
         run: npm run build
 
+      - name: Detect dist changes
+        id: dist
+        shell: bash
+        run: |
+          previous_dir="${RUNNER_TEMP}/vitablue-previous-deploy"
+          rm -rf "$previous_dir"
+          dist_changed=true
+
+          if git fetch origin deploy --depth=1; then
+            mkdir -p "$previous_dir"
+            git archive FETCH_HEAD | tar -x -C "$previous_dir"
+            if diff -qr dist "$previous_dir" >/dev/null; then
+              dist_changed=false
+            fi
+          fi
+
+          file_count=$(find dist -type f | wc -l | tr -d ' ')
+          dist_size=$(du -sh dist | cut -f1)
+          echo "dist_changed=$dist_changed" >> "$GITHUB_OUTPUT"
+          {
+            echo "## VitaBlue V2: compilación"
+            echo "- Archivos generados en \`dist\`: **$file_count**"
+            echo "- Tamaño generado: **$dist_size**"
+            echo "- Cambios respecto a la última rama \`deploy\`: **$dist_changed**"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload dist Artifact (Hostinger)
         uses: actions/upload-artifact@v4
         with:
@@ -41,3 +67,11 @@ jobs:
           folder: dist
           branch: deploy
           clean: true
+
+      - name: Report deployment result
+        if: success()
+        run: |
+          {
+            echo "- Publicación en la rama \`deploy\`: **completada**"
+            echo "- Resultado de esta ejecución: **publicación realizada**"
+          } >> "$GITHUB_STEP_SUMMARY"
