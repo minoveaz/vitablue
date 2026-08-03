@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { generateProfileSvg, generateCoverSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import {
   Check,
   Download,
@@ -93,37 +93,25 @@ const MarketingStudio: React.FC = () => {
   };
 
   const handleSocialExport = async (type: SocialAssetType) => {
-    const assetRef = type === 'cover' ? coverRef.current : profileRef.current;
-    if (!assetRef) return;
-
     setIsExporting(true);
     setExportMessage(null);
 
-    const dims = type === 'cover' && selectedPlatform.coverSize
-      ? selectedPlatform.coverSize
-      : selectedPlatform.profileSize;
-
     try {
-      const dataUrl = await toPng(assetRef, {
-        cacheBust: true,
-        skipFonts: false,
-        pixelRatio: 1, // Full size is already set explicitly in style dimensions
-        width: dims.width,
-        height: dims.height,
-        style: { 
-          width: `${dims.width}px`, 
-          height: `${dims.height}px`, 
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        },
-      });
-      const link = document.createElement('a');
-      link.download = `vitablue_${activePlatform}_${type}_${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
+      const filename = `vitablue_${activePlatform}_${type}_${Date.now()}.png`;
+
+      if (type === 'profile') {
+        const svgString = generateProfileSvg(useDarkBackground);
+        await downloadSvgAsPng(svgString, 800, 800, filename);
+      } else {
+        if (!selectedPlatform.coverSize) return;
+        const { width, height } = selectedPlatform.coverSize;
+        const svgString = generateCoverSvg(width, height, coverLogoSize, coverTitleSize, coverSubtitleSize);
+        await downloadSvgAsPng(svgString, width, height, filename);
+      }
+
       setExportMessage(`${type === 'cover' ? 'Portada' : 'Foto de perfil'} descargada en alta resolución.`);
     } catch (error) {
-      console.error('Error generating profile image:', error);
+      console.error('Error generating asset image:', error);
       setExportMessage('No se pudo descargar la imagen. Inténtalo de nuevo.');
     } finally {
       setIsExporting(false);
