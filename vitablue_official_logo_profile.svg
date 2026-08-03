@@ -1,0 +1,63 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Import Google Fonts Poppins and Inter -->
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&amp;family=Poppins:wght@700;800&amp;display=swap');
+      .brand-text {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 800;
+        font-size: 58px;
+        text-anchor: middle;
+      }
+      .tagline-text {
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        fill: rgba(255, 255, 255, 0.6);
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        text-anchor: middle;
+      }
+    </style>
+    <!-- Subtle background radial glow -->
+    <radialGradient id="bg-radial-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#94D2BD" stop-opacity="0.15" />
+      <stop offset="60%" stop-color="#005F73" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#001219" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Midnight Blue -->
+  <rect width="512" height="512" fill="#001219" />
+  <circle cx="256" cy="256" r="220" fill="url(#bg-radial-glow)" />
+
+  <!-- 3D Folded Cross Isotype (Scaled 2.5x: 64 * 2.5 = 160px, center offset = 256 - 80 = 176) -->
+  <g transform="translate(176, 110)">
+    <!-- TOP ARM (Turquoise / Mint Green) -->
+    <path d="M60,60 V20 C60,14.5 64.5,10 70,10 H100 V60 L80,80 Z" fill="#94D2BD" />
+    
+    <!-- LEFT ARM (Cyan / Medium Teal) -->
+    <path d="M60,100 H30 C24.5,100 20,95.5 20,90 V60 H60 L80,80 Z" fill="#00B4C8" />
+
+    <!-- RIGHT ARM (Light Sky Blue / Soft Cyan) -->
+    <path d="M100,60 H130 C135.5,60 140,64.5 140,70 V100 H100 L80,80 Z" fill="#33C2D6" />
+
+    <!-- BOTTOM ARM (Ocean Teal) -->
+    <path d="M100,100 V130 C100,135.5 95.5,140 90,140 H60 V100 L80,80 Z" fill="#005F73" />
+
+    <!-- CENTER-LEFT FOLD TRIANGLE (Medium Ocean Blue) -->
+    <path d="M80,80 L60,100 V60 Z" fill="#00809B" />
+
+    <!-- CENTER-RIGHT FOLD TRIANGLE (Midnight Blue Shadow) -->
+    <path d="M80,80 L100,60 V100 Z" fill="#001219" />
+
+    <!-- Crease line -->
+    <line x1="60" y1="100" x2="100" y2="60" stroke="#FFFFFF" stroke-width="3" opacity="0.35" stroke-linecap="round" />
+  </g>
+
+  <!-- Brand Typography (Centered horizontally at cx=256) -->
+  <text x="256" y="340" class="brand-text" fill="#FFFFFF">vita<tspan fill="#94D2BD">blue</tspan></text>
+  
+  <!-- Tagline -->
+  <text x="256" y="378" class="tagline-text">Seguros que se adaptan a ti</text>
+</svg>

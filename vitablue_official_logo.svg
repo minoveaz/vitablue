@@ -1,0 +1,51 @@
+<svg width="800" height="250" viewBox="0 0 800 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Import Google Fonts Poppins and Inter -->
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&amp;family=Poppins:wght@700;800&amp;display=swap');
+      .brand-text {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 800;
+        font-size: 76px;
+      }
+      .tagline-text {
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 600;
+        font-size: 19px;
+        fill: #4A5568;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+
+  <!-- 3D Folded Cross Isotype (Scaled and positioned) -->
+  <g transform="translate(50, 61)">
+    <!-- TOP ARM (Turquoise / Mint Green) -->
+    <path d="M48,48 V16 C48,11.6 51.6,8 56,8 H80 V48 L64,64 Z" fill="#94D2BD" />
+    
+    <!-- LEFT ARM (Cyan / Medium Teal) -->
+    <path d="M48,80 H24 C19.6,80 16,76.4 16,72 V48 H48 L64,64 Z" fill="#00B4C8" />
+
+    <!-- RIGHT ARM (Light Sky Blue / Soft Cyan) -->
+    <path d="M80,48 H104 C108.4,48 112,51.6 112,56 V80 H80 L64,64 Z" fill="#33C2D6" />
+
+    <!-- BOTTOM ARM (Ocean Teal) -->
+    <path d="M80,80 V112 C80,116.4 76.4,120 72,120 H48 V80 L64,64 Z" fill="#005F73" />
+
+    <!-- CENTER-LEFT FOLD TRIANGLE (Medium Ocean Blue) -->
+    <path d="M64,64 L48,80 V48 Z" fill="#00809B" />
+
+    <!-- CENTER-RIGHT FOLD TRIANGLE (Midnight Blue Shadow) -->
+    <path d="M64,64 L80,48 V80 Z" fill="#001219" />
+
+    <!-- Crease line -->
+    <line x1="48" y1="80" x2="80" y2="48" stroke="#FFFFFF" stroke-width="2.4" opacity="0.35" stroke-linecap="round" />
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="210" y="142" class="brand-text" fill="#001219">vita<tspan fill="#005F73">blue</tspan></text>
+  
+  <!-- Tagline -->
+  <text x="212" y="185" class="tagline-text">Seguros que se adaptan a ti</text>
+</svg>

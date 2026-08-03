@@ -1,0 +1,32 @@
+{
+  "name": "vitablue-v2",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node post_build_cleanup.cjs",
+    "preview": "vite preview",
+    "sync-blog": "node scripts/sync_blog.cjs"
+  },
+  "dependencies": {
+    "framer-motion": "11.15.0",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-helmet-async": "^2.0.5",
+    "react-router-dom": "^7.11.0",
+    "url": "^0.11.4",
+    "vite-plugin-prerender": "^1.0.8",
+    "vite-plugin-sitemap": "^0.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

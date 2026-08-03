@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VitaBlue | Comparador de Seguros de Salud y Asistencia</title>
+    <meta name="description" content="Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias." data-rh="true" />
+    
+    <!-- Social SEO: Open Graph -->
+    <meta property="og:type" content="website" data-rh="true" />
+    <meta property="og:site_name" content="VitaBlue" data-rh="true" />
+    <meta property="og:title" content="VitaBlue | Comparador de Seguros de Salud y Asistencia" data-rh="true" />
+    <meta property="og:description" content="Encuentra el seguro de salud ideal entre las mejores aseguradoras con asesoría independiente y gratuita." data-rh="true" />
+    <meta property="og:url" content="https://www.vitablue.es" data-rh="true" />
+    <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" data-rh="true" />
+    <meta property="og:image:width" content="1200" data-rh="true" />
+    <meta property="og:image:height" content="630" data-rh="true" />
+
+    <!-- Social SEO: Twitter -->
+    <meta name="twitter:card" content="summary_large_image" data-rh="true" />
+    <meta name="twitter:title" content="VitaBlue | Comparador de Seguros de Salud" data-rh="true" />
+    <meta name="twitter:description" content="Compara y elige tu seguro médico con las mejores compañías de España." data-rh="true" />
+
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Carga Diferida de Google Tag Manager & Google Analytics (Para 100/100 en PageSpeed) -->
+    <script>
+      (function() {
+        var loaded = false;
+        function loadAnalytics() {
+          if (loaded) return;
+          loaded = true;
+
+          // Google Tag Manager (Legacy)
+          var gtm = document.createElement('script');
+          gtm.async = true;
+          gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-5TVLVR64';
+          document.head.appendChild(gtm);
+
+          // Google Analytics 4 (G-DCGH16NP2Q)
+          var ga = document.createElement('script');
+          ga.async = true;
+          ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-DCGH16NP2Q';
+          document.head.appendChild(ga);
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+          
+          // Configuración GA4
+          gtag('config', 'G-DCGH16NP2Q');
+
+          // Configuración Google Ads (ID: 515585712)
+          gtag('config', 'AW-515585712');
+        }
+
+        // Cargar en interacción o scroll
+        function triggerLoad() {
+          loadAnalytics();
+          window.removeEventListener('scroll', triggerLoad);
+          window.removeEventListener('mousemove', triggerLoad);
+          window.removeEventListener('touchstart', triggerLoad);
+        }
+
+        window.addEventListener('scroll', triggerLoad, { passive: true });
+        window.addEventListener('mousemove', triggerLoad, { passive: true });
+        window.addEventListener('touchstart', triggerLoad, { passive: true });
+      })();
+    </script>
+</head>
+  <body class="bg-background-light">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+name: Deploy VitaBlue V2
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Project (SSG)
+        run: npm run build
+
+      - name: Upload dist Artifact (Hostinger)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitablue-v2-dist
+          path: dist
+          if-no-files-found: error
+
+      - name: Deploy Compiled Files to deploy Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: deploy
+          clean: true
