@@ -412,14 +412,14 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         <meta property="og:type" content="website" />
         <meta property="og:title" content={isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'} />
         <meta property="og:description" content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'} />
-        <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content={isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es/'} />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'} />
         <meta name="twitter:description" content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'} />
-        <meta name="twitter:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
 
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
