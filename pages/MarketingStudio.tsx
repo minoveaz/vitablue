@@ -641,8 +641,8 @@ const MarketingStudio: React.FC = () => {
         {/* HIGH-RES EXPORT CANVAS (Rendered Invisibly but fully layouted) */}
         {/* ========================================== */}
         <div 
-          className="absolute top-0 left-0 opacity-0 pointer-events-none select-none overflow-hidden z-[-100]"
-          style={{ width: '3200px', height: '1200px' }}
+          className="absolute pointer-events-none select-none overflow-hidden z-[-100]"
+          style={{ width: '3200px', height: '1200px', left: '-3200px', top: '-1200px' }}
         >
           {/* Profile photo high-res export canvas (800x800) */}
           <div 
