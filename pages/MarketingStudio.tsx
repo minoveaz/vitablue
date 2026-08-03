@@ -650,7 +650,7 @@ const MarketingStudio: React.FC = () => {
             style={{ width: '800px', height: '800px' }}
           >
             <div className="relative z-10 flex items-center justify-center">
-              <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+              <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
             </div>
           </div>
 
@@ -667,7 +667,7 @@ const MarketingStudio: React.FC = () => {
               <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
               <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
               <div className="relative z-10 flex flex-col items-center text-center">
-                <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" />
+                <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" disableTransition={true} />
                 <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
                 <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
                   Protección que se adapta a tu vida

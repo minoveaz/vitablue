@@ -272,6 +272,7 @@ export const SocialGenerator: React.FC = () => {
                   iconSize={64}
                   variant={theme === 'mint' || theme === 'light' ? 'default' : 'colored-on-dark'}
                   orientation="horizontal"
+                  disableTransition={true}
                 />
                 
                 {badgeText && (
