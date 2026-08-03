@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import { supabase } from './supabaseClient';
+
 export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin' | 'x';
 
 export interface SocialProfile {
@@ -100,3 +102,57 @@ export const saveSocialProfiles = (profiles: SocialProfiles): void => {
 };
 
 export const socialProfilesUpdatedEvent = profilesUpdatedEvent;
+
+export const syncSocialProfilesWithSupabase = async (): Promise<SocialProfiles> => {
+  try {
+    const { data, error } = await supabase
+      .from('social_profiles')
+      .select('*');
+
+    if (error) {
+      console.warn('Supabase social_profiles fetch failed:', error.message);
+      return getSocialProfiles();
+    }
+
+    if (data && data.length > 0) {
+      const loaded: Partial<SocialProfiles> = {};
+      data.forEach((row) => {
+        const platform = row.platform as SocialPlatformId;
+        loaded[platform] = {
+          id: platform,
+          name: defaultSocialProfiles[platform]?.name || platform,
+          url: row.url,
+          user: row.username || ''
+        };
+      });
+
+      const merged = { ...getSocialProfiles(), ...loaded };
+      saveSocialProfiles(merged);
+      return merged;
+    }
+  } catch (err) {
+    console.warn('Network error syncing social profiles:', err);
+  }
+  return getSocialProfiles();
+};
+
+export const saveSocialProfilesToSupabase = async (profiles: SocialProfiles): Promise<void> => {
+  try {
+    const rows = Object.values(profiles).map((profile) => ({
+      platform: profile.id,
+      url: profile.url,
+      username: profile.user,
+      updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('social_profiles')
+      .upsert(rows);
+
+    if (error) {
+      console.warn('Could not save social profiles to Supabase:', error.message);
+    }
+  } catch (err) {
+    console.warn('Network error saving social profiles to Supabase:', err);
+  }
+};

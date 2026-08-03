@@ -16,10 +16,25 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
 import SocialGenerator from '@/pages/SocialGenerator';
-import { getSocialProfiles, saveSocialProfiles, SocialPlatformId, SocialProfiles, extractSocialUser, socialProfilesUpdatedEvent } from '@/utils/socialProfiles';
+import { 
+  getSocialProfiles, 
+  saveSocialProfiles, 
+  SocialPlatformId, 
+  SocialProfiles, 
+  extractSocialUser, 
+  socialProfilesUpdatedEvent,
+  syncSocialProfilesWithSupabase,
+  saveSocialProfilesToSupabase
+} from '@/utils/socialProfiles';
+import { 
+  Campaign, 
+  getCampaigns, 
+  syncCampaignsWithSupabase 
+} from '@/utils/campaigns';
+import { CampaignManager } from '@/components/organisms/CampaignManager';
 
-type StudioSection = 'identity' | 'profiles' | 'content';
-type PlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin';
+type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'content';
+type PlatformId = SocialPlatformId;
 type SocialAssetType = 'profile' | 'cover';
 
 interface PlatformConfig {
@@ -68,12 +83,16 @@ const MarketingStudio: React.FC = () => {
   let section: StudioSection = 'identity';
   if (pathname.includes('/perfiles-sociales')) {
     section = 'profiles';
+  } else if (pathname.includes('/campanas')) {
+    section = 'campaigns';
   } else if (pathname.includes('/generador-contenido')) {
     section = 'content';
   }
+
   const [activePlatform, setActivePlatform] = useState<PlatformId>('instagram');
   const [mockupTheme, setMockupTheme] = useState<'light' | 'dark'>('light');
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
+  const [campaigns, setCampaigns] = useState<Campaign[]>(getCampaigns);
   const [useDarkBackground, setUseDarkBackground] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
@@ -90,13 +109,24 @@ const MarketingStudio: React.FC = () => {
   const coverSubtitleSize = coverDimensions.width >= 2000 ? 48 : 32;
 
   React.useEffect(() => {
+    // 1. Listen for profiles localStorage updates
     const handleProfilesUpdate = (event: Event) => {
       const customEvent = event as CustomEvent<SocialProfiles>;
       setSocialProfiles(customEvent.detail ?? getSocialProfiles());
     };
-
     window.addEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
-    return () => window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
+
+    // 2. Perform Supabase database sync (Hybrid Sync Strategy)
+    syncSocialProfilesWithSupabase().then((synced) => {
+      setSocialProfiles(synced);
+    });
+    syncCampaignsWithSupabase().then((syncedCamps) => {
+      setCampaigns(syncedCamps);
+    });
+
+    return () => {
+      window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
+    };
   }, []);
 
   const handleSocialUrlChange = (platform: SocialPlatformId, url: string) => {
@@ -110,6 +140,7 @@ const MarketingStudio: React.FC = () => {
     };
     setSocialProfiles(nextProfiles);
     saveSocialProfiles(nextProfiles);
+    saveSocialProfilesToSupabase(nextProfiles);
   };
 
   const handleSocialExport = async (type: SocialAssetType) => {
@@ -139,41 +170,55 @@ const MarketingStudio: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f8] text-[#001219]">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-5 py-5 sm:px-8">
-          <div className="flex items-center gap-5">
-            <Logo iconSize={42} showTagline={false} />
-            <div className="hidden h-8 w-px bg-slate-200 sm:block" />
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#005F73]">Local workspace</p>
-              <h1 className="font-display text-xl font-black tracking-tight sm:text-2xl">Marketing Studio</h1>
+    <div className="flex min-h-screen bg-[#f4f7f8] text-[#001219]">
+      {/* SIDEBAR NAVIGATION */}
+      <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 border-r border-slate-800 select-none">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-8">
+            <Logo iconSize={36} showTagline={false} variant="colored-on-dark" />
+            <div className="text-left">
+              <h1 className="font-display text-lg font-black tracking-tight leading-none text-white">Studio</h1>
+              <span className="text-[9px] font-black uppercase tracking-wider text-[#94D2BD]">Workspace Dev</span>
             </div>
           </div>
-          <Link to="/" className="text-sm font-bold text-slate-500 transition-colors hover:text-[#005F73]">Salir al sitio <span aria-hidden="true">↗</span></Link>
+          
+          <nav className="space-y-1.5" aria-label="Secciones de Marketing Studio">
+            <Link to="/marketing-studio/identidad-de-marca" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'identity' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <Palette size={16} /> Identidad de marca
+            </Link>
+            <Link to="/marketing-studio/perfiles-sociales" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'profiles' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <ImageIcon size={16} /> Perfiles sociales
+            </Link>
+            <Link to="/marketing-studio/campanas" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'campaigns' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <Sparkles size={16} className="text-[#94D2BD] shrink-0" /> Gestión de Campañas
+            </Link>
+            <Link to="/marketing-studio/generador-contenido" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'content' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <Sparkles size={16} /> Generador de contenido
+            </Link>
+          </nav>
         </div>
-      </header>
-
-      <main className="mx-auto max-w-[1440px] px-5 py-8 sm:px-8 sm:py-12">
-        <div className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#005F73]"><Sparkles size={15} /> Centro de marca</div>
-            <h2 className="font-display text-4xl font-black leading-tight tracking-tight sm:text-5xl">Todo lo que VitaBlue necesita para expresarse.</h2>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">Un espacio de trabajo privado para preparar activos de marca, mantener consistencia visual y crear contenido listo para publicar.</p>
+        
+        <div className="p-6 border-t border-slate-800/60 space-y-4">
+          <div className="rounded-xl border border-[#94D2BD]/20 bg-[#EBF7F4]/5 px-3.5 py-2.5 text-[10px] font-semibold text-[#94D2BD] text-center leading-relaxed">
+            Solo en desarrollo local
           </div>
-          <div className="rounded-2xl border border-[#94D2BD]/50 bg-[#EBF7F4] px-4 py-3 text-xs font-semibold text-[#005F73]">Solo disponible en desarrollo local</div>
+          <Link to="/" className="text-xs font-bold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 justify-center">
+            <span>Salir al sitio</span>
+            <span aria-hidden="true">↗</span>
+          </Link>
         </div>
+      </aside>
 
-        <nav className="mb-8 flex gap-1 overflow-x-auto border-b border-slate-200" aria-label="Secciones de Marketing Studio">
-          <Link to="/marketing-studio/identidad-de-marca" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'identity' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Palette size={17} /> Identidad de marca</Link>
-          <Link to="/marketing-studio/perfiles-sociales" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'profiles' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><ImageIcon size={17} /> Perfiles sociales</Link>
-          <Link to="/marketing-studio/generador-contenido" className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${section === 'content' ? 'border-[#005F73] text-[#005F73]' : 'border-transparent text-slate-400 hover:text-slate-700'}`}><Sparkles size={17} /> Generador de contenido</Link>
-        </nav>
-
-        {section === 'identity' ? (
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      {/* MAIN WORKSPACE AREA */}
+      <main className="flex-grow p-6 md:p-10 overflow-y-auto h-screen max-w-[1440px] mx-auto w-full">
+        {/* BRAND IDENTITY MODULE */}
+        {section === 'identity' && (
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] text-left animate-fadeIn">
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-100 px-6 py-5 sm:px-8"><p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#005F73]">Brand board</p><h3 className="font-display text-2xl font-black">Sistema visual VitaBlue</h3></div>
+              <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
+                <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#005F73]">Brand board</p>
+                <h3 className="font-display text-2xl font-black">Sistema visual VitaBlue</h3>
+              </div>
               <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-2">
                 <div>
                   <p className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">Logotipos disponibles</p>
@@ -186,9 +231,23 @@ const MarketingStudio: React.FC = () => {
                 <div>
                   <p className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">Paleta oficial</p>
                   <div className="grid grid-cols-2 gap-3">
-                    {colorTokens.map((token) => <div key={token.name} className="overflow-hidden rounded-2xl border border-slate-100"><div className={`h-20 ${token.className}`} /><div className="p-3"><p className="text-xs font-bold text-slate-700">{token.name}</p><p className="mt-1 font-mono text-[10px] text-slate-400">{token.value}</p></div></div>)}
+                    {colorTokens.map((token) => (
+                      <div key={token.name} className="overflow-hidden rounded-2xl border border-slate-100">
+                        <div className={`h-20 ${token.className}`} />
+                        <div className="p-3">
+                          <p className="text-xs font-bold text-slate-700">{token.name}</p>
+                          <p className="mt-1 font-mono text-[10px] text-slate-400">{token.value}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="mt-8 flex items-start gap-3 rounded-2xl bg-[#f4f7f8] p-4"><Type className="mt-0.5 text-[#005F73]" size={19} /><div><p className="text-sm font-bold">Tipografía</p><p className="mt-1 text-xs leading-relaxed text-slate-500">Poppins para titulares y navegación. Inter para textos funcionales y lectura.</p></div></div>
+                  <div className="mt-8 flex items-start gap-3 rounded-2xl bg-[#f4f7f8] p-4">
+                    <Type className="mt-0.5 text-[#005F73]" size={19} />
+                    <div>
+                      <p className="text-sm font-bold">Tipografía</p>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-500">Poppins para titulares y navegación. Inter para textos funcionales y lectura.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -198,21 +257,29 @@ const MarketingStudio: React.FC = () => {
               <h3 className="font-display text-3xl font-black leading-tight">Clara, humana y preparada para avanzar.</h3>
               <p className="mt-4 text-sm leading-relaxed text-slate-300">La identidad combina confianza aseguradora con una energía digital accesible. Cada activo debe sentirse útil antes que decorativo.</p>
               <div className="mt-10 space-y-4 border-t border-white/10 pt-6 text-sm">
-                {['Usar el logo con espacio de protección generoso.', 'Priorizar Ocean Blue para acciones y puntos de orientación.', 'Reservar Amber Gold para llamadas de atención.', 'Mantener mensajes breves y fáciles de escanear.'].map((rule) => <div key={rule} className="flex gap-3"><Check className="shrink-0 text-[#94D2BD]" size={17} /><span className="text-slate-300">{rule}</span></div>)}
+                {['Usar el logo con espacio de protección generoso.', 'Priorizar Ocean Blue para acciones y puntos de orientación.', 'Reservar Amber Gold para llamadas de atención.', 'Mantener mensajes breves y fáciles de escanear.'].map((rule) => (
+                  <div key={rule} className="flex gap-3">
+                    <Check className="shrink-0 text-[#94D2BD]" size={17} />
+                    <span className="text-slate-300">{rule}</span>
+                  </div>
+                ))}
               </div>
             </section>
           </div>
-        ) : section === 'profiles' ? (
-          <div className="grid items-start gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-            {/* Left Column: Asset Builder Controls */}
+        )}
+
+        {/* SOCIAL MEDIA PROFILES MODULE */}
+        {section === 'profiles' && (
+          <div className="grid items-start gap-8 lg:grid-cols-[0.85fr_1.15fr] text-left animate-fadeIn">
+            {/* Left Column: Config Panel */}
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 space-y-6">
               <div>
                 <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#005F73]">Asset builder</p>
                 <h3 className="font-display text-2xl font-black">Activos sociales</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">Configura y descarga los activos vectoriales de marca a resoluciones ultra altas.</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">Configura los activos vectoriales de marca y visualiza su maquetación.</p>
               </div>
 
-              {/* Platform Selector buttons */}
+              {/* Platform selector */}
               <div className="space-y-2">
                 <p className="text-xs font-black uppercase tracking-wider text-slate-400">Seleccionar plataforma</p>
                 <div className="space-y-1.5">
@@ -223,7 +290,7 @@ const MarketingStudio: React.FC = () => {
                         setActivePlatform(platform.id);
                         setExportMessage(null);
                       }}
-                      className={`flex w-full items-center justify-between rounded-2xl border p-3 text-left transition-all cursor-pointer ${
+                      className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
                         activePlatform === platform.id
                           ? 'border-[#005F73] bg-[#EBF7F4]'
                           : 'border-slate-200 hover:border-slate-300'
@@ -233,7 +300,7 @@ const MarketingStudio: React.FC = () => {
                         <span style={{ color: platform.accent }}>{platform.icon}</span>
                         <span>
                           <span className="block text-sm font-bold text-slate-800">{platform.name}</span>
-                          <span className="block text-[10px] text-slate-400">
+                          <span className="block text-[10px] text-slate-400 font-semibold">
                             Perfil: {formatDimensions(platform.profileSize)}
                             {platform.coverSize && ` | Portada: ${formatDimensions(platform.coverSize)}`}
                           </span>
@@ -245,7 +312,7 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
 
-              {/* Configuration parameters */}
+              {/* URL and download options */}
               <div className="space-y-4 border-t border-slate-100 pt-5">
                 <label className="block text-xs font-black uppercase tracking-wider text-slate-400">
                   URL oficial de {selectedPlatform.name}
@@ -253,7 +320,7 @@ const MarketingStudio: React.FC = () => {
                     type="url"
                     value={selectedProfile.url}
                     onChange={(event) => handleSocialUrlChange(activePlatform, event.target.value)}
-                    className="mt-2 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-[#005F73]"
+                    className="mt-2 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-[#005F73] bg-white"
                     placeholder={`https://${activePlatform}.com/...`}
                   />
                 </label>
@@ -263,7 +330,6 @@ const MarketingStudio: React.FC = () => {
                   <p className="mt-0.5 text-sm font-bold text-[#001219]">{selectedProfile.user || 'Añade una URL para detectarlo'}</p>
                 </div>
 
-                {/* Profile Photo Export Background Options */}
                 <div className="space-y-2 border-t border-slate-100 pt-4">
                   <p className="text-xs font-black uppercase tracking-wider text-slate-400">Estilo de descarga (Perfil)</p>
                   <label className="flex cursor-pointer items-center justify-between rounded-xl bg-slate-50 px-3.5 py-3 text-sm font-bold text-slate-700">
@@ -278,8 +344,6 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
 
-
-
               {exportMessage && (
                 <p className="text-center text-xs font-semibold text-[#005F73] bg-[#EBF7F4] py-2 rounded-xl border border-[#94D2BD]/30 animate-pulse">
                   {exportMessage}
@@ -287,17 +351,14 @@ const MarketingStudio: React.FC = () => {
               )}
             </section>
 
-            {/* Right Column: Visual Mockup Previews */}
+            {/* Right Column: Context Preview */}
             <section className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-[#e8edef] p-6 shadow-sm sm:p-8">
-              
-              {/* Mockup Header: Toggle theme */}
               <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-wider text-slate-400">Vista previa contextual real</p>
                   <p className="mt-0.5 text-sm font-bold text-slate-700">Canal: {selectedPlatform.name}</p>
                 </div>
                 
-                {/* Mockup Light/Dark mode switcher */}
                 <div className="flex items-center gap-1.5 bg-slate-300/50 p-1 rounded-xl">
                   <button
                     onClick={() => setMockupTheme('light')}
@@ -318,11 +379,9 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
 
-              {/* Realistic mockup canvas */}
               <div className={`w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl border transition-colors shadow-2xl ${
                 mockupTheme === 'dark' ? 'border-[#3e4042] bg-[#18191A]' : 'border-slate-200 bg-white'
               }`}>
-                {/* Simulated browser/network top info bar */}
                 <div className={`flex items-center gap-2 border-b px-4 py-2.5 text-[11px] font-bold tracking-wide select-none ${
                   mockupTheme === 'dark' ? 'border-white/10 text-white/50 bg-[#242526]' : 'border-slate-100 text-slate-400 bg-slate-50'
                 }`}>
@@ -330,12 +389,10 @@ const MarketingStudio: React.FC = () => {
                   <span>Previsualización de Perfil Oficial en {selectedPlatform.name}</span>
                 </div>
 
-                {/* Platform specific mockup renders */}
                 <div className="p-0">
-                  {/* FACEBOOK MOCKUP */}
+                  {/* FACEBOOK */}
                   {activePlatform === 'facebook' && (
                     <div className="relative">
-                      {/* Banner */}
                       <div className="w-full aspect-[2.63/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
                         <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#94D2BD]/20 blur-xl" />
                         <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-[#94D2BD]/10 blur-xl" />
@@ -348,7 +405,6 @@ const MarketingStudio: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Avatar container */}
                       <div className="px-6 pb-6 pt-16 relative">
                         <div 
                           className={`absolute left-6 top-[-36px] rounded-full border-[4px] w-20 h-20 shadow-md overflow-hidden flex items-center justify-center select-none ${
@@ -358,7 +414,6 @@ const MarketingStudio: React.FC = () => {
                           <Logo iconSize={40} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
                         </div>
 
-                        {/* Name and actions */}
                         <div className="text-left space-y-1">
                           <h4 className={`text-xl font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                             VitaBlue
@@ -368,12 +423,12 @@ const MarketingStudio: React.FC = () => {
                           </p>
                           <div className="flex gap-2 pt-3">
                             <button className="px-4 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-bold shadow-sm">
-                              Enviar mensaje
-                            </button>
-                            <button className={`px-4 py-1.5 rounded-lg text-xs font-bold ${
-                              mockupTheme === 'dark' ? 'bg-[#3A3B3C] text-white hover:bg-[#4E4F50]' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                            }`}>
                               Te gusta
+                            </button>
+                            <button className={`px-4 py-1.5 rounded-lg text-xs font-bold border ${
+                              mockupTheme === 'dark' ? 'border-white/10 text-white hover:bg-white/5' : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                            }`}>
+                              Enviar mensaje
                             </button>
                           </div>
                         </div>
@@ -381,10 +436,9 @@ const MarketingStudio: React.FC = () => {
                     </div>
                   )}
 
-                  {/* LINKEDIN MOCKUP */}
+                  {/* LINKEDIN */}
                   {activePlatform === 'linkedin' && (
-                    <div className="relative text-left">
-                      {/* Cover */}
+                    <div className="relative">
                       <div className="w-full aspect-[4/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
                         <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#94D2BD]/20 blur-xl" />
                         <div className="absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-[#94D2BD]/10 blur-xl" />
@@ -397,9 +451,7 @@ const MarketingStudio: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Content */}
                       <div className="px-6 pb-6 pt-16 relative">
-                        {/* Avatar */}
                         <div 
                           className={`absolute left-6 top-[-44px] rounded-full border-[4px] w-22 h-22 shadow-md overflow-hidden flex items-center justify-center select-none ${
                             mockupTheme === 'dark' ? 'border-[#18191A]' : 'border-white'
@@ -408,7 +460,6 @@ const MarketingStudio: React.FC = () => {
                           <Logo iconSize={44} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
                         </div>
 
-                        {/* LinkedIn Company Bio Details */}
                         <div className="space-y-1">
                           <h4 className={`text-xl font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                             VitaBlue
@@ -416,7 +467,7 @@ const MarketingStudio: React.FC = () => {
                           <p className={`text-xs font-semibold ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
                             Asesoría de Seguros Independiente y Gratuita en España
                           </p>
-                          <p className="text-[10px] text-slate-400">
+                          <p className="text-[10px] text-slate-400 font-semibold">
                             Servicios financieros · Madrid, Comunidad de Madrid · 1,240 seguidores
                           </p>
                           <div className="flex gap-2 pt-4">
@@ -434,131 +485,105 @@ const MarketingStudio: React.FC = () => {
                     </div>
                   )}
 
-                  {/* YOUTUBE MOCKUP */}
+                  {/* YOUTUBE */}
                   {activePlatform === 'youtube' && (
-                    <div className="relative text-left">
-                      {/* YouTube Slim Banner */}
-                      <div className="w-full aspect-[6/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
-                        <div className="absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#94D2BD]/20 blur-xl" />
-                        <div className="absolute -bottom-28 -left-20 h-48 w-48 rounded-full bg-[#94D2BD]/10 blur-xl" />
-                        <div className="relative z-10 flex items-center justify-between h-full px-12 select-none">
-                          <div className="flex items-center gap-4">
-                            <Logo iconSize={40} showText={false} showTagline={false} variant="colored-on-dark" />
-                            <div className="text-left">
-                              <p className="font-display font-black text-white text-lg leading-none">VitaBlue</p>
-                              <p className="mt-1 font-semibold text-[#94D2BD] text-[10px] leading-tight">
-                                Protección que se adapta a tu vida
-                              </p>
-                            </div>
-                          </div>
+                    <div>
+                      <div className="w-full aspect-[5.68/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
+                        <div className="absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#94D2BD]/25 blur-2xl" />
+                        <div className="absolute -bottom-24 -left-10 h-48 w-48 rounded-full bg-[#94D2BD]/10 blur-2xl" />
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-3 select-none">
+                          <Logo iconSize={32} showText={false} showTagline={false} variant="colored-on-dark" />
+                          <p className="mt-1 font-display font-black text-white text-[11px] leading-none">VitaBlue</p>
+                          <p className="mt-0.5 font-semibold text-[#94D2BD] text-[6px] leading-tight max-w-[150px]">
+                            Protección que se adapta a tu vida
+                          </p>
                         </div>
                       </div>
 
-                      {/* YouTube Profile Details Row */}
-                      <div className="p-6 flex gap-4 items-start">
-                        {/* Circular Avatar */}
+                      <div className="p-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <div 
-                          className={`rounded-full border w-16 h-16 shrink-0 overflow-hidden flex items-center justify-center select-none ${
-                            mockupTheme === 'dark' ? 'border-white/10' : 'border-slate-100'
+                          className={`rounded-full border w-16 h-16 shadow-md overflow-hidden flex items-center justify-center shrink-0 select-none ${
+                            mockupTheme === 'dark' ? 'border-[#3e4042]' : 'border-slate-100'
                           } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
                         >
                           <Logo iconSize={36} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
                         </div>
 
-                        {/* Title and stats */}
-                        <div className="space-y-1.5">
-                          <h4 className={`text-xl font-bold font-display leading-tight ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                            VitaBlue
+                        <div className="text-left space-y-1">
+                          <h4 className={`text-lg font-bold font-display leading-tight ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                            VitaBlue Seguros
                           </h4>
                           <p className="text-xs text-slate-400 font-semibold">
-                            {selectedProfile.user || '@VitaBlue-seguros'} · 10.4K suscriptores · 78 vídeos
+                            {selectedProfile.user || '@VitaBlue-seguros'} · 4.8K suscriptores · 12 vídeos
                           </p>
-                          <p className="text-[10px] text-slate-400 line-clamp-1 max-w-[340px]">
-                            El comparador independiente de seguros de salud, viaje y asistencia en España...
+                          <p className={`text-xs max-w-sm ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+                            El comparador independiente de seguros de salud gratuito.
                           </p>
-                          <button className={`mt-2.5 px-4 py-2 rounded-full text-xs font-bold shadow-sm ${
-                            mockupTheme === 'dark' ? 'bg-white text-black hover:bg-slate-200' : 'bg-slate-900 text-white hover:bg-slate-800'
-                          }`}>
-                            Suscribirse
-                          </button>
+                          <div className="pt-2">
+                            <button className="px-5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900">
+                              Suscribirse
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* INSTAGRAM MOCKUP */}
+                  {/* INSTAGRAM */}
                   {activePlatform === 'instagram' && (
-                    <div className="p-6 text-left">
-                      {/* Grid Header Info */}
-                      <div className="flex items-center justify-between gap-6 pb-6 border-b border-white/5">
-                        {/* Circular Avatar with Instagram story gradient */}
-                        <div className="rounded-full bg-gradient-to-tr from-[#EE9B00] via-[#D946EF] to-[#005F73] p-[2.5px] select-none shadow-sm">
-                          <div className="rounded-full bg-white p-[2px]">
-                            <div 
-                              className={`rounded-full border w-16 h-16 overflow-hidden flex items-center justify-center ${
-                                useDarkBackground ? 'bg-[#001219]' : 'bg-white'
-                              }`}
-                            >
-                              <Logo iconSize={34} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                    <div className="p-6 space-y-6">
+                      <div className="flex gap-6 items-center">
+                        <div 
+                          className={`rounded-full border-[3px] p-0.5 w-20 h-20 shadow-md flex items-center justify-center shrink-0 select-none ${
+                            mockupTheme === 'dark' ? 'border-[#3e4042]' : 'border-slate-100'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                            <Logo iconSize={40} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                          </div>
+                        </div>
+
+                        <div className="text-left space-y-3 flex-grow">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <h4 className={`text-lg font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                              vitablue_seguros
+                            </h4>
+                            <div className="flex gap-1.5">
+                              <button className="px-3.5 py-1 rounded bg-[#0095F6] text-white text-[11px] font-bold">
+                                Seguir
+                              </button>
+                              <button className={`px-3 py-1 rounded text-[11px] font-bold border ${
+                                mockupTheme === 'dark' ? 'border-white/10 text-white bg-white/5' : 'border-slate-200 text-slate-800 bg-slate-50'
+                              }`}>
+                                Mensaje
+                              </button>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Statistics count */}
-                        <div className="flex gap-6 pr-4">
-                          <div className="text-center">
-                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>24</span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Posts</span>
-                          </div>
-                          <div className="text-center">
-                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>1.5K</span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Seguidores</span>
-                          </div>
-                          <div className="text-center">
-                            <span className={`block text-sm font-black ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>110</span>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Seguidos</span>
+                          <div className="flex gap-5 text-xs select-none">
+                            <div><span className="font-bold">24</span> publicaciones</div>
+                            <div><span className="font-bold">1.5K</span> seguidores</div>
+                            <div><span className="font-bold">110</span> seguidos</div>
                           </div>
                         </div>
                       </div>
 
-                      {/* Bio Details */}
-                      <div className="pt-4 space-y-1 text-xs">
-                        <h4 className={`text-sm font-bold font-display ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                          VitaBlue
-                        </h4>
-                        <p className="text-[11px] text-slate-400 font-semibold">Correduría de seguros</p>
-                        <p className={`${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed max-w-[420px]`}>
+                      <div className="text-left space-y-1 text-xs">
+                        <p className={`font-bold ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-800'}`}>VitaBlue</p>
+                        <p className="text-slate-400 font-semibold">Correduría de seguros</p>
+                        <p className={mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>
                           Comparador independiente de seguros en España. Sin spam y 100% gratuito. Hablamos en idioma humano. 💬 Asistencia en vivo 👇
                         </p>
-                        <a href="https://www.vitablue.es" target="_blank" rel="noreferrer" className="block text-[#005F73] font-bold pt-1 hover:underline">
-                          linktr.ee/vitablue
-                        </a>
-                        
-                        <div className="grid grid-cols-3 gap-2 pt-4">
-                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
-                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
-                          }`}>
-                            Seguir
-                          </button>
-                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
-                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
-                          }`}>
-                            Mensaje
-                          </button>
-                          <button className={`py-1.5 rounded-lg text-[11px] font-bold text-center ${
-                            mockupTheme === 'dark' ? 'bg-[#363636] text-white' : 'bg-slate-100 text-slate-800'
-                          }`}>
-                            Contacto
-                          </button>
-                        </div>
+                        <p className="text-sky-600 font-semibold hover:underline cursor-pointer">
+                          {selectedProfile.url || 'linktr.ee/vitablue'}
+                        </p>
                       </div>
                     </div>
                   )}
 
-                  {/* TIKTOK MOCKUP */}
+                  {/* TIKTOK */}
                   {activePlatform === 'tiktok' && (
                     <div className="p-6 text-center space-y-4">
-                      {/* Avatar Centered */}
                       <div className="flex flex-col items-center select-none">
                         <div 
                           className={`rounded-full border-2 w-20 h-20 overflow-hidden shadow-md flex items-center justify-center ${
@@ -580,7 +605,6 @@ const MarketingStudio: React.FC = () => {
                         </button>
                       </div>
 
-                      {/* Statistics */}
                       <div className="flex justify-center gap-6 text-xs font-bold pt-2 border-t border-b border-white/5 py-3">
                         <div>
                           <span className={`mr-1 ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>14</span>
@@ -596,16 +620,15 @@ const MarketingStudio: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Bio */}
                       <p className={`text-xs max-w-sm mx-auto leading-relaxed ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                         El comparador independiente de seguros de salud, estudios y asistencia en España. Sin spam.
                       </p>
                     </div>
                   )}
 
+                  {/* X (TWITTER) */}
                   {activePlatform === 'x' && (
                     <div className="relative text-left font-sans">
-                      {/* Cover Banner */}
                       <div className="w-full aspect-[3/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
                         <div className="absolute -right-16 -top-16 h-36 w-36 rounded-full bg-[#94D2BD]/20 blur-xl" />
                         <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-[#94D2BD]/10 blur-xl" />
@@ -618,9 +641,7 @@ const MarketingStudio: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Content Section */}
                       <div className="px-6 pb-6 pt-16 relative">
-                        {/* Avatar */}
                         <div 
                           className={`absolute left-6 top-[-40px] rounded-full border-[4px] w-20 h-20 shadow-md overflow-hidden flex items-center justify-center select-none ${
                             mockupTheme === 'dark' ? 'border-[#15181C]' : 'border-white'
@@ -629,7 +650,6 @@ const MarketingStudio: React.FC = () => {
                           <Logo iconSize={40} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
                         </div>
 
-                        {/* Follow Button */}
                         <div className="absolute right-6 top-3">
                           <button className={`px-5 py-1.5 rounded-full text-xs font-black transition-all ${
                             mockupTheme === 'dark' ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800'
@@ -638,12 +658,11 @@ const MarketingStudio: React.FC = () => {
                           </button>
                         </div>
 
-                        {/* Profile Info details */}
                         <div className="space-y-1">
                           <h4 className={`text-xl font-bold font-display leading-none ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                             VitaBlue
                           </h4>
-                          <p className="text-xs text-slate-500 font-medium">
+                          <p className="text-xs text-slate-500 font-semibold">
                             {selectedProfile.user || '@vitablueseguros'}
                           </p>
                           <p className={`text-xs pt-1 leading-relaxed ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -664,27 +683,24 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
 
-              {/* Informative text below mockup */}
+              {/* Informative text */}
               <p className="mt-6 max-w-lg mx-auto text-center text-xs leading-relaxed text-slate-500">
                 La vista simula la composición real y recortes de cada red en modo {mockupTheme === 'light' ? 'claro' : 'oscuro'}.
               </p>
 
-              {/* Assets Download Gallery (Visible and scaled to guarantee browser layout renders correctly) */}
+              {/* Real assets preview and download gallery */}
               <div className="mt-8 w-full border-t border-slate-200/80 pt-6 text-left">
                 <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">
-                  Activos Listos en Alta Resolución
+                  Activos listos en alta resolución
                 </h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Profile photo block */}
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Foto de Perfil</p>
                     
-                    {/* Visual container with scaled wrapper inside */}
-                    <div className="w-[160px] h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-slate-50 flex items-center justify-center shrink-0">
+                    <div className="w-[140px] h-[140px] rounded-xl border border-slate-200/60 overflow-hidden relative flex items-center justify-center shrink-0 bg-slate-50">
                       <div 
                         style={{
-                          transform: 'scale(0.2)',
+                          transform: 'scale(0.18)',
                           transformOrigin: 'center center',
                           width: '800px',
                           height: '800px',
@@ -695,7 +711,7 @@ const MarketingStudio: React.FC = () => {
                       >
                         <div 
                           ref={profileRef}
-                          className={`relative flex items-center justify-center overflow-hidden ${
+                          className={`relative overflow-hidden flex items-center justify-center ${
                             useDarkBackground ? 'bg-[#001219]' : 'bg-white'
                           }`}
                           style={{ 
@@ -722,16 +738,14 @@ const MarketingStudio: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Cover banner block */}
                   {hasCover && (
                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
                       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Portada / Banner</p>
                       
-                      {/* Visual container with scaled wrapper inside */}
-                      <div className="w-full h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-[#001219] flex items-center justify-center shrink-0">
+                      <div className="w-full h-[140px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-[#001219] flex items-center justify-center shrink-0">
                         <div 
                           style={{
-                            transform: `scale(${Math.min(220 / selectedPlatform.coverSize!.width, 140 / selectedPlatform.coverSize!.height)})`,
+                            transform: `scale(${Math.min(200 / selectedPlatform.coverSize!.width, 110 / selectedPlatform.coverSize!.height)})`,
                             transformOrigin: 'center center',
                             width: `${selectedPlatform.coverSize!.width}px`,
                             height: `${selectedPlatform.coverSize!.height}px`,
@@ -777,7 +791,21 @@ const MarketingStudio: React.FC = () => {
               </div>
             </section>
           </div>
-        ) : <SocialGenerator />}
+        )}
+
+        {/* CAMPAIGN MANAGER MODULE */}
+        {section === 'campaigns' && (
+          <div className="animate-fadeIn">
+            <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} />
+          </div>
+        )}
+
+        {/* CONTENT GENERATOR MODULE */}
+        {section === 'content' && (
+          <div className="animate-fadeIn">
+            <SocialGenerator />
+          </div>
+        )}
       </main>
     </div>
   );

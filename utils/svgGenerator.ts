@@ -152,6 +152,95 @@ export const generateCoverSvg = (
 };
 
 /**
+ * Generates the SVG string for a campaign promo banner, post or story.
+ */
+export const generateCampaignBannerSvg = (
+  width: number,
+  height: number,
+  type: 'post' | 'story' | 'banner',
+  theme: 'dark' | 'light' | 'gradient',
+  title: string,
+  tagline: string
+): string => {
+  const isLight = theme === 'light';
+  
+  const primaryBg = isLight ? '#FFFFFF' : (theme === 'dark' ? '#001219' : 'url(#bgGrad)');
+  const titleColor = isLight ? '#001219' : '#FFFFFF';
+  const taglineColor = isLight ? '#005F73' : '#94D2BD';
+
+  let layoutContent = '';
+
+  if (type === 'post') {
+    const logoSize = 180;
+    const logoScale = logoSize / 64;
+    const logoX = (width - logoSize) / 2;
+    const logoY = 160;
+    
+    layoutContent = `
+      <g transform="translate(${logoX}, ${logoY}) scale(${logoScale})">
+        ${isotypeSvgPaths}
+      </g>
+      <text x="${width / 2}" y="460" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="56">${title}</text>
+      <text x="${width / 2}" y="530" text-anchor="middle" fill="${taglineColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="28">${tagline}</text>
+      <rect x="${width / 2 - 120}" y="850" width="240" height="48" rx="24" fill="#005F73" opacity="0.1" />
+      <text x="${width / 2}" y="880" text-anchor="middle" fill="${isLight ? '#005F73' : '#94D2BD'}" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="18">vitablue.es</text>
+    `;
+  } else if (type === 'story') {
+    const logoSize = 240;
+    const logoScale = logoSize / 64;
+    const logoX = (width - logoSize) / 2;
+    const logoY = 400;
+
+    layoutContent = `
+      <circle cx="${width / 2}" cy="520" r="350" fill="url(#glowTop)" opacity="0.8" />
+      <g transform="translate(${logoX}, ${logoY}) scale(${logoScale})">
+        ${isotypeSvgPaths}
+      </g>
+      <text x="${width / 2}" y="800" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64">${title}</text>
+      <text x="${width / 2}" y="890" text-anchor="middle" fill="${taglineColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="32">${tagline}</text>
+      <g transform="translate(${(width - 450) / 2}, 1450)">
+        <rect width="450" height="90" rx="45" fill="#005F73" />
+        <text x="225" y="54" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="28">COTIZAR ONLINE</text>
+      </g>
+      <text x="${width / 2}" y="1600" text-anchor="middle" fill="${isLight ? '#001219' : '#FFFFFF'}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" opacity="0.8">vitablue.es</text>
+    `;
+  } else {
+    const logoSize = 140;
+    const logoScale = logoSize / 64;
+    const logoX = 120;
+    const logoY = (height - logoSize) / 2;
+
+    layoutContent = `
+      <g transform="translate(${logoX}, ${logoY}) scale(${logoScale})">
+        ${isotypeSvgPaths}
+      </g>
+      <text x="320" y="290" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="52">${title}</text>
+      <text x="320" y="360" fill="${taglineColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="24">${tagline}</text>
+      <text x="320" y="420" fill="${isLight ? '#475569' : '#94D2BD'}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="18" opacity="0.9">visita vitablue.es/wizard</text>
+    `;
+  }
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <defs>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#005F73" />
+          <stop offset="50%" stop-color="#003f4e" />
+          <stop offset="100%" stop-color="#001219" />
+        </linearGradient>
+        <radialGradient id="glowTop" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#94D2BD" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#94D2BD" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="${width}" height="${height}" fill="${primaryBg}" />
+      <circle cx="${width - 100}" cy="-100" r="${Math.max(width, height) * 0.4}" fill="url(#glowTop)" />
+      ${layoutContent}
+    </svg>
+  `.trim();
+};
+
+/**
  * Downloads a dynamically constructed SVG string as a high-quality PNG.
  */
 export const downloadSvgAsPng = (
