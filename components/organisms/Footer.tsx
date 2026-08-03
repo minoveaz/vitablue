@@ -79,10 +79,11 @@ export const Footer: React.FC = () => {
               <LinkedinIcon />
             </a>
             <a 
-              href="#" 
+              href="https://www.tiktok.com/@vitablueseguros" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="TikTok"
-              onClick={(e) => e.preventDefault()}
             >
               <TiktokIcon />
             </a>
