@@ -257,6 +257,40 @@ export const BlogPost: React.FC = () => {
               })}
             </div>
 
+            {/* End of article WhatsApp CTA for all screen sizes (ES/EN) */}
+            <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-primary/5 via-brand-cyan/5 to-white border border-primary/10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+              <div className="space-y-2 text-left">
+                <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-0.5 text-[9px] font-black text-text-secondary select-none shadow-sm uppercase tracking-wider">
+                  {isPostEnglish ? 'Immediate Consultation' : 'Consulta Inmediata'}
+                </span>
+                <h3 className="text-xl font-display font-black text-text-main leading-tight">
+                  {isPostEnglish ? 'Do you have questions about the visa health requirements?' : '¿Tienes dudas sobre los requisitos del seguro para tu visado?'}
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  {isPostEnglish 
+                    ? 'Write to us. We will tell you exactly which policy fits your age, nationality, and consular requirements.'
+                    : 'Escríbenos. Te aclaramos qué póliza se adapta exactamente a tu edad, nacionalidad y requisitos de Extranjería.'}
+                </p>
+              </div>
+              <a 
+                href={isPostEnglish
+                  ? `https://wa.me/34661498600?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20some%20advice.`
+                  : `https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20asesoramiento%20para%20mi%20seguro.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-event="whatsapp"
+                onClick={() => {
+                  if ((window as any).dataLayer) {
+                    (window as any).dataLayer.push({ event: 'click_whatsapp', location: `blog_post_bottom_${post.slug}` });
+                  }
+                }}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] px-6 py-3.5 text-xs font-black text-white shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+              >
+                <WhatsAppIcon size={16} />
+                <span>{isPostEnglish ? 'Ask on WhatsApp' : 'Preguntar por WhatsApp'}</span>
+              </a>
+            </div>
+
           </article>
 
           {/* Sidebar column */}
@@ -307,10 +341,16 @@ export const BlogPost: React.FC = () => {
               <div className="space-y-2 pt-2">
                 <a 
                   href={isPostEnglish
-                    ? `https://wa.me/34661498600?text=Hello!%20I%2520come%2520from%2520the%2520guide%2520${encodeURIComponent(post.title)}.%20I%20need%20a%20compliant%20health%20insurance.`
-                    : `https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%2520${encodeURIComponent(post.title)}.%2520Necesito%2520un%2520seguro%2520m%C3%A9dico%2520homologado.`}
+                    ? `https://wa.me/34661498600?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20a%20compliant%20health%20insurance.`
+                    : `https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20un%20seguro%20m%C3%A9dico%20homologado.`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-event="whatsapp"
+                  onClick={() => {
+                    if ((window as any).dataLayer) {
+                      (window as any).dataLayer.push({ event: 'click_whatsapp', location: `blog_post_sidebar_${post.slug}` });
+                    }
+                  }}
                   className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold shadow-md shadow-[#25D366]/10 transition-all duration-200 active:scale-[0.98]"
                 >
                   <WhatsAppIcon size={16} className="fill-white" />
