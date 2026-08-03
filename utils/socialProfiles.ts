@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin';
 
 export interface SocialProfile {
