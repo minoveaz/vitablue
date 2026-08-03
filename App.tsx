@@ -599,17 +599,18 @@ const Styleguide = () => {
 
 // App Views Setup
 
-const App: React.FC = () => {
-  return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen bg-background-light text-text-main font-sans">
-        <Navbar />
+const AppLayout: React.FC = () => {
+  const { pathname } = useLocation();
+  const isMarketingStudio = pathname.startsWith('/marketing-studio');
 
-        <main className="flex-grow">
-          <Suspense fallback={<div className="min-h-screen bg-background-light"></div>}>
-            <Routes>
-              <Route path="/" element={<Home />} />
+  return (
+    <div className="flex flex-col min-h-screen bg-background-light text-text-main font-sans">
+      {!isMarketingStudio && <Navbar />}
+
+      <main className="flex-grow">
+        <Suspense fallback={<div className="min-h-screen bg-background-light"></div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
             {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
             {import.meta.env.DEV && (
@@ -618,6 +619,7 @@ const App: React.FC = () => {
                 <Route path="/marketing-studio/identidad-de-marca" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/perfiles-sociales" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/campanas" element={<MarketingStudio />} />
+                <Route path="/marketing-studio/conexiones" element={<MarketingStudio />} />
                 <Route path="/marketing-studio/generador-contenido" element={<MarketingStudio />} />
               </>
             )}
@@ -693,10 +695,22 @@ const App: React.FC = () => {
         </Suspense>
       </main>
 
-        <Footer />
-        <CookieBanner />
-        <FloatingWhatsApp />
-      </div>
+      {!isMarketingStudio && (
+        <>
+          <Footer />
+          <CookieBanner />
+          <FloatingWhatsApp />
+        </>
+      )}
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <AppLayout />
     </BrowserRouter>
   );
 };

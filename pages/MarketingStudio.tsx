@@ -256,7 +256,35 @@ const MarketingStudio: React.FC = () => {
       </aside>
 
       {/* MAIN WORKSPACE AREA */}
-      <main className="flex-grow p-6 md:p-10 overflow-y-auto h-screen max-w-[1440px] mx-auto w-full">
+      <main className="flex-grow p-6 md:p-10 overflow-y-auto h-screen max-w-[1440px] mx-auto w-full flex flex-col gap-8">
+        {/* ADMIN HEADER BAR */}
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 select-none text-left">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#005F73] animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#005F73]">Panel de Administración</span>
+            </div>
+            <h2 className="font-display text-xl font-black text-slate-800 mt-1">
+              {section === 'identity' && 'Identidad de Marca & Sistema Visual'}
+              {section === 'profiles' && 'Gestión de Perfiles Sociales'}
+              {section === 'campaigns' && 'Planificador de Campañas Multicanal'}
+              {section === 'connections' && 'Configuración de Conexiones de API'}
+              {section === 'content' && 'Generador Automático de Contenido'}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#EBF7F4] border border-[#94D2BD]/20 text-[10px] font-bold text-[#005F73]">
+              <Check size={11} className="text-[#005F73]" />
+              <span>Base de Datos Sincronizada</span>
+            </div>
+
+            <div className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200/60 px-3 py-1.5 rounded-xl">
+              Entorno Local: Activo
+            </div>
+          </div>
+        </header>
+
         {/* BRAND IDENTITY MODULE */}
         {section === 'identity' && (
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] text-left animate-fadeIn">
