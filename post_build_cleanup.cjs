@@ -39,4 +39,46 @@ function cleanHtmlFolders(dir) {
 }
 
 cleanHtmlFolders(distDir);
+
+// === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
+
+function optimizeHtmlHeadTagsRecursive(dir) {
+  if (!fs.existsSync(dir)) return;
+  const items = fs.readdirSync(dir);
+
+  items.forEach(item => {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      optimizeHtmlHeadTagsRecursive(fullPath);
+    } else if (item.endsWith('.html')) {
+      optimizeHeadTags(fullPath);
+    }
+  });
+}
+
+function optimizeHeadTags(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  const stylesheetRegex = /<link rel="stylesheet"[^>]*href="\/assets\/[^>]*\.css"[^>]*>/g;
+  const match = content.match(stylesheetRegex);
+
+  if (match && match.length > 0) {
+    const stylesheetTag = match[0];
+    content = content.replace(stylesheetTag, '');
+    
+    // Insert immediately after <head> to prioritize CSS download over JS preloads
+    const headIndex = content.indexOf('<head>');
+    if (headIndex !== -1) {
+      const insertPos = headIndex + 6;
+      content = content.slice(0, insertPos) + '\n    ' + stylesheetTag + content.slice(insertPos);
+      fs.writeFileSync(filePath, content, 'utf8');
+    }
+  }
+}
+
+console.log('\n⚡ Optimizando orden de carga crítica de CSS en cabeceras...');
+optimizeHtmlHeadTagsRecursive(distDir);
+console.log('✅ Cabeceras optimizadas con éxito para FCP ultra rápido.');
+
 console.log('\n=== LIMPIEZA POST-BUILD COMPLETADA CON ÉXITO ===');

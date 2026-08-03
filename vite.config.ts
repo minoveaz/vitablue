@@ -6,6 +6,7 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const prerender = require('vite-plugin-prerender');
+const Renderer = prerender.PuppeteerRenderer;
 
 export default defineConfig({
   base: '/',
@@ -13,6 +14,10 @@ export default defineConfig({
     react(),
     prerender({
       staticDir: path.join(__dirname, 'dist'),
+      renderer: new Renderer({
+        renderAfterTime: 5000,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      }),
       routes: [
         '/',
         '/en',

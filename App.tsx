@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { 
   Mail, 
@@ -54,25 +54,25 @@ import TransparencyBlock from '@/components/molecules/TransparencyBlock';
 import AdvisorCard from '@/components/molecules/AdvisorCard';
 
 // Import new page views (Phase 3 & 4)
-import Home from '@/pages/Home';
-import Wizard from '@/pages/Wizard';
-import Results from '@/pages/Results';
-import StudentInsurance from '@/pages/StudentInsurance';
-import SanitasMasSalud from '@/pages/SanitasMasSalud';
-import SanitasMascotas from '@/pages/SanitasMascotas';
-import AsistenciaFamiliar from '@/pages/AsistenciaFamiliar';
-import HealthInsurance from '@/pages/HealthInsurance';
-import ExpatInsurance from '@/pages/ExpatInsurance';
-import NomadInsurance from '@/pages/NomadInsurance';
-import ForeignerInsurance from '@/pages/ForeignerInsurance';
-import TravelInsurance from '@/pages/TravelInsurance';
-import LifeInsurance from '@/pages/LifeInsurance';
-import SanitasInsurances from '@/pages/SanitasInsurances';
-import Privacy from '@/pages/Privacy';
-import CookiesPolicy from '@/pages/CookiesPolicy';
-import LegalNotice from '@/pages/AvisoLegal';
-import BlogList from '@/pages/BlogList';
-import BlogPost from '@/pages/BlogPost';
+const Home = lazy(() => import('@/pages/Home'));
+const Wizard = lazy(() => import('@/pages/Wizard'));
+const Results = lazy(() => import('@/pages/Results'));
+const StudentInsurance = lazy(() => import('@/pages/StudentInsurance'));
+const SanitasMasSalud = lazy(() => import('@/pages/SanitasMasSalud'));
+const SanitasMascotas = lazy(() => import('@/pages/SanitasMascotas'));
+const AsistenciaFamiliar = lazy(() => import('@/pages/AsistenciaFamiliar'));
+const HealthInsurance = lazy(() => import('@/pages/HealthInsurance'));
+const ExpatInsurance = lazy(() => import('@/pages/ExpatInsurance'));
+const NomadInsurance = lazy(() => import('@/pages/NomadInsurance'));
+const ForeignerInsurance = lazy(() => import('@/pages/ForeignerInsurance'));
+const TravelInsurance = lazy(() => import('@/pages/TravelInsurance'));
+const LifeInsurance = lazy(() => import('@/pages/LifeInsurance'));
+const SanitasInsurances = lazy(() => import('@/pages/SanitasInsurances'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const CookiesPolicy = lazy(() => import('@/pages/CookiesPolicy'));
+const LegalNotice = lazy(() => import('@/pages/AvisoLegal'));
+const BlogList = lazy(() => import('@/pages/BlogList'));
+const BlogPost = lazy(() => import('@/pages/BlogPost'));
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -598,8 +598,9 @@ const App: React.FC = () => {
         <Navbar />
 
         <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
+          <Suspense fallback={<div className="min-h-screen bg-background-light"></div>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
             <Route path="/styleguide" element={<Styleguide />} />
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
@@ -671,7 +672,8 @@ const App: React.FC = () => {
               </div>
             } />
           </Routes>
-        </main>
+        </Suspense>
+      </main>
 
         <Footer />
         <CookieBanner />
