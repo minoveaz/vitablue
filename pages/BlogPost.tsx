@@ -274,8 +274,8 @@ export const BlogPost: React.FC = () => {
               </div>
               <a 
                 href={isPostEnglish
-                  ? `https://wa.me/34661498600?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20some%20advice.`
-                  : `https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20asesoramiento%20para%20mi%20seguro.`}
+                  ? `https://wa.me/34694583452?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20some%20advice.`
+                  : `https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20asesoramiento%20para%20mi%20seguro.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-event="whatsapp"
@@ -341,8 +341,8 @@ export const BlogPost: React.FC = () => {
               <div className="space-y-2 pt-2">
                 <a 
                   href={isPostEnglish
-                    ? `https://wa.me/34661498600?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20a%20compliant%20health%20insurance.`
-                    : `https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20un%20seguro%20m%C3%A9dico%20homologado.`}
+                    ? `https://wa.me/34694583452?text=Hello!%20I%20come%20from%20the%20guide%20${encodeURIComponent(post.title)}.%20I%20need%20a%20compliant%20health%20insurance.`
+                    : `https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20gu%C3%ADa%20de%20${encodeURIComponent(post.title)}.%20Necesito%20un%20seguro%20m%C3%A9dico%20homologado.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-event="whatsapp"

@@ -96,7 +96,7 @@ export const SanitasInsurances: React.FC = () => {
         'Sin carencias de ningún tipo'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Accede.'
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Accede.'
     },
     {
       id: 'sanitas-avanza',
@@ -109,7 +109,7 @@ export const SanitasInsurances: React.FC = () => {
         'Límite de copago anual de 350€ por asegurado'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Avanza.'
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Avanza.'
     },
     {
       id: 'sanitas-unico',
@@ -122,7 +122,7 @@ export const SanitasInsurances: React.FC = () => {
         'Incluye servicios a domicilio senior'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20%C3%9Anico.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20%C3%9Anico.',
       badge: '+60 años'
     },
     {
@@ -136,7 +136,7 @@ export const SanitasInsurances: React.FC = () => {
         'Programas digitales de nutrición infantil'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20M%C3%A1s%20Salud%20Familias.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20M%C3%A1s%20Salud%20Familias.',
       badge: 'Familias'
     },
     {
@@ -150,7 +150,7 @@ export const SanitasInsurances: React.FC = () => {
         'Ventajas fiscales para autónomos en España'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Profesionales.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Profesionales.',
       badge: 'Autónomos'
     },
     {
@@ -164,7 +164,7 @@ export const SanitasInsurances: React.FC = () => {
         'Asistencia urgente en viajes de hasta 15.000€'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Top%20Quantum.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20Top%20Quantum.',
       badge: 'Premium'
     },
     {
@@ -178,7 +178,7 @@ export const SanitasInsurances: React.FC = () => {
         'Repatriación por fallecimiento ilimitada'
       ],
       price: 'Consultar',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20International%20Residents.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Sanitas%20International%20Residents.',
       badge: 'Extranjeros'
     },
     {
@@ -192,7 +192,7 @@ export const SanitasInsurances: React.FC = () => {
         'Pago en una única cuota de por vida'
       ],
       price: 'Prima única',
-      link: 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Asistencia%20Senior%20a%20Prima%20%C3%9Anica%20Sanitas.',
+      link: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Asistencia%20Senior%20a%20Prima%20%C3%9Anica%20Sanitas.',
       badge: '+65 años'
     }
   ];
@@ -249,7 +249,7 @@ export const SanitasInsurances: React.FC = () => {
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+34 661 49 86 00",
+          "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
         }
@@ -374,7 +374,7 @@ export const SanitasInsurances: React.FC = () => {
                 <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
                   Calcular mi tarifa online
                 </Button>
-                <a href="https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20los%20seguros%20de%20Sanitas." className="inline-flex items-center justify-center" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20los%20seguros%20de%20Sanitas." className="inline-flex items-center justify-center" target="_blank" rel="noopener noreferrer">
                   <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     Hablar con un Asesor
                   </Button>
@@ -533,7 +533,7 @@ export const SanitasInsurances: React.FC = () => {
                 Al pulsar en <strong>Consultar por WhatsApp</strong>, nuestro equipo calculará tu prima oficial en menos de 2 minutos. Te resolveremos dudas de carencias, cuestionario de salud y realizaremos el alta digital de forma totalmente gratuita y sin spam comercial.
               </p>
             </div>
-            <a href="https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20para%20los%20seguros%20especiales%20de%20Sanitas." target="_blank" rel="noopener noreferrer" className="w-full md:w-auto shrink-0">
+            <a href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20para%20los%20seguros%20especiales%20de%20Sanitas." target="_blank" rel="noopener noreferrer" className="w-full md:w-auto shrink-0">
               <Button variant="accent" className="w-full md:w-auto font-bold shadow-md shadow-accent/10 whitespace-nowrap">
                 Hablar con un asesor ahora
               </Button>
@@ -719,7 +719,7 @@ export const SanitasInsurances: React.FC = () => {
             <p className="text-body-reg text-text-secondary font-medium">Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita.</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20los%20seguros%20de%20Sanitas.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20los%20seguros%20de%20Sanitas.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>

@@ -228,7 +228,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a 
-                  href="https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+                  href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="hover:text-[#25D366] transition-colors duration-150 flex items-center gap-1.5"
@@ -248,8 +248,8 @@ export const Footer: React.FC = () => {
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-accent shrink-0" />
-                <a href="tel:+34661498600" className="hover:text-accent transition-colors">
-                  +34 661 49 86 00
+                <a href="tel:+34694583452" className="hover:text-accent transition-colors">
+                  +34 694 58 34 52
                 </a>
               </li>
               <li className="flex items-center gap-2">

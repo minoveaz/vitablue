@@ -28,7 +28,7 @@ export const LegalNotice: React.FC = () => {
           </p>
           <ul className="list-disc pl-5 space-y-2 text-body-reg text-text-secondary font-medium leading-relaxed">
             <li><strong>Titular del portal:</strong> VitaBlue Mediación de Seguros.</li>
-            <li><strong>Contacto:</strong> info@vitablue.es / +34 661 49 86 00.</li>
+            <li><strong>Contacto:</strong> info@vitablue.es / +34 694 58 34 52.</li>
             <li><strong>Actividad regulatoria:</strong> Bróker y mediador de seguros autorizado e inscrito en el Registro Especial de Mediadores de Seguros de la Dirección General de Seguros y Fondos de Pensiones (DGSFP).</li>
           </ul>
         </section>

@@ -388,7 +388,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           "width": 180,
           "height": 60
         },
-        "telephone": "+34 661 49 86 00",
+        "telephone": "+34 694 58 34 52",
         "email": "info@vitablue.es",
         "address": {
           "@type": "PostalAddress",
@@ -396,7 +396,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           "addressCountry": "ES"
         },
         "sameAs": [
-          "https://wa.me/34661498600"
+          "https://wa.me/34694583452"
         ]
       },
       {
@@ -822,8 +822,8 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
             {/* Card 4: CTA Card */}
             <a 
               href={isEnglish 
-                ? 'https://wa.me/34661498600?text=Hello!%20I%20come%20from%20the%20VitaBlue%20website.%20I%20need%20some%20advice%20on%20health%20insurance.'
-                : 'https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud%20para%20mi%20caso.'}
+                ? 'https://wa.me/34694583452?text=Hello!%20I%20come%20from%20the%20VitaBlue%20website.%20I%20need%20some%20advice%20on%20health%20insurance.'
+                : 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud%20para%20mi%20caso.'}
               target="_blank"
               rel="noopener noreferrer"
               data-event="whatsapp"

@@ -8,7 +8,7 @@ export interface RedirectState {
 }
 
 export const getWhatsAppLink = (state: RedirectState): string => {
-  const phone = '34661498600';
+  const phone = '34694583452';
   let message = 'Hola! Vengo de la web de VitaBlue. Necesito asesoramiento general sobre seguros de salud.';
 
   // Map user-friendly labels

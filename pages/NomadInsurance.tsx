@@ -279,7 +279,7 @@ export const NomadInsurance: React.FC = () => {
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+34 661 49 86 00",
+          "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
         }
@@ -835,7 +835,7 @@ export const NomadInsurance: React.FC = () => {
             <p className="text-body-reg text-text-secondary font-medium">{isEnglish ? 'Ask our advisors over WhatsApp directly and free of charge. You will get fast answers on how the medical network works in your travel destinations without any commitment.' : 'Pregunta a nuestros asesores por WhatsApp de forma directa y gratuita. Obtendrás respuestas rápidas sobre cómo funciona la red médica en tus destinos de viaje sin ningún compromiso.'}</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20N%C3%B3madas%20Digitales.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20N%C3%B3madas%20Digitales.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>

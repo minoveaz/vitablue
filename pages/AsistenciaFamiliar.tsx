@@ -189,7 +189,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+34 661 49 86 00",
+          "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
         }
@@ -746,7 +746,7 @@ export const AsistenciaFamiliar: React.FC = () => {
             <p className="text-body-reg text-text-secondary font-medium">Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita.</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>

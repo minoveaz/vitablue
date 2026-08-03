@@ -84,7 +84,7 @@ export const ForeignerInsurance: React.FC = () => {
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
-          "telephone": "+34 661 49 86 00",
+          "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
         }
@@ -418,7 +418,7 @@ export const ForeignerInsurance: React.FC = () => {
           </p>
         </div>
         <AdvisorCard 
-          onWhatsAppClick={() => window.open('https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros.', '_blank')}
+          onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros.', '_blank')}
           onPhoneClick={() => window.open('tel:+34900839240')}
         />
       </section>

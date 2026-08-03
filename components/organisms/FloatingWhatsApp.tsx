@@ -3,7 +3,7 @@ import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
 export const FloatingWhatsApp: React.FC = () => {
   const handleClick = () => {
-    window.open('https://wa.me/34661498600?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud.', '_blank');
+    window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud.', '_blank');
   };
 
   return (

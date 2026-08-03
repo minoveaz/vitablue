@@ -254,7 +254,7 @@ export const BlogList: React.FC = () => {
           </p>
           <div className="pt-2 flex justify-center">
             <a 
-              href="https://wa.me/34661498600?text=Hola!%20Vengo%20del%20blog%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20m%C3%A9dicos%20para%20tr%C3%A1mites%20legales."
+              href="https://wa.me/34694583452?text=Hola!%20Vengo%20del%20blog%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20m%C3%A9dicos%20para%20tr%C3%A1mites%20legales."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold rounded-xl text-sm px-6 py-3.5 shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"
