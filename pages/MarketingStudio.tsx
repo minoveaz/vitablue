@@ -220,12 +220,9 @@ const MarketingStudio: React.FC = () => {
       {/* SIDEBAR NAVIGATION */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 border-r border-slate-800 select-none">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-8">
-            <Logo iconSize={36} showTagline={false} variant="colored-on-dark" />
-            <div className="text-left">
-              <h1 className="font-display text-lg font-black tracking-tight leading-none text-white">Studio</h1>
-              <span className="text-[9px] font-black uppercase tracking-wider text-[#94D2BD]">Workspace Dev</span>
-            </div>
+          <div className="mb-8 pb-4 border-b border-slate-800/60 text-left">
+            <h1 className="font-display text-xl font-black tracking-tight text-white">Marketing Studio</h1>
+            <span className="text-[9px] font-black uppercase tracking-wider text-[#94D2BD] block mt-1">Dev Workspace</span>
           </div>
           
           <nav className="space-y-1.5" aria-label="Secciones de Marketing Studio">
