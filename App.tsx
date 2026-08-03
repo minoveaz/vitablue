@@ -73,6 +73,7 @@ const CookiesPolicy = lazy(() => import('@/pages/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/BlogList'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
+const SocialGenerator = lazy(() => import('@/pages/SocialGenerator'));
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -603,6 +604,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
             <Route path="/styleguide" element={<Styleguide />} />
+            <Route path="/styleguide/social-generator" element={<SocialGenerator />} />
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
             <Route path="/productos/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguros-salud/seguro-medico-estudiantes" element={<StudentInsurance />} />
