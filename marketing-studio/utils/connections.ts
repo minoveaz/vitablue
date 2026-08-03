@@ -101,7 +101,8 @@ export const startPlatformOAuth = (platform: SocialPlatformId): void => {
 
     case 'tiktok':
       // TikTok OAuth
-      authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=dummy_tiktok_key&scope=user.info.basic,video.publish,video.list&response_type=code&redirect_uri=${redirectUri}&state=tiktok_vitablue`;
+      const tiktokClientKey = import.meta.env.VITE_TIKTOK_CLIENT_KEY || 'dummy_tiktok_key';
+      authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${tiktokClientKey}&scope=user.info.basic,video.publish,video.list&response_type=code&redirect_uri=${redirectUri}&state=tiktok_vitablue`;
       break;
   }
 
