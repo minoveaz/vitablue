@@ -1,0 +1,1 @@
+import{j as n}from"./vendor-QJzVp1nH.js";const a=8,e="round",l="round",i=({children:s,className:o="w-full h-full",viewBox:t="0 0 400 300"})=>n.jsx("svg",{viewBox:t,className:o,fill:"none",xmlns:"http://www.w3.org/2000/svg",children:s});export{i as I,e as a,l as b,a as s};
