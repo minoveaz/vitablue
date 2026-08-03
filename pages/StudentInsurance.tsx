@@ -286,7 +286,7 @@ export const StudentInsurance: React.FC = () => {
     canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
   } else if (isLegacy2) {
     title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
-    description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento por VitaBlue, agente exclusivo Sanitas.';
+    description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento independiente por VitaBlue.';
     canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
   }
 
@@ -299,7 +299,7 @@ export const StudentInsurance: React.FC = () => {
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
         "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
-        "description": "Agente Exclusivo Sanitas. Comercializamos seguros de salud Sanitas para familias, profesionales, estudiantes, mayores, mascotas y más. Asesoramiento personalizado y contratación 100% online.",
+        "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",

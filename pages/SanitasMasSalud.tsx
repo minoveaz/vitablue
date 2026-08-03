@@ -176,7 +176,7 @@ export const SanitasMasSalud: React.FC = () => {
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
         "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
-        "description": "Agente Exclusivo Sanitas. Comercializamos seguros de salud Sanitas para familias, profesionales, estudiantes, mayores, mascotas y más. Asesoramiento personalizado y contratación 100% online.",
+        "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",

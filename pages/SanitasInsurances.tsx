@@ -199,7 +199,7 @@ export const SanitasInsurances: React.FC = () => {
 
   const faqs = [
     {
-      q: '¿Qué ventajas tiene contratar a través de un Agente Exclusivo de Sanitas?',
+      q: '¿Qué ventajas tiene contratar a través de un Asesor Especialista de Sanitas?',
       a: 'Contratas directamente con el precio oficial de Sanitas y todas sus promociones vigentes. No pagas ningún tipo de comisión ni recargo. La gran ventaja es que obtienes soporte y asesoramiento continuo y humano de VitaBlue para autorizaciones, reembolsos o dudas de cobertura.'
     },
     {
@@ -281,7 +281,7 @@ export const SanitasInsurances: React.FC = () => {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Qué ventajas tiene contratar a través de un Agente Exclusivo de Sanitas?",
+            "name": "¿Qué ventajas tiene contratar a través de un Asesor Especialista de Sanitas?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Contratas directamente con el precio oficial de Sanitas y todas sus promociones vigentes. No pagas ningún tipo de comisión ni recargo. La gran ventaja es que obtienes soporte y asesoramiento continuo y humano de VitaBlue para autorizaciones, reembolsos o dudas de cobertura."
@@ -355,7 +355,7 @@ export const SanitasInsurances: React.FC = () => {
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
-                  <Sparkles className="w-4 h-4" /> Agentes Exclusivos Sanitas
+                  <Sparkles className="w-4 h-4" /> Especialistas en Sanitas
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
                   Precios oficiales y promociones
@@ -418,7 +418,7 @@ export const SanitasInsurances: React.FC = () => {
           <div className="flex items-center gap-3.5">
             <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Agente Exclusivo Autorizado</h4>
+              <h4 className="text-sm font-bold text-text-main">Asesoría de Seguros Autorizada</h4>
               <p className="text-xs text-text-secondary font-semibold">Precios oficiales garantizados sin recargo comercial.</p>
             </div>
           </div>

@@ -46,7 +46,7 @@ export const navbarTranslations: Record<'es' | 'en', NavigationTranslations> = {
     blog: 'Blog',
     contact: 'Contacto',
     whatsappCta: 'Consultar WhatsApp',
-    agentBadge: 'Agente Autorizado Sanitas'
+    agentBadge: 'Asesoría Independiente'
   },
   en: {
     products: 'Products',
@@ -54,7 +54,7 @@ export const navbarTranslations: Record<'es' | 'en', NavigationTranslations> = {
     blog: 'Blog',
     contact: 'Contact',
     whatsappCta: 'WhatsApp Chat',
-    agentBadge: 'Authorized Sanitas Agent'
+    agentBadge: 'Independent Advice'
   }
 };
 

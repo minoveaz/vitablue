@@ -477,7 +477,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
               </div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-100/50 px-3 py-1 text-caption font-bold text-sky-800">
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
-                {isEnglish ? 'Exclusive Sanitas Agent (Reg. DGSFP C0038)' : 'Agente Exclusivo Sanitas (Reg. DGSFP C0038)'}
+                {isEnglish ? 'Independent Insurance Advice' : 'Asesoría de Seguros Independiente'}
               </div>
             </div>
           </div>
@@ -536,7 +536,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                 </div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-100/50 px-3 py-1 text-caption font-bold text-sky-800">
                   <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
-                  Agente Exclusivo Sanitas (Reg. DGSFP C0038)
+                  Asesoría de Seguros Independiente
                 </div>
               </div>
             </div>

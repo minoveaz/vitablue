@@ -783,7 +783,7 @@ export const HealthInsurance: React.FC = () => {
             </h2>
             
             <p className="text-body-reg text-text-secondary leading-relaxed font-medium">
-              Como agentes exclusivos de seguros, ponemos a tu disposición toda la gama oficial de pólizas de salud de Sanitas: desde coberturas básicas extrahospitalarias hasta los planes de reembolso premium más avanzados del mercado.
+              Te ayudamos a encontrar y comparar toda la gama oficial de pólizas de salud de Sanitas: desde coberturas básicas extrahospitalarias hasta los planes de reembolso premium más avanzados del mercado.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-bold text-text-main">
