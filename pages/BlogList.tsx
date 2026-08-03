@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, ChevronRight, User, ShieldCheck, Search, X } from 'lucide-react';
 import { blogPosts, BlogPostData } from '@/utils/blogData';
@@ -9,7 +9,22 @@ export const BlogList: React.FC = () => {
   const location = useLocation();
   const isEnglish = location.pathname.startsWith('/en');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('search') || '');
+
+  useEffect(() => {
+    const q = searchParams.get('search') || '';
+    setSearchQuery(q);
+  }, [searchParams]);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (value) {
+      setSearchParams({ search: value }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  };
 
   const categories = isEnglish ? [
     { value: 'all', label: 'All Articles' },
@@ -96,12 +111,12 @@ export const BlogList: React.FC = () => {
               type="text"
               placeholder={isEnglish ? 'Search guides (e.g. visa, copay)...' : 'Buscar guías (ej: visado, copago)...'}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full h-12 pl-12 pr-10 rounded-2xl bg-white border border-slate-200/80 shadow-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-sm font-semibold text-text-main placeholder-slate-400/80 outline-none"
             />
             {searchQuery && (
               <button 
-                onClick={() => setSearchQuery('')}
+                onClick={() => handleSearchChange('')}
                 className="absolute inset-y-0 right-3 flex items-center px-1.5 text-slate-400 hover:text-text-main transition-colors cursor-pointer bg-transparent border-0"
                 title={isEnglish ? 'Clear search' : 'Limpiar búsqueda'}
               >
@@ -215,7 +230,7 @@ export const BlogList: React.FC = () => {
               <button 
                 onClick={() => {
                   setSelectedCategory('all');
-                  setSearchQuery('');
+                  handleSearchChange('');
                 }} 
                 className="text-sm font-bold text-primary hover:underline cursor-pointer bg-transparent border-0"
               >

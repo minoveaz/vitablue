@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Star,
   X,
+  Search,
 } from 'lucide-react';
 import { useWizard } from '@/context/WizardContext';
 import ConversationalHero from '@/components/organisms/ConversationalHero';
@@ -45,6 +46,24 @@ export const Home: React.FC = () => {
   const isEnglish = location.pathname.startsWith('/en');
   
   const { setProfile, setAgeRange, setVisaRequired, resetWizard } = useWizard();
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    const targetUrl = isEnglish 
+      ? `/en/blog?search=${encodeURIComponent(searchQuery.trim())}`
+      : `/blog?search=${encodeURIComponent(searchQuery.trim())}`;
+    navigate(targetUrl);
+  };
+
+  const handleQuickSearch = (term: string) => {
+    const targetUrl = isEnglish 
+      ? `/en/blog?search=${encodeURIComponent(term)}`
+      : `/blog?search=${encodeURIComponent(term)}`;
+    navigate(targetUrl);
+  };
 
   const guides = isEnglish ? [
     {
@@ -674,6 +693,51 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
             <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
               {isEnglish ? 'Practical articles written by our team to help you understand your coverages and make informed decisions.' : 'Artículos prácticos redactados por nuestro equipo para ayudarte a entender tus coberturas y tomar decisiones con criterio.'}
             </p>
+            
+            {/* Search Input for Guides */}
+            <div className="pt-4 max-w-md mx-auto">
+              <form onSubmit={handleSearchSubmit} className="relative group">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                  <Search className="w-5 h-5" />
+                </div>
+                <input 
+                  type="text"
+                  placeholder={isEnglish ? 'Search guides (e.g. visa, copay)...' : 'Buscar guías (ej: visado, copago)...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-12 pl-12 pr-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-sm font-semibold text-text-main placeholder-slate-400/80 outline-none"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-2 h-8 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold transition-colors cursor-pointer border-0"
+                >
+                  {isEnglish ? 'Search' : 'Buscar'}
+                </button>
+              </form>
+              
+              {/* Quick tags */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3 text-[10px] font-bold text-text-secondary">
+                <span>{isEnglish ? 'Try:' : 'Sugerencias:'}</span>
+                <button 
+                  onClick={() => handleQuickSearch(isEnglish ? 'student' : 'visado')}
+                  className="px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 hover:border-primary hover:text-primary transition-all cursor-pointer"
+                >
+                  {isEnglish ? 'Student visa' : 'Visado'}
+                </button>
+                <button 
+                  onClick={() => handleQuickSearch(isEnglish ? 'copay' : 'copago')}
+                  className="px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 hover:border-primary hover:text-primary transition-all cursor-pointer"
+                >
+                  {isEnglish ? 'Copays' : 'Copago'}
+                </button>
+                <button 
+                  onClick={() => handleQuickSearch(isEnglish ? 'pre-existing' : 'carencia')}
+                  className="px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 hover:border-primary hover:text-primary transition-all cursor-pointer"
+                >
+                  {isEnglish ? 'Waiting periods' : 'Carencia'}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
