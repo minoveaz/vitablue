@@ -722,6 +722,7 @@ const MarketingStudio: React.FC = () => {
             </section>
           </div>
         ) : <SocialGenerator />}
+      </main>
     </div>
   );
 };
