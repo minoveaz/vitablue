@@ -644,24 +644,34 @@ const MarketingStudio: React.FC = () => {
                   <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Foto de Perfil</p>
                     
-                    {/* Visual container with scaled renderer inside */}
+                    {/* Visual container with scaled wrapper inside */}
                     <div className="w-[160px] h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-slate-50 flex items-center justify-center shrink-0">
                       <div 
-                        ref={profileRef}
-                        className={`relative flex items-center justify-center overflow-hidden ${
-                          useDarkBackground ? 'bg-[#001219]' : 'bg-white'
-                        }`}
-                        style={{ 
-                          width: '800px', 
-                          height: '800px', 
-                          minWidth: '800px', 
-                          minHeight: '800px',
+                        style={{
                           transform: 'scale(0.2)',
-                          transformOrigin: 'center center'
+                          transformOrigin: 'center center',
+                          width: '800px',
+                          height: '800px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
                         }}
                       >
-                        <div className="relative z-10 flex items-center justify-center">
-                          <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
+                        <div 
+                          ref={profileRef}
+                          className={`relative flex items-center justify-center overflow-hidden ${
+                            useDarkBackground ? 'bg-[#001219]' : 'bg-white'
+                          }`}
+                          style={{ 
+                            width: '800px', 
+                            height: '800px', 
+                            minWidth: '800px', 
+                            minHeight: '800px'
+                          }}
+                        >
+                          <div className="relative z-10 flex items-center justify-center">
+                            <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -681,28 +691,38 @@ const MarketingStudio: React.FC = () => {
                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
                       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Portada / Banner</p>
                       
-                      {/* Visual container with scaled renderer inside */}
+                      {/* Visual container with scaled wrapper inside */}
                       <div className="w-full h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-[#001219] flex items-center justify-center shrink-0">
                         <div 
-                          ref={coverRef}
-                          className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]"
                           style={{
+                            transform: `scale(${Math.min(220 / selectedPlatform.coverSize!.width, 140 / selectedPlatform.coverSize!.height)})`,
+                            transformOrigin: 'center center',
                             width: `${selectedPlatform.coverSize!.width}px`,
                             height: `${selectedPlatform.coverSize!.height}px`,
-                            minWidth: `${selectedPlatform.coverSize!.width}px`,
-                            minHeight: `${selectedPlatform.coverSize!.height}px`,
-                            transform: `scale(${Math.min(220 / selectedPlatform.coverSize!.width, 140 / selectedPlatform.coverSize!.height)})`,
-                            transformOrigin: 'center center'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                           }}
                         >
-                          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
-                          <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
-                          <div className="relative z-10 flex flex-col items-center text-center">
-                            <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" disableTransition={true} />
-                            <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
-                            <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
-                              Protección que se adapta a tu vida
-                            </p>
+                          <div 
+                            ref={coverRef}
+                            className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]"
+                            style={{
+                              width: `${selectedPlatform.coverSize!.width}px`,
+                              height: `${selectedPlatform.coverSize!.height}px`,
+                              minWidth: `${selectedPlatform.coverSize!.width}px`,
+                              minHeight: `${selectedPlatform.coverSize!.height}px`
+                            }}
+                          >
+                            <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
+                            <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
+                            <div className="relative z-10 flex flex-col items-center text-center">
+                              <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" disableTransition={true} />
+                              <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
+                              <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
+                                Protección que se adapta a tu vida
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
