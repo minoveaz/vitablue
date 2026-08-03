@@ -630,58 +630,98 @@ const MarketingStudio: React.FC = () => {
 
               {/* Informative text below mockup */}
               <p className="mt-6 max-w-lg mx-auto text-center text-xs leading-relaxed text-slate-500">
-                La vista simula la composición real y recortes de cada red en modo {mockupTheme === 'light' ? 'claro' : 'oscuro'}. 
-                Las descargas conservan el tamaño nativo y formato oficial en alta definición.
+                La vista simula la composición real y recortes de cada red en modo {mockupTheme === 'light' ? 'claro' : 'oscuro'}.
               </p>
+
+              {/* Assets Download Gallery (Visible and scaled to guarantee browser layout renders correctly) */}
+              <div className="mt-8 w-full border-t border-slate-200/80 pt-6 text-left">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">
+                  Activos Listos en Alta Resolución
+                </h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Profile photo block */}
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Foto de Perfil</p>
+                    
+                    {/* Visual container with scaled renderer inside */}
+                    <div className="w-[160px] h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-slate-50 flex items-center justify-center shrink-0">
+                      <div 
+                        ref={profileRef}
+                        className={`relative flex items-center justify-center overflow-hidden ${
+                          useDarkBackground ? 'bg-[#001219]' : 'bg-white'
+                        }`}
+                        style={{ 
+                          width: '800px', 
+                          height: '800px', 
+                          minWidth: '800px', 
+                          minHeight: '800px',
+                          transform: 'scale(0.2)',
+                          transformOrigin: 'center center'
+                        }}
+                      >
+                        <div className="relative z-10 flex items-center justify-center">
+                          <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => handleSocialExport('profile')}
+                      disabled={isExporting}
+                      className="w-full py-2 px-3 rounded-xl bg-[#005F73] hover:bg-[#004f5e] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <Download size={14} />
+                      <span>Descargar Perfil</span>
+                    </button>
+                  </div>
+
+                  {/* Cover banner block */}
+                  {hasCover && (
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center gap-3">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Portada / Banner</p>
+                      
+                      {/* Visual container with scaled renderer inside */}
+                      <div className="w-full h-[160px] rounded-xl border border-slate-200/60 overflow-hidden relative bg-[#001219] flex items-center justify-center shrink-0">
+                        <div 
+                          ref={coverRef}
+                          className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]"
+                          style={{
+                            width: `${selectedPlatform.coverSize!.width}px`,
+                            height: `${selectedPlatform.coverSize!.height}px`,
+                            minWidth: `${selectedPlatform.coverSize!.width}px`,
+                            minHeight: `${selectedPlatform.coverSize!.height}px`,
+                            transform: `scale(${Math.min(220 / selectedPlatform.coverSize!.width, 140 / selectedPlatform.coverSize!.height)})`,
+                            transformOrigin: 'center center'
+                          }}
+                        >
+                          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
+                          <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
+                          <div className="relative z-10 flex flex-col items-center text-center">
+                            <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" disableTransition={true} />
+                            <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
+                            <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
+                              Protección que se adapta a tu vida
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => handleSocialExport('cover')}
+                        disabled={isExporting}
+                        className="w-full py-2 px-3 rounded-xl bg-[#005F73] hover:bg-[#004f5e] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        <Download size={14} />
+                        <span>Descargar Portada</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </section>
           </div>
         ) : <SocialGenerator />}
-
-        {/* ========================================== */}
-        {/* HIGH-RES EXPORT CANVAS (Rendered Invisibly but fully layouted) */}
-        {/* ========================================== */}
-        <div 
-          className="absolute top-0 left-0 pointer-events-none select-none overflow-hidden z-[-100]"
-          style={{ width: '1px', height: '1px', opacity: 0.005 }}
-        >
-          {/* Profile photo high-res export canvas (800x800) */}
-          <div 
-            ref={profileRef}
-            className={`relative flex items-center justify-center overflow-hidden ${
-              useDarkBackground ? 'bg-[#001219]' : 'bg-white'
-            }`}
-            style={{ width: '800px', height: '800px', minWidth: '800px', minHeight: '800px' }}
-          >
-            <div className="relative z-10 flex items-center justify-center">
-              <Logo iconSize={420} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} disableTransition={true} />
-            </div>
-          </div>
-
-          {/* Cover banner high-res export canvas */}
-          {selectedPlatform.coverSize && (
-            <div 
-              ref={coverRef}
-              className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219]"
-              style={{
-                width: `${selectedPlatform.coverSize.width}px`,
-                height: `${selectedPlatform.coverSize.height}px`,
-                minWidth: `${selectedPlatform.coverSize.width}px`,
-                minHeight: `${selectedPlatform.coverSize.height}px`,
-              }}
-            >
-              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#94D2BD]/20 blur-2xl" />
-              <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#94D2BD]/10 blur-2xl" />
-              <div className="relative z-10 flex flex-col items-center text-center">
-                <Logo iconSize={coverLogoSize} showText={false} showTagline={false} variant="colored-on-dark" orientation="vertical" disableTransition={true} />
-                <p className="mt-7 font-display font-black text-white" style={{ fontSize: `${coverTitleSize}px`, lineHeight: 1.1 }}>VitaBlue</p>
-                <p className="mt-4 max-w-[1200px] font-semibold text-[#94D2BD]" style={{ fontSize: `${coverSubtitleSize}px`, lineHeight: 1.25 }}>
-                  Protección que se adapta a tu vida
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
     </div>
   );
 };
