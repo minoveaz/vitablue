@@ -13,3 +13,7 @@
 - [Seguro de Decesos Asistencia Familiar](https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar)
 - [Blog de Guías Oficiales](https://www.vitablue.es/blog)
 - [Cotizador de Seguros Online](https://www.vitablue.es/wizard)
+
+## Detailed Specifications
+
+- [Full Specifications (Guía Completa para IA)](https://www.vitablue.es/llms-full.txt)
