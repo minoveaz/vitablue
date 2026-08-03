@@ -265,38 +265,7 @@ const MarketingStudio: React.FC = () => {
                 </div>
               </div>
 
-              {/* High Resolution Asset Download Panel */}
-              <div className="space-y-3 border-t border-slate-100 pt-5">
-                <p className="text-xs font-black uppercase tracking-wider text-slate-400">Descargar en Alta Definición (PNG)</p>
-                
-                <button
-                  onClick={() => handleSocialExport('profile')}
-                  disabled={isExporting}
-                  className="w-full flex items-center justify-between rounded-2xl border border-slate-200 p-3.5 hover:border-[#005F73] hover:bg-[#005F73]/5 transition-all text-left cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  <div>
-                    <span className="block text-xs font-bold text-slate-800">Foto de Perfil</span>
-                    <span className="block text-[10px] text-slate-400">Alta resolución: 800 × 800 px</span>
-                  </div>
-                  <Download size={18} className="text-[#005F73]" />
-                </button>
 
-                {hasCover && (
-                  <button
-                    onClick={() => handleSocialExport('cover')}
-                    disabled={isExporting}
-                    className="w-full flex items-center justify-between rounded-2xl border border-slate-200 p-3.5 hover:border-[#005F73] hover:bg-[#005F73]/5 transition-all text-left cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    <div>
-                      <span className="block text-xs font-bold text-slate-800">Portada / Banner</span>
-                      <span className="block text-[10px] text-slate-400">
-                        Resolución retina: {formatDimensions(selectedPlatform.coverSize!)}
-                      </span>
-                    </div>
-                    <Download size={18} className="text-[#005F73]" />
-                  </button>
-                )}
-              </div>
 
               {exportMessage && (
                 <p className="text-center text-xs font-semibold text-[#005F73] bg-[#EBF7F4] py-2 rounded-xl border border-[#94D2BD]/30 animate-pulse">
