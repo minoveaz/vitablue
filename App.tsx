@@ -73,13 +73,21 @@ const CookiesPolicy = lazy(() => import('@/pages/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/BlogList'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
-const SocialGenerator = lazy(() => import('@/pages/SocialGenerator'));
+const MarketingStudio = import.meta.env.DEV ? lazy(() => import('@/pages/MarketingStudio')) : () => null;
 
 // Scroll to top on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   React.useEffect(() => {
     window.scrollTo(0, 0);
+
+    const isLocalOnlyPath = pathname === '/styleguide'
+      || pathname.startsWith('/styleguide/')
+      || pathname === '/marketing-studio'
+      || pathname.startsWith('/marketing-studio/');
+
+    window['ga-disable-G-DCGH16NP2Q'] = isLocalOnlyPath;
+    window['ga-disable-AW-515585712'] = isLocalOnlyPath;
   }, [pathname]);
   return null;
 };
@@ -603,8 +611,8 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
-            <Route path="/styleguide" element={<Styleguide />} />
-            <Route path="/styleguide/social-generator" element={<SocialGenerator />} />
+            {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
+            {import.meta.env.DEV && <Route path="/marketing-studio" element={<MarketingStudio />} />}
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
             <Route path="/productos/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguros-salud/seguro-medico-estudiantes" element={<StudentInsurance />} />

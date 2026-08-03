@@ -24,6 +24,7 @@ export const SocialGenerator: React.FC = () => {
   const [subtitle, setSubtitle] = useState('Te ayudamos a elegir la mejor opción sin copagos, sin carencias y con repatriación oficial. Compara gratis en 30 segundos.');
   const [showWhatsappCta, setShowWhatsappCta] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // Background configurations
   const themeClasses = {
@@ -40,36 +41,42 @@ export const SocialGenerator: React.FC = () => {
     light: 'bg-[#005F73]/10 text-[#005F73] border-[#005F73]/20',
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!previewRef.current) return;
+
     setIsExporting(true);
+    setExportError(null);
 
     // Export dimensions
     const width = 1080;
     const height = aspectRatio === 'square' ? 1080 : 1920;
 
-    toPng(previewRef.current, {
-      cacheBust: true,
-      width: width,
-      height: height,
-      style: {
-        transform: 'scale(1)',
-        transformOrigin: 'top left',
-        width: `${width}px`,
-        height: `${height}px`,
-      }
-    })
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = `vitablue_social_${aspectRatio}_${Date.now()}.png`;
-        link.href = dataUrl;
-        link.click();
-        setIsExporting(false);
-      })
-      .catch((err) => {
-        console.error('Error generating image:', err);
-        setIsExporting(false);
+    try {
+      const dataUrl = await toPng(previewRef.current, {
+        cacheBust: true,
+        skipFonts: true,
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+        width,
+        height,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: `${width}px`,
+          height: `${height}px`,
+        },
       });
+
+      const link = document.createElement('a');
+      link.download = `vitablue_social_${aspectRatio}_${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Error generating image:', err);
+      setExportError('No se pudo exportar la imagen. Inténtalo de nuevo o prueba con otro navegador.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -223,6 +230,10 @@ export const SocialGenerator: React.FC = () => {
             <Download className="w-5 h-5" />
             {isExporting ? 'Exportando PNG...' : 'Descargar Imagen PNG'}
           </button>
+
+          {exportError && (
+            <p className="text-sm text-red-600 font-medium">{exportError}</p>
+          )}
         </div>
 
         {/* Right column: Preview container */}

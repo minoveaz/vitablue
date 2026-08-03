@@ -40,8 +40,15 @@
     <script>
       (function() {
         var loaded = false;
+        var isLocalOnlyPath = function() {
+          return window.location.pathname === '/styleguide'
+            || window.location.pathname.indexOf('/styleguide/') === 0
+            || window.location.pathname === '/marketing-studio'
+            || window.location.pathname.indexOf('/marketing-studio/') === 0;
+        };
+
         function loadAnalytics() {
-          if (loaded) return;
+          if (loaded || isLocalOnlyPath()) return;
           loaded = true;
 
           // Google Tag Manager (Legacy)
@@ -74,6 +81,11 @@
           window.removeEventListener('scroll', triggerLoad);
           window.removeEventListener('mousemove', triggerLoad);
           window.removeEventListener('touchstart', triggerLoad);
+        }
+
+        if (isLocalOnlyPath()) {
+          window['ga-disable-G-DCGH16NP2Q'] = true;
+          window['ga-disable-AW-515585712'] = true;
         }
 
         window.addEventListener('scroll', triggerLoad, { passive: true });

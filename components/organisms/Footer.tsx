@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Mail, Phone, MapPin, Shield, HelpCircle, UserCheck } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
+import { getSocialProfiles, socialProfilesUpdatedEvent, SocialProfiles } from '@/utils/socialProfiles';
 
 // Social Icon SVGs
 const FacebookIcon: React.FC = () => (
@@ -32,9 +33,27 @@ const TiktokIcon: React.FC = () => (
   </svg>
 );
 
+const YoutubeIcon: React.FC = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z" />
+    <polygon points="10 15 15 12 10 9" fill="currentColor" />
+  </svg>
+);
+
 export const Footer: React.FC = () => {
   const location = useLocation();
   const isEnglish = location.pathname.startsWith('/en');
+  const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
+
+  useEffect(() => {
+    const handleProfilesUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<SocialProfiles>;
+      setSocialProfiles(customEvent.detail ?? getSocialProfiles());
+    };
+
+    window.addEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
+    return () => window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
+  }, []);
 
   return (
     <footer className="bg-primary-dark text-white border-t border-slate-900 pt-16 pb-8">
@@ -54,7 +73,7 @@ export const Footer: React.FC = () => {
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-1">Síguenos</span>
             
             <a 
-              href="https://www.facebook.com/share/1FwKPbX8N7/?mibextid=wwXIfr" 
+              href={socialProfiles.facebook.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
@@ -63,7 +82,7 @@ export const Footer: React.FC = () => {
               <FacebookIcon />
             </a>
             <a 
-              href="https://www.instagram.com/vitablue_seguros/" 
+              href={socialProfiles.instagram.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
@@ -72,7 +91,7 @@ export const Footer: React.FC = () => {
               <InstagramIcon />
             </a>
             <a 
-              href="#" 
+              href={socialProfiles.linkedin.url || '#'} 
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="LinkedIn"
               onClick={(e) => e.preventDefault()}
@@ -80,13 +99,22 @@ export const Footer: React.FC = () => {
               <LinkedinIcon />
             </a>
             <a 
-              href="https://www.tiktok.com/@vitablueseguros" 
+              href={socialProfiles.tiktok.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="TikTok"
             >
               <TiktokIcon />
+            </a>
+            <a 
+              href={socialProfiles.youtube.url || '#'} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              title="YouTube"
+            >
+              <YoutubeIcon />
             </a>
           </div>
         </div>

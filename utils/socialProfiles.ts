@@ -1,0 +1,94 @@
+export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin';
+
+export interface SocialProfile {
+  id: SocialPlatformId;
+  name: string;
+  url: string;
+  user: string;
+}
+
+export type SocialProfiles = Record<SocialPlatformId, SocialProfile>;
+
+export const defaultSocialProfiles: SocialProfiles = {
+  facebook: {
+    id: 'facebook',
+    name: 'Facebook',
+    url: 'https://www.facebook.com/share/1FwKPbX8N7/?mibextid=wwXIfr',
+    user: 'Página VitaBlue',
+  },
+  instagram: {
+    id: 'instagram',
+    name: 'Instagram',
+    url: 'https://www.instagram.com/vitablue_seguros/',
+    user: '@vitablue_seguros',
+  },
+  tiktok: {
+    id: 'tiktok',
+    name: 'TikTok',
+    url: 'https://www.tiktok.com/@vitablueseguros',
+    user: '@vitablueseguros',
+  },
+  youtube: {
+    id: 'youtube',
+    name: 'YouTube',
+    url: 'https://www.youtube.com/@VitaBlue-seguros',
+    user: '@VitaBlue-seguros',
+  },
+  linkedin: {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    url: 'https://www.linkedin.com/company/vitablue-seguros/',
+    user: '/company/vitablue-seguros',
+  },
+};
+
+const storageKey = 'vitablue.social-profiles';
+const profilesUpdatedEvent = 'vitablue:social-profiles-updated';
+
+export const extractSocialUser = (url: string, platform: SocialPlatformId): string => {
+  if (!url.trim()) return '';
+
+  try {
+    const parsedUrl = new URL(url.trim());
+    const segments = parsedUrl.pathname.split('/').filter(Boolean);
+    const handleSegment = segments.find((segment) => segment.startsWith('@'));
+
+    if (handleSegment) return handleSegment;
+    if (platform === 'linkedin' && segments[0] === 'company' && segments[1]) return `/${segments[0]}/${segments[1]}`;
+    if (platform === 'facebook' && segments[0] === 'share') return 'Página VitaBlue';
+    if (platform === 'youtube' && segments[0] === 'channel' && segments[1]) return segments[1];
+
+    return segments.at(-1) ? `@${decodeURIComponent(segments.at(-1) ?? '')}` : '';
+  } catch {
+    return '';
+  }
+};
+
+export const getSocialProfiles = (): SocialProfiles => {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return defaultSocialProfiles;
+
+  try {
+    const storedProfiles = window.localStorage.getItem(storageKey);
+    if (!storedProfiles) return defaultSocialProfiles;
+    const parsedProfiles = JSON.parse(storedProfiles) as Partial<SocialProfiles>;
+    const mergedProfiles = { ...defaultSocialProfiles, ...parsedProfiles };
+
+    (['youtube', 'linkedin'] as const).forEach((platform) => {
+      if (!parsedProfiles[platform]?.url) {
+        mergedProfiles[platform] = defaultSocialProfiles[platform];
+      }
+    });
+
+    return mergedProfiles;
+  } catch {
+    return defaultSocialProfiles;
+  }
+};
+
+export const saveSocialProfiles = (profiles: SocialProfiles): void => {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return;
+  window.localStorage.setItem(storageKey, JSON.stringify(profiles));
+  window.dispatchEvent(new CustomEvent(profilesUpdatedEvent, { detail: profiles }));
+};
+
+export const socialProfilesUpdatedEvent = profilesUpdatedEvent;
