@@ -38,6 +38,19 @@ const platforms: PlatformConfig[] = [
   { id: 'tiktok', name: 'TikTok', recommendedSize: '200 × 200 px', profileSize: { width: 200, height: 200 }, icon: <Music2 size={20} />, accent: '#111827' },
   { id: 'youtube', name: 'YouTube', recommendedSize: '800 × 800 px', profileSize: { width: 800, height: 800 }, coverSize: { width: 2560, height: 1440 }, icon: <Youtube size={20} />, accent: '#FF0033' },
   { id: 'linkedin', name: 'LinkedIn', recommendedSize: '300 × 300 px', profileSize: { width: 300, height: 300 }, coverSize: { width: 1584, height: 396 }, icon: <Linkedin size={20} />, accent: '#0A66C2' },
+  { 
+    id: 'x', 
+    name: 'X (Twitter)', 
+    recommendedSize: '400 × 400 px', 
+    profileSize: { width: 400, height: 400 }, 
+    coverSize: { width: 1500, height: 500 }, 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    ), 
+    accent: '#0f172a' 
+  },
 ];
 
 const colorTokens = [
@@ -587,6 +600,65 @@ const MarketingStudio: React.FC = () => {
                       <p className={`text-xs max-w-sm mx-auto leading-relaxed ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                         El comparador independiente de seguros de salud, estudios y asistencia en España. Sin spam.
                       </p>
+                    </div>
+                  )}
+
+                  {activePlatform === 'x' && (
+                    <div className="relative text-left font-sans">
+                      {/* Cover Banner */}
+                      <div className="w-full aspect-[3/1] bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] relative overflow-hidden">
+                        <div className="absolute -right-16 -top-16 h-36 w-36 rounded-full bg-[#94D2BD]/20 blur-xl" />
+                        <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-[#94D2BD]/10 blur-xl" />
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-3 select-none">
+                          <Logo iconSize={36} showText={false} showTagline={false} variant="colored-on-dark" />
+                          <p className="mt-1.5 font-display font-black text-white text-base leading-none">VitaBlue</p>
+                          <p className="mt-1 font-semibold text-[#94D2BD] text-[8px] leading-tight max-w-[200px]">
+                            Protección que se adapta a tu vida
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="px-6 pb-6 pt-16 relative">
+                        {/* Avatar */}
+                        <div 
+                          className={`absolute left-6 top-[-40px] rounded-full border-[4px] w-20 h-20 shadow-md overflow-hidden flex items-center justify-center select-none ${
+                            mockupTheme === 'dark' ? 'border-[#15181C]' : 'border-white'
+                          } ${useDarkBackground ? 'bg-[#001219]' : 'bg-white'}`}
+                        >
+                          <Logo iconSize={40} showText={false} showTagline={false} variant={useDarkBackground ? 'colored-on-dark' : 'default'} />
+                        </div>
+
+                        {/* Follow Button */}
+                        <div className="absolute right-6 top-3">
+                          <button className={`px-5 py-1.5 rounded-full text-xs font-black transition-all ${
+                            mockupTheme === 'dark' ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800'
+                          }`}>
+                            Seguir
+                          </button>
+                        </div>
+
+                        {/* Profile Info details */}
+                        <div className="space-y-1">
+                          <h4 className={`text-xl font-bold font-display leading-none ${mockupTheme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                            VitaBlue
+                          </h4>
+                          <p className="text-xs text-slate-500 font-medium">
+                            {selectedProfile.user || '@vitablueseguros'}
+                          </p>
+                          <p className={`text-xs pt-1 leading-relaxed ${mockupTheme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                            El comparador independiente de seguros de salud, estudiantes y nómadas digitales en España. 🩺 Sin spam y 100% gratuito.
+                          </p>
+                          <div className="flex gap-4 pt-3 text-[11px] font-bold text-slate-500">
+                            <div>
+                              <span className={mockupTheme === 'dark' ? 'text-white' : 'text-slate-800'}>84</span> Siguiendo
+                            </div>
+                            <div>
+                              <span className={mockupTheme === 'dark' ? 'text-white' : 'text-slate-800'}>1.5K</span> Seguidores
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

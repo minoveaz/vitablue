@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin';
+export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin' | 'x';
 
 export interface SocialProfile {
   id: SocialPlatformId;
@@ -42,6 +42,12 @@ export const defaultSocialProfiles: SocialProfiles = {
     url: 'https://www.linkedin.com/company/vitablue-seguros/',
     user: '/company/vitablue-seguros',
   },
+  x: {
+    id: 'x',
+    name: 'X (Twitter)',
+    url: 'https://x.com/vitablueseguros',
+    user: '@vitablueseguros',
+  },
 };
 
 const storageKey = 'vitablue.social-profiles';
@@ -75,7 +81,7 @@ export const getSocialProfiles = (): SocialProfiles => {
     const parsedProfiles = JSON.parse(storedProfiles) as Partial<SocialProfiles>;
     const mergedProfiles = { ...defaultSocialProfiles, ...parsedProfiles };
 
-    (['youtube', 'linkedin'] as const).forEach((platform) => {
+    (['youtube', 'linkedin', 'x'] as const).forEach((platform) => {
       if (!parsedProfiles[platform]?.url) {
         mergedProfiles[platform] = defaultSocialProfiles[platform];
       }
