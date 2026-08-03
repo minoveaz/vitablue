@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Calendar, Clock, ChevronRight, User, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, ChevronRight, User, ShieldCheck, Search, X } from 'lucide-react';
 import { blogPosts, BlogPostData } from '@/utils/blogData';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
@@ -9,6 +9,7 @@ export const BlogList: React.FC = () => {
   const location = useLocation();
   const isEnglish = location.pathname.startsWith('/en');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const categories = isEnglish ? [
     { value: 'all', label: 'All Articles' },
@@ -24,9 +25,19 @@ export const BlogList: React.FC = () => {
     return isEnglish ? postLang === 'en' : postLang === 'es';
   });
 
+  const filteredPostsBySearch = filteredPostsByLang.filter(post => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      post.title.toLowerCase().includes(query) ||
+      post.excerpt.toLowerCase().includes(query) ||
+      post.categoryLabel.toLowerCase().includes(query)
+    );
+  });
+
   const filteredPosts = selectedCategory === 'all'
-    ? filteredPostsByLang
-    : filteredPostsByLang.filter(post => post.category === selectedCategory);
+    ? filteredPostsBySearch
+    : filteredPostsBySearch.filter(post => post.category === selectedCategory);
 
   return (
     <div className="w-full flex flex-col bg-background-light">
@@ -76,7 +87,29 @@ export const BlogList: React.FC = () => {
       {/* Filter and Grid section */}
       <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="mx-auto w-full max-w-6xl space-y-10">
-          
+          {/* Search bar */}
+          <div className="max-w-md mx-auto relative group">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+              <Search className="w-5 h-5" />
+            </div>
+            <input 
+              type="text"
+              placeholder={isEnglish ? 'Search guides (e.g. visa, copay)...' : 'Buscar guías (ej: visado, copago)...'}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-12 pl-12 pr-10 rounded-2xl bg-white border border-slate-200/80 shadow-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-sm font-semibold text-text-main placeholder-slate-400/80 outline-none"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-3 flex items-center px-1.5 text-slate-400 hover:text-text-main transition-colors cursor-pointer bg-transparent border-0"
+                title={isEnglish ? 'Clear search' : 'Limpiar búsqueda'}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
           {/* Category Filter Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 border-b border-slate-150 pb-6">
             {categories.map((cat) => (
@@ -174,12 +207,19 @@ export const BlogList: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-16 space-y-4">
-              <p className="text-lg font-bold text-text-secondary">No se han encontrado artículos en esta categoría.</p>
+              <p className="text-lg font-bold text-text-secondary">
+                {isEnglish 
+                  ? 'No articles match your search criteria.' 
+                  : 'No se han encontrado artículos que coincidan con tu búsqueda.'}
+              </p>
               <button 
-                onClick={() => setSelectedCategory('all')} 
-                className="text-sm font-bold text-primary hover:underline cursor-pointer"
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSearchQuery('');
+                }} 
+                className="text-sm font-bold text-primary hover:underline cursor-pointer bg-transparent border-0"
               >
-                Ver todos los artículos
+                {isEnglish ? 'Clear filters and search' : 'Limpiar filtros y búsqueda'}
               </button>
             </div>
           )}
