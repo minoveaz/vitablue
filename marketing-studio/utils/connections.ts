@@ -55,6 +55,10 @@ export const disconnectPlatform = (platform: SocialPlatformId): SocialConnection
     ...current,
     [platform]: { connected: false }
   };
+  if (platform === 'facebook' || platform === 'instagram') {
+    next.facebook = { connected: false };
+    next.instagram = { connected: false };
+  }
   saveConnections(next);
   return next;
 };
@@ -136,6 +140,16 @@ export const handleOAuthCallback = async (
         expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString() // 60 days
       }
     };
+
+    if (platform === 'facebook') {
+      next.instagram = {
+        connected: true,
+        username: '@vitablue_seguros',
+        connectedAt: new Date().toLocaleDateString(),
+        expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString()
+      };
+    }
+
     saveConnections(next);
 
     return { success: true, username: mockUsername };

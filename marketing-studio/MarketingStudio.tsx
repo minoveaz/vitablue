@@ -883,18 +883,27 @@ const MarketingStudio: React.FC = () => {
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {platforms.map((plat) => {
+                if (plat.id === 'instagram') return null; // Unify with Facebook card
+                
                 const conn = connections[plat.id];
                 const isConnected = conn?.connected;
+                const isMeta = plat.id === 'facebook';
+                const cardTitle = isMeta ? 'Meta (Facebook & Instagram)' : plat.name;
 
                 return (
-                  <div key={plat.id} className="border border-slate-200 rounded-3xl p-5 bg-slate-50/30 flex flex-col justify-between gap-5 hover:shadow-sm transition-all">
+                  <div key={plat.id} className="border border-slate-200 rounded-3xl p-5 bg-slate-50/30 flex flex-col justify-between gap-5 hover:shadow-sm transition-all text-left">
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <span className="p-2.5 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm" style={{ color: plat.accent }}>
-                          {plat.icon}
+                          {isMeta ? (
+                            <span className="flex gap-1 items-center">
+                              <Facebook size={18} className="text-[#1877F2]" />
+                              <Instagram size={18} className="text-[#D946EF]" />
+                            </span>
+                          ) : plat.icon}
                         </span>
                         <div>
-                          <span className="block text-sm font-bold text-slate-800">{plat.name}</span>
+                          <span className="block text-sm font-bold text-slate-800">{cardTitle}</span>
                           <span className="block text-[10px] text-slate-400 font-semibold">API OAuth 2.0</span>
                         </div>
                       </div>
@@ -907,9 +916,14 @@ const MarketingStudio: React.FC = () => {
                               Conectado
                             </span>
                             <span className="block text-xs font-bold text-slate-700 mt-2 truncate">
-                              Usuario: {conn.username}
+                              Facebook: {conn.username}
                             </span>
-                            <span className="block text-[9px] text-slate-400 font-semibold">
+                            {isMeta && connections.instagram?.connected && (
+                              <span className="block text-xs font-bold text-slate-700 truncate">
+                                Instagram: {connections.instagram.username}
+                              </span>
+                            )}
+                            <span className="block text-[9px] text-slate-400 font-semibold mt-1">
                               Vinculado: {conn.connectedAt}
                             </span>
                           </div>
