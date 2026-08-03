@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 import { supabase } from './supabaseClient';
-import { SocialPlatformId } from './socialProfiles';
+import { SocialPlatformId } from '@/utils/socialProfiles';
 
 export interface CampaignAsset {
   id: string;

@@ -1,4 +1,4 @@
-import { SocialPlatformId } from './socialProfiles';
+import { SocialPlatformId } from '@/utils/socialProfiles';
 
 export interface ConnectionState {
   connected: boolean;

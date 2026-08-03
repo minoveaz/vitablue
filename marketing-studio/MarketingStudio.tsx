@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
-import SocialGenerator from '@/pages/SocialGenerator';
+import SocialGenerator from '@/marketing-studio/SocialGenerator';
 import { 
   getSocialProfiles, 
   saveSocialProfiles, 
@@ -31,15 +31,15 @@ import {
   Campaign, 
   getCampaigns, 
   syncCampaignsWithSupabase 
-} from '@/utils/campaigns';
-import { CampaignManager } from '@/components/organisms/CampaignManager';
+} from '@/marketing-studio/utils/campaigns';
+import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
 import { 
   getConnections, 
   startPlatformOAuth, 
   handleOAuthCallback, 
   disconnectPlatform,
   SocialConnections
-} from '@/utils/connections';
+} from '@/marketing-studio/utils/connections';
 
 type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'connections' | 'content';
 type PlatformId = SocialPlatformId;

@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import { supabase } from './supabaseClient';
+import { supabase } from '@/marketing-studio/utils/supabaseClient';
 
 export type SocialPlatformId = 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'linkedin' | 'x';
 

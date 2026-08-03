@@ -6,7 +6,7 @@ import {
   saveCampaigns, 
   saveCampaignToSupabase, 
   deleteCampaign 
-} from '@/utils/campaigns';
+} from '@/marketing-studio/utils/campaigns';
 import { SocialPlatformId, getSocialProfiles } from '@/utils/socialProfiles';
 import { generateCampaignBannerSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import { 

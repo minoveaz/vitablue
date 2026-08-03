@@ -73,7 +73,7 @@ const CookiesPolicy = lazy(() => import('@/pages/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/BlogList'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
-const MarketingStudio = import.meta.env.DEV ? lazy(() => import('@/pages/MarketingStudio')) : () => null;
+const MarketingStudio = import.meta.env.DEV ? lazy(() => import('@/marketing-studio/MarketingStudio')) : () => null;
 
 // Scroll to top on route change
 const ScrollToTop = () => {
