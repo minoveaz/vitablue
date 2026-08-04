@@ -1,4 +1,4 @@
-import{j as e,e as fe,r as S,u as Fe,h as De,R as xe,L as V}from"./vendor-KdecfZM-.js";import{c as I,L as z,g as ee,B as me,d as ze,f as pe,h as Be,i as Te,j as Ee}from"./index-GAS3gR23.js";import{Y as ae,Z as ne,_ as ge,$ as be,a0 as ve,a1 as te,a as Ae,F as je,V as Pe,a2 as _e,j as Y,n as ue,u as we,X as Ie,N as Le,a3 as Me,p as Ve,h as Re,A as Oe,a4 as Ue,a5 as Ge,a6 as qe,r as He,g as J,a7 as Ye}from"./ui-icons-Cw7VJ9JQ.js";import{S as We,b as Ke}from"./BackofficeShell-6sHYqPqQ.js";const G=`
+import{j as e,e as fe,r as S,u as Fe,h as De,R as xe,L as V}from"./vendor-KdecfZM-.js";import{c as I,L as z,g as ee,B as me,d as ze,f as pe,h as Be,i as Te,j as Ee}from"./index-B_0Rf1tQ.js";import{Y as ae,Z as ne,_ as ge,$ as be,a0 as ve,a1 as te,a as Ae,F as je,V as Pe,a2 as _e,j as Y,n as ue,u as we,X as Ie,N as Le,a3 as Me,p as Ve,h as Re,A as Oe,a4 as Ue,a5 as Ge,a6 as qe,r as He,g as J,a7 as Ye}from"./ui-icons-Cw7VJ9JQ.js";import{S as We,b as Ke}from"./BackofficeShell-Vu_EV5Ts.js";const G=`
   <!-- TOP ARM (Turquoise / Mint Green) -->
   <path d="M24,24 V8 C24,5.8 25.8,4 28,4 H40 V24 L32,32 Z" fill="#94D2BD" />
   
