@@ -39,6 +39,14 @@
   RewriteEngine On
   RewriteBase /
 
+  # Aliases legacy de Marketing Studio: conservar la sección solicitada.
+  RewriteRule ^marketing-studio/identidad-de-marca$ /backoffice/marketing-studio/identidad-de-marca [R=301,L,NE]
+  RewriteRule ^marketing-studio/perfiles-sociales$ /backoffice/marketing-studio/perfiles-sociales [R=301,L,NE]
+  RewriteRule ^marketing-studio/campanas(?:/.*)?$ /backoffice/marketing-studio/campanas [R=301,L,NE]
+  RewriteRule ^marketing-studio/conexiones$ /backoffice/marketing-studio/conexiones [R=301,L,NE]
+  RewriteRule ^marketing-studio/generador-contenido$ /backoffice/marketing-studio/generador-contenido [R=301,L,NE]
+  RewriteRule ^marketing-studio/?$ /backoffice/marketing-studio [R=301,L,NE]
+
   # Redirecciones permanentes de URLs legacy hacia sus canónicas.
   RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud [R=301,L,NE]
   RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html$ /productos/seguro-mascotas/sanitas-mascotas [R=301,L,NE]

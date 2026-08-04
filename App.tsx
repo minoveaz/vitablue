@@ -79,6 +79,11 @@ const AppLayout: React.FC = () => {
             {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
             <Route path="/login" element={<MarketingLogin />} />
             <Route path="/marketing-studio/login" element={<Navigate to="/login" replace />} />
+            <Route path="/marketing-studio/identidad-de-marca" element={<Navigate to="/backoffice/marketing-studio/identidad-de-marca" replace />} />
+            <Route path="/marketing-studio/perfiles-sociales" element={<Navigate to="/backoffice/marketing-studio/perfiles-sociales" replace />} />
+            <Route path="/marketing-studio/campanas/*" element={<Navigate to="/backoffice/marketing-studio/campanas" replace />} />
+            <Route path="/marketing-studio/conexiones" element={<Navigate to="/backoffice/marketing-studio/conexiones" replace />} />
+            <Route path="/marketing-studio/generador-contenido" element={<Navigate to="/backoffice/marketing-studio/generador-contenido" replace />} />
             <Route path="/marketing-studio/*" element={<Navigate to="/backoffice/marketing-studio" replace />} />
             {generatedBackofficeRoutes.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
