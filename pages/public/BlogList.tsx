@@ -257,7 +257,7 @@ export const BlogList: React.FC = () => {
               href="https://wa.me/34694583452?text=Hola!%20Vengo%20del%20blog%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20m%C3%A9dicos%20para%20tr%C3%A1mites%20legales."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold rounded-xl text-sm px-6 py-3.5 shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 bg-whatsapp hover:bg-whatsapp-dark text-white font-bold rounded-xl text-sm px-6 py-3.5 shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
             >
               <WhatsAppIcon size={18} className="fill-white" />
               <span>Hablar con un Asesor por WhatsApp</span>

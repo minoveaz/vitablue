@@ -278,7 +278,7 @@ const Results: React.FC = () => {
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2 max-w-3xl">
                 <div className="flex items-center gap-3">
-                  <div className="size-12 rounded-2xl bg-[#25D366]/10 text-[#25D366] flex items-center justify-center shrink-0">
+                  <div className="size-12 rounded-2xl bg-whatsapp/10 text-whatsapp flex items-center justify-center shrink-0">
                     <MessageSquare className="w-6 h-6" />
                   </div>
                   <div>
@@ -290,7 +290,7 @@ const Results: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-3 text-caption font-bold uppercase tracking-wider text-text-secondary">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#25D366]" /> Respuesta humana
+                    <ShieldCheck className="w-4 h-4 text-whatsapp" /> Respuesta humana
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Smartphone className="w-4 h-4 text-primary" /> WhatsApp directo

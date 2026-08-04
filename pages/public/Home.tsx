@@ -837,7 +837,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                     : 'Escríbenos directamente por WhatsApp. Una asesora real te explicará la letra pequeña sin prisa ni compromisos de contratación.'}
                 </p>
               </div>
-              <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] px-6 py-3.5 text-sm font-black text-white shadow-md shadow-[#25D366]/20 transition-all duration-200">
+              <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp hover:bg-whatsapp-dark px-6 py-3.5 text-sm font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200">
                 <WhatsAppIcon size={18} />
                 {isEnglish ? 'Ask on WhatsApp' : 'Preguntar por WhatsApp'}
               </span>

@@ -282,7 +282,7 @@ export const BlogPost: React.FC = () => {
                     window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_bottom_${post.slug}` });
                   }
                 }}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] px-6 py-3.5 text-xs font-black text-white shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp hover:bg-whatsapp-dark px-6 py-3.5 text-xs font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
               >
                 <WhatsAppIcon size={16} />
                 <span>{isPostEnglish ? 'Ask on WhatsApp' : 'Preguntar por WhatsApp'}</span>
@@ -349,7 +349,7 @@ export const BlogPost: React.FC = () => {
                       window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_sidebar_${post.slug}` });
                     }
                   }}
-                  className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold shadow-md shadow-[#25D366]/10 transition-all duration-200 active:scale-[0.98]"
+                  className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-xs font-bold shadow-md shadow-whatsapp/10 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
                 >
                   <WhatsAppIcon size={16} className="fill-white" />
                   <span>{isPostEnglish ? 'Consult on WhatsApp' : 'Consultar por WhatsApp'}</span>

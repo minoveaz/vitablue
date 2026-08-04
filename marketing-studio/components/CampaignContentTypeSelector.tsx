@@ -27,9 +27,9 @@ export const CampaignContentTypeSelector: React.FC<CampaignContentTypeSelectorPr
             type="button"
             onClick={() => onChange(isSelected ? value.filter((type) => type !== option.id) : [...value, option.id])}
             aria-pressed={isSelected}
-            className={`flex items-start gap-3 rounded-2xl border p-3 text-left transition-all ${isSelected ? 'border-[#005F73] bg-[#EBF7F4]/60 text-[#005F73]' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'}`}
+            className={`flex items-start gap-3 rounded-2xl border p-3 text-left transition-all ${isSelected ? 'border-primary bg-brand-cyan/60 text-primary' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'}`}
           >
-            <span className={`mt-0.5 rounded-lg p-2 ${isSelected ? 'bg-[#005F73] text-white' : 'bg-slate-100 text-slate-400'}`}>
+            <span className={`mt-0.5 rounded-lg p-2 ${isSelected ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>
               {option.icon}
             </span>
             <span>

@@ -420,7 +420,7 @@ export const SanitasInsurances: React.FC = () => {
                       variant="outline" 
                       size="sm" 
                       className="font-bold border-emerald-500 text-emerald-600 hover:bg-emerald-50/50"
-                      leftIcon={<WhatsAppIcon size={14} className="fill-[#25D366]" />}
+                      leftIcon={<WhatsAppIcon size={14} className="fill-whatsapp" />}
                     >
                       Consultar WhatsApp
                     </Button>
@@ -557,6 +557,5 @@ export const SanitasInsurances: React.FC = () => {
 };
 
 export default SanitasInsurances;
-
 
 

@@ -47,7 +47,7 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
     <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8">
       <header className="flex flex-col gap-2 border-b border-slate-100 pb-5">
         <div className="flex items-center gap-2">
-          <MonitorPlay size={18} className="text-[#005F73]" />
+          <MonitorPlay size={18} className="text-primary" />
           <h3 className="font-display text-xl font-black">Centro de contenido</h3>
         </div>
         <p className="text-xs text-slate-400">Selecciona una red y un formato para editar el copy, el activo y su previsualización en un mismo espacio.</p>
@@ -68,7 +68,7 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
               key={platformId}
               type="button"
               onClick={() => onPlatformChange(platformId)}
-              className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-black transition-all ${isSelected ? 'border-[#005F73] bg-[#EBF7F4] text-[#005F73] shadow-sm' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+              className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-black transition-all ${isSelected ? 'border-primary bg-brand-cyan text-primary shadow-sm' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
               title={`Editar contenido de ${config.name}`}
             >
               <span style={{ color: config.color }}>{config.icon}</span>
@@ -84,12 +84,12 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Contenido de {selectedPlatform?.name}</span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#005F73]"><FileText size={12} /> Texto</span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary"><FileText size={12} /> Texto</span>
             </div>
             <textarea
               value={campaign.copies[platform] || ''}
               onChange={(event) => onCopyChange(platform, event.target.value)}
-              className="min-h-[180px] w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs font-semibold leading-relaxed text-slate-600 outline-none transition-all focus:border-[#005F73] focus:bg-white"
+              className="min-h-[180px] w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs font-semibold leading-relaxed text-slate-600 outline-none transition-all focus:border-primary focus:bg-white"
               placeholder={`Escribe el copy promocional para ${selectedPlatform?.name}...`}
             />
             <div className="rounded-2xl bg-slate-50 p-3 text-[10px] font-semibold leading-relaxed text-slate-400">
@@ -106,7 +106,7 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
                     key={type}
                     type="button"
                     onClick={() => onAssetTypeChange(type)}
-                    className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${assetType === type ? 'bg-white text-[#005F73] shadow-sm' : 'text-slate-500'}`}
+                    className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${assetType === type ? 'bg-white text-primary shadow-sm' : 'text-slate-500'}`}
                   >
                     {type === 'post' ? 'Post' : 'Story'}
                   </button>
@@ -153,7 +153,7 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
               <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs font-semibold text-slate-400">No hay activos visuales para este formato.</div>
             )}
             {hasVideo && <div className="rounded-2xl border border-dashed border-slate-200 p-3 text-[10px] font-bold text-slate-400">El contenido de vídeo estará disponible en la siguiente iteración.</div>}
-            {exportMessage && <p className="rounded-xl bg-[#EBF7F4] px-3 py-2 text-center text-[10px] font-bold text-[#005F73]">{exportMessage}</p>}
+            {exportMessage && <p className="rounded-xl bg-brand-cyan px-3 py-2 text-center text-[10px] font-bold text-primary">{exportMessage}</p>}
           </div>
         </div>
       )}

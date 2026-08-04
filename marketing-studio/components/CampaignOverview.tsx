@@ -112,20 +112,20 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
     <div className="space-y-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#005F73]">Workspace de campañas</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">Workspace de campañas</p>
           <h2 className="mt-1 font-display text-3xl font-black text-slate-900">Campañas activas</h2>
           <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500">Consulta el estado de cada campaña y entra en una para gestionar su estrategia, canales, copies y activos.</p>
         </div>
         <button
           onClick={() => setIsCreating((value) => !value)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#005F73] px-4 py-2.5 text-xs font-black text-white transition-colors hover:bg-[#004f5e]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black text-white transition-colors hover:bg-primary-dark"
         >
           <Plus size={15} /> Nueva campaña
         </button>
       </header>
 
       {isCreating && (
-        <div className="space-y-4 rounded-2xl border border-dashed border-[#005F73]/40 bg-[#EBF7F4]/40 p-4">
+        <div className="space-y-4 rounded-2xl border border-dashed border-primary/40 bg-brand-cyan/40 p-4">
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               autoFocus
@@ -133,9 +133,9 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
               onChange={(event) => setNewCampaignName(event.target.value)}
               onKeyDown={(event) => event.key === 'Enter' && handleCreateCampaign()}
               placeholder="Nombre de campaña..."
-              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold outline-none focus:border-[#005F73]"
+              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold outline-none focus:border-primary"
             />
-            <button onClick={handleCreateCampaign} className="rounded-xl bg-[#005F73] px-4 py-2 text-xs font-black text-white">Crear campaña</button>
+            <button onClick={handleCreateCampaign} className="rounded-xl bg-primary px-4 py-2 text-xs font-black text-white">Crear campaña</button>
           </div>
         </div>
       )}
@@ -149,7 +149,7 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {campaigns.map((campaign) => (
-            <article key={campaign.id} className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#005F73]/40 hover:shadow-md">
+            <article key={campaign.id} className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <span className={`rounded-full border px-2 py-1 text-[9px] font-black uppercase ${statusColors[campaign.status]}`}>
@@ -173,7 +173,7 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
                       return platform ? <span key={platform.id} style={{ color: platform.color }} title={platform.name}>{platform.icon}</span> : null;
                     })}
                   </div>
-                  <button onClick={() => navigate(`/backoffice/marketing-studio/campanas/${campaign.id}`)} className="inline-flex items-center gap-1 rounded-xl bg-[#005F73] px-3 py-2 text-[10px] font-black text-white transition-colors hover:bg-[#004f5e]">
+                  <button onClick={() => navigate(`/backoffice/marketing-studio/campanas/${campaign.id}`)} className="inline-flex items-center gap-1 rounded-xl bg-primary px-3 py-2 text-[10px] font-black text-white transition-colors hover:bg-primary-dark">
                     Abrir <ArrowRight size={12} />
                   </button>
                   <button onClick={() => handleDeleteCampaign(campaign)} title="Eliminar campaña" className="rounded-xl border border-rose-100 p-2 text-rose-500 transition-colors hover:bg-rose-50">

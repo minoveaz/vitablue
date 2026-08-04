@@ -231,9 +231,9 @@ export const Footer: React.FC = () => {
                   href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="hover:text-[#25D366] transition-colors duration-150 flex items-center gap-1.5"
+                    className="hover:text-whatsapp transition-colors duration-150 flex items-center gap-1.5"
                 >
-                  <span className="size-2 rounded-full bg-[#25D366] animate-pulse" />
+                  <span className="size-2 rounded-full bg-whatsapp animate-pulse" />
                   Asesor WhatsApp Online
                 </a>
               </li>

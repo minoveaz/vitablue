@@ -19,12 +19,12 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100';
+  const baseClasses = 'inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100';
 
   const variantClasses = {
     primary: 'bg-primary hover:bg-primary-dark text-white shadow-md shadow-primary/10 focus:ring-primary/20',
     secondary: 'bg-primary-dark hover:bg-primary text-white focus:ring-primary-dark/20',
-    accent: 'bg-accent hover:bg-[#d48900] text-background-dark shadow-md shadow-accent/10 focus:ring-accent/20 font-bold',
+    accent: 'bg-accent hover:bg-accent-dark text-background-dark shadow-md shadow-accent/10 focus-visible:ring-accent/20 font-bold',
     outline: 'border border-primary text-primary hover:bg-primary/5 focus:ring-primary/20',
     ghost: 'text-primary hover:bg-primary/5 focus:ring-primary/20',
   };

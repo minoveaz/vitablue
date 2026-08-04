@@ -44,7 +44,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         <p className="text-slate-500 max-w-sm mt-2">La campaña puede haber sido eliminada o todavía no se ha sincronizado.</p>
         <button
           onClick={() => navigate('/backoffice/marketing-studio/campanas')}
-          className="mt-6 px-5 py-2.5 bg-[#005F73] hover:bg-[#004f5e] text-white font-bold text-sm rounded-xl flex items-center gap-2 cursor-pointer"
+          className="mt-6 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold text-sm rounded-xl flex items-center gap-2 cursor-pointer"
         >
           <ArrowLeft size={16} /> Volver a campañas
         </button>
@@ -141,7 +141,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     <div className="space-y-6">
       <button
         onClick={() => navigate('/backoffice/marketing-studio/campanas')}
-        className="inline-flex items-center gap-2 text-xs font-black text-slate-500 transition-colors hover:text-[#005F73]"
+        className="inline-flex items-center gap-2 text-xs font-black text-slate-500 transition-colors hover:text-primary"
       >
         <ArrowLeft size={14} /> Volver a campañas
       </button>
@@ -151,12 +151,12 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6 text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#005F73] mb-1">Campaña Activa</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary mb-1">Campaña Activa</p>
               <input
                 type="text"
                 value={campaign.name}
                 onChange={(e) => updateCampaignField('name', e.target.value)}
-                className="font-display text-2xl font-black text-slate-800 bg-transparent hover:bg-slate-50 border-b border-transparent hover:border-slate-200 focus:bg-slate-50 focus:border-[#005F73] px-2 py-1 outline-none rounded-lg w-full sm:w-[400px]"
+                className="font-display text-2xl font-black text-slate-800 bg-transparent hover:bg-slate-50 border-b border-transparent hover:border-slate-200 focus:bg-slate-50 focus:border-primary px-2 py-1 outline-none rounded-lg w-full sm:w-[400px]"
               />
             </div>
             
@@ -192,7 +192,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
             <textarea
               value={campaign.objective}
               onChange={(e) => updateCampaignField('objective', e.target.value)}
-              className="w-full text-sm font-semibold text-slate-600 bg-slate-50/50 border border-slate-100 rounded-2xl p-4 min-h-[80px] focus:bg-white focus:border-[#005F73] outline-none transition-all"
+              className="w-full text-sm font-semibold text-slate-600 bg-slate-50/50 border border-slate-100 rounded-2xl p-4 min-h-[80px] focus:bg-white focus:border-primary outline-none transition-all"
               placeholder="¿Qué quieres conseguir con esta campaña?"
             />
           </div>

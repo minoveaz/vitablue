@@ -43,7 +43,7 @@ export const CampaignAssetEditor: React.FC<CampaignAssetEditorProps> = ({
             type="text"
             value={asset.customTitle ?? ''}
             onChange={(event) => onChange({ customTitle: event.target.value })}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:border-[#005F73] outline-none"
+            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:border-primary outline-none"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -52,7 +52,7 @@ export const CampaignAssetEditor: React.FC<CampaignAssetEditorProps> = ({
             type="text"
             value={asset.customTagline ?? ''}
             onChange={(event) => onChange({ customTagline: event.target.value })}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:border-[#005F73] outline-none"
+            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:border-primary outline-none"
           />
         </label>
       </div>
@@ -61,7 +61,7 @@ export const CampaignAssetEditor: React.FC<CampaignAssetEditorProps> = ({
     <button
       onClick={onDownload}
       disabled={isExporting}
-      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-[#005F73] hover:bg-[#004f5e] text-white text-xs font-bold cursor-pointer disabled:opacity-50"
+      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-primary hover:bg-primary-dark text-white text-xs font-bold cursor-pointer disabled:opacity-50"
     >
       <Download size={14} />
       <span>Descargar {asset.type === 'story' ? 'Story' : 'Post'}</span>

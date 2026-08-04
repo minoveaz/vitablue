@@ -31,7 +31,7 @@ export const CampaignDeliveryChannels: React.FC<CampaignDeliveryChannelsProps> =
           return (
             <div
               key={platform.id}
-              className={`flex items-center justify-between gap-3 rounded-2xl border p-3 transition-all ${isSelected ? 'border-[#005F73]/40 bg-[#EBF7F4]/40' : 'border-slate-200 bg-white'}`}
+              className={`flex items-center justify-between gap-3 rounded-2xl border p-3 transition-all ${isSelected ? 'border-primary/40 bg-brand-cyan/40' : 'border-slate-200 bg-white'}`}
             >
               <label className="flex min-w-0 cursor-pointer items-center gap-2 text-left text-xs font-bold">
                 <input
@@ -46,7 +46,7 @@ export const CampaignDeliveryChannels: React.FC<CampaignDeliveryChannelsProps> =
                     : isConnected ? [...automaticPlatforms, platform.id] : automaticPlatforms;
                   onChange({ platforms: nextPlatforms, automaticPlatforms: nextAutomatic, automaticPlatformsConfigured: true });
                   }}
-                  className="h-4 w-4 shrink-0 accent-[#005F73]"
+                  className="h-4 w-4 shrink-0 accent-primary"
                   aria-label={`${isSelected ? 'Deshabilitar' : 'Habilitar'} ${platform.name}`}
                 />
                 <span style={{ color: platform.color }}>{platform.icon}</span>

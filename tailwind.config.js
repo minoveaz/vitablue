@@ -21,9 +21,15 @@ export default {
         "primary": "#005F73",       // Primary links & headers -> Ocean
         "primary-dark": "#001219",  // Hover & Dark text -> Midnight
         "accent": "#EE9B00",        // Call to action buttons -> Gold
+        "accent-dark": "#D48900",   // Gold hover state
         "brand-cyan": "#94D2BD",    // Badges & Success metrics -> Mint
+        "success-strong": "#0F766E", // Accessible success text on light surfaces
+        "whatsapp": "#25D366",      // WhatsApp action
+        "whatsapp-dark": "#20BA5A", // WhatsApp hover state
         "background-light": "#f8fafc",
         "background-dark": "#001219",
+        "surface-soft": "#f4f7f8",
+        "surface-muted": "#e8edef",
         "text-main": "#001219",     // Main text body -> Midnight
         "text-secondary": "#4a5568",
       },

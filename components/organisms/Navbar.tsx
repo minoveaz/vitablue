@@ -8,14 +8,14 @@ import { navbarTranslations } from '@/utils/translations';
 // Custom Premium SVG Illustrations (VitaBlue Style)
 const SaludGeneralIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#E6F7F8" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-health)" />
     <path d="M20 8C14 10 12 12 12 17V23C12 28 17 31 20 32C23 31 28 28 28 23V17C28 12 26 10 20 8Z" fill="url(#sg-grad)" opacity="0.12" />
     <path d="M20 8C14 10 12 12 12 17V23C12 28 17 31 20 32C23 31 28 28 28 23V17C28 12 26 10 20 8Z" stroke="url(#sg-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M14 20H17L18.5 14L20.5 25L22 18.5H26" stroke="#005F73" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14 20H17L18.5 14L20.5 25L22 18.5H26" stroke="var(--color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     <defs>
       <linearGradient id="sg-grad" x1="12" y1="8" x2="28" y2="32" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#00B4C8" />
-        <stop offset="100%" stopColor="#005F73" />
+        <stop offset="0%" stopColor="var(--illustration-cyan)" />
+        <stop offset="100%" stopColor="var(--color-primary)" />
       </linearGradient>
     </defs>
   </svg>
@@ -23,16 +23,16 @@ const SaludGeneralIcon: React.FC = () => (
 
 const EstudiantesIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#EBF7F4" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-student)" />
     <path d="M20 10L10 15L20 20L30 15L20 10Z" fill="url(#est-grad)" opacity="0.2" />
     <path d="M20 10L10 15L20 20L30 15L20 10Z" stroke="url(#est-grad)" strokeWidth="2" strokeLinejoin="round" />
     <path d="M14 17.5V22.5C14 24.5 16.7 26 20 26C23.3 26 26 24.5 26 22.5V17.5" stroke="url(#est-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="29" cy="23" r="2" fill="#00B4C8" />
-    <path d="M29 23V18" stroke="#00B4C8" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="29" cy="23" r="2" fill="var(--illustration-cyan)" />
+    <path d="M29 23V18" stroke="var(--illustration-cyan)" strokeWidth="1.5" strokeLinecap="round" />
     <defs>
       <linearGradient id="est-grad" x1="10" y1="10" x2="30" y2="26" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#94D2BD" />
-        <stop offset="100%" stopColor="#00B4C8" />
+        <stop offset="0%" stopColor="var(--color-pastel)" />
+        <stop offset="100%" stopColor="var(--illustration-cyan)" />
       </linearGradient>
     </defs>
   </svg>
@@ -40,17 +40,17 @@ const EstudiantesIcon: React.FC = () => (
 
 const ExpatriadosIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#E6F2F5" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-expat)" />
     <circle cx="20" cy="20" r="9" fill="url(#exp-grad)" opacity="0.12" />
     <circle cx="20" cy="20" r="9" stroke="url(#exp-grad)" strokeWidth="2" />
     <path d="M11 20H29" stroke="url(#exp-grad)" strokeWidth="1.5" />
     <path d="M20 11C22.2 13.5 23 16.5 23 20C23 23.5 22.2 26.5 20 29" stroke="url(#exp-grad)" strokeWidth="1.5" />
     <path d="M20 11C17.8 13.5 17 16.5 17 20C17 23.5 17.8 26.5 20 29" stroke="url(#exp-grad)" strokeWidth="1.5" />
-    <path d="M24 13.5L26 11.5M26 11.5H23M26 11.5V14.5" stroke="#00B4C8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 13.5L26 11.5M26 11.5H23M26 11.5V14.5" stroke="var(--illustration-cyan)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     <defs>
       <linearGradient id="exp-grad" x1="11" y1="11" x2="29" y2="29" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#00B4C8" />
-        <stop offset="100%" stopColor="#33C2D6" />
+        <stop offset="0%" stopColor="var(--illustration-cyan)" />
+        <stop offset="100%" stopColor="var(--illustration-cyan-light)" />
       </linearGradient>
     </defs>
   </svg>
@@ -58,15 +58,15 @@ const ExpatriadosIcon: React.FC = () => (
 
 const NomadasIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#EAF5F0" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-nomad)" />
     <rect x="13" y="14" width="14" height="9" rx="1.5" stroke="url(#nom-grad)" strokeWidth="2" />
     <path d="M10 25H30" stroke="url(#nom-grad)" strokeWidth="2.5" strokeLinecap="round" />
-    <path d="M17 10C18.2 10.8 19 12 19 12" stroke="#94D2BD" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M23 10C21.8 10.8 21 12 21 12" stroke="#94D2BD" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M17 10C18.2 10.8 19 12 19 12" stroke="var(--color-pastel)" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M23 10C21.8 10.8 21 12 21 12" stroke="var(--color-pastel)" strokeWidth="1.8" strokeLinecap="round" />
     <defs>
       <linearGradient id="nom-grad" x1="10" y1="12" x2="30" y2="25" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#94D2BD" />
-        <stop offset="100%" stopColor="#005F73" />
+        <stop offset="0%" stopColor="var(--color-pastel)" />
+        <stop offset="100%" stopColor="var(--color-primary)" />
       </linearGradient>
     </defs>
   </svg>
@@ -74,14 +74,14 @@ const NomadasIcon: React.FC = () => (
 
 const SanitasIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#EAF3F7" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-expat)" />
     <path d="M20 9L23 14H29L25 18L27.5 24L22 22L20 26L18 22L12.5 24L15 18L11 14H17L20 9Z" fill="url(#san-grad)" opacity="0.15" />
     <path d="M20 9L23 14H29L25 18L27.5 24L22 22L20 26L18 22L12.5 24L15 18L11 14H17L20 9Z" stroke="url(#san-grad)" strokeWidth="2" strokeLinejoin="round" />
-    <circle cx="20" cy="18" r="1.5" fill="#0079C8" />
+    <circle cx="20" cy="18" r="1.5" fill="var(--illustration-blue)" />
     <defs>
       <linearGradient id="san-grad" x1="11" y1="9" x2="29" y2="26" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#00B4C8" />
-        <stop offset="100%" stopColor="#0079C8" />
+        <stop offset="0%" stopColor="var(--illustration-cyan)" />
+        <stop offset="100%" stopColor="var(--illustration-blue)" />
       </linearGradient>
     </defs>
   </svg>
@@ -89,7 +89,7 @@ const SanitasIcon: React.FC = () => (
 
 const MascotasIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#FDF3F5" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-pet)" />
     {/* Metacarpal pad: typical three-lobed bottom shape */}
     <path 
       d="M20 19C16 19 13.5 21.5 13.5 24.5C13.5 27.2 15 28.5 17.5 28.5C18.8 28.5 19.5 27.8 20 27.8C20.5 27.8 21.2 28.5 22.5 28.5C25 28.5 26.5 27.2 26.5 24.5C26.5 21.5 24 19 20 19Z" 
@@ -109,8 +109,8 @@ const MascotasIcon: React.FC = () => (
     <circle cx="28" cy="19.5" r="2.2" fill="url(#masc-grad)" />
     <defs>
       <linearGradient id="masc-grad" x1="12" y1="11" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#FF8FA3" />
-        <stop offset="100%" stopColor="#FF4D6D" />
+        <stop offset="0%" stopColor="var(--illustration-coral)" />
+        <stop offset="100%" stopColor="var(--illustration-red)" />
       </linearGradient>
     </defs>
   </svg>
@@ -118,14 +118,14 @@ const MascotasIcon: React.FC = () => (
 
 const FamiliarIcon: React.FC = () => (
   <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="12" fill="#EDEFFB" />
+    <rect width="40" height="40" rx="12" fill="var(--illustration-surface-family)" />
     <path d="M12 21V28C12 29.1 12.9 30 14 30H26C27.1 30 28 29.1 28 28V21" stroke="url(#fam-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M10 21L20 13L30 21" stroke="url(#fam-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M20 25.5C19.5 25.5 18.5 24.5 18.5 23.5C18.5 22.7 19.1 22 19.8 22C20.2 22 20.5 22.2 20.5 22.2C20.5 22.2 20.8 22 21.2 22C21.9 22 22.5 22.7 22.5 23.5C22.5 24.5 21.5 25.5 20 25.5Z" fill="url(#fam-grad)" />
     <defs>
       <linearGradient id="fam-grad" x1="10" y1="13" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#00B4C8" />
-        <stop offset="100%" stopColor="#4F46E5" />
+        <stop offset="0%" stopColor="var(--illustration-cyan)" />
+        <stop offset="100%" stopColor="var(--illustration-indigo)" />
       </linearGradient>
     </defs>
   </svg>
@@ -396,7 +396,7 @@ export const Navbar: React.FC = () => {
                   window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_desktop' });
                 }
               }}
-              className="inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] bg-[#25D366] hover:bg-[#20ba5a] text-white shadow-sm shadow-[#25D366]/10 text-xs px-3.5 py-2 gap-1.5 focus:outline-none focus:ring-4 focus:ring-[#25D366]/20 cursor-pointer"
+              className="inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] bg-whatsapp hover:bg-whatsapp-dark text-white shadow-sm shadow-whatsapp/10 text-xs px-3.5 py-2 gap-1.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20 cursor-pointer"
             >
               <WhatsAppIcon size={16} />
               <span>{t.whatsappCta}</span>
@@ -594,7 +594,7 @@ export const Navbar: React.FC = () => {
                     className="w-full h-full object-cover rounded-full bg-white" 
                   />
                 </div>
-                <span className="absolute bottom-0 right-0 size-3.5 rounded-full bg-[#25D366] border-2 border-white shadow-sm animate-pulse" />
+                <span className="absolute bottom-0 right-0 size-3.5 rounded-full bg-whatsapp border-2 border-white shadow-sm animate-pulse" />
               </div>
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-sm font-black text-text-main leading-tight">Lucía Delgado</p>
@@ -617,7 +617,7 @@ export const Navbar: React.FC = () => {
                     window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_mobile' });
                   }
                 }}
-                className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-bold shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"
+                className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
               >
                 <WhatsAppIcon size={18} />
                 Escribir por WhatsApp

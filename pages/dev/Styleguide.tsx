@@ -105,7 +105,7 @@ const Styleguide = () => {
                 <div className="bg-accent text-background-dark p-4 rounded-xl">
                   Amber Gold<br />#EE9B00
                 </div>
-                <div className="bg-[#94D2BD] text-[#0f766e] p-4 rounded-xl">
+                <div className="bg-brand-cyan text-success-strong p-4 rounded-xl">
                   Mint Green<br />#94D2BD
                 </div>
               </div>

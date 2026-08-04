@@ -104,10 +104,10 @@ export const ProductPromoCard: React.FC<ProductPromoCardProps> = ({
         {/* Button 2: Validation Check icon with internal circle outline */}
         <button
           onClick={onCheckClick}
-          className="size-11 sm:size-12 rounded-full bg-white border border-slate-200/60 shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 text-[#0f766e] flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary/10"
+          className="size-11 sm:size-12 rounded-full bg-white border border-slate-200/60 shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 text-success-strong flex items-center justify-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10"
           aria-label="Verificar seguro"
         >
-          <div className="size-7 sm:size-8 rounded-full border border-[#0f766e]/25 flex items-center justify-center bg-[#0f766e]/5">
+          <div className="size-7 sm:size-8 rounded-full border border-success-strong/25 flex items-center justify-center bg-success-strong/5">
             <Check className="w-3.5 h-3.5 stroke-[3]" />
           </div>
         </button>

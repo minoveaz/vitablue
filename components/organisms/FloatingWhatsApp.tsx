@@ -24,7 +24,7 @@ export const FloatingWhatsApp: React.FC = () => {
       {/* Floating Action Button */}
       <button
         onClick={handleClick}
-        className="size-[60px] rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg shadow-[#25D366]/30 hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/40 transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-[#25D366]/20 active:scale-[0.95]"
+        className="size-[60px] rounded-full bg-whatsapp text-white flex items-center justify-center shadow-lg shadow-whatsapp/30 hover:scale-110 hover:shadow-xl hover:shadow-whatsapp/40 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20 active:scale-[0.95]"
         aria-label="Contactar por WhatsApp"
       >
         <WhatsAppIcon size={28} />

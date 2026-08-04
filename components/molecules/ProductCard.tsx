@@ -145,7 +145,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* WhatsApp human support button with official WhatsApp SVG logo */}
           <button 
             onClick={onWhatsAppClick}
-            className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-bold shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"
+            className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
           >
             <WhatsAppIcon size={20} />
             Hablar con Asesor

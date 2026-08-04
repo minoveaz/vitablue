@@ -33,7 +33,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
             <img src={avatarUrl} alt={name} className="w-full h-full object-cover rounded-full bg-white" />
           </div>
           {/* Active status indicator green dot with pulse effect */}
-          <span className="absolute bottom-0.5 right-1 size-4 rounded-full bg-[#25D366] border-2 border-white shadow-sm animate-pulse" />
+          <span className="absolute bottom-0.5 right-1 size-4 rounded-full bg-whatsapp border-2 border-white shadow-sm animate-pulse" />
         </div>
 
         <div className="flex-1 flex flex-col gap-3 text-center sm:text-left">
@@ -53,7 +53,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-primary" /> Lunes a Viernes: 9:00 - 19:00 (CET)
             </span>
-            <span className="flex items-center gap-1.5 text-[#25D366]">
+            <span className="flex items-center gap-1.5 text-whatsapp">
               {/* Inline official WhatsApp icon handset inside a bubble */}
               <WhatsAppIcon size={16} />
               Respuesta en &lt; 15 mins
@@ -67,7 +67,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
         {/* WhatsApp chat button with official WhatsApp logo */}
         <button 
           onClick={onWhatsAppClick}
-          className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-bold shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"
+          className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
         >
           <WhatsAppIcon size={20} />
           {whatsAppText}

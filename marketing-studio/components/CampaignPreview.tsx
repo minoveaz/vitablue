@@ -33,16 +33,16 @@ export const CampaignPreview: React.FC<CampaignPreviewProps> = ({
   const background = asset.theme === 'light'
     ? 'bg-white'
     : asset.theme === 'gradient'
-      ? 'bg-gradient-to-br from-[#005F73] via-[#001219] to-[#94D2BD]'
-      : 'bg-[#001219]';
-  const textColor = asset.theme === 'light' ? 'text-[#001219]' : 'text-white';
-  const taglineColor = asset.theme === 'light' ? 'text-[#005F73]' : 'text-[#94D2BD]';
+      ? 'bg-gradient-to-br from-primary via-primary-dark to-brand-cyan'
+      : 'bg-primary-dark';
+  const textColor = asset.theme === 'light' ? 'text-primary-dark' : 'text-white';
+  const taglineColor = asset.theme === 'light' ? 'text-primary' : 'text-brand-cyan';
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-md w-full max-w-[340px] overflow-hidden text-left p-4 space-y-3 font-sans">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[#001219] flex items-center justify-center select-none overflow-hidden border border-slate-100">
+          <div className="w-8 h-8 rounded-full bg-primary-dark flex items-center justify-center select-none overflow-hidden border border-slate-100">
             <Logo iconSize={18} showText={false} showTagline={false} variant="colored-on-dark" />
           </div>
           <div>
@@ -58,8 +58,8 @@ export const CampaignPreview: React.FC<CampaignPreviewProps> = ({
       </p>
 
       <div className={`w-full ${getPreviewAspect(platform, asset.type)} rounded-xl overflow-hidden relative flex items-center justify-center border border-slate-100 ${background}`}>
-        <div className="absolute -right-16 -top-16 h-36 w-36 rounded-full bg-[#94D2BD]/20 blur-xl" />
-        <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-[#94D2BD]/10 blur-xl" />
+        <div className="absolute -right-16 -top-16 h-36 w-36 rounded-full bg-brand-cyan/20 blur-xl" />
+        <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-brand-cyan/10 blur-xl" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-5">
           <Logo iconSize={asset.type === 'story' ? 38 : 32} showText={false} showTagline={false} variant="colored-on-dark" />
           <p className={`mt-2 font-display font-black text-sm leading-tight ${textColor}`}>

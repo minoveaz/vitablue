@@ -30,17 +30,17 @@ export const SocialGenerator: React.FC = () => {
 
   // Background configurations
   const themeClasses = {
-    ocean: 'bg-gradient-to-br from-[#005F73] via-[#003f4e] to-[#001219] text-white',
-    midnight: 'bg-gradient-to-br from-[#001219] via-[#011c26] to-[#002430] text-white',
-    mint: 'bg-gradient-to-br from-[#EBF7F4] via-white to-[#E6F7F8] text-[#001219]',
-    light: 'bg-gradient-to-br from-[#F8F9FA] via-white to-[#F0F4F6] text-[#001219]',
+    ocean: 'bg-gradient-to-br from-primary via-primary-dark to-primary-dark text-white',
+    midnight: 'bg-gradient-to-br from-primary-dark via-primary-dark to-primary-dark text-white',
+    mint: 'bg-gradient-to-br from-brand-cyan/30 via-white to-brand-cyan/20 text-primary-dark',
+    light: 'bg-gradient-to-br from-slate-50 via-white to-slate-100 text-primary-dark',
   };
 
   const badgeThemeClasses = {
-    ocean: 'bg-white/10 text-[#94D2BD] border-white/20',
-    midnight: 'bg-white/10 text-[#94D2BD] border-white/20',
-    mint: 'bg-[#94D2BD]/20 text-[#005F73] border-[#94D2BD]/40',
-    light: 'bg-[#005F73]/10 text-[#005F73] border-[#005F73]/20',
+    ocean: 'bg-white/10 text-brand-cyan border-white/20',
+    midnight: 'bg-white/10 text-brand-cyan border-white/20',
+    mint: 'bg-brand-cyan/20 text-primary border-brand-cyan/40',
+    light: 'bg-primary/10 text-primary border-primary/20',
   };
 
   const handleExport = async () => {
@@ -227,7 +227,7 @@ export const SocialGenerator: React.FC = () => {
           <button
             onClick={handleExport}
             disabled={isExporting}
-            className="w-full py-3.5 px-5 rounded-2xl bg-primary hover:bg-[#004f5e] text-white font-bold text-sm shadow-md transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full py-3.5 px-5 rounded-2xl bg-primary hover:bg-primary-dark text-white font-bold text-sm shadow-md transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:pointer-events-none"
           >
             <Download className="w-5 h-5" />
             {isExporting ? 'Exportando PNG...' : 'Descargar Imagen PNG'}
@@ -266,7 +266,7 @@ export const SocialGenerator: React.FC = () => {
             >
               {/* Decorative background grid/bubble elements matching styleguide */}
               <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-white/5 pointer-events-none blur-2xl"></div>
-              <div className="absolute bottom-[-100px] left-[-100px] w-[600px] h-[600px] rounded-full bg-[#94D2BD]/5 pointer-events-none blur-3xl"></div>
+              <div className="absolute bottom-[-100px] left-[-100px] w-[600px] h-[600px] rounded-full bg-brand-cyan/5 pointer-events-none blur-3xl"></div>
 
               {/* Upper Section: Logo and Badges */}
               <div className="flex items-center justify-between w-full relative z-10">
@@ -309,7 +309,7 @@ export const SocialGenerator: React.FC = () => {
               <div className="flex items-end justify-between w-full pt-10 border-t border-white/10 relative z-10">
                 <div className="flex flex-col gap-1.5 text-left">
                   <span className={`text-[13px] font-black uppercase tracking-[0.25em] ${
-                    theme === 'mint' || theme === 'light' ? 'text-[#005F73]' : 'text-[#94D2BD]'
+                    theme === 'mint' || theme === 'light' ? 'text-primary' : 'text-brand-cyan'
                   }`}>
                     Asesoría de Seguros Independiente
                   </span>
@@ -321,7 +321,7 @@ export const SocialGenerator: React.FC = () => {
                 </div>
 
                 {showWhatsappCta && (
-                  <div className="flex items-center gap-4 bg-[#25D366] text-white px-7 py-4 rounded-[1.5rem] shadow-lg shadow-[#25D366]/10 text-[20px] font-bold cursor-pointer">
+                  <div className="flex items-center gap-4 bg-whatsapp text-white px-7 py-4 rounded-[1.5rem] shadow-lg shadow-whatsapp/10 text-[20px] font-bold cursor-pointer">
                     <MessageSquare className="w-6 h-6 fill-white" />
                     <span>Consultar WhatsApp</span>
                   </div>

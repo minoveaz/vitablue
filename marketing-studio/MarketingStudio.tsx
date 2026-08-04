@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+﻿import React, { useRef, useState } from 'react';
 import { generateProfileSvg, generateCoverSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import {
   Check,
@@ -46,6 +46,7 @@ import {
   disconnectPlatform,
   SocialConnections
 } from '@/marketing-studio/utils/connections';
+import BrandIdentityPanel from '@/marketing-studio/components/BrandIdentityPanel';
 
 type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'connections' | 'content';
 type PlatformId = SocialPlatformId;
@@ -304,7 +305,8 @@ const MarketingStudio: React.FC = () => {
         </header>
 
         {/* BRAND IDENTITY MODULE */}
-        {section === 'identity' && (
+        {section === 'identity' && <BrandIdentityPanel colorTokens={colorTokens} />}
+        {pathname === '__legacy__' && section === 'identity' && (
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] text-left animate-fadeIn">
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
