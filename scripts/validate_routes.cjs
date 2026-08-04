@@ -31,6 +31,7 @@ const registryRoutes = [
   ...[...registry.matchAll(/(?:canonical|legacy)\('([^']+)'/g)].map((match) => match[1]),
   ...[...registry.matchAll(/path:\s*'([^']+)'/g)].map((match) => match[1]),
 ];
+const nonSeoRoutes = new Set(['/login', '/backoffice', '/cotizador.html', '/wizard', '/resultados']);
 
 const unique = (routes) => [...new Set(routes)];
 const dynamicRoutes = appRoutes.filter((route) => route.includes(':'));
@@ -42,6 +43,7 @@ const routeIsCovered = (route) => appRoutes.some((appRoute) => {
 const concreteAppRoutes = appRoutes.filter((route) =>
   !route.includes(':') &&
   route !== '*' &&
+  !nonSeoRoutes.has(route) &&
   !route.startsWith('/styleguide') &&
   !route.startsWith('/marketing-studio')
 );
