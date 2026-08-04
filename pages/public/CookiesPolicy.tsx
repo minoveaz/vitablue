@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ShieldAlert } from 'lucide-react';
+import ConsentPreferences from '@/components/molecules/ConsentPreferences';
 
 export const CookiesPolicy: React.FC = () => {
   return (
@@ -45,6 +46,7 @@ export const CookiesPolicy: React.FC = () => {
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
             En cualquier momento podrá ejercitar su derecho de desactivación o eliminación de cookies de este sitio web desde el panel de ajustes de su navegador de internet (Chrome, Safari, Firefox, Edge, etc.).
           </p>
+          <ConsentPreferences />
         </section>
       </div>
     </div>

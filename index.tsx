@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { WizardProvider } from './context/WizardContext';
 import { AuthProvider } from './context/AuthContext';
+import { ConsentProvider } from './context/ConsentContext';
 import App from './App';
 import './index.css';
 
@@ -17,7 +18,7 @@ root.render(
     <HelmetProvider>
       <WizardProvider>
         <AuthProvider>
-          <App />
+          <ConsentProvider><App /></ConsentProvider>
         </AuthProvider>
       </WizardProvider>
     </HelmetProvider>

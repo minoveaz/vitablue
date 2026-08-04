@@ -385,6 +385,15 @@ La separación reduce el riesgo de mezclar código comercial, SEO, datos interno
 - [x] Añadir accesos visibles al inicio del backoffice, sitio público, cierre de sesión y estado del usuario/rol.
 - [x] Verificar `npm run typecheck` correctamente.
 
+### Actualización — Consentimiento centralizado
+
+- [x] Creado `ConsentProvider` con categorías necesarias, preferencias, analítica y marketing.
+- [x] Migrado `CookieBanner` para consumir el contexto en lugar de leer/escribir directamente `localStorage`.
+- [x] Bloqueada la carga inicial de GTM/GA/Ads hasta que exista consentimiento analítico.
+- [x] Añadido evento para cargar analítica después de aceptar sin recargar la página.
+- [ ] Añadir centro de preferencias accesible desde la política de cookies.
+- [ ] Validar aceptación, rechazo, retirada y ausencia de tags con pruebas automatizadas.
+
 - Decidir si el panel debe estar bajo el mismo dominio o un subdominio privado.
 - Confirmar si existe un único equipo/marca o si el modelo debe ser multi-tenant.
 - Determinar si la web pública necesita leer perfiles sociales desde Supabase o puede usar contenido publicado estático.

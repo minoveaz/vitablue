@@ -3,27 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '@/components/atoms/Button';
+import { useConsent } from '@/context/ConsentContext';
 
 export const CookieBanner: React.FC = () => {
+  const { hasDecision, acceptAll, rejectOptional } = useConsent();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
+    if (!hasDecision) {
       const timer = setTimeout(() => setIsVisible(true), 2500); // Show after 2.5 seconds
       return () => clearTimeout(timer);
     }
-  }, []);
-
-  const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'accepted');
     setIsVisible(false);
-  };
-
-  const handleDecline = () => {
-    localStorage.setItem('cookie-consent', 'declined');
-    setIsVisible(false);
-  };
+  }, [hasDecision]);
 
   return (
     <AnimatePresence>
@@ -63,7 +55,7 @@ export const CookieBanner: React.FC = () => {
                 <Button 
                   variant="primary" 
                   size="md" 
-                  onClick={handleAccept}
+                  onClick={() => { acceptAll(); setIsVisible(false); }}
                   className="w-full sm:flex-1"
                 >
                   Aceptar todas
@@ -72,7 +64,7 @@ export const CookieBanner: React.FC = () => {
                   variant="ghost" 
                   size="md" 
                   className="!text-text-secondary/60 hover:!text-text-main w-full sm:flex-1"
-                  onClick={handleDecline}
+                  onClick={() => { rejectOptional(); setIsVisible(false); }}
                 >
                   Rechazar
                 </Button>
