@@ -1,0 +1,26 @@
+name: VitaBlue RLS matrix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rls-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - name: Run authenticated RLS matrix
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITABLUE_RLS_VIEWER_EMAIL: ${{ secrets.VITABLUE_RLS_VIEWER_EMAIL }}
+          VITABLUE_RLS_VIEWER_PASSWORD: ${{ secrets.VITABLUE_RLS_VIEWER_PASSWORD }}
+          VITABLUE_RLS_EDITOR_EMAIL: ${{ secrets.VITABLUE_RLS_EDITOR_EMAIL }}
+          VITABLUE_RLS_EDITOR_PASSWORD: ${{ secrets.VITABLUE_RLS_EDITOR_PASSWORD }}
+          VITABLUE_RLS_ADMIN_EMAIL: ${{ secrets.VITABLUE_RLS_ADMIN_EMAIL }}
+          VITABLUE_RLS_ADMIN_PASSWORD: ${{ secrets.VITABLUE_RLS_ADMIN_PASSWORD }}
+        run: npm run test:rls

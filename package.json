@@ -17,7 +17,8 @@
     "typecheck": "tsc --noEmit",
     "validate-products": "node scripts/validate_product_inventory.cjs",
     "validate-route-registry": "node scripts/validate_route_registry.cjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:rls": "node scripts/test_rls_matrix.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",
