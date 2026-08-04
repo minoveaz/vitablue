@@ -23,7 +23,7 @@ const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.
   headers: { ...corsHeaders, 'Content-Type': 'application/json' },
 });
 
-const allowedRedirectUris = () => (Deno.env.get('OAUTH_ALLOWED_REDIRECT_URIS') ?? 'http://localhost:5173/marketing-studio/conexiones')
+const allowedRedirectUris = () => (Deno.env.get('OAUTH_ALLOWED_REDIRECT_URIS') ?? 'http://localhost:5173/backoffice/marketing-studio/conexiones')
   .split(',')
   .map((uri) => uri.trim())
   .filter(Boolean);

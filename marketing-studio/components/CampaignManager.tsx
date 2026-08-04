@@ -43,7 +43,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         <h3 className="text-xl font-bold">Campaña no encontrada</h3>
         <p className="text-slate-500 max-w-sm mt-2">La campaña puede haber sido eliminada o todavía no se ha sincronizado.</p>
         <button
-          onClick={() => navigate('/marketing-studio/campanas')}
+          onClick={() => navigate('/backoffice/marketing-studio/campanas')}
           className="mt-6 px-5 py-2.5 bg-[#005F73] hover:bg-[#004f5e] text-white font-bold text-sm rounded-xl flex items-center gap-2 cursor-pointer"
         >
           <ArrowLeft size={16} /> Volver a campañas
@@ -140,7 +140,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate('/marketing-studio/campanas')}
+        onClick={() => navigate('/backoffice/marketing-studio/campanas')}
         className="inline-flex items-center gap-2 text-xs font-black text-slate-500 transition-colors hover:text-[#005F73]"
       >
         <ArrowLeft size={14} /> Volver a campañas

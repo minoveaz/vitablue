@@ -1,0 +1,17 @@
+export { default as Home } from './Home';
+export { default as StudentInsurance } from './StudentInsurance';
+export { default as SanitasMasSalud } from './SanitasMasSalud';
+export { default as SanitasMascotas } from './SanitasMascotas';
+export { default as AsistenciaFamiliar } from './AsistenciaFamiliar';
+export { default as HealthInsurance } from './HealthInsurance';
+export { default as ExpatInsurance } from './ExpatInsurance';
+export { default as NomadInsurance } from './NomadInsurance';
+export { default as ForeignerInsurance } from './ForeignerInsurance';
+export { default as TravelInsurance } from './TravelInsurance';
+export { default as LifeInsurance } from './LifeInsurance';
+export { default as SanitasInsurances } from './SanitasInsurances';
+export { default as Privacy } from './Privacy';
+export { default as CookiesPolicy } from './CookiesPolicy';
+export { default as AvisoLegal } from './AvisoLegal';
+export { default as BlogList } from './BlogList';
+export { default as BlogPost } from './BlogPost';

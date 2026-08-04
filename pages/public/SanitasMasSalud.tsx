@@ -5,12 +5,12 @@ import {
   Activity, ShieldCheck, Clock, Award, Check, Heart, ArrowRight, Smartphone,
   FileText, CreditCard
 } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import TestimonialCard from '../components/molecules/TestimonialCard';
-import { Button } from '../components/atoms/Button';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import TestimonialCard from '../../components/molecules/TestimonialCard';
+import { Button } from '../../components/atoms/Button';
 import { 
   HealthIllustration, 
   MedicalAttentionIllustration, 
@@ -18,7 +18,7 @@ import {
   PreventionIllustration,
   FamilyIllustration,
   TravelIllustration
-} from '../components/illustrations';
+} from '../../components/illustrations';
 
 export const SanitasMasSalud: React.FC = () => {
   const navigate = useNavigate();

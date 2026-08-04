@@ -36,6 +36,8 @@ import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
 import { CampaignOverview } from '@/marketing-studio/components/CampaignOverview';
 import { useAuth } from '@/context/AuthContext';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
+import SaaSShell from '@/components/layouts/SaaSShell';
+import { backofficeNavigation } from '@/components/layouts/BackofficeShell';
 import { 
   getConnections, 
   syncConnectionsWithSupabase,
@@ -232,9 +234,9 @@ const MarketingStudio: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f4f7f8] text-[#001219]">
+    <SaaSShell navigation={backofficeNavigation} title={section === 'identity' ? 'Identidad de Marca & Sistema Visual' : section === 'profiles' ? 'Gestión de Perfiles Sociales' : section === 'campaigns' ? 'Planificador de Campañas Multicanal' : section === 'connections' ? 'Configuración de Conexiones de API' : 'Generador Automático de Contenido'}>
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 border-r border-slate-800 select-none">
+      <aside className="hidden">
         <div className="p-6">
           <div className="mb-8 pb-4 border-b border-slate-800/60 text-left">
             <h1 className="font-display text-xl font-black tracking-tight text-white">Marketing Studio</h1>
@@ -272,9 +274,9 @@ const MarketingStudio: React.FC = () => {
       </aside>
 
       {/* MAIN WORKSPACE AREA */}
-      <main className="flex-grow p-6 md:p-10 overflow-y-auto h-screen max-w-[1440px] mx-auto w-full flex flex-col gap-8">
+      <div className="contents">
         {/* ADMIN HEADER BAR */}
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 select-none text-left">
+        <header className="hidden">
           <div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#005F73] animate-pulse" />
@@ -1024,8 +1026,8 @@ const MarketingStudio: React.FC = () => {
             }
           }}
         />
-      </main>
-    </div>
+      </div>
+    </SaaSShell>
   );
 };
 

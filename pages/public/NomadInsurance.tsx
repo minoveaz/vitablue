@@ -5,21 +5,21 @@ import {
   ShieldCheck, Check, Heart, ArrowRight, Laptop,
   FileText, CreditCard, Globe
 } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import TestimonialCard from '../components/molecules/TestimonialCard';
-import TransparencyBlock from '../components/molecules/TransparencyBlock';
-import { Button } from '../components/atoms/Button';
-import { nomadTranslations } from '../utils/translations';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import TestimonialCard from '../../components/molecules/TestimonialCard';
+import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import { Button } from '../../components/atoms/Button';
+import { nomadTranslations } from '../../utils/translations';
 import { 
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
   MedicalAttentionIllustration,
   FamilyIllustration
-} from '../components/illustrations';
+} from '../../components/illustrations';
 
 export const NomadInsurance: React.FC = () => {
   const navigate = useNavigate();
@@ -33,15 +33,6 @@ export const NomadInsurance: React.FC = () => {
   // State for interactive nomad pricing estimator
   const [age, setAge] = useState<number>(32);
   const [stayArea, setStayArea] = useState<'major' | 'coasts' | 'rest'>('major');
-
-  const calculateNomadPrice = () => {
-    let base = 42.90;
-    if (age > 30 && age <= 45) base = 47.80;
-    if (age > 45 && age <= 60) base = 62.50;
-    if (age > 60) base = 84.90;
-    if (stayArea === 'major') base += 3.10;
-    return base.toFixed(2);
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -263,7 +254,6 @@ export const NomadInsurance: React.FC = () => {
     }
   ];
 
-  const priceEstimate = calculateNomadPrice();
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -530,7 +520,7 @@ export const NomadInsurance: React.FC = () => {
                   <div className="text-right">
                     <div className="flex items-baseline gap-0.5">
                       <span className="text-2xl font-sans font-black text-text-main">
-                        {isEnglish ? `From ${priceEstimate}` : `Desde ${priceEstimate}`}
+                        {isEnglish ? 'Personalized price' : 'Precio personalizado'}
                       </span>
                       <span className="text-[10px] font-bold text-text-secondary">
                         {isEnglish ? '€/month' : '€/mes'}

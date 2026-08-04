@@ -22,7 +22,7 @@ No configurar en Hostinger:
 Dominio de producción actual: `https://vitablue.es`
 
 ```text
-https://vitablue.es/marketing-studio/conexiones
+https://vitablue.es/backoffice/marketing-studio/conexiones
 ```
 
 Debe añadirse exactamente en:
@@ -33,7 +33,7 @@ Debe añadirse exactamente en:
 Para conservar desarrollo local, separar ambas URLs con coma:
 
 ```text
-http://localhost:5173/marketing-studio/conexiones,https://vitablue.es/marketing-studio/conexiones
+http://localhost:5173/backoffice/marketing-studio/conexiones,https://vitablue.es/backoffice/marketing-studio/conexiones
 ```
 
 ## Comprobación posterior

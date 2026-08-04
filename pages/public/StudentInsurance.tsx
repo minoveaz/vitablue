@@ -3,187 +3,180 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
   ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
-  FileText, CreditCard, Home
+  FileText, CreditCard, GraduationCap
 } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import TestimonialCard from '../components/molecules/TestimonialCard';
-import TransparencyBlock from '../components/molecules/TransparencyBlock';
-import { Button } from '../components/atoms/Button';
-import { expatTranslations } from '../utils/translations';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import TestimonialCard from '../../components/molecules/TestimonialCard';
+import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import { Button } from '../../components/atoms/Button';
+import { studentTranslations } from '../../utils/translations';
 import { 
+  StudentIllustration,
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
-  MedicalAttentionIllustration,
-  FamilyIllustration
-} from '../components/illustrations';
+  MedicalAttentionIllustration
+} from '../../components/illustrations';
 
-export const ExpatInsurance: React.FC = () => {
+export const StudentInsurance: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setProfile, resetWizard } = useWizard();
+  const { setProfile, setVisaRequired, resetWizard } = useWizard();
 
   const isEnglish = location.pathname.startsWith('/en');
   const lang = isEnglish ? 'en' : 'es';
-  const t = expatTranslations[lang];
+  const t = studentTranslations[lang];
 
-  // State for interactive expat pricing estimator
-  const [age, setAge] = useState<number>(45);
-  const [visaType, setVisaType] = useState<'non-lucrative' | 'golden' | 'regroup'>('non-lucrative');
-
-  const calculateExpatPrice = () => {
-    let base = 48.90;
-    if (age > 30 && age <= 45) base = 54.80;
-    if (age > 45 && age <= 60) base = 69.90;
-    if (age > 60) base = 89.50;
-    if (visaType === 'golden') base += 5.00;
-    return base.toFixed(2);
-  };
+  // State for interactive student pricing estimator
+  const [age, setAge] = useState<number>(22);
+  const [courseType, setCourseType] = useState<'undergrad' | 'master' | 'language'>('undergrad');
 
   const handleStartQuoting = () => {
     resetWizard();
-    setProfile('expat');
+    setProfile('student');
+    setVisaRequired('yes');
     navigate('/wizard');
   };
 
   const visaRequirements = isEnglish ? [
-    'Policies with no copays or deductibles (immigration requirement).',
-    'Full hospitalization coverage equivalent to the public health system.',
-    'No wait times (carencias) for general consultations and emergencies.',
-    'Official certificate in Spanish to present at consulates or for NIE.'
+    'Health insurance company authorized to operate in Spain.',
+    'Zero copays and zero deductibles of any kind.',
+    'Zero wait times (carencias) for emergency cover.',
+    'Sanitary repatriation cover to the country of origin included.'
   ] : [
-    'Pólizas sin copagos ni franquicias (exigencia de Extranjería).',
-    'Cobertura de hospitalización completa equivalente a la sanidad pública.',
-    'Sin periodos de carencia para consultas generales y urgencias médicas.',
-    'Certificado oficial en español para presentar en consulados o NIE.'
+    'Entidad aseguradora autorizada para operar en España.',
+    'Sin copagos ni franquicias de ningún tipo.',
+    'Sin periodos de carencia para coberturas de urgencia.',
+    'Cobertura de repatriación sanitaria al país de origen incluida.'
   ];
+  void visaRequirements;
 
   const inclusions = isEnglish ? [
-    'Unlimited access to specialists and high-tech tests in Spain.',
-    'Medical and surgical hospitalization in a single private room.',
-    '24-hour emergencies and sanitary transport.',
-    'Preventive medicine services and annual check-ups.'
+    'Comprehensive healthcare including general medicine, specialties, and emergencies.',
+    '100% covered medical and surgical hospitalization.',
+    'Official repatriation guarantee to country of origin in case of illness/death.',
+    'Zero copays (access any medical consult with no additional fees).'
   ] : [
-    'Acceso ilimitado a especialistas y pruebas de alta tecnología en España.',
-    'Hospitalización médica y quirúrgica en habitación individual.',
-    'Urgencias 24 horas y traslados sanitarios.',
-    'Servicios de medicina preventiva y chequeos anuales.'
+    'Asistencia sanitaria completa en medicina general, especialidades y urgencias.',
+    'Hospitalización médica y quirúrgica al 100% de cobertura.',
+    'Garantía de repatriación sanitaria al país de origen en caso de fallecimiento o enfermedad grave.',
+    'Sin copagos (acceso a cualquier consulta médica sin pagar cargos adicionales).'
   ];
 
   const exclusions = isEnglish ? [
-    'Aesthetic treatments, cosmetic surgery, or elective reconstructive surgery.',
-    'Prescribed medications outside the hospital (retail pharmacy).',
-    'Pre-existing pathologies not declared in the health questionnaire.',
-    'Fertility or assisted reproduction treatments (except in specific plans).'
+    'Aesthetic treatments, elective reconstructive medicine, and cosmetics.',
+    'Out-of-hospital prescription medications.',
+    'Pre-existing conditions not declared in the health questionnaire.',
+    'Complex dental treatments (such as implants or orthodontics).'
   ] : [
-    'Tratamientos estéticos, cirugía cosmética o reconstructiva electiva.',
-    'Medicamentos recetados fuera del hospital (farmacia de calle).',
-    'Patologías preexistentes no declaradas en el cuestionario de salud.',
-    'Tratamientos de fertilidad o reproducción asistida (salvo en planes específicos).'
+    'Tratamientos estéticos, medicina reconstructiva electiva y cosmética.',
+    'Medicamentos recetados fuera del ámbito hospitalario.',
+    'Patologías y lesiones preexistentes no declaradas en el cuestionario de salud.',
+    'Tratamientos dentales complejos (como implantes u ortodoncia).'
   ];
 
   const coverages = isEnglish ? [
     {
       title: 'No Copays or Deductibles',
-      desc: 'Fixed monthly fee policies guaranteeing €0 additional expense on consultations or admissions, complying with consular law.',
+      desc: 'Access consultations, tests, and surgeries without paying any extra cost, as strictly required by consular regulations.',
       illustration: MedicalAttentionIllustration
     },
     {
-      title: 'Full Hospitalization',
-      desc: 'Unlimited access to hospital stays in an individual room for a companion and all necessary surgeries.',
-      illustration: FamilyIllustration
-    },
-    {
-      title: 'Unlimited Specialists',
-      desc: 'Limitless consultations in traumatology, cardiology, dermatology, and over 50,000 national professionals.',
-      illustration: HealthIllustration
-    },
-    {
       title: 'Sanitary Repatriation',
-      desc: 'Unlimited legal guarantee of medical transport to the country of origin due to serious illness or death.',
+      desc: 'Official and unlimited guarantee of medical transport to the country of origin due to serious illness or death.',
       illustration: TravelIllustration
     },
     {
-      title: 'Free Blua Digital Module',
-      desc: 'Video consultations with specialists in under 5 minutes and approved e-prescriptions instantly on your mobile app.',
+      title: 'Emergencies & Hospitalization',
+      desc: '24/7 continuous medical emergency attention and 100% covered hospital stay expenses.',
       illustration: HealthIllustration
     },
     {
-      title: 'Preventive Medicine',
-      desc: 'Guided annual health programs, complete preventive check-ups, and clinical analyses from day one.',
+      title: 'National Medical Network',
+      desc: 'Direct access to over 50,000 specialist doctors and top-tier hospital networks (Quirón, Ruber, Vithas).',
+      illustration: StudentIllustration
+    },
+    {
+      title: 'Free Blua Digital Module',
+      desc: 'Medical video consultations in under 5 minutes, official e-prescriptions on your phone, and wellness plans.',
+      illustration: HealthIllustration
+    },
+    {
+      title: 'Zero Wait Times',
+      desc: 'Coverage active from day one for all emergency medical needs required for your visa approval.',
       illustration: PreventionIllustration
     }
   ] : [
     {
       title: 'Sin Copagos ni Franquicias',
-      desc: 'Pólizas de cuota fija mensual que garantizan 0€ de gasto adicional en consultas o ingresos, cumpliendo la ley consular.',
+      desc: 'Acceso a consultas, análisis y cirugías sin pagar ningún coste adicional, tal como exige la normativa consular.',
       illustration: MedicalAttentionIllustration
     },
     {
-      title: 'Hospitalización Completa',
-      desc: 'Acceso ilimitado a ingresos hospitalarios en habitación individual para acompañante y todas las cirugías necesarias.',
-      illustration: FamilyIllustration
-    },
-    {
-      title: 'Especialistas e Ilimitado',
-      desc: 'Consultas sin límites en traumatología, cardiología, dermatología y más de 50.000 profesionales a nivel nacional.',
-      illustration: HealthIllustration
-    },
-    {
       title: 'Repatriación Sanitaria',
-      desc: 'Garantía legal ilimitada de repatriación médica al país de origen por enfermedad grave o fallecimiento del asegurado.',
+      desc: 'Garantía oficial e ilimitada de traslado sanitario al país de origen por enfermedad grave o fallecimiento del estudiante.',
       illustration: TravelIllustration
     },
     {
-      title: 'Blua Digital Gratis',
-      desc: 'Videoconsultas con especialistas en menos de 5 minutos y receta médica homologada al instante en tu app móvil.',
+      title: 'Urgencias y Hospitalización',
+      desc: 'Atención médica continuada de urgencia 24/7 y cobertura de ingreso hospitalario completo al 100% de los gastos.',
       illustration: HealthIllustration
     },
     {
-      title: 'Medicina Preventiva',
-      desc: 'Programas anuales de salud guiados, chequeos preventivos completos y analíticas clínicas desde el primer día.',
+      title: 'Cuadro Médico Nacional',
+      desc: 'Acceso directo a más de 50.000 médicos especialistas y red de hospitales de primer nivel (Quirón, Ruber, Vithas).',
+      illustration: StudentIllustration
+    },
+    {
+      title: 'Blua Digital Gratis',
+      desc: 'Videoconsultas médicas en menos de 5 minutos, receta electrónica oficial en el móvil y planes preventivos incluidos.',
+      illustration: HealthIllustration
+    },
+    {
+      title: 'Sin Períodos de Carencia',
+      desc: 'Coberturas activas desde el primer día para todas las necesidades médicas de urgencia requeridas para tu visado.',
       illustration: PreventionIllustration
     }
   ];
 
   const plansList = isEnglish ? [
     {
-      name: 'Sanitas Más Salud (No Copay)',
-      subtitle: 'VIP Digital Coverage',
-      desc: 'The leading policy for residence visas. Includes the Blua telemedicine module free forever, premium hospitalization, and immediate consular certificate.',
-      priceDetail: 'Consular certificate in 24h included',
-      tag: 'Best Seller',
+      name: 'Sanitas International Students',
+      subtitle: 'Premium Digital',
+      desc: 'The preferred choice for student visas. Includes the Blua telemedicine module free forever, unlimited video consults, and immediate official certificate.',
+      priceDetail: 'Consular PDF certificate instantly',
+      tag: 'Recommended',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: true
     },
     {
-      name: 'Adeslas Plena Total',
-      subtitle: '3-Year Price Lock',
-      desc: 'Excellent national medical coverage option from Adeslas with zero copays. Includes repatriation and a protected renewal price during the first three years.',
-      priceDetail: 'Expanded Adeslas medical network',
-      tag: 'Excellent Quality',
+      name: 'Adeslas Plena Extra',
+      subtitle: 'Standard Network Insurance',
+      desc: 'Excellent national medical coverage from Adeslas with zero copays. Includes repatriation and international reimbursement for emergencies outside Spain.',
+      priceDetail: 'Large network of private hospitals',
+      tag: 'Alternative',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     }
   ] : [
     {
-      name: 'Sanitas Más Salud (Sin Copago)',
-      subtitle: 'Cobertura VIP Digital',
-      desc: 'La póliza líder para visados de residencia. Incluye el módulo Blua de telemedicina gratis para siempre, hospitalización premium y certificado consular de emisión inmediata.',
-      priceDetail: 'Certificado consular en 24h incluido',
-      tag: 'Más Vendido',
+      name: 'Sanitas International Students',
+      subtitle: 'Premium Digital',
+      desc: 'La opción predilecta para el visado de estudiantes. Incluye el módulo Blua de telemedicina gratis para siempre, videoconsultas ilimitadas y certificado oficial inmediato.',
+      priceDetail: 'Certificado consular en PDF al instante',
+      tag: 'Recomendado',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: true
     },
     {
-      name: 'Adeslas Plena Total',
-      subtitle: 'Tranquilidad 3 Años',
-      desc: 'Excelente opción de cobertura médica nacional de Adeslas sin copagos. Incluye repatriación y un precio de renovación protegido durante los primeros tres años.',
-      priceDetail: 'Red médica Adeslas ampliada',
-      tag: 'Excelente Calidad',
+      name: 'Adeslas Plena Extra',
+      subtitle: 'Seguro Médico de Cuadro',
+      desc: 'Excelente cobertura médica nacional de Adeslas sin copagos. Incluye repatriación y reembolso internacional para emergencias fuera de España en periodos vacacionales.',
+      priceDetail: 'Gran red de clínicas concertadas',
+      tag: 'Alternativa',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     }
@@ -191,79 +184,102 @@ export const ExpatInsurance: React.FC = () => {
 
   const testimonials = isEnglish ? [
     {
-      author: 'Elena Gutiérrez',
-      meta: 'Non-Lucrative Residence (Madrid)',
-      comment: 'We contracted family health insurance with VitaBlue for our Non-Lucrative Visa. Super fast, zero copays or carencias, and the medical certificate was accepted at the consulate without any hurdles.',
+      author: 'Mariana Silva',
+      meta: 'Master Student in Madrid',
+      comment: 'I needed an insurance policy without copays or wait times for my student visa and was completely lost. They helped me instantly via WhatsApp, recommended the ideal option, and sent my certificate immediately. Visa approved!',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Manuel Ramón',
-      meta: 'Golden Visa (Málaga)',
-      comment: 'We studied several policies for family reunification and Golden Visa. The VitaBlue advisor helped us wonderfully over WhatsApp, solving all our pre-existing condition queries and sending the approval in 24 hours.',
+      author: 'Carlos Mendoza',
+      meta: 'Undergrad Student in Barcelona',
+      comment: 'I was looking for normal private health insurance. I tried other comparison sites and they bombarded me with telemarketing calls. With VitaBlue I could see the real prices without registering and contracted at my own pace. Excellent.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Laura Fernández',
-      meta: 'NIE & Residence (Alicante)',
-      comment: 'Fantastic express issuance. I needed the policy to renew my residence and they provided it instantly in PDF. Excellent continuous human support.',
+      author: 'Li Wei',
+      meta: 'Language Course in Seville',
+      comment: '100% online management, super fast. The documentation in Spanish and English arrived in my email in minutes and was accepted by the Spanish Consulate in Beijing without any problem.',
       stars: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100'
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100'
     }
   ] : [
     {
-      author: 'Elena Gutiérrez',
-      meta: 'Residencia No Lucrativa (Madrid)',
-      comment: 'Contratamos el seguro médico familiar con VitaBlue para nuestra Residencia No Lucrativa. Súper rápido, sin copagos ni carencias, y el certificado médico fue aceptado en el consulado sin ninguna traba.',
+      author: 'Mariana Silva',
+      meta: 'Estudiante de Máster en Madrid',
+      comment: 'Necesitaba un seguro sin copagos ni carencias para el visado de estudios y estaba perdidísima. Me atendieron al momento por WhatsApp, me recomendaron la opción ideal y me enviaron el certificado consular de inmediato. ¡Visado aprobado!',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Manuel Ramón',
-      meta: 'Golden Visa (Málaga)',
-      comment: 'Estudiamos varias pólizas para la reagrupación y Golden Visa. La asesora de VitaBlue nos atendió de maravilla por WhatsApp, resolviendo todas nuestras dudas de preexistencias y enviando el alta en 24 horas.',
+      author: 'Carlos Mendoza',
+      meta: 'Estudiante de Grado en Barcelona',
+      comment: 'Buscaba un seguro de salud privado normal. Probé en otros comparadores y me acribillaron a llamadas telefónicas de telemarketing. En VitaBlue pude ver los precios reales sin registrarme y contraté directamente a mi ritmo. Excelente.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Laura Fernández',
-      meta: 'NIE y Residencia (Alicante)',
-      comment: 'Emisión express fantástica. Necesitaba la póliza para renovar mi residencia y me la facilitaron al instante en PDF. Excelente soporte humano continuo.',
+      author: 'Li Wei',
+      meta: 'Curso de Idiomas en Sevilla',
+      comment: 'Gestión 100% online súper rápida. La documentación en español e inglés llegó a mi correo en minutos y fue aceptada por el consulado de España en Pekín sin ningún problema.',
       stars: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100'
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100'
     }
   ];
 
   const faqs = isEnglish ? [
     {
-      q: 'Which insurance is mandatory for the Non-Lucrative Visa?',
-      a: 'Immigration requires private health insurance contracted with a company authorized in Spain, providing full coverage (medical and hospital), "without copays" (sin copagos) and "without carencias" (no wait times). Adeslas Plena Total and Sanitas Más Salud comply 100% with these guidelines.'
+      q: 'What does it mean for the insurance to be "without copays" (sin copagos)?',
+      a: 'It means you pay a fixed monthly premium and won\'t have to pay any extra amount when you visit a doctor, have lab tests, or undergo surgery. Spanish immigration offices and consulates strictly require that the insurance has zero copays.'
     },
     {
-      q: 'How does the declaration of pre-existing medical conditions work?',
-      a: 'Before issuing the insurance, you must fill out a mandatory health questionnaire. If you have any prior medical conditions (e.g., hypertension, diabetes, recent surgeries), the insurer will evaluate it and may accept it, exclude it, or deny the policy. We advise you personally to find the best option.'
+      q: 'When will I receive the certificate for my student visa?',
+      a: 'Once you apply online and complete the first payment, the certificate of coverage and policy details in PDF are automatically generated and sent to your email within a maximum of 24 business hours.'
     },
     {
-      q: 'Can I purchase the insurance before traveling to Spain?',
-      a: 'Yes, this is standard and required. You must contract it in advance so that the medical coverage certificate forms part of the documentation you submit to the Consulate of your home country when applying for your visa.'
+      q: 'What happens if my visa is denied?',
+      a: 'Both Adeslas and Sanitas guarantee a full refund of the amount paid if you present the official visa rejection letter issued by the consulate of Spain, provided you request it before the policy start date.'
     }
   ] : [
     {
-      q: '¿Qué seguro es obligatorio para la Residencia No Lucrativa?',
-      a: 'Extranjería exige un seguro de salud privado contratado con una compañía autorizada en España, que sea de cobertura completa (médica y hospitalaria), "sin copagos" y "sin carencias". Adeslas Plena Total y Sanitas Más Salud cumplen al 100% con estas directrices.'
+      q: '¿Qué significa que el seguro sea "sin copagos"?',
+      a: 'Significa que pagas una prima mensual fija y no tendrás que abonar ninguna cantidad adicional cuando vayas al médico, te hagas análisis o te sometas a una intervención. Las oficinas de Extranjería y Consulados exigen explícitamente que el seguro no tenga copagos.'
     },
     {
-      q: '¿Cómo funciona la declaración de enfermedades preexistentes?',
-      a: 'Antes de emitir el seguro, debes rellenar un cuestionario de salud obligatorio. Si tienes alguna patología previa (ej. hipertensión, diabetes, cirugías recientes), la aseguradora la evaluará y podrá aceptarla, excluirla de la póliza o rechazar el alta. Te asesoramos de forma personalizada para encontrar la compañía idónea.'
+      q: '¿Cuándo recibiré el certificado para mi visado?',
+      a: 'Una vez contratada la póliza online y realizado el primer pago, el certificado de cobertura y las condiciones particulares en PDF se generan automáticamente y se envían a tu correo en un plazo máximo de 24 horas laborales.'
     },
     {
-      q: '¿Puedo contratar el seguro antes de viajar a España?',
-      a: 'Sí, es lo habitual y obligatorio. Debes contratarlo con antelación para que el certificado de cobertura médica forme parte de la documentación que entregues en el Consulado de tu país de origen al solicitar tu visado.'
+      q: '¿Qué pasa si mi visado es denegado?',
+      a: 'Tanto Adeslas como Sanitas garantizan la devolución íntegra del importe abonado si presentas la carta oficial de denegación del visado emitida por el consulado de España, siempre que lo solicites antes de la fecha de inicio de la póliza.'
     }
   ];
 
-  const priceEstimate = calculateExpatPrice();
+
+  const isLegacy1 = location.pathname.includes('seguro-medico-estudiantes-extranjeros-espana.html');
+  const isLegacy2 = location.pathname.includes('international-students');
+  
+
+  let title = isEnglish
+    ? 'Health Insurance for Student Visa Spain | VitaBlue'
+    : 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
+  let description = isEnglish
+    ? 'Compare health insurance for student visas in Spain. Full coverage policies with zero copays, zero wait times, and repatriation included. Oficial certificate in 24h.'
+    : 'Compara los seguros médicos para visado de estudiante en España. Pólizas sin copagos, sin carencias y con repatriación obligatoria. Certificados en 24h.';
+  let canonicalUrl = isEnglish
+    ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain'
+    : 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
+
+  if (isLegacy1) {
+    title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
+    description = 'Seguro médico diseñado para cumplir requisitos habituales de visado de estudiante en España. Sin copagos ni carencias (según condiciones). Certificado oficial en minutos.';
+    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
+  } else if (isLegacy2) {
+    title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
+    description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento independiente por VitaBlue.';
+    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
+  }
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -274,7 +290,7 @@ export const ExpatInsurance: React.FC = () => {
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
         "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
-        "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias.",
+        "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
@@ -285,24 +301,24 @@ export const ExpatInsurance: React.FC = () => {
       },
       {
         "@type": "Product",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados#producto",
-        "name": "Seguro Médico para Expatriados en España",
-        "description": "Seguro de salud completo sin copagos y sin carencias para visados de residencia no lucrativa y Golden Visa en España.",
+        "@id": `${canonicalUrl}#producto`,
+        "name": "Sanitas International Students",
+        "description": "Seguro médico diseñado para estudiantes extranjeros en España válido para visado. Cobertura sin copagos y sin carencias.",
         "brand": {
           "@type": "Brand",
-          "name": "VitaBlue"
+          "name": "Sanitas"
         },
         "offers": {
           "@type": "Offer",
           "price": "Consultar precio",
           "priceCurrency": "EUR",
           "availability": "https://schema.org/InStock",
-          "url": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados"
+          "url": canonicalUrl
         },
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.8",
-          "reviewCount": "120",
+          "reviewCount": "94",
           "bestRating": "5",
           "worstRating": "1"
         },
@@ -311,10 +327,24 @@ export const ExpatInsurance: React.FC = () => {
             "@type": "Review",
             "author": {
               "@type": "Person",
-              "name": "John D."
+              "name": "David L."
             },
-            "datePublished": "2025-11-05",
-            "reviewBody": "El seguro perfecto para mi Golden Visa. Sin copagos y con todo incluido, la embajada lo aceptó sin ninguna objeción.",
+            "datePublished": "2025-11-10",
+            "reviewBody": "El certificado para el visado de estudiante llegó súper rápido. Todo el trámite fue online y sin complicaciones.",
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5",
+              "bestRating": "5"
+            }
+          },
+          {
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": "Sophie M."
+            },
+            "datePublished": "2025-10-22",
+            "reviewBody": "No copay and full medical coverage, perfect for my Erasmus semester in Madrid. Very helpful support in English.",
             "reviewRating": {
               "@type": "Rating",
               "ratingValue": "5",
@@ -335,13 +365,13 @@ export const ExpatInsurance: React.FC = () => {
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Seguros de Salud",
-            "item": "https://www.vitablue.es/productos/seguros-salud"
+            "name": "Productos",
+            "item": "https://www.vitablue.es#productos"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Expatriados"
+            "name": "Seguro Médico Estudiantes"
           }
         ]
       },
@@ -350,44 +380,32 @@ export const ExpatInsurance: React.FC = () => {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Qué requisitos debe cumplir el seguro para los visados de Residencia No Lucrativa o Golden Visa?",
+            "name": "¿El seguro médico de Sanitas es válido para el visado de estudiante en España?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Debe ser un seguro de salud completo, sin copagos por consultas, sin periodos de carencia en coberturas (especialmente hospitalización) y con cobertura de repatriación en caso de fallecimiento."
+              "text": "Sí. Sanitas International Students está diseñado específicamente para cumplir con todos los requisitos de los consulados españoles: sin copagos, sin carencias (en servicios sanitarios cubiertos), con repatriación y un capital de cobertura ilimitado."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Cómo funciona la declaración de enfermedades preexistentes?",
+            "name": "¿Cuánto se tarda en obtener el certificado oficial para el visado?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Antes de emitir el seguro, debes rellenar un cuestionario de salud obligatorio. Si tienes alguna patología previa (ej. hipertensión, diabetes, cirugías recientes), la aseguradora la evaluará y podrá aceptarla, excluirla de la póliza o rechazar el alta. Te asesoramos de forma personalizada para encontrar la compañía idónea."
+              "text": "Una vez confirmada la contratación y el pago, el certificado de seguro digital en español (y en inglés si lo solicitas) se emite y envía a tu correo en menos de 24 horas laborables."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Puedo contratar el seguro antes de viajar a España?",
+            "name": "¿Qué ocurre si deniegan mi visado?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí, es lo habitual y obligatorio. Debes contratarlo con antelación para que el certificado de cobertura médica forme parte de la documentación que entregues en el Consulado de tu país de origen al solicitar tu visado."
+              "text": "En caso de denegación oficial del visado por parte del consulado, Sanitas permite la cancelación de la póliza y la devolución de la prima abonada, siempre que se presente el justificante oficial antes de la fecha de efecto del seguro."
             }
           }
         ]
       }
     ]
   };
-
-  const canonicalUrl = isEnglish
-    ? 'https://www.vitablue.es/en/health-insurance-expatriates-spain'
-    : 'https://www.vitablue.es/productos/seguros-salud/seguro-expatriados';
-
-  const title = isEnglish
-    ? 'Health Insurance for Expatriates and Residents in Spain | VitaBlue'
-    : 'Seguro Médico para Expatriados y Residentes en España | VitaBlue';
-
-  const description = isEnglish
-    ? 'Compare health insurance for expats in Spain. Full coverage with no copays for non-lucrative and Golden Visas with instant certificates.'
-    : 'Compara seguros médicos para expatriados en España. Coberturas sin copago para visados de residencia no lucrativa y Golden Visa con certificados inmediatos.';
 
   return (
     <div className="w-full flex flex-col bg-white">
@@ -397,9 +415,9 @@ export const ExpatInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
@@ -424,7 +442,8 @@ export const ExpatInsurance: React.FC = () => {
           <Breadcrumbs 
             items={[
               { label: isEnglish ? 'Health Insurance' : 'Seguros de Salud', href: '/productos/seguros-salud' },
-              { label: isEnglish ? 'Expats & Residents' : 'Expatriados', href: isEnglish ? '/en/health-insurance-expatriates-spain' : '/productos/seguros-salud/seguro-expatriados' }
+              { label: isEnglish ? 'Sanitas Insurance' : 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' },
+              { label: isEnglish ? 'International Students' : 'Estudiantes Extranjeros', href: isEnglish ? '/en/health-insurance-student-visa-spain' : '/productos/seguros-salud/seguros-sanitas/international-students' }
             ]} 
           />
         </div>
@@ -441,10 +460,10 @@ export const ExpatInsurance: React.FC = () => {
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
-                  <Home className="w-4 h-4" /> {t.heroTag}
+                  <GraduationCap className="w-4 h-4" /> {t.heroTag}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
-                  {isEnglish ? 'Valid for residency visas' : 'Apto para visados de residencia'}
+                  {isEnglish ? '100% Visa Approved Guarantee' : '100% Visado Garantizado'}
                 </span>
               </div>
               
@@ -467,8 +486,8 @@ export const ExpatInsurance: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> {isEnglish ? 'Official certificate in 24h' : 'Certificado oficial en 24h'}</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> {isEnglish ? 'Full coverage with no copays' : 'Cobertura total sin copagos'}</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> {isEnglish ? 'Certificate in 24 hours' : 'Certificado en 24 horas'}</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> {isEnglish ? 'Repatriation included' : 'Repatriación incluida'}</span>
               </div>
             </div>
 
@@ -477,7 +496,7 @@ export const ExpatInsurance: React.FC = () => {
               <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
                 <div>
                   <h3 className="text-xl font-display font-black text-text-main">
-                    {isEnglish ? 'Residency Price Estimator' : 'Tarificador de Residentes'}
+                    {isEnglish ? 'Student Price Estimator' : 'Tarificador de Estudiante'}
                   </h3>
                   <p className="text-xs text-text-secondary font-semibold mt-1">
                     {isEnglish ? 'Calculate your monthly quote with zero copays.' : 'Calcula tu cuota mensual sin copagos de forma inmediata.'}
@@ -488,7 +507,7 @@ export const ExpatInsurance: React.FC = () => {
                   {/* Age Selector */}
                   <div>
                     <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">
-                      {isEnglish ? 'Insured Age:' : 'Edad del Asegurado:'} 
+                      {isEnglish ? 'Student Age:' : 'Edad del Estudiante:'} 
                       <span className="text-sm font-sans font-black text-primary ml-1">
                         {age} {isEnglish ? 'years old' : 'años'}
                       </span>
@@ -497,7 +516,7 @@ export const ExpatInsurance: React.FC = () => {
                       <input 
                         type="range" 
                         min="18" 
-                        max="65" 
+                        max="35" 
                         value={age} 
                         onChange={(e) => setAge(parseInt(e.target.value))} 
                         className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
@@ -505,23 +524,23 @@ export const ExpatInsurance: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Visa Type Selector */}
+                  {/* Course Type Selector */}
                   <div>
                     <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">
-                      {isEnglish ? 'Visa / Permit Type' : 'Tipo de Visado / Permiso'}
+                      {isEnglish ? 'Type of Studies' : 'Tipo de Estudios'}
                     </label>
                     <div className="grid grid-cols-3 gap-2">
                       {[
-                        { id: 'non-lucrative', label: isEnglish ? 'Non-Lucrative' : 'Residencia NL' },
-                        { id: 'golden', label: isEnglish ? 'Golden Visa' : 'Golden Visa' },
-                        { id: 'regroup', label: isEnglish ? 'Reunification' : 'Reagrupación' }
+                        { id: 'undergrad', label: isEnglish ? 'University' : 'Grado/Uni' },
+                        { id: 'master', label: isEnglish ? 'Master/PhD' : 'Máster/Doc' },
+                        { id: 'language', label: isEnglish ? 'Language' : 'Idiomas' }
                       ].map((item) => (
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setVisaType(item.id as any)}
+                          onClick={() => setCourseType(item.id as any)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
-                            visaType === item.id 
+                            courseType === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 
                               : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
                           }`}
@@ -541,7 +560,7 @@ export const ExpatInsurance: React.FC = () => {
                   <div className="text-right">
                     <div className="flex items-baseline gap-0.5">
                       <span className="text-2xl font-sans font-black text-text-main">
-                        {isEnglish ? `From ${priceEstimate}` : `Desde ${priceEstimate}`}
+                        {isEnglish ? 'Personalized price' : 'Precio personalizado'}
                       </span>
                       <span className="text-[10px] font-bold text-text-secondary">
                         {isEnglish ? '€/month' : '€/mes'}
@@ -566,22 +585,22 @@ export const ExpatInsurance: React.FC = () => {
           <div className="flex items-center gap-3.5">
             <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">{isEnglish ? 'Consular Approval' : 'Validez Consular'}</h4>
-              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? 'Absolute guarantee for immigration offices and NIE.' : 'Garantía absoluta ante delegaciones de Extranjería y NIE.'}</p>
+              <h4 className="text-sm font-bold text-text-main">{isEnglish ? 'Consular Approval' : 'Homologación Consular'}</h4>
+              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? '100% meets Spanish immigration requirements.' : 'Cumple al 100% las exigencias de Extranjería.'}</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Clock className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">{isEnglish ? '24h Express Issuance' : 'Emisión Express 24h'}</h4>
-              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? 'We send you the official certificate of coverage on the same day.' : 'Te enviamos el certificado oficial de cobertura en el día.'}</p>
+              <h4 className="text-sm font-bold text-text-main">{isEnglish ? '24-Hour Certificate' : 'Certificado en 24 Horas'}</h4>
+              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? 'Receive your official PDF documentation ready to submit.' : 'Recibe tu documentación en PDF lista para presentar.'}</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Award className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">{isEnglish ? '100% Refund' : 'Devolución del 100%'}</h4>
-              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? 'Full refund guaranteed if the visa is denied.' : 'Reembolso íntegro garantizado si el visado es denegado.'}</p>
+              <h4 className="text-sm font-bold text-text-main">{isEnglish ? 'Guaranteed Refund' : 'Devolución Garantizada'}</h4>
+              <p className="text-xs text-text-secondary font-semibold">{isEnglish ? '100% refund in case of visa rejection.' : 'Reembolso del 100% en caso de denegación de visado.'}</p>
             </div>
           </div>
         </div>
@@ -603,7 +622,7 @@ export const ExpatInsurance: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Required Conditions' : 'Condiciones Exigidas'}</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            {isEnglish ? 'Official Residency Guarantees' : 'Garantías Oficiales para Residencia'}
+            {isEnglish ? 'Official Insurance Guarantees' : 'Garantías Oficiales del Seguro'}
           </h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
             {isEnglish ? 'All our selected policies strictly comply with the Spanish immigration law for your absolute peace of mind.' : 'Todas nuestras pólizas seleccionadas cumplen estrictamente la ley de extranjería española para tu absoluta tranquilidad.'}
@@ -639,7 +658,7 @@ export const ExpatInsurance: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Available Options' : 'Opciones Disponibles'}</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            {isEnglish ? 'Compare expat health insurances' : 'Compara seguros para expatriados'}
+            {isEnglish ? 'Compare student health insurances' : 'Compara seguros para estudiantes'}
           </h2>
         </div>
 
@@ -692,49 +711,28 @@ export const ExpatInsurance: React.FC = () => {
         </div>
       </section>
 
-      {/* Requirements Section */}
-      <section className="py-16 sm:py-20 max-w-5xl mx-auto px-6 sm:px-8 bg-white text-left">
-        <div className="rounded-3xl border border-slate-150 bg-slate-50/50 p-6 sm:p-10 space-y-6 shadow-inner">
-          <span className="text-xs font-black uppercase tracking-wider text-primary">{isEnglish ? 'Residence & Visa Requirements' : 'Requisitos de Residencia y Visados'}</span>
-          <h2 className="text-2xl sm:text-3xl font-display font-black text-text-main">{isEnglish ? 'What does Immigration require for expats?' : '¿Qué exige Extranjería para expatriados?'}</h2>
-          <p className="text-body-reg text-text-secondary leading-relaxed font-medium">
-            {isEnglish ? 'If you apply for the Non-Lucrative Visa, Family Reunification or the investor visa (Golden Visa), the contracted insurance in Spain must meet these criteria:' : 'Si solicitas la Residencia No Lucrativa, Reagrupación Familiar o el visado de inversor (Golden Visa), el seguro contratado en España debe cumplir obligatoriamente estos criterios:'}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {visaRequirements.map((req, idx) => (
-              <div key={idx} className="flex gap-3 text-sm font-bold text-text-main leading-relaxed">
-                <ShieldCheck className="w-5 h-5 text-[#94D2BD] shrink-0 mt-0.5" />
-                <span>{req}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Transparency section */}
-      <section className="py-16 sm:py-20 bg-slate-50/50 border-t border-b border-slate-100 w-full text-left">
-        <div className="max-w-5xl mx-auto px-6 sm:px-8 w-full">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Radical Transparency' : 'Transparencia Radical'}</span>
-            <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-              {isEnglish ? 'What does your health insurance include and exclude?' : '¿Qué incluye y qué excluye tu seguro médico?'}
-            </h2>
-            <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-              {isEnglish ? 'We detail the real conditions and common exclusions so you can make your decision with complete honesty.' : 'Te detallamos las condiciones reales y exclusiones comunes para que tomes tu decisión con total honestidad.'}
-            </p>
-          </div>
-
-          <TransparencyBlock 
-            inclusions={inclusions}
-            exclusions={exclusions}
-          />
+      <section className="py-16 sm:py-20 max-w-5xl mx-auto px-6 sm:px-8 w-full bg-white text-left">
+        <div className="text-center space-y-4 mb-12">
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Radical Transparency' : 'Transparencia Radical'}</span>
+          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
+            {isEnglish ? 'What exactly are you buying?' : '¿Qué estás contratando exactamente?'}
+          </h2>
+          <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-2xl mx-auto">
+            {isEnglish ? 'We show you upfront the legally required inclusions and standard exclusions to avoid surprises when applying for your visa.' : 'Te mostramos sin rodeos las inclusiones requeridas legalmente y las exclusiones estándar para evitar sorpresas al solicitar tu visado.'}
+          </p>
         </div>
+
+        <TransparencyBlock 
+          inclusions={inclusions}
+          exclusions={exclusions}
+        />
       </section>
 
       {/* How to hire in 4 steps Onboarding timeline */}
       <section className="py-16 sm:py-20 max-w-6xl mx-auto px-6 sm:px-8 text-left border-t border-slate-100">
         <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Proceso</span>
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Process' : 'Proceso'}</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
             {isEnglish ? 'How to apply in 4 steps' : 'Cómo contratar en 4 pasos'}
           </h2>
@@ -752,7 +750,7 @@ export const ExpatInsurance: React.FC = () => {
               { 
                 step: '01', 
                 title: isEnglish ? 'Fill in the form' : 'Rellena el formulario', 
-                desc: isEnglish ? 'Enter your age, arrival date in Spain, and select the visa type (Non-Lucrative, Golden) in our quoting tool.' : 'Introduce tu edad, fecha de llegada a España y selecciona el tipo de visa (No Lucrativa, Golden) en nuestro cotizador.',
+                desc: isEnglish ? 'Enter your age, arrival date in Spain, and select your ideal insurer in our comparator.' : 'Introduce tu edad, fecha de llegada a España y selecciona tu aseguradora ideal en nuestro comparador.',
                 icon: FileText
               },
               { 
@@ -764,13 +762,13 @@ export const ExpatInsurance: React.FC = () => {
               { 
                 step: '03', 
                 title: isEnglish ? 'Health questionnaire' : 'Cuestionario de salud', 
-                desc: isEnglish ? 'Complete a short digital medical questionnaire required for immediate resident policy issuance.' : 'Completa un breve cuestionario digital necesario para la emisión inmediata de tu póliza de residente.',
+                desc: isEnglish ? 'Complete a short digital medical questionnaire required for immediate student policy issuance.' : 'Completa un breve cuestionario digital necesario para la emisión inmediata de tu póliza de estudiante.',
                 icon: Heart
               },
               { 
                 step: '04', 
                 title: isEnglish ? 'Get your policy' : 'Recibe tu póliza', 
-                desc: isEnglish ? 'Get your official coverage certificate in PDF in 24 business hours, ready to present to immigration.' : 'Obtén tu certificado oficial de cobertura en PDF en 24h laborales, listo para presentar ante Extranjería.',
+                desc: isEnglish ? 'Get your official coverage certificate in PDF in 24 business hours, ready to present at the consulate.' : 'Obtén tu certificado oficial de cobertura en PDF en 24h laborales, listo para presentar en el consulado.',
                 icon: ShieldCheck
               }
             ].map((item, idx) => {
@@ -820,7 +818,7 @@ export const ExpatInsurance: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'}</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            {isEnglish ? 'Clear doubts about Expat Insurance' : 'Resolver dudas sobre el Seguro de Expatriados'}
+            {isEnglish ? 'Clear doubts about Student Insurance' : 'Resolver dudas sobre el Seguro de Estudiante'}
           </h2>
         </div>
 
@@ -841,11 +839,11 @@ export const ExpatInsurance: React.FC = () => {
       <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
           <div className="space-y-1">
-            <h3 className="text-2xl font-display font-extrabold text-text-main">{isEnglish ? 'Doubts with Immigration procedures?' : '¿Dudas con los trámites de Extranjería?'}</h3>
-            <p className="text-body-reg text-text-secondary font-medium">{isEnglish ? 'Speak directly and free of charge with our advisors. We will clear up your doubts regarding pre-existing conditions, carencias, and policy registrations without any commitment.' : 'Habla con nuestros asesores de forma directa y gratuita. Resolveremos tus dudas sobre preexistencias, carencias y alta de pólizas sin ningún compromiso.'}</p>
+            <h3 className="text-2xl font-display font-extrabold text-text-main">{isEnglish ? 'Need help with consulate procedures?' : '¿Necesitas ayuda con los trámites del consulado?'}</h3>
+            <p className="text-body-reg text-text-secondary font-medium">{isEnglish ? 'Our senior advisors perfectly know the specific requirements of each Spanish consulate and immigration office. They will guide you step by step free of charge.' : 'Nuestros asesores senior conocen perfectamente los requisitos específicos de cada consulado español y delegación de extranjería. Te guiarán paso a paso de manera gratuita.'}</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Expatriados.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Estudiantes%20Extranjeros.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>
@@ -854,4 +852,4 @@ export const ExpatInsurance: React.FC = () => {
   );
 };
 
-export default ExpatInsurance;
+export default StudentInsurance;

@@ -2,12 +2,12 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, ShieldCheck, Clock, Award, Check } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import { Button } from '../components/atoms/Button';
-import { StudentIllustration, ProfileIllustration, TravelIllustration } from '../components/illustrations';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import { Button } from '../../components/atoms/Button';
+import { StudentIllustration, ProfileIllustration, TravelIllustration } from '../../components/illustrations';
 
 export const ForeignerInsurance: React.FC = () => {
   const navigate = useNavigate();

@@ -34,7 +34,7 @@ const legacy = (path: string, redirectTo: string): RouteDefinition => ({
   locale: 'neutral',
   canonical: redirectTo,
   indexable: false,
-  prerender: true,
+  prerender: false,
   sitemap: false,
   redirectTo,
 });
@@ -71,7 +71,7 @@ export const canonicalRoutes: RouteDefinition[] = [
 export const dynamicRoutes: RouteDefinition[] = [
   { path: '/blog/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/en/blog/:slug', kind: 'dynamic', locale: 'en', indexable: true, prerender: true, sitemap: true },
-  { path: '/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
 
 /**
@@ -108,12 +108,12 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/wizard', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
   { path: '/resultados', kind: 'private', locale: 'es', canonical: '/resultados', indexable: false, prerender: true, sitemap: false },
   { path: '/styleguide', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio/identidad-de-marca', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio/perfiles-sociales', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio/campanas', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio/conexiones', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
-  { path: '/marketing-studio/generador-contenido', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/identidad-de-marca', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/perfiles-sociales', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/campanas', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/conexiones', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/generador-contenido', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
 
 export const routeRegistry = [

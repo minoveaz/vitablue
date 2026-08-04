@@ -93,7 +93,7 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
     await saveCampaignToSupabase(newCampaign);
     setNewCampaignName('');
     setIsCreating(false);
-    navigate(`/marketing-studio/campanas/${newCampaign.id}`);
+    navigate(`/backoffice/marketing-studio/campanas/${newCampaign.id}`);
   };
 
   const handleDeleteCampaign = async (campaign: Campaign) => {
@@ -173,7 +173,7 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
                       return platform ? <span key={platform.id} style={{ color: platform.color }} title={platform.name}>{platform.icon}</span> : null;
                     })}
                   </div>
-                  <button onClick={() => navigate(`/marketing-studio/campanas/${campaign.id}`)} className="inline-flex items-center gap-1 rounded-xl bg-[#005F73] px-3 py-2 text-[10px] font-black text-white transition-colors hover:bg-[#004f5e]">
+                  <button onClick={() => navigate(`/backoffice/marketing-studio/campanas/${campaign.id}`)} className="inline-flex items-center gap-1 rounded-xl bg-[#005F73] px-3 py-2 text-[10px] font-black text-white transition-colors hover:bg-[#004f5e]">
                     Abrir <ArrowRight size={12} />
                   </button>
                   <button onClick={() => handleDeleteCampaign(campaign)} title="Eliminar campaña" className="rounded-xl border border-rose-100 p-2 text-rose-500 transition-colors hover:bg-rose-50">

@@ -97,7 +97,9 @@ Funciones server-side / Edge Functions
 - [x] Corregido el estado local posterior al callback para conservar `externalAccountId` y permitir la desconexión server-side.
 - [x] Validada la desconexión completa: modal, Edge Function, eliminación de Vault, eliminación de `oauth_connections` y actualización visual.
 - [x] Añadido checklist de configuración Hostinger/Supabase sin fijar todavía un dominio concreto.
-- [ ] Clasificar las 21 URLs legacy fuera del sitemap antes de crear canonicals y redirecciones.
+- [x] Validado en producción `https://vitablue.es`: acceso admin al backoffice y conexión Facebook/Instagram visible desde Supabase.
+- [ ] Validar en producción las restricciones de `viewer` y `editor` junto con el resto de usuarios del equipo.
+- [x] Clasificar las 18 URLs públicas que faltaban en la auditoría: son aliases legacy con destino canónico definido en `config/routes.ts`; quedan fuera del sitemap.
 - [x] Registrar las rutas dinámicas de blog y la excepción dinámica del panel en el registro tipado.
 
 Resultado de la primera auditoría: `App.tsx` contiene 56 rutas (3 dinámicas), `vite.config.ts` contiene 53 rutas prerenderizadas tras corregir viaje/vida y `sitemap.xml` contiene 32 URLs.
@@ -132,7 +134,7 @@ Esta clasificación es deliberadamente documental. No activa todavía redireccio
 
 - [x] Clasificación inicial de las 21 URLs completada.
 - [ ] Confirmar con negocio/legal la canonical de privacidad antes de aplicar redirects.
-- [ ] Implementar redirects en la infraestructura de hosting, no como duplicados de React Router.
+- [x] Preparar redirects 301 en `public/.htaccess` para las URLs legacy; queda pendiente verificar su efecto tras subir el build a Hostinger.
 - [ ] Mantener los aliases funcionales del funnel hasta confirmar que no existen enlaces o campañas activas que dependan de ellos.
 
 ## Fases de implementación
@@ -157,11 +159,13 @@ Actualmente existen inventarios independientes de rutas:
 
 Esto permite que una página sea navegable pero no prerenderizada, tenga canonical incorrecto o no aparezca en el sitemap.
 
-- [ ] Crear un registro tipado de rutas canónicas, por ejemplo `config/routes.ts` o `domain/routing/routes.ts`.
-- [ ] Definir por ruta: `path`, componente, idioma, canonical, `hreflang`, indexabilidad, prioridad SEO y si es legacy.
+- [x] Crear un registro tipado de rutas canónicas en `config/routes.ts`.
+- [x] Definir por ruta: `path`, tipo, idioma, canonical, alternate, indexabilidad, prerender, sitemap y redirect legacy.
 - [ ] Generar desde ese registro las rutas de React Router.
-- [ ] Generar desde el mismo registro las rutas de `vite-plugin-prerender`.
-- [ ] Generar `sitemap.xml` y, si aplica, `robots.txt` desde el mismo registro.
+- [x] Generar desde el mismo registro las rutas de `vite-plugin-prerender`.
+- [x] Generar `sitemap.xml` desde el mismo registro y `blogData.ts`.
+- [x] Añadir `validate-route-registry` al pipeline para detectar duplicados, redirects legacy inválidos y rutas privadas indexables.
+- [x] Generar las rutas privadas de backoffice en `App.tsx` desde `privateRoutes`/`dynamicRoutes`, manteniendo las landings públicas sin cambios.
 - [ ] Generar los enlaces `canonical`, `alternate` y `x-default` sin duplicarlos manualmente en cada página.
 - [ ] Declarar redirecciones legacy separadas de las rutas canónicas.
 - [ ] Implementar las URLs legacy como redirecciones permanentes en infraestructura/hosting, no como otra renderización del mismo componente.
@@ -228,8 +232,16 @@ Esto permite que una página sea navegable pero no prerenderizada, tenga canonic
 
 `App.tsx` mezcla actualmente routing, layout global, styleguide y lógica de desarrollo. Varias páginas de negocio son monolitos de 35–50 KB.
 
+- [x] Reorganizadas físicamente las páginas en `pages/public/` (landings, blog y legales), `pages/funnel/` (cotizador/resultados) y `pages/backoffice/` (login, backoffice y módulos internos).
+- [x] Creado el namespace `pages/backoffice/` y conectado el router mediante imports lazy; las fuentes ya viven en su ubicación definitiva.
+- [x] Creado el namespace `pages/funnel/` y conectado `Wizard`/`Results` mediante imports lazy.
+- [x] Creado el namespace `pages/public/` y conectadas landings, legales y blog mediante imports lazy.
+- [x] Verificado que los imports del backoffice se mantienen en chunks lazy y fuera de la navegación pública.
+- [ ] Asegurar que cada grupo tenga su layout, metadatos y reglas de acceso claramente delimitados.
+- [x] Añadidos `PublicLayout` y `PrivateLayout`; el shell público conserva navegación, footer, consentimiento y WhatsApp, mientras el privado queda sin navegación pública.
+
 - [ ] Reducir `App.tsx` a composición de providers, router, layout global y registro de rutas.
-- [ ] Mover el styleguide a `pages/dev/` o a una entrada de desarrollo separada.
+- [x] Movido el styleguide a `pages/dev/Styleguide.tsx`; `/styleguide` continúa disponible únicamente en desarrollo mediante carga lazy.
 - [ ] Mantener styleguide y Marketing Studio fuera del bundle público cuando no sean necesarios.
 - [ ] Crear layouts explícitos para web pública, funnel del cotizador y backoffice.
 - [ ] Dividir landings grandes por secciones reutilizables: hero, beneficios, cobertura, exclusiones, FAQ, prueba social y CTA.
@@ -243,14 +255,24 @@ Esto permite que una página sea navegable pero no prerenderizada, tenga canonic
 
 Las coberturas, precios, proveedores, copy, URLs y recomendaciones están distribuidos entre páginas y `utils/recommendationEngine.ts`. El motor actual maneja solo dos productos y contiene un destino `example.com`.
 
-- [ ] Crear `domain/products/` con tipos para proveedor, producto, cobertura, exclusión, precio, documento, URL canónica y versión de catálogo.
-- [ ] Convertir el catálogo de productos en una fuente de verdad única.
+- [x] Creado `domain/products/` con catálogo tipado, elegibilidad, coberturas, exclusiones, precio orientativo, URLs canónicas y disclaimers.
+- [x] Auditado el catálogo contra las landings: inventariadas 32 entradas entre salud, estudiantes, expatriados, nómadas, mascotas, decesos, viaje y vida.
+- [x] Migradas al dominio 12 entradas de la familia Sanitas, incluyendo coberturas, descripciones, precios orientativos y enlaces de consulta.
+- [x] Extraídos al dominio los planes de mascotas, viaje y vida; las landings consumen ahora sus listas tipadas.
+- [x] Añadido `npm run validate-products` para detectar IDs duplicados, rutas inválidas, categorías no reconocidas y entradas sin fuente.
+- [x] Marcados precios y coberturas como pendientes de verificación; la interfaz usa mensajes comerciales de consulta sin exponer estados técnicos.
+- [x] Sustituidas las estimaciones de precio no verificadas en estudiantes, expatriados y nómadas por “Precio personalizado”.
+- [x] Creado el registro `domain/products/dataReadiness.ts` y una plantilla de ficha para dejar precio, coberturas, exclusiones, carencias y elegibilidad como `pending` hasta recibir fuentes oficiales.
+- [x] Añadido `/backoffice/catalogo` como vista privada filtrable del inventario y de los datos pendientes, sin edición comercial todavía.
+- [x] Conectado `recommendationEngine.ts` al catálogo; los productos base ya no se definen allí.
 - [ ] Añadir estado de publicación, fecha de vigencia y fuente de cada precio/cobertura.
 - [ ] Modelar explícitamente elegibilidad por perfil, visado, duración, residencia, edad, movilidad y territorios.
-- [ ] Separar reglas de elegibilidad, ranking/recomendación y presentación de UI.
-- [ ] Hacer que el motor devuelva decisiones explicables: producto, puntuación/razones, restricciones y disclaimers.
-- [ ] Sustituir enlaces placeholder por destinos reales validados; fallar el build si aparece `example.com` en el catálogo productivo.
-- [ ] Añadir pruebas de casos límite: criterios incompletos, perfiles incompatibles, USA/Norteamérica y productos no elegibles.
+- [x] Separadas inicialmente las reglas de elegibilidad en `domain/products/eligibility.ts`; el ranking y la presentación permanecen compatibles con el motor actual.
+- [x] Añadido `getRecommendationDecisions()` como salida explicable con producto, puntuación, razones, restricciones y estado de datos.
+- [x] Extraído el ranking a `domain/products/ranking.ts`, independiente de elegibilidad y presentación.
+- [x] Eliminado el destino `example.com` del catálogo inicial y sustituidos los destinos por URLs de VitaBlue.
+- [x] Añadidas pruebas automatizadas de elegibilidad, ranking y decisiones explicables; `npm test` ejecuta 7 casos, incluyendo USA/Norteamérica y criterios incompletos.
+- [x] CI exige ahora `npm test`, `npm run typecheck` y `npm run validate-products` antes de rutas, sitemap y build.
 - [ ] Versionar cambios de precio y cobertura para evitar que una landing histórica pierda coherencia.
 
 **Criterio:** ninguna página define por su cuenta precio, proveedor, cobertura o URL canónica que también exista en el catálogo.
@@ -349,6 +371,19 @@ La separación reduce el riesgo de mezclar código comercial, SEO, datos interno
 - El build, typecheck, lint y pruebas pasan en CI antes del deploy.
 
 ## Riesgos y decisiones pendientes
+
+### Actualización 2026-08-04 — shell privado del catálogo
+
+- [x] Crear `BackofficeShell` reutilizable con sidebar responsive y navegación entre backoffice, catálogo y módulos de Marketing Studio.
+- [x] Alinear visualmente `BackofficeShell` con el shell estándar de Marketing Studio: sidebar oscuro, navegación activa, badges de estado y cabecera de workspace.
+- [x] Crear `SaaSShell` como componente SaaS canónico tipado y exportarlo desde `components/layouts/index.ts`; `BackofficeShell` queda como configuración de navegación sobre este shell.
+- [x] Aplicar el shell canónico también a `/backoffice`, dejando inicio y catálogo con la misma navegación y contexto de sesión.
+- [x] Integrar Marketing Studio en `SaaSShell`; se conserva su lógica de módulos y se elimina la dependencia visual de un shell independiente.
+- [x] Reubicar las rutas privadas canónicas bajo `/backoffice/marketing-studio/...` y mantener redirección legacy desde `/marketing-studio/*`.
+- [x] Hacer que el redirect OAuth use el origen actual (`window.location.origin`) para funcionar tanto en local como en producción.
+- [x] Aplicar el shell a `/backoffice/catalogo`, manteniendo la vista como consulta interna sin exponer datos pendientes en la web pública.
+- [x] Añadir accesos visibles al inicio del backoffice, sitio público, cierre de sesión y estado del usuario/rol.
+- [x] Verificar `npm run typecheck` correctamente.
 
 - Decidir si el panel debe estar bajo el mismo dominio o un subdominio privado.
 - Confirmar si existe un único equipo/marca o si el modelo debe ser multi-tenant.

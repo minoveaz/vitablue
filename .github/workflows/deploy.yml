@@ -25,6 +25,18 @@ jobs:
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Run Automated Tests
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate Product Inventory
+        run: npm run validate-products
+
+      - name: Validate Route Registry
+        run: npm run validate-route-registry
+
       - name: Validate Route Registry
         run: npm run validate-routes:strict
 

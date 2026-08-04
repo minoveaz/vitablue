@@ -134,7 +134,7 @@ export const startPlatformOAuth = async (platform: SocialPlatformId): Promise<vo
     return;
   }
   
-  const redirectUri = encodeURIComponent('http://localhost:5173/marketing-studio/conexiones');
+  const redirectUri = encodeURIComponent(`${window.location.origin}/backoffice/marketing-studio/conexiones`);
   let authUrl = '';
 
   switch (platform) {
@@ -187,7 +187,7 @@ export const handleOAuthCallback = async (
 ): Promise<{ success: boolean; username?: string; error?: string }> => {
   try {
     if ((platform === 'facebook' || platform === 'instagram') && state) {
-      const redirectUri = `${window.location.origin}/marketing-studio/conexiones`;
+      const redirectUri = `${window.location.origin}/backoffice/marketing-studio/conexiones`;
       const { data, error } = await supabase.functions.invoke('oauth-callback', {
         body: { provider: platform, code, redirectUri, state },
       });

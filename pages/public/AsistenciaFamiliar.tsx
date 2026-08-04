@@ -2,119 +2,124 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, Heart, ArrowRight, Stethoscope,
+  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
   FileText, CreditCard, Shield
 } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import TestimonialCard from '../components/molecules/TestimonialCard';
-import TransparencyBlock from '../components/molecules/TransparencyBlock';
-import { Button } from '../components/atoms/Button';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import TestimonialCard from '../../components/molecules/TestimonialCard';
+import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import { Button } from '../../components/atoms/Button';
 import { 
   FamilyIllustration,
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
   MedicalAttentionIllustration
-} from '../components/illustrations';
+} from '../../components/illustrations';
 
-export const LifeInsurance: React.FC = () => {
+export const AsistenciaFamiliar: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
 
-  // State for interactive life pricing estimator
-  const [age, setAge] = useState<number>(35);
-  const [capital, setCapital] = useState<number>(100000);
+  // State for interactive pricing estimator
+  const [age, setAge] = useState<number>(40);
+  const [premiumType, setPremiumType] = useState<'levelled' | 'natural' | 'mixed'>('mixed');
 
-  const calculateLifePrice = () => {
-    let factor = 0.00012;
-    if (age > 30) factor = 0.00018;
-    if (age > 45) factor = 0.00038;
-    if (age > 55) factor = 0.00085;
-    let base = (capital * factor) / 12;
+  const calculateDecesosPrice = () => {
+    let base = 5.20;
+    
+    if (premiumType === 'levelled') {
+      base = age < 30 ? 11.50 : age < 50 ? 19.80 : 29.50;
+    } else if (premiumType === 'natural') {
+      base = age < 30 ? 3.90 : age < 50 ? 6.50 : 12.80;
+    } else {
+      // Mixed
+      base = age < 30 ? 5.80 : age < 50 ? 9.90 : 18.50;
+    }
     return base.toFixed(2);
   };
 
   const handleStartQuoting = () => {
     resetWizard();
-    setProfile('expat'); // Standard profile fits general life insurance wizard
+    setProfile('expat'); // Standard profile
     navigate('/wizard');
   };
 
   const inclusions = [
-    'Fallecimiento por cualquier causa (enfermedad o accidente) con abono del capital a beneficiarios.',
-    'Invalidez absoluta y permanente que impida realizar cualquier actividad profesional.',
-    'Anticipo de capital para el pago del Impuesto sobre Sucesiones y Donaciones.',
-    'Servicio gratuito de testamento online y orientación jurídica familiar.'
+    'Gestión y cobertura completa de los servicios fúnebres de sepelio o incineración.',
+    'Traslado nacional e internacional ilimitado del fallecido hasta el cementerio elegido.',
+    'Asesoramiento legal, tramitación de pensiones, viudedad y herencias familiares.',
+    'Testamento online gratuito y borrado de la huella digital en internet.'
   ];
 
   const exclusions = [
-    'Fallecimiento derivado de deportes extremos o de alto riesgo no declarados previamente.',
+    'Indemnización directa si el servicio de decesos es organizado por terceros ajenos a la aseguradora.',
+    'Siniestros derivados de conflictos bélicos, catástrofes naturales o radiación nuclear.',
     'Suicidio del asegurado durante el primer año de vigencia de la póliza.',
-    'Siniestros producidos por conflictos armados, motines o catástrofes nucleares.',
-    'Invalidez derivada de autolesiones voluntarias o adicciones.'
+    'Gastos suntuarios no contemplados en el capital de sepelio contratado.'
   ];
 
   const coverages = [
     {
-      title: 'Fallecimiento por Cualquier Causa',
-      desc: 'Abono íntegro del capital asegurado a los beneficiarios designados en caso de defunción por enfermedad o accidente.',
+      title: 'Servicio de Sepelio',
+      desc: 'Gestión integral fúnebre de sepelio o incineración, coche fúnebre, tanatorio, flores y nicho o sepultura seleccionados.',
       illustration: FamilyIllustration
     },
     {
-      title: 'Invalidez Permanente y Absoluta',
-      desc: 'Pago anticipado del 100% del capital si sufres una incapacidad irreversible que te impida trabajar en el futuro.',
-      illustration: MedicalAttentionIllustration
-    },
-    {
-      title: 'Doble Capital por Accidente',
-      desc: 'Se duplica el importe de indemnización cobrado por los beneficiarios si la causa del fallecimiento es un accidente de tráfico o laboral.',
+      title: 'Traslado Nacional e Internacional',
+      desc: 'Garantía de traslado sanitario y repatriación del asegurado fallecido desde cualquier parte del mundo hasta España o viceversa.',
       illustration: TravelIllustration
     },
     {
-      title: 'Anticipo para Sucesiones',
-      desc: 'Adelanto inmediato de hasta 10.000€ del capital para hacer frente al Impuesto de Sucesiones y desbloquear la herencia.',
+      title: 'Asesoramiento Legal',
+      desc: 'Gestión y tramitación de pensiones de viudedad, orfandad, auxilio por defunción, declaración de herederos y adjudicación de herencias.',
       illustration: PreventionIllustration
     },
     {
-      title: 'Testamento Online Gratis',
-      desc: 'Gestión anual de redacción y firma de testamento vital guiado por un equipo legal especializado sin coste adicional.',
+      title: 'Testamento Online',
+      desc: 'Acceso gratuito a la firma de testamento vital y testamento online anual guiado por un abogado especializado.',
       illustration: HealthIllustration
     },
     {
-      title: 'Segunda Opinión Médica',
-      desc: 'Acceso a diagnósticos e informes médicos contrastados por expertos internacionales ante enfermedades graves.',
-      illustration: Stethoscope
+      title: 'Apoyo Psicológico',
+      desc: 'Asistencia y soporte psicológico telefónico y presencial a la familia por duelo inmediato ante la pérdida.',
+      illustration: MedicalAttentionIllustration
+    },
+    {
+      title: 'Asistencia en Viajes',
+      desc: 'Gastos médicos de urgencia en el extranjero y repatriación médica en caso de accidente durante viajes internacionales.',
+      illustration: TravelIllustration
     }
   ];
 
   const plansList = [
     {
-      name: 'Vida Esencial',
-      subtitle: 'Protección familiar básica',
-      desc: 'Perfecto para quienes buscan cubrir el capital mínimo de sepelio y asegurar el sustento básico de sus hijos. Cubre fallecimiento por cualquier causa a coste mínimo.',
-      priceDetail: 'Cobertura esencial a precio reducido',
-      tag: 'Más Económico',
+      name: 'Prima Nivelada',
+      subtitle: 'Cuota estable vitalicia',
+      desc: 'Pagas una cuota ligeramente superior al inicio pero muy estable. La prima no aumenta con tu edad, solo se actualiza según el IPC y capital de sepelio.',
+      priceDetail: 'Cuota protegida frente a la edad',
+      tag: 'Estabilidad',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     },
     {
-      name: 'Vida Completo',
-      subtitle: 'Fallecimiento e Invalidez',
-      desc: 'El plan recomendado. Une la cobertura de fallecimiento y el pago de invalidez permanente absoluta, protegiendo tanto tu estabilidad futura como la de tus hijos.',
-      priceDetail: 'Doble cobertura (Defunción + Invalidez)',
-      tag: 'Más Recomendado',
+      name: 'Prima Mixta',
+      subtitle: 'Equilibrio recomendado',
+      desc: 'La modalidad más popular. Comienza con una prima reducida que aumenta de forma progresiva hasta los 65 años, momento en el cual se nivela y se estabiliza.',
+      priceDetail: 'Estabilización automática a los 65',
+      tag: 'Más Contratado',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: true
     },
     {
-      name: 'Vida Hipotecas',
-      subtitle: 'Saldo pendiente del préstamo',
-      desc: 'Especialmente adaptado para vincularse al préstamo de tu vivienda. En caso de siniestro, el capital se destina a amortizar el saldo pendiente con el banco.',
-      priceDetail: 'Amortización de préstamos bancarios',
-      tag: 'Protección Hogar',
+      name: 'Prima Natural',
+      subtitle: 'Mínimo coste inicial',
+      desc: 'La cuota de entrada más económica. El precio se ajusta de forma anual y aumenta progresivamente según cumples años a lo largo del contrato.',
+      priceDetail: 'Prima adaptada a tu edad actual',
+      tag: 'Ahorro Inicial',
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25',
       isFeatured: false
     }
@@ -122,44 +127,52 @@ export const LifeInsurance: React.FC = () => {
 
   const testimonials = [
     {
-      author: 'Ricardo Jiménez',
-      meta: 'Asegurado Vida Hipotecas (Madrid)',
-      comment: 'Buscaba un seguro para desvincularme del banco. Encontré una cuota a mitad de precio que la que me ofrecían con la hipoteca y el cambio fue facilísimo. VitaBlue gestionó todo.',
-      stars: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
-    },
-    {
-      author: 'Laura Muñoz',
-      meta: 'Asegurada Vida Completo (Sevilla)',
-      comment: 'El cuestionario de salud online fue rápido, sin necesidad de visitas médicas ni analíticas. Los asesores por WhatsApp resolvieron mis dudas sobre el capital de invalidez.',
+      author: 'Elena Gutiérrez',
+      meta: 'Asegurada familiar en Madrid',
+      comment: 'Trato de máxima sensibilidad en un momento tan duro. Se encargaron de toda la gestión fúnebre, traslados y trámites de herencia sin cobrarnos un euro adicional. Impagable.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Andrés Pastrana',
-      meta: 'Asegurado Familiar (Zaragoza)',
-      comment: 'Tranquilidad absoluta para mi familia. Poder duplicar el capital en caso de accidente de tráfico y tener el testamento gratuito son extras de un valor tremendo.',
+      author: 'Manuel Ramón',
+      meta: 'Asegurado en Valencia',
+      comment: 'Elegimos la modalidad de prima mixta. VitaBlue nos asesoró de forma impecable por WhatsApp, resolviendo todas las dudas sobre la estabilización a los 65 años. Muy transparentes.',
       stars: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100'
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
+    },
+    {
+      author: 'Laura Fernández',
+      meta: 'Asegurada en Barcelona',
+      comment: 'El servicio de testamento online y el borrado de huella digital de mi padre nos facilitó todo enormemente. Un seguro de decesos moderno que va más allá del sepelio.',
+      stars: 5,
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100'
     }
   ];
 
   const faqs = [
     {
-      q: '¿Es obligatorio pasar una revisión médica para contratar?',
-      a: 'Para la mayoría de los capitales (hasta 150.000€) y edades normales, solo se exige completar un cuestionario de salud digital de 5 minutos al contratar. No requiere analíticas ni visitas médicas en clínicas.'
+      q: '¿Qué cubre exactamente la repatriación internacional?',
+      a: 'Si el asegurado fallece fuera de España, la póliza cubre los gastos de traslado y acondicionamiento sanitario del cuerpo hasta el aeropuerto más cercano a la localidad de inhumación en España.'
     },
     {
-      q: '¿Cómo puedo cambiar mi seguro de vida de la hipoteca a VitaBlue?',
-      a: 'Es tu derecho legal. Puedes dar de baja el seguro de vida del banco avisando con 30 días de antelación al vencimiento y presentar la nueva póliza de VitaBlue con el banco como beneficiario hipotecario. Te ayudamos gratis con todo el trámite.'
+      q: '¿Qué diferencia hay entre la prima nivelada y la prima mixta?',
+      a: 'En la prima nivelada, el precio es estable toda la vida (solo sube por el IPC anual). En la prima mixta, pagas una cuota inicial más barata que va aumentando gradualmente con la edad hasta los 65 años, donde se estabiliza y ya no vuelve a subir por edad.'
     },
     {
-      q: '¿Quién recibe el capital en caso de fallecimiento?',
-      a: 'El capital asegurado lo reciben los beneficiarios expresamente designados por el asegurado en la póliza (ej. cónyuge, hijos). En caso de no designarse beneficiarios específicos, se abonará a los herederos legales según ley.'
+      q: '¿Puedo incluir a varios miembros de la familia en la misma póliza?',
+      a: 'Sí. Asistencia Familiar Iplus permite incluir en un único contrato a todos los miembros de la unidad familiar (padres, hijos y abuelos), aplicando descuentos colectivos en la cuota global.'
+    },
+    {
+      q: '¿En qué consiste el borrado de la huella digital?',
+      a: 'Consiste en la tramitación del cierre, borrado y desactivación de todas las cuentas de redes sociales, correos electrónicos y perfiles públicos de internet pertenecientes al asegurado fallecido.'
     }
   ];
 
-  const priceEstimate = calculateLifePrice();
+  const priceEstimate = calculateDecesosPrice();
+  
+  const canonicalUrl = 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar';
+  const title = 'Asistencia Familiar Iplus | Seguro de Decesos | VitaBlue';
+  const description = 'Protege a tu familia frente a imprevistos con Asistencia Familiar Iplus. Seguro de decesos completo con cobertura de traslado, asesoramiento legal y testamento.';
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -170,7 +183,7 @@ export const LifeInsurance: React.FC = () => {
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
         "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
-        "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias.",
+        "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
@@ -181,24 +194,28 @@ export const LifeInsurance: React.FC = () => {
       },
       {
         "@type": "Product",
-        "@id": "https://www.vitablue.es/productos/seguro-vida#producto",
-        "name": "Seguro de Vida Familiar",
-        "description": "Seguro de vida familiar para proteger la estabilidad de tus seres queridos y cubrir tu hipoteca frente a imprevistos.",
+        "@id": `${canonicalUrl}#producto`,
+        "name": "Asistencia Familiar iPlus Sanitas",
+        "description": "Seguro de asistencia familiar y decesos: servicios funerarios completos, traslado mundial, apoyo emocional y gestión documental.",
         "brand": {
           "@type": "Brand",
-          "name": "VitaBlue"
+          "name": "Sanitas"
+        },
+        "isSimilarTo": {
+          "@type": "Brand",
+          "name": "Santalucía"
         },
         "offers": {
           "@type": "Offer",
           "price": "Consultar precio",
           "priceCurrency": "EUR",
           "availability": "https://schema.org/InStock",
-          "url": "https://www.vitablue.es/productos/seguro-vida"
+          "url": canonicalUrl
         },
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.8",
-          "reviewCount": "82",
+          "reviewCount": "76",
           "bestRating": "5",
           "worstRating": "1"
         },
@@ -207,10 +224,38 @@ export const LifeInsurance: React.FC = () => {
             "@type": "Review",
             "author": {
               "@type": "Person",
-              "name": "Pedro M."
+              "name": "Ana B."
             },
-            "datePublished": "2025-11-08",
-            "reviewBody": "Cambié mi seguro de vida vinculado al banco por el de VitaBlue y me ahorro más de un 40% al año con mejores coberturas. Ellos se encargaron de toda la gestión.",
+            "datePublished": "2025-11-15",
+            "reviewBody": "En un momento muy difícil, el servicio fue impecable. Gestionaron todo y nos ayudaron con el traslado internacional.",
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5",
+              "bestRating": "5"
+            }
+          },
+          {
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": "Roberto C."
+            },
+            "datePublished": "2025-10-08",
+            "reviewBody": "Excelente cobertura funeraria y el apoyo emocional fue muy valioso. Totalmente recomendable.",
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5",
+              "bestRating": "5"
+            }
+          },
+          {
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": "Isabel M."
+            },
+            "datePublished": "2025-09-25",
+            "reviewBody": "Contratación sencilla y tranquilidad para toda la familia. El coaseguro con Santalucía es una garantía.",
             "reviewRating": {
               "@type": "Rating",
               "ratingValue": "5",
@@ -237,7 +282,7 @@ export const LifeInsurance: React.FC = () => {
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro de Vida"
+            "name": "Asistencia Familiar iPlus"
           }
         ]
       },
@@ -246,18 +291,34 @@ export const LifeInsurance: React.FC = () => {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Cómo puedo cambiar mi seguro de vida de la hipoteca a VitaBlue?",
+            "name": "¿Qué incluye el servicio funerario?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Es tu derecho legal. Puedes dar de baja el seguro de vida del banco avisando con 30 días de antelación al vencimiento y presentar la nueva póliza de VitaBlue con el banco como beneficiario hipotecario. Te ayudamos gratis con todo el trámite."
+              "text": "Organización, tanatorio, féretro, ceremonia y gestiones básicas."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Quién recibe el capital en caso de fallecimiento?",
+            "name": "¿Se cubre repatriación internacional?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "El capital asegurado lo reciben los beneficiarios expresamente designados por el asegurado en la póliza (ej. cónyuge, hijos). En caso de no designarse beneficiarios específicos, se abonará a los herederos legales según ley."
+              "text": "Sí, según límites económicos definidos en póliza."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo funciona la prima mixta?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Combina ventajas de prima natural y nivelada para suavizar incrementos."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Hay carencias?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Aplican carencias específicas por garantía. Confirmar en condiciones particulares."
             }
           }
         ]
@@ -268,21 +329,21 @@ export const LifeInsurance: React.FC = () => {
   return (
     <div className="w-full flex flex-col bg-white">
       <Helmet>
-        <title>Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue</title>
-        <meta name="description" content="Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas." />
-        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-vida" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue" />
-        <meta property="og:description" content="Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas." />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
-        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-vida" />
+        <meta property="og:url" content={canonicalUrl} />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue" />
-        <meta name="twitter:description" content="Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas." />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
@@ -294,7 +355,9 @@ export const LifeInsurance: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs 
             items={[
-              { label: 'Seguros de Vida', href: '/productos/seguro-vida' }
+              { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
+              { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' },
+              { label: 'Asistencia Familiar', href: '/productos/seguro-para-decesos/asistencia-familiar' }
             ]} 
           />
         </div>
@@ -311,23 +374,23 @@ export const LifeInsurance: React.FC = () => {
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
-                  <Shield className="w-4 h-4" /> Seguros de Vida
+                  <Shield className="w-4 h-4" /> Seguro de Decesos Familiar
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
-                  Apto para vinculación hipotecaria
+                  Cobertura de traslado internacional
                 </span>
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight tracking-tight">
-                Seguro de Vida Familiar
+                Asistencia Familiar Iplus
               </h1>
               <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Asegura la tranquilidad y el futuro financiero de tus seres queridos. Cubre préstamos, hipotecas y garantiza la estabilidad familiar con cuotas mínimas mensuales.
+                Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Seguro Online
+                  Calcular Cuota Familiar
                 </Button>
                 <a href="tel:+34900839240" className="inline-flex items-center justify-center">
                   <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -337,8 +400,8 @@ export const LifeInsurance: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Sin reconocimientos médicos</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Cobertura de invalidez</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Testamento online gratis</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Trámites de herencia</span>
               </div>
             </div>
 
@@ -346,8 +409,8 @@ export const LifeInsurance: React.FC = () => {
             <div className="lg:col-span-5 w-full">
               <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
                 <div>
-                  <h3 className="text-xl font-display font-black text-text-main">Tarificador de Vida</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu cuota según edad y capital asegurado.</p>
+                  <h3 className="text-xl font-display font-black text-text-main">Tarificador de Decesos</h3>
+                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu prima según tu edad y estructura de pago.</p>
                 </div>
 
                 <div className="space-y-4">
@@ -358,7 +421,7 @@ export const LifeInsurance: React.FC = () => {
                       <input 
                         type="range" 
                         min="18" 
-                        max="65" 
+                        max="75" 
                         value={age} 
                         onChange={(e) => setAge(parseInt(e.target.value))} 
                         className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
@@ -366,19 +429,28 @@ export const LifeInsurance: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Capital Selector */}
+                  {/* Premium Type Selector */}
                   <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Capital a Asegurar: <span className="text-sm font-sans font-black text-primary ml-1">{capital.toLocaleString('es-ES')} €</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="50000" 
-                        max="300000" 
-                        step="10000"
-                        value={capital} 
-                        onChange={(e) => setCapital(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Tipo de Prima</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'levelled', label: 'Nivelada' },
+                        { id: 'mixed', label: 'Mixta' },
+                        { id: 'natural', label: 'Natural' }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setPremiumType(item.id as any)}
+                          className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
+                            premiumType === item.id 
+                              ? 'border-primary bg-primary/5 text-primary' 
+                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -410,22 +482,22 @@ export const LifeInsurance: React.FC = () => {
           <div className="flex items-center gap-3.5">
             <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Tranquilidad Familiar</h4>
-              <p className="text-xs text-text-secondary font-semibold">Asegura la manutención y estudios de tus hijos.</p>
+              <h4 className="text-sm font-bold text-text-main">Homologación Oficial</h4>
+              <p className="text-xs text-text-secondary font-semibold">Pólizas oficiales autorizadas por la DGSFP.</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Clock className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Emisión sin Médicos</h4>
-              <p className="text-xs text-text-secondary font-semibold">Cuestionario online sin visitas clínicas ni analíticas.</p>
+              <h4 className="text-sm font-bold text-text-main">Gestión Completa</h4>
+              <p className="text-xs text-text-secondary font-semibold">Servicio fúnebre, traslados y trámites en 24h.</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Award className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Protección Hipotecaria</h4>
-              <p className="text-xs text-text-secondary font-semibold">Cancela la hipoteca pendiente en caso de siniestro.</p>
+              <h4 className="text-sm font-bold text-text-main">Asistencia 24/7 Duelo</h4>
+              <p className="text-xs text-text-secondary font-semibold">Apoyo psicológico y gestores de servicio de guardia.</p>
             </div>
           </div>
         </div>
@@ -434,7 +506,7 @@ export const LifeInsurance: React.FC = () => {
       {/* Providers Logos */}
       <section className="py-10 bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales colaboradoras</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales homologadas</p>
           <div className="flex justify-center items-center gap-12 sm:gap-16">
             <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
             <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
@@ -445,12 +517,12 @@ export const LifeInsurance: React.FC = () => {
       {/* Coberturas Esenciales (Symmetric standard grid with clean illustrations) */}
       <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
         <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Garantías de vida</span>
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Garantías Familiares</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Coberturas del Seguro de Vida
+            Coberturas de Asistencia Familiar
           </h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            Protección completa y capitales garantizados para asegurar el bienestar de tu familia ante cualquier imprevisto.
+            Máxima cobertura en sepelio, orientación sucesoria y traslados sanitarios para toda la unidad familiar.
           </p>
         </div>
 
@@ -465,11 +537,7 @@ export const LifeInsurance: React.FC = () => {
                 <div className="space-y-4">
                   {/* Clean illustration container directly in flex */}
                   <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                    {typeof Illustration === 'function' ? (
-                      <Illustration />
-                    ) : (
-                      <Activity className="w-8 h-8 text-primary" />
-                    )}
+                    <Illustration />
                   </div>
 
                   <div className="space-y-2">
@@ -486,12 +554,12 @@ export const LifeInsurance: React.FC = () => {
       {/* Modalities Comparison Grid */}
       <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-slate-50/50 border-t border-b border-slate-100">
         <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades</span>
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades de Prima</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Elige el plan adaptado a tus necesidades
+            Elige tu estructura de pago
           </h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            Compara las tres alternativas de contratación para proteger tu hipoteca, patrimonio o el sustento de tus hijos.
+            Compara las tres alternativas de tarificación para equilibrar tu cuota mensual a corto y largo plazo.
           </p>
         </div>
 
@@ -549,10 +617,10 @@ export const LifeInsurance: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Transparencia Radical</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            ¿Qué incluye y qué excluye tu seguro de vida?
+            ¿Qué incluye y qué excluye Asistencia Familiar Iplus?
           </h2>
           <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Te mostramos sin rodeos las condiciones reales de la póliza de vida para que decidas de forma clara y transparente.
+            Te explicamos claramente las exclusiones e inclusiones del seguro de decesos familiar para proteger a los tuyos de manera transparente.
           </p>
         </div>
 
@@ -583,25 +651,25 @@ export const LifeInsurance: React.FC = () => {
               { 
                 step: '01', 
                 title: 'Rellena el formulario', 
-                desc: 'Introduce tu edad, capital deseado y si quieres cobertura de invalidez en nuestro cotizador.',
+                desc: 'Indica los datos de tu familia y selecciona el tipo de prima (Nivelada, Mixta o Natural) en nuestro cotizador.',
                 icon: FileText
               },
               { 
                 step: '02', 
-                title: 'Revisa tu prima', 
-                desc: 'Revisa tu tarifa mensual estimada y vinculación hipotecaria; te indicamos descuentos por pago anual.',
+                title: 'Elige forma de pago', 
+                desc: 'Pago mensual o pago anual; te indicamos los descuentos aplicables y la promoción vigente en tu cuota.',
                 icon: CreditCard
               },
               { 
                 step: '03', 
                 title: 'Cuestionario de salud', 
-                desc: 'Completa un breve cuestionario digital necesario para la emisión inmediata de tu póliza de vida.',
+                desc: 'Completa un breve cuestionario digital necesario para declarar la salud y activar coberturas del seguro.',
                 icon: Heart
               },
               { 
                 step: '04', 
                 title: 'Recibe tu póliza', 
-                desc: 'Obtén tu documentación oficial y contrato de seguro firmado digitalmente al instante en tu correo.',
+                desc: 'Obtén tu documentación oficial y tarjetas de asistencia familiar listas para empezar a usar desde el primer día.',
                 icon: ShieldCheck
               }
             ].map((item, idx) => {
@@ -651,7 +719,7 @@ export const LifeInsurance: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preguntas Frecuentes</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Resolver dudas sobre el Seguro de Vida
+            Resolver dudas sobre Asistencia Familiar Iplus
           </h2>
         </div>
 
@@ -672,11 +740,11 @@ export const LifeInsurance: React.FC = () => {
       <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
           <div className="space-y-1">
-            <h3 className="text-2xl font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada para tu seguro de vida?</h3>
-            <p className="text-body-reg text-text-secondary font-medium">Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita.</p>
+            <h3 className="text-2xl font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada para tu unidad familiar?</h3>
+            <p className="text-body-reg text-text-secondary font-medium">Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita.</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20de%20Vida.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>
@@ -685,4 +753,4 @@ export const LifeInsurance: React.FC = () => {
   );
 };
 
-export default LifeInsurance;
+export default AsistenciaFamiliar;

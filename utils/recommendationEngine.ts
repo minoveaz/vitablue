@@ -1,81 +1,15 @@
-export interface Product {
-  id: string;
-  name: string;
-  providerName: string;
-  providerLogo: string;
-  whyItFits: string;
-  price: string;
-  pricePeriod: string;
-  ctaText: string;
-  ctaHref: string;
-  externalUrl: string;
-  inclusions: string[];
-  exclusions: string[];
-  isRecommended?: boolean;
-  highlights?: string[];
-  features?: { id: string; label: string; icon: string }[];
-}
+import type { Recommendation, RecommendationCriteria, RecommendationDecision } from '@/domain/products/types';
+import { PRODUCT_CATALOG } from '@/domain/products/catalog';
+import { evaluateEligibility } from '@/domain/products/eligibility';
+import { rankRecommendations } from '@/domain/products/ranking';
 
-export const PRODUCTS_BASE = {
-  adeslas: {
-    id: 'adeslas',
-    name: 'Adeslas Plena Total',
-    providerName: 'Adeslas',
-    providerLogo: 'https://static.vitablue.es/logos/adeslas.png',
-    price: 'Desde 35€',
-    pricePeriod: 'mes',
-    ctaText: 'Ver en Vitablue',
-    ctaHref: '/continuar-a-vitablue/adeslas',
-    externalUrl: 'https://example.com',
-    inclusions: [
-      'Repatriación sanitaria ilimitada',
-      'Urgencias 24h y hospitalización',
-      'Sin copagos (todo incluido)',
-      'Certificado oficial para visado'
-    ],
-    exclusions: [
-      'Tratamientos estéticos',
-      'Reembolso fuera de cuadro médico',
-      'Carencia de 3 meses para cirugías'
-    ],
-    highlights: ['Visa Ready', 'Red Médica Nº1', 'Sin Copagos'],
-  },
-  sanitas: {
-    id: 'sanitas',
-    name: 'Sanitas Más Salud',
-    providerName: 'Sanitas',
-    providerLogo: 'https://static.vitablue.es/logos/sanitas.png',
-    price: 'Desde 38€',
-    pricePeriod: 'mes',
-    ctaText: 'Ver en Vitablue',
-    ctaHref: '/continuar-a-vitablue/sanitas',
-    externalUrl: 'https://www.vitablue.es/productos/seguro-medico-estudiantes-extranjeros-espana.html',
-    inclusions: [
-      'Asistencia médica completa',
-      'Sin copagos opcional',
-      'Acceso a videoconsulta 24h (Blua)',
-      'Cobertura dental ampliada'
-    ],
-    exclusions: [
-      'Psicoterapia ilimitada',
-      'Medicamentos fuera de hospital',
-      'Óptica'
-    ],
-    highlights: ['Líder Digital', 'Centros Propios', 'Red Bupa'],
-  }
-};
+export type { Product, Recommendation, RecommendationDecision } from '@/domain/products/types';
 
-interface FilterCriteria {
-  profile: string | null;
-  visaRequired: string | null;
-  duration: string | null;
-  ageRange: string | null;
-  travelFrequency?: string | null;
-  residencyType?: string | null;
-  continents?: string[];
-}
+export const PRODUCTS_BASE = PRODUCT_CATALOG;
 
-export const getRecommendations = (criteria: FilterCriteria): Product[] => {
+type FilterCriteria = RecommendationCriteria;
+
+export const getRecommendations = (criteria: FilterCriteria): Recommendation[] => {
   const { profile, visaRequired, ageRange, travelFrequency, residencyType, continents = [] } = criteria;
 
   // LOGIC: Drivers based on Marketing Research
@@ -96,12 +30,12 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: true,
-        whyItFits: 'Para la residencia no lucrativa, Extranjería exige un seguro equivalente al público. Adeslas es la opción más segura por su aceptación garantizada en consulados y su red nacional.'
+        whyItFits: 'Para la residencia no lucrativa, ExtranjerÃ­a exige un seguro equivalente al pÃºblico. Adeslas es la opciÃ³n mÃ¡s segura por su aceptaciÃ³n garantizada en consulados y su red nacional.'
       },
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: false,
-        whyItFits: 'Una alternativa de alta calidad con servicios digitales premium que también cumple los requisitos legales para tu residencia.'
+        whyItFits: 'Una alternativa de alta calidad con servicios digitales premium que tambiÃ©n cumple los requisitos legales para tu residencia.'
       }
     ];
   }
@@ -112,12 +46,12 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Para inversores y Golden Visa, Sanitas ofrece el nivel de servicio y exclusividad que buscas, con acceso a sus propios hospitales premium y gestión digital VIP.'
+        whyItFits: 'Para inversores y Golden Visa, Sanitas ofrece el nivel de servicio y exclusividad que buscas, con acceso a sus propios hospitales premium y gestiÃ³n digital VIP.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'La opción con la red de especialistas más extensa de España, ideal si prefieres tener la máxima libertad de elección de centros físicos.'
+        whyItFits: 'La opciÃ³n con la red de especialistas mÃ¡s extensa de EspaÃ±a, ideal si prefieres tener la mÃ¡xima libertad de elecciÃ³n de centros fÃ­sicos.'
       }
     ];
   }
@@ -128,13 +62,13 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Como trabajador en España ya tendrás acceso a la sanidad pública. Te recomendamos esta opción para agilizar tus visitas a especialistas y pruebas médicas con el mejor soporte digital.'
+        whyItFits: 'Como trabajador en EspaÃ±a ya tendrÃ¡s acceso a la sanidad pÃºblica. Te recomendamos esta opciÃ³n para agilizar tus visitas a especialistas y pruebas mÃ©dicas con el mejor soporte digital.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        price: 'Desde 25€ (con copago)',
-        whyItFits: 'Si buscas ahorro, esta alternativa con copagos te permite acceder a la red médica líder por una cuota mensual mínima, ideal como complemento a la Seguridad Social.'
+        price: 'Precio personalizado',
+        whyItFits: 'Si buscas ahorro, esta alternativa con copagos te permite acceder a la red mÃ©dica lÃ­der por una cuota mensual mÃ­nima, ideal como complemento a la Seguridad Social.'
       }
     ];
   }
@@ -144,11 +78,11 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
     const sanitasResult = { 
       ...PRODUCTS_BASE.sanitas, 
       isRecommended: true,
-      whyItFits: `Al viajar con frecuencia${includesUSA ? ' (incluyendo Norteamérica)' : ''}, necesitas el respaldo de una red global. Sanitas, junto a Bupa, te ofrece la mejor asistencia internacional y telemedicina 24/7 estés donde estés.`
+      whyItFits: `Al viajar con frecuencia${includesUSA ? ' (incluyendo NorteamÃ©rica)' : ''}, necesitas el respaldo de una red global. Sanitas, junto a Bupa, te ofrece la mejor asistencia internacional y telemedicina 24/7 estÃ©s donde estÃ©s.`
     };
 
     if (includesUSA) {
-      sanitasResult.price = 'Consultar precio (USA)';
+      sanitasResult.price = 'Precio personalizado';
       sanitasResult.highlights = [...(sanitasResult.highlights || []), 'Cobertura USA'];
     }
 
@@ -157,7 +91,7 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'Una opción sólida si buscas la mayor red de médicos físicos en España para cuando regreses de tus viajes.'
+        whyItFits: 'Una opciÃ³n sÃ³lida si buscas la mayor red de mÃ©dicos fÃ­sicos en EspaÃ±a para cuando regreses de tus viajes.'
       }
     ];
   }
@@ -168,12 +102,12 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: true,
-        whyItFits: 'Es la opción más robusta para trámites de extranjería. Su certificado es aceptado sin excepciones y ofrece la red de médicos más amplia de España.'
+        whyItFits: 'Es la opciÃ³n mÃ¡s robusta para trÃ¡mites de extranjerÃ­a. Su certificado es aceptado sin excepciones y ofrece la red de mÃ©dicos mÃ¡s amplia de EspaÃ±a.'
       },
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: false,
-        whyItFits: 'Una excelente alternativa si además del visado buscas la mejor experiencia digital y videoconsultas médicas 24/7.'
+        whyItFits: 'Una excelente alternativa si ademÃ¡s del visado buscas la mejor experiencia digital y videoconsultas mÃ©dicas 24/7.'
       }
     ];
   }
@@ -184,12 +118,12 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Ideal por su liderazgo en telemedicina y su red internacional. Perfecto si prefieres gestionar todo desde el móvil y acceder a hospitales propios premium.'
+        whyItFits: 'Ideal por su liderazgo en telemedicina y su red internacional. Perfecto si prefieres gestionar todo desde el mÃ³vil y acceder a hospitales propios premium.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'La alternativa sólida si buscas tener el máximo número de especialistas y clínicas disponibles en cualquier rincón del país.'
+        whyItFits: 'La alternativa sÃ³lida si buscas tener el mÃ¡ximo nÃºmero de especialistas y clÃ­nicas disponibles en cualquier rincÃ³n del paÃ­s.'
       }
     ];
   }
@@ -199,12 +133,33 @@ export const getRecommendations = (criteria: FilterCriteria): Product[] => {
     { 
       ...PRODUCTS_BASE.adeslas, 
       isRecommended: true,
-      whyItFits: 'Nuestra recomendación general por equilibrio entre precio y cobertura en la red médica más grande del país.'
+      whyItFits: 'Nuestra recomendaciÃ³n general por equilibrio entre precio y cobertura en la red mÃ©dica mÃ¡s grande del paÃ­s.'
     },
     { 
       ...PRODUCTS_BASE.sanitas, 
       isRecommended: false,
-      whyItFits: 'Una opción superior en servicios digitales y acceso a centros médicos exclusivos de alta calidad.'
+      whyItFits: 'Una opciÃ³n superior en servicios digitales y acceso a centros mÃ©dicos exclusivos de alta calidad.'
     }
   ];
 };
+
+/**
+ * Explainable adapter for consumers that need ranking metadata instead of UI copy.
+ * It intentionally reuses the proven ranking above until eligibility rules are split out.
+ */
+export const getRecommendationDecisions = (criteria: FilterCriteria): RecommendationDecision[] =>
+  rankRecommendations(getRecommendations(criteria)).map(({ product, score }) => {
+    const eligibility = evaluateEligibility(product, criteria);
+    return ({
+    productId: product.id,
+    eligible: eligibility.eligible,
+    score,
+    reasons: [product.whyItFits],
+    restrictions: [...eligibility.restrictions, ...(product.priceStatus === 'pending' || product.coverageStatus === 'pending'
+      ? ['Precio y coberturas pendientes de verificación oficial']
+      : [])],
+    dataStatus: product.priceStatus === 'verified' && product.coverageStatus === 'verified'
+      ? 'verified'
+      : 'pending',
+    });
+  });

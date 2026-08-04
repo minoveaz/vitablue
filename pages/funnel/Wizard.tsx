@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import QuotationWizard from '../components/organisms/QuotationWizard';
+import { useWizard } from '../../context/WizardContext';
+import QuotationWizard from '../../components/organisms/QuotationWizard';
 
 export const Wizard: React.FC = () => {
   const navigate = useNavigate();

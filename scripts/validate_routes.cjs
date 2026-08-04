@@ -13,7 +13,10 @@ const vite = fs.readFileSync(vitePath, 'utf8');
 const sitemap = fs.readFileSync(sitemapPath, 'utf8');
 const registry = fs.readFileSync(registryPath, 'utf8');
 
-const appRoutes = [...app.matchAll(/<Route\s+path="([^"]+)"/g)].map((match) => match[1]);
+const appRoutes = [
+  ...[...app.matchAll(/<Route\s+path="([^"]+)"/g)].map((match) => match[1]),
+  ...[...registry.matchAll(/path:\s*'([^']+)'/g)].map((match) => match[1]).filter((route) => route.startsWith('/backoffice')),
+];
 const prerenderBlock = vite.match(/routes:\s*\[([\s\S]*?)\n\s*\],/);
 let prerenderRoutes = prerenderBlock
   ? [...prerenderBlock[1].matchAll(/'([^']+)'/g)].map((match) => match[1])
@@ -31,7 +34,8 @@ const registryRoutes = [
   ...[...registry.matchAll(/(?:canonical|legacy)\('([^']+)'/g)].map((match) => match[1]),
   ...[...registry.matchAll(/path:\s*'([^']+)'/g)].map((match) => match[1]),
 ];
-const nonSeoRoutes = new Set(['/login', '/backoffice', '/cotizador.html', '/wizard', '/resultados']);
+const legacyRegistryRoutes = new Set([...registry.matchAll(/legacy\('([^']+)'/g)].map((match) => match[1]));
+const nonSeoRoutes = new Set(['/login', '/backoffice', '/backoffice/catalogo', '/cotizador.html', '/wizard', '/resultados']);
 
 const unique = (routes) => [...new Set(routes)];
 const dynamicRoutes = appRoutes.filter((route) => route.includes(':'));
@@ -44,8 +48,10 @@ const concreteAppRoutes = appRoutes.filter((route) =>
   !route.includes(':') &&
   route !== '*' &&
   !nonSeoRoutes.has(route) &&
+  !legacyRegistryRoutes.has(route) &&
   !route.startsWith('/styleguide') &&
-  !route.startsWith('/marketing-studio')
+  !route.startsWith('/marketing-studio') &&
+  !route.startsWith('/backoffice/marketing-studio')
 );
 const missingPrerender = concreteAppRoutes.filter((route) => !prerenderRoutes.includes(route));
 const missingSitemap = concreteAppRoutes.filter((route) => !sitemapRoutes.includes(route));

@@ -1,149 +1,119 @@
 import React, { useState } from 'react';
+import { travelPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
   ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
-  FileText, CreditCard, Shield
+  FileText, CreditCard, Globe
 } from 'lucide-react';
-import { useWizard } from '../context/WizardContext';
-import Breadcrumbs from '../components/molecules/Breadcrumbs';
-import AdvisorCard from '../components/molecules/AdvisorCard';
-import Accordion from '../components/molecules/Accordion';
-import TestimonialCard from '../components/molecules/TestimonialCard';
-import TransparencyBlock from '../components/molecules/TransparencyBlock';
-import { Button } from '../components/atoms/Button';
+import { useWizard } from '../../context/WizardContext';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs';
+import AdvisorCard from '../../components/molecules/AdvisorCard';
+import Accordion from '../../components/molecules/Accordion';
+import TestimonialCard from '../../components/molecules/TestimonialCard';
+import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import { Button } from '../../components/atoms/Button';
 import { 
-  FamilyIllustration,
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
-  MedicalAttentionIllustration
-} from '../components/illustrations';
+  MedicalAttentionIllustration,
+  FamilyIllustration
+} from '../../components/illustrations';
 
-export const AsistenciaFamiliar: React.FC = () => {
+export const TravelInsurance: React.FC = () => {
   const navigate = useNavigate();
-  const { setProfile, resetWizard } = useWizard();
+  const { setProfile, setVisaRequired, resetWizard } = useWizard();
 
-  // State for interactive pricing estimator
-  const [age, setAge] = useState<number>(40);
-  const [premiumType, setPremiumType] = useState<'levelled' | 'natural' | 'mixed'>('mixed');
+  // State for interactive travel pricing estimator
+  const [duration, setDuration] = useState<'escapade' | 'short' | 'long' | 'annual'>('escapade');
+  const [destination, setDestination] = useState<'europe' | 'world-no-usa' | 'world-all'>('europe');
 
-  const calculateDecesosPrice = () => {
-    let base = 5.20;
+  const calculateTravelPrice = () => {
+    let base = 18.50;
+    if (duration === 'short') base = 32.20;
+    if (duration === 'long') base = 59.90;
+    if (duration === 'annual') base = 124.00;
     
-    if (premiumType === 'levelled') {
-      base = age < 30 ? 11.50 : age < 50 ? 19.80 : 29.50;
-    } else if (premiumType === 'natural') {
-      base = age < 30 ? 3.90 : age < 50 ? 6.50 : 12.80;
-    } else {
-      // Mixed
-      base = age < 30 ? 5.80 : age < 50 ? 9.90 : 18.50;
-    }
+    if (destination === 'world-no-usa') base *= 1.4;
+    if (destination === 'world-all') base *= 1.8;
     return base.toFixed(2);
   };
 
   const handleStartQuoting = () => {
     resetWizard();
-    setProfile('expat'); // Standard profile
+    setProfile('nomad'); // Nomad/traveler profile fits travel wizard
+    setVisaRequired('unknown');
     navigate('/wizard');
   };
 
   const inclusions = [
-    'Gestión y cobertura completa de los servicios fúnebres de sepelio o incineración.',
-    'Traslado nacional e internacional ilimitado del fallecido hasta el cementerio elegido.',
-    'Asesoramiento legal, tramitación de pensiones, viudedad y herencias familiares.',
-    'Testamento online gratuito y borrado de la huella digital en internet.'
+    'Gastos mÃƒÂ©dicos, farmacÃƒÂ©uticos y de hospitalizaciÃƒÂ³n de urgencia en el extranjero.',
+    'RepatriaciÃƒÂ³n mÃƒÂ©dica del asegurado enfermo, accidentado o fallecido.',
+    'IndemnizaciÃƒÂ³n por pÃƒÂ©rdida, robo o daÃƒÂ±os graves en el equipaje facturado.',
+    'Regreso anticipado del asegurado por hospitalizaciÃƒÂ³n o fallecimiento de un familiar.'
   ];
 
   const exclusions = [
-    'Indemnización directa si el servicio de decesos es organizado por terceros ajenos a la aseguradora.',
-    'Siniestros derivados de conflictos bélicos, catástrofes naturales o radiación nuclear.',
-    'Suicidio del asegurado durante el primer año de vigencia de la póliza.',
-    'Gastos suntuarios no contemplados en el capital de sepelio contratado.'
+    'Enfermedades preexistentes o crÃƒÂ³nicas conocidas previas al inicio del viaje.',
+    'Tratamientos dentales complejos o revisiones preventivas ordinarias en viaje.',
+    'Siniestros producidos bajo los efectos del alcohol o drogas.',
+    'PrÃƒÂ¡ctica de deportes de aventura extremos sin contratar el suplemento correspondiente.'
   ];
 
   const coverages = [
     {
-      title: 'Servicio de Sepelio',
-      desc: 'Gestión integral fúnebre de sepelio o incineración, coche fúnebre, tanatorio, flores y nicho o sepultura seleccionados.',
-      illustration: FamilyIllustration
-    },
-    {
-      title: 'Traslado Nacional e Internacional',
-      desc: 'Garantía de traslado sanitario y repatriación del asegurado fallecido desde cualquier parte del mundo hasta España o viceversa.',
-      illustration: TravelIllustration
-    },
-    {
-      title: 'Asesoramiento Legal',
-      desc: 'Gestión y tramitación de pensiones de viudedad, orfandad, auxilio por defunción, declaración de herederos y adjudicación de herencias.',
-      illustration: PreventionIllustration
-    },
-    {
-      title: 'Testamento Online',
-      desc: 'Acceso gratuito a la firma de testamento vital y testamento online anual guiado por un abogado especializado.',
-      illustration: HealthIllustration
-    },
-    {
-      title: 'Apoyo Psicológico',
-      desc: 'Asistencia y soporte psicológico telefónico y presencial a la familia por duelo inmediato ante la pérdida.',
+      title: 'Gastos MÃƒÂ©dicos de Urgencia',
+      desc: 'Cobertura de hasta 150.000Ã¢â€šÂ¬ en hospitalizaciÃƒÂ³n, cirugÃƒÂ­as, honorarios mÃƒÂ©dicos y farmacia en el extranjero.',
       illustration: MedicalAttentionIllustration
     },
     {
-      title: 'Asistencia en Viajes',
-      desc: 'Gastos médicos de urgencia en el extranjero y repatriación médica en caso de accidente durante viajes internacionales.',
+      title: 'RepatriaciÃƒÂ³n Sanitaria',
+      desc: 'GarantÃƒÂ­a del 100% de los costes de traslado mÃƒÂ©dico urgente de vuelta a EspaÃƒÂ±a por enfermedad grave o deceso.',
       illustration: TravelIllustration
+    },
+    {
+      title: 'PÃƒÂ©rdida de Equipajes',
+      desc: 'IndemnizaciÃƒÂ³n por daÃƒÂ±os graves, robo o extravÃƒÂ­o definitivo del equipaje facturado durante el vuelo.',
+      illustration: PreventionIllustration
+    },
+    {
+      title: 'Demoras y CancelaciÃƒÂ³n',
+      desc: 'Reembolso de gastos de hotel y manutenciÃƒÂ³n por retraso del medio de transporte o pÃƒÂ©rdida de conexiones.',
+      illustration: HealthIllustration
+    },
+    {
+      title: 'Regreso Anticipado',
+      desc: 'Billetes de vuelta cubiertos si debes interrumpir tu viaje por fallecimiento o ingreso de un familiar en EspaÃƒÂ±a.',
+      illustration: FamilyIllustration
+    },
+    {
+      title: 'Asistencia 24h MultilingÃƒÂ¼e',
+      desc: 'TelÃƒÂ©fono de asistencia internacional permanente para resolver cualquier urgencia mÃƒÂ©dica o legal en tu idioma.',
+      illustration: HealthIllustration
     }
   ];
 
-  const plansList = [
-    {
-      name: 'Prima Nivelada',
-      subtitle: 'Cuota estable vitalicia',
-      desc: 'Pagas una cuota ligeramente superior al inicio pero muy estable. La prima no aumenta con tu edad, solo se actualiza según el IPC y capital de sepelio.',
-      priceDetail: 'Cuota protegida frente a la edad',
-      tag: 'Estabilidad',
-      badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
-      isFeatured: false
-    },
-    {
-      name: 'Prima Mixta',
-      subtitle: 'Equilibrio recomendado',
-      desc: 'La modalidad más popular. Comienza con una prima reducida que aumenta de forma progresiva hasta los 65 años, momento en el cual se nivela y se estabiliza.',
-      priceDetail: 'Estabilización automática a los 65',
-      tag: 'Más Contratado',
-      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
-      isFeatured: true
-    },
-    {
-      name: 'Prima Natural',
-      subtitle: 'Mínimo coste inicial',
-      desc: 'La cuota de entrada más económica. El precio se ajusta de forma anual y aumenta progresivamente según cumples años a lo largo del contrato.',
-      priceDetail: 'Prima adaptada a tu edad actual',
-      tag: 'Ahorro Inicial',
-      badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25',
-      isFeatured: false
-    }
-  ];
 
   const testimonials = [
     {
-      author: 'Elena Gutiérrez',
-      meta: 'Asegurada familiar en Madrid',
-      comment: 'Trato de máxima sensibilidad en un momento tan duro. Se encargaron de toda la gestión fúnebre, traslados y trámites de herencia sin cobrarnos un euro adicional. Impagable.',
+      author: 'Marta Soler',
+      meta: 'ContratÃƒÂ³ Viaje Anual Multiviaje',
+      comment: 'Viajo constantemente por trabajo. ContratÃƒÂ© la pÃƒÂ³liza anual multiviaje y es comodÃƒÂ­sima; te olvidas de hacer un seguro cada vez que vuelas y sale sÃƒÂºper rentable.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Manuel Ramón',
-      meta: 'Asegurado en Valencia',
-      comment: 'Elegimos la modalidad de prima mixta. VitaBlue nos asesoró de forma impecable por WhatsApp, resolviendo todas las dudas sobre la estabilización a los 65 años. Muy transparentes.',
+      author: 'Daniel RodrÃƒÂ­guez',
+      meta: 'Viaje de 3 semanas a Tailandia',
+      comment: 'Tuve una apendicitis en Bangkok y me atendieron al instante por telÃƒÂ©fono en espaÃƒÂ±ol. Asumieron todos los costes hospitalarios directamente sin que yo tuviera que adelantar nada. IncreÃƒÂ­ble.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
-      author: 'Laura Fernández',
-      meta: 'Asegurada en Barcelona',
-      comment: 'El servicio de testamento online y el borrado de huella digital de mi padre nos facilitó todo enormemente. Un seguro de decesos moderno que va más allá del sepelio.',
+      author: 'SofÃƒÂ­a K.',
+      meta: 'Vacaciones Familiares en USA',
+      comment: 'El seguro Estrella con cobertura para USA nos dio total tranquilidad. AdemÃƒÂ¡s, incluimos el seguro de cancelaciÃƒÂ³n y nos salvÃƒÂ³ el dinero de los vuelos por enfermedad previa.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100'
     }
@@ -151,28 +121,20 @@ export const AsistenciaFamiliar: React.FC = () => {
 
   const faqs = [
     {
-      q: '¿Qué cubre exactamente la repatriación internacional?',
-      a: 'Si el asegurado fallece fuera de España, la póliza cubre los gastos de traslado y acondicionamiento sanitario del cuerpo hasta el aeropuerto más cercano a la localidad de inhumación en España.'
+      q: 'Ã‚Â¿CÃƒÂ³mo funciona la asistencia mÃƒÂ©dica de urgencia en el extranjero?',
+      a: 'Si sufres un accidente o enfermedad en viaje, llamas al telÃƒÂ©fono de asistencia 24h indicado en tu pÃƒÂ³liza. Nuestro equipo te derivarÃƒÂ¡ al centro mÃƒÂ©dico concertado mÃƒÂ¡s cercano y se coordinarÃƒÂ¡ con el hospital para asumir el coste de las facturas mÃƒÂ©dicas directamente.'
     },
     {
-      q: '¿Qué diferencia hay entre la prima nivelada y la prima mixta?',
-      a: 'En la prima nivelada, el precio es estable toda la vida (solo sube por el IPC anual). En la prima mixta, pagas una cuota inicial más barata que va aumentando gradualmente con la edad hasta los 65 años, donde se estabiliza y ya no vuelve a subir por edad.'
+      q: 'Ã‚Â¿QuÃƒÂ© cubre la garantÃƒÂ­a de cancelaciÃƒÂ³n de viaje?',
+      a: 'Te reembolsa los gastos de billetes y reservas de hotel no recuperables (hasta el lÃƒÂ­mite contratado) si tienes que suspender el viaje antes de su inicio por causas justificadas de fuerza mayor (enfermedad grave, despido laboral, etc.).'
     },
     {
-      q: '¿Puedo incluir a varios miembros de la familia en la misma póliza?',
-      a: 'Sí. Asistencia Familiar Iplus permite incluir en un único contrato a todos los miembros de la unidad familiar (padres, hijos y abuelos), aplicando descuentos colectivos en la cuota global.'
-    },
-    {
-      q: '¿En qué consiste el borrado de la huella digital?',
-      a: 'Consiste en la tramitación del cierre, borrado y desactivación de todas las cuentas de redes sociales, correos electrónicos y perfiles públicos de internet pertenecientes al asegurado fallecido.'
+      q: 'Ã‚Â¿El seguro de viaje cubre la prÃƒÂ¡ctica de deportes de aventura?',
+      a: 'La modalidad Estrella y Premium cubren la prÃƒÂ¡ctica de deportes de aventura estÃƒÂ¡ndar (senderismo, kayak, bicicleta). Para actividades de alto riesgo (como buceo profundo, esquÃƒÂ­ o montaÃƒÂ±ismo), se debe aÃƒÂ±adir el suplemento deportivo especÃƒÂ­fico al contratar.'
     }
   ];
 
-  const priceEstimate = calculateDecesosPrice();
-  
-  const canonicalUrl = 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar';
-  const title = 'Asistencia Familiar Iplus | Seguro de Decesos | VitaBlue';
-  const description = 'Protege a tu familia frente a imprevistos con Asistencia Familiar Iplus. Seguro de decesos completo con cobertura de traslado, asesoramiento legal y testamento.';
+  const priceEstimate = calculateTravelPrice();
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -183,7 +145,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
         "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
-        "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
+        "description": "Compara y contrata los mejores seguros de salud en EspaÃƒÂ±a. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nÃƒÂ³madas y familias.",
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",
@@ -194,28 +156,24 @@ export const AsistenciaFamiliar: React.FC = () => {
       },
       {
         "@type": "Product",
-        "@id": `${canonicalUrl}#producto`,
-        "name": "Asistencia Familiar iPlus Sanitas",
-        "description": "Seguro de asistencia familiar y decesos: servicios funerarios completos, traslado mundial, apoyo emocional y gestión documental.",
+        "@id": "https://www.vitablue.es/productos/seguro-viaje#producto",
+        "name": "Seguro de Viaje Internacional",
+        "description": "Seguro de asistencia en viaje internacional con cobertura de gastos mÃƒÂ©dicos, repatriaciÃƒÂ³n y anulaciÃƒÂ³n.",
         "brand": {
           "@type": "Brand",
-          "name": "Sanitas"
-        },
-        "isSimilarTo": {
-          "@type": "Brand",
-          "name": "Santalucía"
+          "name": "VitaBlue"
         },
         "offers": {
           "@type": "Offer",
           "price": "Consultar precio",
           "priceCurrency": "EUR",
           "availability": "https://schema.org/InStock",
-          "url": canonicalUrl
+          "url": "https://www.vitablue.es/productos/seguro-viaje"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "76",
+          "ratingValue": "4.7",
+          "reviewCount": "104",
           "bestRating": "5",
           "worstRating": "1"
         },
@@ -224,38 +182,10 @@ export const AsistenciaFamiliar: React.FC = () => {
             "@type": "Review",
             "author": {
               "@type": "Person",
-              "name": "Ana B."
+              "name": "MarÃƒÂ­a T."
             },
-            "datePublished": "2025-11-15",
-            "reviewBody": "En un momento muy difícil, el servicio fue impecable. Gestionaron todo y nos ayudaron con el traslado internacional.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Roberto C."
-            },
-            "datePublished": "2025-10-08",
-            "reviewBody": "Excelente cobertura funeraria y el apoyo emocional fue muy valioso. Totalmente recomendable.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Isabel M."
-            },
-            "datePublished": "2025-09-25",
-            "reviewBody": "Contratación sencilla y tranquilidad para toda la familia. El coaseguro con Santalucía es una garantía.",
+            "datePublished": "2025-11-14",
+            "reviewBody": "ContratÃƒÂ© el seguro de viaje Estrella y tuve que usarlo en Nueva York por una otitis. La asistencia fue rÃƒÂ¡pida y pagaron todo directamente al hospital.",
             "reviewRating": {
               "@type": "Rating",
               "ratingValue": "5",
@@ -282,7 +212,7 @@ export const AsistenciaFamiliar: React.FC = () => {
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Asistencia Familiar iPlus"
+            "name": "Seguro de Viaje"
           }
         ]
       },
@@ -291,34 +221,18 @@ export const AsistenciaFamiliar: React.FC = () => {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Qué incluye el servicio funerario?",
+            "name": "Ã‚Â¿QuÃƒÂ© cubre la garantÃƒÂ­a de cancelaciÃƒÂ³n de viaje?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Organización, tanatorio, féretro, ceremonia y gestiones básicas."
+              "text": "Te reembolsa los gastos de billetes y reservas de hotel no recuperables (hasta el lÃƒÂ­mite contratado) si tienes que suspender el viaje antes de su inicio por causas justificadas de fuerza mayor (enfermedad grave, despido laboral, etc.)."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Se cubre repatriación internacional?",
+            "name": "Ã‚Â¿El seguro de viaje cubre la prÃƒÂ¡ctica de deportes de aventura?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí, según límites económicos definidos en póliza."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Cómo funciona la prima mixta?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Combina ventajas de prima natural y nivelada para suavizar incrementos."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Hay carencias?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Aplican carencias específicas por garantía. Confirmar en condiciones particulares."
+              "text": "La modalidad Estrella y Premium cubren la prÃƒÂ¡ctica de deportes de aventura estÃƒÂ¡ndar (senderismo, kayak, bicicleta). Para actividades de alto riesgo (como buceo profundo, esquÃƒÂ­ o montaÃƒÂ±ismo), se debe aÃƒÂ±adir el suplemento deportivo especÃƒÂ­fico al contratar."
             }
           }
         ]
@@ -329,21 +243,21 @@ export const AsistenciaFamiliar: React.FC = () => {
   return (
     <div className="w-full flex flex-col bg-white">
       <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={canonicalUrl} />
+        <title>Seguro de Viaje Internacional | Cobertura MÃƒÂ©dica | VitaBlue</title>
+        <meta name="description" content="Compara y contrata tu seguro de viaje internacional. Cobertura de gastos mÃƒÂ©dicos, repatriaciÃƒÂ³n, pÃƒÂ©rdida de equipaje y anulaciÃƒÂ³n para tus viajes vacacionales o de larga estancia." />
+        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-viaje" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
+        <meta property="og:title" content="Seguro de Viaje Internacional | Cobertura MÃƒÂ©dica | VitaBlue" />
+        <meta property="og:description" content="Compara y contrata tu seguro de viaje internacional. Cobertura de gastos mÃƒÂ©dicos, repatriaciÃƒÂ³n, pÃƒÂ©rdida de equipaje y anulaciÃƒÂ³n para tus viajes vacacionales o de larga estancia." />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
-        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-viaje" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:title" content="Seguro de Viaje Internacional | Cobertura MÃƒÂ©dica | VitaBlue" />
+        <meta name="twitter:description" content="Compara y contrata tu seguro de viaje internacional. Cobertura de gastos mÃƒÂ©dicos, repatriaciÃƒÂ³n, pÃƒÂ©rdida de equipaje y anulaciÃƒÂ³n para tus viajes vacacionales o de larga estancia." />
         <meta name="twitter:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
@@ -355,9 +269,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs 
             items={[
-              { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-              { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' },
-              { label: 'Asistencia Familiar', href: '/productos/seguro-para-decesos/asistencia-familiar' }
+              { label: 'Seguros de Viaje', href: '/productos/seguro-viaje' }
             ]} 
           />
         </div>
@@ -374,23 +286,23 @@ export const AsistenciaFamiliar: React.FC = () => {
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
-                  <Shield className="w-4 h-4" /> Seguro de Decesos Familiar
+                  <Globe className="w-4 h-4" /> Seguros de Viaje
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
-                  Cobertura de traslado internacional
+                  Asistencia mÃƒÂ©dica mundial 24h
                 </span>
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight tracking-tight">
-                Asistencia Familiar Iplus
+                Seguro de Viaje Internacional
               </h1>
               <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar.
+                Viaja protegido ante cualquier imprevisto de salud, equipaje o vuelos. Cobertura de gastos mÃƒÂ©dicos internacionales de urgencia y repatriaciÃƒÂ³n con soporte continuo.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Cuota Familiar
+                  Calcular Seguro Online
                 </Button>
                 <a href="tel:+34900839240" className="inline-flex items-center justify-center">
                   <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -400,8 +312,8 @@ export const AsistenciaFamiliar: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Testamento online gratis</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Trámites de herencia</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Cobertura de equipaje</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> OpciÃƒÂ³n de anulaciÃƒÂ³n</span>
               </div>
             </div>
 
@@ -409,41 +321,52 @@ export const AsistenciaFamiliar: React.FC = () => {
             <div className="lg:col-span-5 w-full">
               <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
                 <div>
-                  <h3 className="text-xl font-display font-black text-text-main">Tarificador de Decesos</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu prima según tu edad y estructura de pago.</p>
+                  <h3 className="text-xl font-display font-black text-text-main">Tarificador de Viaje</h3>
+                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima la prima de tu seguro de viaje al instante.</p>
                 </div>
 
                 <div className="space-y-4">
-                  {/* Age Selector */}
+                  {/* Duration Selector */}
                   <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Edad del Asegurado: <span className="text-sm font-sans font-black text-primary ml-1">{age} años</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="75" 
-                        value={age} 
-                        onChange={(e) => setAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Premium Type Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Tipo de Prima</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">DuraciÃƒÂ³n del Viaje</label>
+                    <div className="grid grid-cols-2 gap-2">
                       {[
-                        { id: 'levelled', label: 'Nivelada' },
-                        { id: 'mixed', label: 'Mixta' },
-                        { id: 'natural', label: 'Natural' }
+                        { id: 'escapade', label: 'Escapada (<15d)' },
+                        { id: 'short', label: 'Viaje Corto (<30d)' },
+                        { id: 'long', label: 'Larga Estancia' },
+                        { id: 'annual', label: 'Anual Multiviaje' }
                       ].map((item) => (
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setPremiumType(item.id as any)}
-                          className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
-                            premiumType === item.id 
+                          onClick={() => setDuration(item.id as any)}
+                          className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
+                            duration === item.id 
+                              ? 'border-primary bg-primary/5 text-primary' 
+                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Destination Selector */}
+                  <div>
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Destino</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'europe', label: 'Europa/Schengen' },
+                        { id: 'world-no-usa', label: 'Mundo (sin USA)' },
+                        { id: 'world-all', label: 'Mundo Completo' }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setDestination(item.id as any)}
+                          className={`text-xs font-bold py-2 px-0.5 rounded-xl border text-center transition-all ${
+                            destination === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 
                               : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
                           }`}
@@ -461,13 +384,13 @@ export const AsistenciaFamiliar: React.FC = () => {
                   <div className="text-right">
                     <div className="flex items-baseline gap-0.5">
                       <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                      <span className="text-[10px] font-bold text-text-secondary">€/mes</span>
+                      <span className="text-[10px] font-bold text-text-secondary">Ã¢â€šÂ¬</span>
                     </div>
                   </div>
                 </div>
 
                 <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
+                  Iniciar ContrataciÃƒÂ³n Online
                 </Button>
               </div>
             </div>
@@ -480,24 +403,24 @@ export const AsistenciaFamiliar: React.FC = () => {
       <section className="py-8 bg-slate-50 border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
           <div className="flex items-center gap-3.5">
-            <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
+            <Globe className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Homologación Oficial</h4>
-              <p className="text-xs text-text-secondary font-semibold">Pólizas oficiales autorizadas por la DGSFP.</p>
+              <h4 className="text-sm font-bold text-text-main">Asistencia Mundial 24h</h4>
+              <p className="text-xs text-text-secondary font-semibold">Soporte mÃƒÂ©dico continuado en cualquier paÃƒÂ­s.</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Clock className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Gestión Completa</h4>
-              <p className="text-xs text-text-secondary font-semibold">Servicio fúnebre, traslados y trámites en 24h.</p>
+              <h4 className="text-sm font-bold text-text-main">EmisiÃƒÂ³n Digital Inmediata</h4>
+              <p className="text-xs text-text-secondary font-semibold">Recibe tu pÃƒÂ³liza y justificantes al instante en tu correo.</p>
             </div>
           </div>
           <div className="flex items-center gap-3.5">
             <Award className="w-8 h-8 text-primary shrink-0" />
             <div>
-              <h4 className="text-sm font-bold text-text-main">Asistencia 24/7 Duelo</h4>
-              <p className="text-xs text-text-secondary font-semibold">Apoyo psicológico y gestores de servicio de guardia.</p>
+              <h4 className="text-sm font-bold text-text-main">GarantÃƒÂ­a de CancelaciÃƒÂ³n</h4>
+              <p className="text-xs text-text-secondary font-semibold">Reembolso de gastos de billete por fuerza mayor.</p>
             </div>
           </div>
         </div>
@@ -506,7 +429,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       {/* Providers Logos */}
       <section className="py-10 bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales homologadas</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras colaboradoras oficiales</p>
           <div className="flex justify-center items-center gap-12 sm:gap-16">
             <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
             <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
@@ -517,12 +440,12 @@ export const AsistenciaFamiliar: React.FC = () => {
       {/* Coberturas Esenciales (Symmetric standard grid with clean illustrations) */}
       <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
         <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Garantías Familiares</span>
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">GarantÃƒÂ­as en viaje</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Coberturas de Asistencia Familiar
+            Coberturas de Asistencia en Viaje
           </h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            Máxima cobertura en sepelio, orientación sucesoria y traslados sanitarios para toda la unidad familiar.
+            Disfruta de tu aventura con la mÃƒÂ¡xima protecciÃƒÂ³n en cobertura sanitaria, pÃƒÂ©rdidas de equipaje y anulaciones.
           </p>
         </div>
 
@@ -554,17 +477,17 @@ export const AsistenciaFamiliar: React.FC = () => {
       {/* Modalities Comparison Grid */}
       <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-slate-50/50 border-t border-b border-slate-100">
         <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades de Prima</span>
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Elige tu estructura de pago
+            Elige el nivel de protecciÃƒÂ³n para tu viaje
           </h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            Compara las tres alternativas de tarificación para equilibrar tu cuota mensual a corto y largo plazo.
+            Compara nuestras tres alternativas de seguro de viaje internacional segÃƒÂºn la duraciÃƒÂ³n y el destino elegidos.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {plansList.map((item, index) => (
+          {travelPlans.map((item, index) => (
             <div 
               key={index} 
               className={`rounded-3xl border p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 bg-white hover:shadow-md ${
@@ -579,7 +502,7 @@ export const AsistenciaFamiliar: React.FC = () => {
                     {item.tag}
                   </span>
                   {item.isFeatured && (
-                    <span className="text-[9px] font-black uppercase tracking-wider text-primary">Más Recomendado</span>
+                    <span className="text-[9px] font-black uppercase tracking-wider text-primary">MÃƒÂ¡s Recomendado</span>
                   )}
                 </div>
 
@@ -604,7 +527,7 @@ export const AsistenciaFamiliar: React.FC = () => {
                   className="w-full font-bold"
                   onClick={handleStartQuoting}
                 >
-                  Comparar esta opción
+                  Comparar esta opciÃƒÂ³n
                 </Button>
               </div>
             </div>
@@ -617,10 +540,10 @@ export const AsistenciaFamiliar: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Transparencia Radical</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            ¿Qué incluye y qué excluye Asistencia Familiar Iplus?
+            Ã‚Â¿QuÃƒÂ© incluye y quÃƒÂ© excluye tu seguro de viaje?
           </h2>
           <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Te explicamos claramente las exclusiones e inclusiones del seguro de decesos familiar para proteger a los tuyos de manera transparente.
+            Te mostramos sin rodeos las condiciones de la pÃƒÂ³liza de viaje para que contrates con absoluta claridad.
           </p>
         </div>
 
@@ -635,10 +558,10 @@ export const AsistenciaFamiliar: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Proceso</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Cómo contratar en 4 pasos
+            CÃƒÂ³mo contratar en 4 pasos
           </h2>
           <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Proceso 100% online, rápido y seguro con el acompañamiento personalizado de VitaBlue.
+            Proceso 100% online, rÃƒÂ¡pido y seguro con el acompaÃƒÂ±amiento personalizado de VitaBlue.
           </p>
         </div>
 
@@ -651,25 +574,25 @@ export const AsistenciaFamiliar: React.FC = () => {
               { 
                 step: '01', 
                 title: 'Rellena el formulario', 
-                desc: 'Indica los datos de tu familia y selecciona el tipo de prima (Nivelada, Mixta o Natural) en nuestro cotizador.',
+                desc: 'Introduce tu destino, fechas de viaje y nÃƒÂºmero de viajeros en nuestro cotizador de viajes.',
                 icon: FileText
               },
               { 
                 step: '02', 
-                title: 'Elige forma de pago', 
-                desc: 'Pago mensual o pago anual; te indicamos los descuentos aplicables y la promoción vigente en tu cuota.',
+                title: 'Elige tu modalidad', 
+                desc: 'Selecciona el plan ideal (EstÃƒÂ¡ndar, Estrella o Premium) y revisa las opciones de anulaciÃƒÂ³n.',
                 icon: CreditCard
               },
               { 
                 step: '03', 
-                title: 'Cuestionario de salud', 
-                desc: 'Completa un breve cuestionario digital necesario para declarar la salud y activar coberturas del seguro.',
+                title: 'Completa los datos', 
+                desc: 'Introduce los nombres y documentos de identidad de los viajeros de forma rÃƒÂ¡pida digital.',
                 icon: Heart
               },
               { 
                 step: '04', 
-                title: 'Recibe tu póliza', 
-                desc: 'Obtén tu documentación oficial y tarjetas de asistencia familiar listas para empezar a usar desde el primer día.',
+                title: 'Recibe tu pÃƒÂ³liza', 
+                desc: 'ObtÃƒÂ©n tu documentaciÃƒÂ³n oficial y tarjetas mÃƒÂ©dicas digitales al instante en tu correo electrÃƒÂ³nico.',
                 icon: ShieldCheck
               }
             ].map((item, idx) => {
@@ -696,7 +619,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-12">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Opiniones reales</span>
-            <h2 className="text-h2 font-display font-black text-text-main">La experiencia de quienes ya confían en nosotros</h2>
+            <h2 className="text-h2 font-display font-black text-text-main">La experiencia de quienes ya confÃƒÂ­an en nosotros</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
@@ -719,7 +642,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preguntas Frecuentes</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Resolver dudas sobre Asistencia Familiar Iplus
+            Resolver dudas sobre el Seguro de Viaje
           </h2>
         </div>
 
@@ -740,11 +663,11 @@ export const AsistenciaFamiliar: React.FC = () => {
       <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
           <div className="space-y-1">
-            <h3 className="text-2xl font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada para tu unidad familiar?</h3>
-            <p className="text-body-reg text-text-secondary font-medium">Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita.</p>
+            <h3 className="text-2xl font-display font-extrabold text-text-main">Ã‚Â¿Necesitas asistencia en la contrataciÃƒÂ³n?</h3>
+            <p className="text-body-reg text-text-secondary font-medium">Te ayudamos a contratar tu pÃƒÂ³liza de viaje o a tramitar coberturas de grupo para estancias de larga duraciÃƒÂ³n. Te asesoramos sin compromiso de forma gratuita.</p>
           </div>
           <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus.', '_blank')}
+            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20de%20Viaje.', '_blank')}
             onPhoneClick={() => window.open('tel:+34900839240')}
           />
         </div>
@@ -753,4 +676,7 @@ export const AsistenciaFamiliar: React.FC = () => {
   );
 };
 
-export default AsistenciaFamiliar;
+export default TravelInsurance;
+
+
+
