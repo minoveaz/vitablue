@@ -1,10 +1,15 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  DEFAULT_CONSENT_CHOICES,
+  mergeConsentChoices,
+  parseStoredConsent,
+  type ConsentChoices,
+} from './consentPolicy';
 
-export type ConsentCategory = 'necessary' | 'preferences' | 'analytics' | 'marketing';
-export type ConsentChoices = Record<ConsentCategory, boolean>;
+export type { ConsentCategory, ConsentChoices } from './consentPolicy';
 
 const STORAGE_KEY = 'vitablue-consent-v1';
-const defaultChoices: ConsentChoices = { necessary: true, preferences: false, analytics: false, marketing: false };
+const defaultChoices = DEFAULT_CONSENT_CHOICES;
 
 interface ConsentContextValue {
   choices: ConsentChoices;
@@ -17,18 +22,8 @@ interface ConsentContextValue {
 
 const ConsentContext = createContext<ConsentContextValue | undefined>(undefined);
 
-const readStoredConsent = (): ConsentChoices | null => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return { ...defaultChoices, ...JSON.parse(stored) };
-    const legacy = localStorage.getItem('cookie-consent');
-    if (legacy === 'accepted') return { ...defaultChoices, analytics: true, marketing: true };
-    if (legacy === 'declined') return defaultChoices;
-  } catch (error) {
-    console.warn('Unable to read consent preference:', error);
-  }
-  return null;
-};
+const readStoredConsent = (): ConsentChoices | null =>
+  parseStoredConsent(localStorage.getItem(STORAGE_KEY), localStorage.getItem('cookie-consent'));
 
 export const ConsentProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [choices, setChoices] = useState<ConsentChoices>(() => readStoredConsent() ?? defaultChoices);
@@ -55,7 +50,7 @@ export const ConsentProvider: React.FC<React.PropsWithChildren> = ({ children })
     hasDecision,
     acceptAll: () => persist({ necessary: true, preferences: true, analytics: true, marketing: true }),
     rejectOptional: () => persist(defaultChoices),
-    updateChoices: (updates) => persist({ ...choices, ...updates, necessary: true }),
+    updateChoices: (updates) => persist(mergeConsentChoices(choices, updates)),
     reopen: () => setHasDecision(false),
   }), [choices, hasDecision]);
 
