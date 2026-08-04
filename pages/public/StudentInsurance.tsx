@@ -538,7 +538,7 @@ export const StudentInsurance: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setCourseType(item.id as any)}
+                          onClick={() => setCourseType(item.id as typeof courseType)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
                             courseType === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 

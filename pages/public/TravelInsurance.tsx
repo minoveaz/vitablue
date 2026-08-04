@@ -339,7 +339,7 @@ export const TravelInsurance: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setDuration(item.id as any)}
+                          onClick={() => setDuration(item.id as typeof duration)}
                           className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
                             duration === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 
@@ -364,7 +364,7 @@ export const TravelInsurance: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setDestination(item.id as any)}
+                          onClick={() => setDestination(item.id as typeof destination)}
                           className={`text-xs font-bold py-2 px-0.5 rounded-xl border text-center transition-all ${
                             destination === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 
@@ -677,6 +677,5 @@ export const TravelInsurance: React.FC = () => {
 };
 
 export default TravelInsurance;
-
 
 

@@ -818,8 +818,8 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
               rel="noopener noreferrer"
               data-event="whatsapp"
               onClick={() => {
-                if ((window as any).dataLayer) {
-                  (window as any).dataLayer.push({ event: 'click_whatsapp', location: 'home_bottom_banner' });
+                if (window.dataLayer) {
+                  window.dataLayer.push({ event: 'click_whatsapp', location: 'home_bottom_banner' });
                 }
               }}
               className="lg:col-span-2 group rounded-3xl border border-primary/10 bg-gradient-to-br from-primary to-primary-dark p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer text-white"

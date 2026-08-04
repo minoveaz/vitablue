@@ -28,7 +28,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
             ref={ref}
             id={checkboxId}
             type="checkbox"
-            className="peer sr-only"
+            className={`peer sr-only ${className}`}
             {...props}
           />
           <div className={`

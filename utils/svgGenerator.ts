@@ -166,7 +166,7 @@ export const generateCampaignBannerSvg = (
   const titleColor = isLight ? '#001219' : '#FFFFFF';
   const taglineColor = isLight ? '#005F73' : '#94D2BD';
 
-  let layoutContent = '';
+  let layoutContent: string;
 
   if (type === 'post') {
     const logoSize = 180;

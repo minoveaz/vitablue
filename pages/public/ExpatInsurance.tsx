@@ -509,7 +509,7 @@ export const ExpatInsurance: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setVisaType(item.id as any)}
+                          onClick={() => setVisaType(item.id as typeof visaType)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
                             visaType === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 

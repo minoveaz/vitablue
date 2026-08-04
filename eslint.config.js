@@ -30,4 +30,17 @@ export default tseslint.config(
       'no-case-declarations': 'warn',
     },
   },
+  {
+    // Contexts and shell/config modules intentionally export hooks/constants
+    // alongside providers/components; Fast Refresh's single-export heuristic
+    // does not apply to these non-page modules.
+    files: [
+      'context/*.tsx',
+      'components/layouts/BackofficeShell.tsx',
+      'marketing-studio/config/platforms.tsx',
+    ],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 );

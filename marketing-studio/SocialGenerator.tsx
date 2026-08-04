@@ -1,3 +1,5 @@
+/* The component is compile-time gated to local development; hooks are never conditionally rendered at runtime. */
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';

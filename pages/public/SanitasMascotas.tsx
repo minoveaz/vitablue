@@ -389,7 +389,7 @@ export const SanitasMascotas: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setMascotPlan(item.id as any)}
+                          onClick={() => setMascotPlan(item.id as typeof mascotPlan)}
                           className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
                             mascotPlan === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 
@@ -701,6 +701,5 @@ export const SanitasMascotas: React.FC = () => {
 };
 
 export default SanitasMascotas;
-
 
 

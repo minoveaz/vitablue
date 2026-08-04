@@ -34,7 +34,7 @@ export const LifeInsurance: React.FC = () => {
     if (age > 30) factor = 0.00018;
     if (age > 45) factor = 0.00038;
     if (age > 55) factor = 0.00085;
-    let base = (capital * factor) / 12;
+    const base = (capital * factor) / 12;
     return base.toFixed(2);
   };
 
@@ -658,6 +658,5 @@ export const LifeInsurance: React.FC = () => {
 };
 
 export default LifeInsurance;
-
 
 

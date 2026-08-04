@@ -392,7 +392,7 @@ export const SanitasMasSalud: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setModality(item.id as any)}
+                          onClick={() => setModality(item.id as typeof modality)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
                             modality === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 

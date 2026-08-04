@@ -498,7 +498,7 @@ export const NomadInsurance: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setStayArea(item.id as any)}
+                          onClick={() => setStayArea(item.id as typeof stayArea)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
                             stayArea === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 

@@ -29,7 +29,7 @@ export const AsistenciaFamiliar: React.FC = () => {
   const [premiumType, setPremiumType] = useState<'levelled' | 'natural' | 'mixed'>('mixed');
 
   const calculateDecesosPrice = () => {
-    let base = 5.20;
+    let base: number;
     
     if (premiumType === 'levelled') {
       base = age < 30 ? 11.50 : age < 50 ? 19.80 : 29.50;
@@ -441,7 +441,7 @@ export const AsistenciaFamiliar: React.FC = () => {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setPremiumType(item.id as any)}
+                          onClick={() => setPremiumType(item.id as typeof premiumType)}
                           className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
                             premiumType === item.id 
                               ? 'border-primary bg-primary/5 text-primary' 

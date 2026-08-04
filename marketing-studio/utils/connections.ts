@@ -138,36 +138,41 @@ export const startPlatformOAuth = async (platform: SocialPlatformId): Promise<vo
   let authUrl = '';
 
   switch (platform) {
-    case 'linkedin':
+    case 'linkedin': {
       // LinkedIn OAuth V2
       const liClientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID || 'dummy_linkedin_id';
       authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&scope=w_member_social%20r_liteprofile&state=${encodeURIComponent(state)}`;
       break;
+    }
 
     case 'facebook':
-    case 'instagram':
+    case 'instagram': {
       // Meta OAuth
       const fbAppId = import.meta.env.VITE_FACEBOOK_APP_ID || 'dummy_facebook_id';
       authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${redirectUri}&scope=pages_manage_posts%2Cpages_read_engagement%2Cinstagram_basic%2Cinstagram_content_publish&state=${encodeURIComponent(state)}`;
       break;
+    }
 
-    case 'youtube':
+    case 'youtube': {
       // Google OAuth V2
       const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_google_id';
       authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&response_type=code&scope=https://www.googleapis.com/auth/youtube.upload%20https://www.googleapis.com/auth/youtube.readonly&state=${encodeURIComponent(state)}&access_type=offline&prompt=consent`;
       break;
+    }
 
-    case 'x':
+    case 'x': {
       // X (Twitter) OAuth 2.0
       const xClientId = import.meta.env.VITE_X_API_KEY || 'dummy_x_id';
       authUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${xClientId}&redirect_uri=${redirectUri}&scope=tweet.read%20tweet.write%20users.read%20offline.access&state=${encodeURIComponent(state)}&code_challenge=challenge&code_challenge_method=plain`;
       break;
+    }
 
-    case 'tiktok':
+    case 'tiktok': {
       // TikTok OAuth
       const tiktokClientKey = import.meta.env.VITE_TIKTOK_CLIENT_KEY || 'dummy_tiktok_key';
       authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${tiktokClientKey}&scope=user.info.basic,video.publish,video.list&response_type=code&redirect_uri=${redirectUri}&state=${encodeURIComponent(state)}`;
       break;
+    }
   }
 
   // Open the auth popup or redirect
@@ -240,7 +245,7 @@ export const handleOAuthCallback = async (
     saveConnections(next);
 
     return { success: true, username: mockUsername };
-  } catch (err: any) {
-    return { success: false, error: err.message };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : 'No se pudo conectar la cuenta.' };
   }
 };

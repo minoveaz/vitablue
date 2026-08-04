@@ -24,17 +24,11 @@ export const BlogPost: React.FC = () => {
     'health-insurance-spain-non-lucrative-visa-requirements': 'seguro-medico-residencia-no-lucrativa-espana'
   };
 
-  const alternateSlug = useMemo(() => {
-    return post ? alternateSlugs[post.slug] : undefined;
-  }, [post]);
-
-  if (!post) {
-    return <Navigate to={isPostEnglish ? "/en/blog" : "/blog"} replace />;
-  }
+  const alternateSlug = post ? alternateSlugs[post.slug] : undefined;
 
   // Generate Table of Contents items dynamically from headings
   const tocItems = useMemo(() => {
-    return post.sections
+    return (post?.sections ?? [])
       .filter(section => section.type === 'heading-2')
       .map(heading => {
         const id = heading.text
@@ -46,6 +40,10 @@ export const BlogPost: React.FC = () => {
         return { text: heading.text || '', id };
       });
   }, [post]);
+
+  if (!post) {
+    return <Navigate to={isPostEnglish ? "/en/blog" : "/blog"} replace />;
+  }
 
   return (
     <div className="w-full flex flex-col bg-background-light">
@@ -280,8 +278,8 @@ export const BlogPost: React.FC = () => {
                 rel="noopener noreferrer"
                 data-event="whatsapp"
                 onClick={() => {
-                  if ((window as any).dataLayer) {
-                    (window as any).dataLayer.push({ event: 'click_whatsapp', location: `blog_post_bottom_${post.slug}` });
+                  if (window.dataLayer) {
+                    window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_bottom_${post.slug}` });
                   }
                 }}
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] px-6 py-3.5 text-xs font-black text-white shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98] cursor-pointer"
@@ -347,8 +345,8 @@ export const BlogPost: React.FC = () => {
                   rel="noopener noreferrer"
                   data-event="whatsapp"
                   onClick={() => {
-                    if ((window as any).dataLayer) {
-                      (window as any).dataLayer.push({ event: 'click_whatsapp', location: `blog_post_sidebar_${post.slug}` });
+                    if (window.dataLayer) {
+                      window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_sidebar_${post.slug}` });
                     }
                   }}
                   className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold shadow-md shadow-[#25D366]/10 transition-all duration-200 active:scale-[0.98]"

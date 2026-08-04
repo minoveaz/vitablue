@@ -392,8 +392,8 @@ export const Navbar: React.FC = () => {
               rel="noopener noreferrer"
               data-event="whatsapp"
               onClick={() => {
-                if ((window as any).dataLayer) {
-                  (window as any).dataLayer.push({ event: 'click_whatsapp', location: 'navbar_desktop' });
+                if (window.dataLayer) {
+                  window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_desktop' });
                 }
               }}
               className="inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] bg-[#25D366] hover:bg-[#20ba5a] text-white shadow-sm shadow-[#25D366]/10 text-xs px-3.5 py-2 gap-1.5 focus:outline-none focus:ring-4 focus:ring-[#25D366]/20 cursor-pointer"
@@ -613,8 +613,8 @@ export const Navbar: React.FC = () => {
                 data-event="whatsapp"
                 onClick={() => {
                   setIsOpen(false);
-                  if ((window as any).dataLayer) {
-                    (window as any).dataLayer.push({ event: 'click_whatsapp', location: 'navbar_mobile' });
+                  if (window.dataLayer) {
+                    window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_mobile' });
                   }
                 }}
                 className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-bold shadow-md shadow-[#25D366]/20 transition-all duration-200 active:scale-[0.98]"

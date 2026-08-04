@@ -52,7 +52,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     );
   }
 
-  const updateCampaignField = (field: keyof Campaign, value: any) => {
+  const updateCampaignField = (field: keyof Campaign, value: unknown) => {
     if (!canEdit) return;
     const updated = campaigns.map(c => {
       if (c.id === campaign.id) {

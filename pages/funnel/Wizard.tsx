@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
-import QuotationWizard from '../../components/organisms/QuotationWizard';
+import QuotationWizard, { type QuotationData } from '../../components/organisms/QuotationWizard';
 
 export const Wizard: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, setAgeRange, setVisaRequired, setResidencyType } = useWizard();
 
-  const handleWizardComplete = (data: any) => {
+  const handleWizardComplete = (data: QuotationData) => {
     // Hydrate the context state with the quoter data
     if (data.profile) setProfile(data.profile);
     if (data.ageRange) setAgeRange(data.ageRange);

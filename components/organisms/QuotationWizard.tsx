@@ -20,8 +20,23 @@ type StepKey =
   | 'ageRange' | 'travelFrequency' | 'continents' | 'residencyType' | 'contact';
 
 interface QuotationWizardProps {
-  onComplete?: (data: any) => void;
+  onComplete?: (data: QuotationData) => void;
   className?: string;
+}
+
+export interface QuotationData {
+  profile: ProfileType;
+  duration: DurationType;
+  startDate: StartDateType;
+  visaRequired: VisaRequiredType;
+  ageRange: AgeRangeType;
+  travelFrequency: TravelFrequencyType;
+  residencyType: ResidencyType;
+  continents: string[];
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  termsAccepted?: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
