@@ -27,6 +27,7 @@ export interface ExpatTranslations {
   heroTitle: string;
   heroSubtitle: string;
   ctaButton: string;
+  callAdvisor: string;
   featuresTitle: string;
 }
 
@@ -91,6 +92,7 @@ export const expatTranslations: Record<'es' | 'en', ExpatTranslations> = {
     heroTitle: 'Seguro Médico para Expatriados y Residentes en España',
     heroSubtitle: 'Compara y contrata la póliza perfecta para tu visado de residencia no lucrativa, Golden Visa o reagrupación. Cobertura completa sin copagos.',
     ctaButton: 'Calcular Seguro Online',
+    callAdvisor: 'Llamar Gratis',
     featuresTitle: 'Coberturas de Sanitas Más Salud Expatriados'
   },
   en: {
@@ -98,6 +100,7 @@ export const expatTranslations: Record<'es' | 'en', ExpatTranslations> = {
     heroTitle: 'Health Insurance for Expats and Residents in Spain',
     heroSubtitle: 'Compare and contract the perfect policy for your Non-Lucrative Visa, Golden Visa, or family reunification. Full coverage with zero copays.',
     ctaButton: 'Calculate Insurance Online',
+    callAdvisor: 'Call Toll-Free',
     featuresTitle: 'Sanitas Más Salud Expat Coverages'
   }
 };

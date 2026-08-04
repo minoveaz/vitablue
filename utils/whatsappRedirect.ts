@@ -1,5 +1,5 @@
 export interface RedirectState {
-  profile: 'student' | 'expat' | 'nomad' | null;
+  profile: 'student' | 'expat' | 'nomad' | 'individual' | 'pet' | null;
   ageRange: '18_24' | '25_30' | '31_40' | 'plus_40' | null;
   visaRequired: 'yes' | 'no' | 'unknown' | null;
   residencyType?: 'non_lucrative' | 'work' | 'golden_visa' | 'reunification' | null;

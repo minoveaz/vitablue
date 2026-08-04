@@ -11,7 +11,6 @@ import { getConnections } from '@/marketing-studio/utils/connections';
 import { generateCampaignBannerSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import { CampaignDeliveryChannels } from '@/marketing-studio/components/CampaignDeliveryChannels';
 import { CampaignContentWorkspace } from '@/marketing-studio/components/CampaignContentWorkspace';
-import { platformConfigs } from '@/marketing-studio/config/platforms';
 import { 
   ArrowLeft,
   Calendar, 
@@ -134,8 +133,6 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
       setExportMessage('No se pudo preparar la publicación de Instagram. Descarga el activo manualmente.');
     }
   };
-
-  const previewAsset = campaign.assets.find((asset) => asset.type === previewAssetType) ?? campaign.assets[0];
 
   return (
     <div className="space-y-6">

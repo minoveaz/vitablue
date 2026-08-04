@@ -8,6 +8,7 @@ export interface ConnectionState {
 }
 
 export type SocialConnections = Record<SocialPlatformId, ConnectionState>;
+export type Connections = SocialConnections;
 
 const storageKey = 'vitablue.social-connections';
 

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, ChevronRight, Phone, MessageSquare, 
-  Stethoscope, ShieldAlert, Heart, Calendar, ArrowRight, Laptop, Smartphone, HelpCircle,
+  Activity, ShieldCheck, Clock, Award, Check, Heart, ArrowRight, Smartphone,
   FileText, CreditCard
 } from 'lucide-react';
 import { useWizard } from '../context/WizardContext';

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, ChevronRight, Phone, MessageSquare, 
-  Stethoscope, ShieldAlert, Heart, Calendar, ArrowRight, Laptop, Smartphone, HelpCircle,
+  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
   FileText, CreditCard, Home
 } from 'lucide-react';
 import { useWizard } from '../context/WizardContext';
@@ -398,9 +397,9 @@ export const ExpatInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
-        <link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
-        <link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

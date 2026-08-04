@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, ChevronRight, Phone, MessageSquare, 
-  Stethoscope, ShieldAlert, Heart, Calendar, ArrowRight, Laptop, Smartphone, HelpCircle,
+  ShieldCheck, Check, Heart, ArrowRight, Laptop,
   FileText, CreditCard, Globe
 } from 'lucide-react';
 import { useWizard } from '../context/WizardContext';
@@ -390,9 +389,9 @@ export const NomadInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
-        <link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain" />
-        <link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

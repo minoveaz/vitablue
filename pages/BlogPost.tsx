@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, ChevronLeft, ShieldCheck, HelpCircle, ArrowRight, Star } from 'lucide-react';
-import { blogPosts, BlogPostData } from '@/utils/blogData';
+import { blogPosts } from '@/utils/blogData';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import Button from '@/components/atoms/Button';
 
@@ -56,9 +56,9 @@ export const BlogPost: React.FC = () => {
         
         {alternateSlug && (
           <>
-            <link rel="alternate" hreflang="es" href={`https://www.vitablue.es/blog/${isPostEnglish ? alternateSlug : post.slug}`} />
-            <link rel="alternate" hreflang="en" href={`https://www.vitablue.es/en/blog/${isPostEnglish ? post.slug : alternateSlug}`} />
-            <link rel="alternate" hreflang="x-default" href={`https://www.vitablue.es/blog/${isPostEnglish ? alternateSlug : post.slug}`} />
+            <link rel="alternate" hrefLang="es" href={`https://www.vitablue.es/blog/${isPostEnglish ? alternateSlug : post.slug}`} />
+            <link rel="alternate" hrefLang="en" href={`https://www.vitablue.es/en/blog/${isPostEnglish ? post.slug : alternateSlug}`} />
+            <link rel="alternate" hrefLang="x-default" href={`https://www.vitablue.es/blog/${isPostEnglish ? alternateSlug : post.slug}`} />
           </>
         )}
 

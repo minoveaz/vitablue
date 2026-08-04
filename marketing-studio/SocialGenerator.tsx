@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
 import Logo from '@/components/atoms/Logo';
-import { ShieldCheck, MessageSquare, ArrowRight, Download, Image as ImageIcon } from 'lucide-react';
+import { MessageSquare, Download, Image as ImageIcon } from 'lucide-react';
 
 export const SocialGenerator: React.FC = () => {
   // Safe-guard to prevent this page from rendering/working in production

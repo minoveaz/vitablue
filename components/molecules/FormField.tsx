@@ -4,7 +4,7 @@ interface FormFieldProps {
   label?: string;
   description?: string;
   error?: string;
-  children: React.ReactElement;
+  children: React.ReactElement<{ id?: string; error?: string }>;
   className?: string;
 }
 

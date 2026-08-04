@@ -25,6 +25,15 @@ jobs:
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Validate Route Registry
+        run: npm run validate-routes:strict
+
+      - name: Validate Sitemap Registry
+        run: npm run validate-sitemap
+
+      - name: Check Generated Sitemap
+        run: npm run generate-sitemap:check
+
       - name: Build Project (SSG)
         run: npm run build
 

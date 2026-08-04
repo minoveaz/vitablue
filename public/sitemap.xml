@@ -1,196 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <url>
+<url>
     <loc>https://www.vitablue.es/</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
   </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-expatriados</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguro-viaje</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/productos/seguro-vida</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/aviso-legal</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.30</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/politica-privacidad</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.30</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/politica-cookies</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.30</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/cookies</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.30</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/privacidad</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.30</priority>
-  </url>
-
-  <url>
-    <loc>https://www.vitablue.es/blog</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.70</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/que-es-el-copago-seguro-salud</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-
-  <!-- English Section -->
-  <url>
+<url>
     <loc>https://www.vitablue.es/en</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
   </url>
-  <url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+<url>
     <loc>https://www.vitablue.es/en/health-insurance-student-visa-spain</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-expatriados</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+<url>
     <loc>https://www.vitablue.es/en/health-insurance-expatriates-spain</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+<url>
     <loc>https://www.vitablue.es/en/digital-nomad-insurance-spain</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguro-viaje</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/productos/seguro-vida</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/aviso-legal</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.30</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/politica-privacidad</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.30</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/politica-cookies</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.30</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/privacidad</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.30</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/cookies</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.30</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.70</priority>
+  </url>
+<url>
     <loc>https://www.vitablue.es/en/blog</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.70</priority>
   </url>
-  <url>
+<url>
+    <loc>https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog/que-es-el-copago-seguro-salud</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
+    <loc>https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+<url>
     <loc>https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
-  <url>
+<url>
     <loc>https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>

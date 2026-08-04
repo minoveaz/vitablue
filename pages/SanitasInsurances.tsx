@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, CheckCircle2, ChevronRight, ArrowRight,
-  Sparkle, Sparkles, Layers, Globe, Heart, FileText, CreditCard, Shield, MessageSquare
+  Activity, ShieldCheck, Clock, Award, CheckCircle2, ArrowRight,
+  Sparkle, Sparkles, Layers, Heart, FileText, CreditCard, MessageSquare
 } from 'lucide-react';
 import Breadcrumbs from '../components/molecules/Breadcrumbs';
 import AdvisorCard from '../components/molecules/AdvisorCard';

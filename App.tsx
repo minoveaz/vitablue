@@ -2,7 +2,6 @@ import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { 
   Mail, 
-  Phone, 
   Shield, 
   ArrowRight, 
   Check, 
@@ -86,8 +85,9 @@ const ScrollToTop = () => {
       || pathname === '/marketing-studio'
       || pathname.startsWith('/marketing-studio/');
 
-    window['ga-disable-G-DCGH16NP2Q'] = isLocalOnlyPath;
-    window['ga-disable-AW-515585712'] = isLocalOnlyPath;
+    const analyticsWindow = window as unknown as Window & Record<string, boolean>;
+    analyticsWindow['ga-disable-G-DCGH16NP2Q'] = isLocalOnlyPath;
+    analyticsWindow['ga-disable-AW-515585712'] = isLocalOnlyPath;
   }, [pathname]);
   return null;
 };

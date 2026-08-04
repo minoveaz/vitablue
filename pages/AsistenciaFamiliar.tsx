@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, ChevronRight, Phone, MessageSquare, 
-  Stethoscope, ShieldAlert, Heart, Calendar, ArrowRight, Laptop, Smartphone, HelpCircle,
+  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
   FileText, CreditCard, Shield
 } from 'lucide-react';
 import { useWizard } from '../context/WizardContext';
@@ -18,8 +17,7 @@ import {
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
-  MedicalAttentionIllustration,
-  DentalIllustration
+  MedicalAttentionIllustration
 } from '../components/illustrations';
 
 export const AsistenciaFamiliar: React.FC = () => {

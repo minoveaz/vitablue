@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "vite build && node post_build_cleanup.cjs",
     "preview": "vite preview",
-    "sync-blog": "node scripts/sync_blog.cjs"
+    "sync-blog": "node scripts/sync_blog.cjs",
+    "validate-routes": "node scripts/validate_routes.cjs",
+    "validate-routes:strict": "node scripts/validate_routes.cjs --strict",
+    "validate-sitemap": "node scripts/validate_sitemap.cjs",
+    "generate-sitemap": "node scripts/generate_sitemap.cjs --write",
+    "generate-sitemap:check": "node scripts/generate_sitemap.cjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",

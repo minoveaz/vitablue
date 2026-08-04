@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Mail, Phone, MapPin, Shield, HelpCircle, UserCheck } from 'lucide-react';
+import { Mail, Phone, Shield } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import { getSocialProfiles, socialProfilesUpdatedEvent, SocialProfiles } from '@/utils/socialProfiles';
 

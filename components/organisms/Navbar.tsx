@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowRight, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen } from 'lucide-react';
+import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { navbarTranslations } from '@/utils/translations';

@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, 
-  ShieldCheck, 
+  Activity,
   ArrowRight, 
   CheckCircle2, 
-  Sparkles, 
-  Heart, 
-  ChevronRight, 
   Globe,
-  Calculator,
-  Layers,
-  Sparkle
+  ChevronRight,
+  Sparkle,
 } from 'lucide-react';
 import { useWizard } from '@/context/WizardContext';
 import TransparencyBlock from '@/components/molecules/TransparencyBlock';
@@ -37,8 +32,6 @@ export const HealthInsurance: React.FC = () => {
   const [selectedAge, setSelectedAge] = useState<'young' | 'adult' | 'senior'>('young');
   
   // State for bento grid products filter
-  const [activeFilter, setActiveFilter] = useState<'all' | 'esencial' | 'completa' | 'premium' | 'otros'>('all');
-
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('individual');
@@ -322,6 +315,7 @@ export const HealthInsurance: React.FC = () => {
       badge: '+65 años'
     }
   ];
+  void bentoProducts;
 
   const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud';
   const title = 'Seguros de Salud en España | Compara Tarifas y Coberturas | VitaBlue';

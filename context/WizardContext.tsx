@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type ProfileType = 'student' | 'expat' | 'nomad' | null;
+export type ProfileType = 'student' | 'expat' | 'nomad' | 'individual' | 'pet' | null;
 export type DurationType = 'less_6' | '6_12' | 'more_12' | null;
 export type StartDateType = 'weeks' | 'month' | 'later' | null;
 export type VisaRequiredType = 'yes' | 'no' | 'unknown' | null;

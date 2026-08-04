@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Calendar, Clock, ChevronRight, User, ShieldCheck, Search, X } from 'lucide-react';
+import { Calendar, Clock, ChevronRight, ShieldCheck, Search, X } from 'lucide-react';
 import { blogPosts, BlogPostData } from '@/utils/blogData';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
@@ -63,9 +63,9 @@ export const BlogList: React.FC = () => {
           content={isEnglish ? 'Learn about health insurance requirements for student visas, non-lucrative residency, and immigration procedures in Spain. Guides written by experts.' : 'Infórmate sobre los requisitos de seguros médicos para visado de estudiante, residencia no lucrativa y trámites de extranjería en España. Guías redactadas por expertos.'} 
         />
         <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en/blog' : 'https://www.vitablue.es/blog'} />
-        <link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog" />
-        <link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog" />
-        <link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog" />
+          <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/blog" />
+          <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/blog" />
+          <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/blog" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

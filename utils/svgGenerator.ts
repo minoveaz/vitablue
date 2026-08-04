@@ -1,7 +1,5 @@
 /// <reference types="vite/client" />
 
-import { SocialPlatformId } from './socialProfiles';
-
 // Colored brand isotype paths (used for both light and dark exports)
 const isotypeSvgPaths = `
   <!-- TOP ARM (Turquoise / Mint Green) -->

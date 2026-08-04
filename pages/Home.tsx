@@ -3,19 +3,9 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   ShieldCheck,
-  Heart,
-  Users,
-  HelpCircle,
-  GraduationCap,
-  Dog,
-  Shield,
-  Activity,
+  
   ArrowRight,
-  Sparkles,
-  MessageSquare,
-  CheckCircle2,
   Star,
-  X,
   Search,
 } from 'lucide-react';
 import { useWizard } from '@/context/WizardContext';
@@ -423,9 +413,9 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'}
         />
         <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es/'} />
-        <link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />
-        <link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />
-        <link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

@@ -4,7 +4,7 @@ import { ArrowRight, Shield, ChevronDown } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 
 interface ConversationalHeroProps {
-  onSearch?: (data: { age: number; needType: string }) => void;
+  onSearch?: (data: { age: number; needType: string; insuranceType: string; nationality: string }) => void;
   className?: string;
 }
 
@@ -24,6 +24,8 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
       onSearch({
         age: parseInt(age) || 25,
         needType,
+        insuranceType: needType,
+        nationality: '',
       });
     }
   };

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, ChevronRight, Phone, MessageSquare, 
-  Stethoscope, ShieldAlert, Heart, Calendar, ArrowRight, Laptop, Smartphone, HelpCircle,
+  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
   FileText, CreditCard, GraduationCap
 } from 'lucide-react';
 import { useWizard } from '../context/WizardContext';
@@ -19,8 +18,7 @@ import {
   TravelIllustration,
   PreventionIllustration,
   HealthIllustration,
-  MedicalAttentionIllustration,
-  FamilyIllustration
+  MedicalAttentionIllustration
 } from '../components/illustrations';
 
 export const StudentInsurance: React.FC = () => {
@@ -61,6 +59,7 @@ export const StudentInsurance: React.FC = () => {
     'Sin periodos de carencia para coberturas de urgencia.',
     'Cobertura de repatriación sanitaria al país de origen incluida.'
   ];
+  void visaRequirements;
 
   const inclusions = isEnglish ? [
     'Comprehensive healthcare including general medicine, specialties, and emergencies.',
@@ -265,10 +264,10 @@ export const StudentInsurance: React.FC = () => {
   ];
 
   const priceEstimate = calculateStudentPrice();
-  
+
   const isLegacy1 = location.pathname.includes('seguro-medico-estudiantes-extranjeros-espana.html');
   const isLegacy2 = location.pathname.includes('international-students');
-  const isLegacy = isLegacy1 || isLegacy2;
+  
 
   let title = isEnglish
     ? 'Health Insurance for Student Visa Spain | VitaBlue'
@@ -424,9 +423,9 @@ export const StudentInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
-        <link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
-        <link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
