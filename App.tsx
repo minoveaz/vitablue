@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { 
   Mail, 
   Shield, 
@@ -35,6 +35,7 @@ import Breadcrumbs from '@/components/molecules/Breadcrumbs';
 // Import organisms & layout
 import FloatingWhatsApp from '@/components/organisms/FloatingWhatsApp';
 import ConversationalHero from '@/components/organisms/ConversationalHero';
+import ProtectedRoute from '@/components/organisms/ProtectedRoute';
 
 // Import illustrations copied from Marketing-Studio
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
@@ -72,7 +73,9 @@ const CookiesPolicy = lazy(() => import('@/pages/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/BlogList'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
-const MarketingStudio = import.meta.env.DEV ? lazy(() => import('@/marketing-studio/MarketingStudio')) : () => null;
+const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'));
+const MarketingLogin = lazy(() => import('@/pages/MarketingLogin'));
+const BackofficeHome = lazy(() => import('@/pages/BackofficeHome'));
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -82,6 +85,8 @@ const ScrollToTop = () => {
 
     const isLocalOnlyPath = pathname === '/styleguide'
       || pathname.startsWith('/styleguide/')
+      || pathname === '/login'
+      || pathname.startsWith('/backoffice')
       || pathname === '/marketing-studio'
       || pathname.startsWith('/marketing-studio/');
 
@@ -601,11 +606,13 @@ const Styleguide = () => {
 
 const AppLayout: React.FC = () => {
   const { pathname } = useLocation();
-  const isMarketingStudio = pathname.startsWith('/marketing-studio');
+  const isPrivateArea = pathname === '/login'
+    || pathname.startsWith('/backoffice')
+    || pathname.startsWith('/marketing-studio');
 
   return (
     <div className="flex flex-col min-h-screen bg-background-light text-text-main font-sans">
-      {!isMarketingStudio && <Navbar />}
+      {!isPrivateArea && <Navbar />}
 
       <main className="flex-grow">
         <Suspense fallback={<div className="min-h-screen bg-background-light"></div>}>
@@ -613,17 +620,16 @@ const AppLayout: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
             {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
-            {import.meta.env.DEV && (
-              <>
-                <Route path="/marketing-studio" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/identidad-de-marca" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/perfiles-sociales" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/campanas" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/campanas/:campaignId" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/conexiones" element={<MarketingStudio />} />
-                <Route path="/marketing-studio/generador-contenido" element={<MarketingStudio />} />
-              </>
-            )}
+            <Route path="/login" element={<MarketingLogin />} />
+            <Route path="/marketing-studio/login" element={<Navigate to="/login" replace />} />
+            <Route path="/backoffice" element={<ProtectedRoute><BackofficeHome /></ProtectedRoute>} />
+            <Route path="/marketing-studio" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/identidad-de-marca" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/perfiles-sociales" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/campanas" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/campanas/:campaignId" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/conexiones" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
+            <Route path="/marketing-studio/generador-contenido" element={<ProtectedRoute><MarketingStudio /></ProtectedRoute>} />
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
             <Route path="/productos/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguros-salud/seguro-medico-estudiantes" element={<StudentInsurance />} />
@@ -696,7 +702,7 @@ const AppLayout: React.FC = () => {
         </Suspense>
       </main>
 
-      {!isMarketingStudio && (
+      {!isPrivateArea && (
         <>
           <Footer />
           <CookieBanner />

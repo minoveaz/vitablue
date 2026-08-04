@@ -21,9 +21,10 @@ interface CampaignManagerProps {
   campaigns: Campaign[];
   setCampaigns: React.Dispatch<React.SetStateAction<Campaign[]>>;
   campaignId: string;
+  canEdit: boolean;
 }
 
-export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, setCampaigns, campaignId }) => {
+export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, setCampaigns, campaignId, canEdit }) => {
   const navigate = useNavigate();
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
@@ -52,6 +53,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   }
 
   const updateCampaignField = (field: keyof Campaign, value: any) => {
+    if (!canEdit) return;
     const updated = campaigns.map(c => {
       if (c.id === campaign.id) {
         const next = { ...c, [field]: value };
@@ -65,6 +67,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   };
 
   const updateCampaignFields = (fields: Partial<Campaign>) => {
+    if (!canEdit) return;
     const updated = campaigns.map(c => {
       if (c.id === campaign.id) {
         const next = { ...c, ...fields };

@@ -5,10 +5,13 @@ import { Campaign, deleteCampaign, generateCampaignCopies, saveCampaignToSupabas
 import { getConnections } from '@/marketing-studio/utils/connections';
 import { SocialPlatformId } from '@/utils/socialProfiles';
 import { platformConfigs } from '@/marketing-studio/config/platforms';
+import ConfirmModal from '@/components/molecules/ConfirmModal';
 
 interface CampaignOverviewProps {
   campaigns: Campaign[];
   setCampaigns: React.Dispatch<React.SetStateAction<Campaign[]>>;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 const statusLabels: Record<Campaign['status'], string> = {
@@ -25,13 +28,15 @@ const statusColors: Record<Campaign['status'], string> = {
   completed: 'bg-blue-50 text-blue-700 border-blue-200',
 };
 
-export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, setCampaigns }) => {
+export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, setCampaigns, canEdit, canDelete }) => {
   const navigate = useNavigate();
   const connections = getConnections();
   const [isCreating, setIsCreating] = useState(false);
   const [newCampaignName, setNewCampaignName] = useState('Lanzamiento de Marca');
+  const [pendingDelete, setPendingDelete] = useState<Campaign | null>(null);
 
   const handleCreateCampaign = async () => {
+    if (!canEdit) return;
     const name = newCampaignName.trim();
     if (!name) return;
 
@@ -92,7 +97,11 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
   };
 
   const handleDeleteCampaign = async (campaign: Campaign) => {
-    if (!window.confirm(`¿Seguro que deseas eliminar la campaña "${campaign.name}"?`)) return;
+    if (!canDelete) return;
+    setPendingDelete(campaign);
+  };
+
+  const performDeleteCampaign = async (campaign: Campaign) => {
     await deleteCampaign(campaign.id, campaigns);
     const remaining = campaigns.filter((item) => item.id !== campaign.id);
     setCampaigns(remaining);
@@ -176,6 +185,18 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
           ))}
         </div>
       )}
+      <ConfirmModal
+        open={Boolean(pendingDelete)}
+        variant="danger"
+        title="Eliminar campaña"
+        description={pendingDelete ? `¿Seguro que deseas eliminar “${pendingDelete.name}”? Esta acción no se puede deshacer.` : undefined}
+        confirmLabel="Eliminar campaña"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          if (pendingDelete) await performDeleteCampaign(pendingDelete);
+          setPendingDelete(null);
+        }}
+      />
     </div>
   );
 };

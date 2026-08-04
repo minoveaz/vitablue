@@ -101,6 +101,9 @@ export const legacyRoutes: RouteDefinition[] = [
 
 /** Functional routes that must remain out of search indexes. */
 export const privateRoutes: RouteDefinition[] = [
+  { path: '/login', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/marketing-studio/login', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/login' },
   { path: '/cotizador.html', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
   { path: '/wizard', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
   { path: '/resultados', kind: 'private', locale: 'es', canonical: '/resultados', indexable: false, prerender: true, sitemap: false },

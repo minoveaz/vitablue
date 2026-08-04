@@ -64,6 +64,39 @@ Funciones server-side / Edge Functions
 - [x] Build, prerender, auditoría estricta de rutas y auditoría de sitemap verificados después de la limpieza.
 - [x] Eliminada la opción innecesaria `ignoreDeprecations` de `tsconfig.json`; `npm run typecheck` continúa pasando.
 - [x] Eliminado `baseUrl`, opción marcada como obsoleta por el TypeScript de VS Code; los alias `@/*` siguen pasando el typecheck mediante `paths`.
+- [x] Añadido `AuthProvider`, página `/marketing-studio/login`, logout/sesión y `ProtectedRoute` para el panel.
+- [x] Marketing Studio deja de depender de `import.meta.env.DEV`; queda protegido por sesión también en producción.
+- [x] Typecheck y build/prerender verificados con la primera capa de login.
+- [ ] Crear roles (`admin`/`editor`) y políticas RLS en Supabase.
+- [x] Añadida migración `supabase/06_marketing_auth_roles.sql` con roles y políticas RLS explícitas para staging.
+- [x] `ProtectedRoute` verifica sesión y rol (`admin`/`editor`/`viewer`) consultando `user_roles`.
+- [x] Reorganizada el área privada: `/login` como acceso, `/backoffice` como shell y `marketing-studio` como módulo.
+- [x] Conservada `/marketing-studio/login` como redirección compatible a `/login`.
+- [x] Mejorado el dashboard de Backoffice con módulos y acciones visuales.
+- [x] Aplicar en Supabase la función segura `get_my_marketing_role()`; el usuario admin ya resuelve correctamente su rol.
+- [x] Añadido `supabase/07_rls_validation.sql` con comprobaciones estructurales y matriz de permisos esperada.
+- [x] Detectado y corregido un bypass de permisos en la UI de campañas: `viewer` ya no puede crear, editar ni borrar mediante el estado/localStorage del navegador.
+- [x] En el único entorno Supabase actual: creados admin/editor/viewer y validadas las acciones permitidas y denegadas de cada perfil, además del acceso anónimo.
+- [ ] Antes de publicar cambios: exportar respaldo, revisar políticas y confirmar usuarios/roles en este mismo entorno.
+- [x] Creado inventario seguro de credenciales OAuth sin copiar valores privados al repositorio.
+- [x] Creada la frontera `supabase/functions/oauth-callback` como scaffold server-side seguro; los intercambios por proveedor siguen desactivados hasta configurar JWT, state/PKCE y secretos.
+- [x] La función valida sesión Supabase, rol `admin`/`editor` y allowlist de `redirectUri` antes de aceptar un código.
+- [x] Creada la migración `supabase/08_oauth_connections.sql` para metadatos OAuth con RLS; no almacena tokens, solo una referencia a secretos server-side.
+- [x] Aplicada la migración `08_oauth_connections.sql` en el único proyecto Supabase.
+- [x] Verificado `rowsecurity = true` y las cuatro políticas de `oauth_connections` en Supabase.
+- [x] Preparada la función `store_oauth_connection_secret` para guardar credenciales cifradas en Vault sin devolver tokens.
+- [x] Aplicada la migración `09_oauth_vault_helpers.sql` en Supabase.
+- [x] Verificado que `store_oauth_connection_secret` es `SECURITY DEFINER` y solo ejecutable por `authenticated`.
+- [x] Desplegado `oauth-callback` como Edge Function en Supabase.
+- [x] Implementado `state` OAuth de un solo uso en cliente, Supabase y Edge Function; typecheck verificado.
+- [x] Aplicada la migración `10_oauth_states.sql` y desplegada la Edge Function con validación de `state`.
+- [x] Probada conexión real Facebook/Instagram desde el backoffice; la cuenta aparece vinculada tras el callback.
+- [x] Confirmada persistencia segura: `oauth_connections` contiene metadatos y `credential_ref` UUID, sin tokens en la tabla pública.
+- [x] Marketing Studio sincroniza el estado de conexiones desde `oauth_connections`, manteniendo `localStorage` solo como fallback de red.
+- [x] Preparada la desconexión server-side: elimina la referencia de Vault y la fila de `oauth_connections` mediante `oauth-disconnect`.
+- [x] Corregido el estado local posterior al callback para conservar `externalAccountId` y permitir la desconexión server-side.
+- [x] Validada la desconexión completa: modal, Edge Function, eliminación de Vault, eliminación de `oauth_connections` y actualización visual.
+- [x] Añadido checklist de configuración Hostinger/Supabase sin fijar todavía un dominio concreto.
 - [ ] Clasificar las 21 URLs legacy fuera del sitemap antes de crear canonicals y redirecciones.
 - [x] Registrar las rutas dinámicas de blog y la excepción dinámica del panel en el registro tipado.
 
@@ -181,7 +214,7 @@ Esto permite que una página sea navegable pero no prerenderizada, tenga canonic
 
 ### Fase 4 — Secretos y OAuth fuera del navegador
 
-- [ ] Eliminar secretos OAuth del conjunto `VITE_*`.
+- [x] Retirar los secretos OAuth del ejemplo público `.env.example`; su configuración server-side en Supabase queda pendiente.
 - [ ] Mantener en frontend únicamente identificadores públicos que el proveedor permita exponer.
 - [ ] Mover intercambio de `code` por tokens, refresh tokens y client secrets a Supabase Edge Functions o backend privado.
 - [ ] Guardar secretos en variables protegidas del entorno de Supabase/CI, nunca en el repositorio.

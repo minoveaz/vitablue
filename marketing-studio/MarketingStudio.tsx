@@ -34,8 +34,11 @@ import {
 } from '@/marketing-studio/utils/campaigns';
 import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
 import { CampaignOverview } from '@/marketing-studio/components/CampaignOverview';
+import { useAuth } from '@/context/AuthContext';
+import ConfirmModal from '@/components/molecules/ConfirmModal';
 import { 
   getConnections, 
+  syncConnectionsWithSupabase,
   startPlatformOAuth, 
   handleOAuthCallback, 
   disconnectPlatform,
@@ -87,6 +90,9 @@ const colorTokens = [
 const formatDimensions = (dimensions: { width: number; height: number }) => `${dimensions.width} × ${dimensions.height} px`;
 
 const MarketingStudio: React.FC = () => {
+  const { role } = useAuth();
+  const canEdit = role === 'admin' || role === 'editor';
+  const canDelete = role === 'admin';
   const { pathname } = useLocation();
   const { campaignId } = useParams<{ campaignId?: string }>();
   
@@ -106,6 +112,8 @@ const MarketingStudio: React.FC = () => {
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
   const [campaigns, setCampaigns] = useState<Campaign[]>(getCampaigns);
   const [connections, setConnections] = useState<SocialConnections>(getConnections);
+  const [pendingDisconnect, setPendingDisconnect] = useState<PlatformId | null>(null);
+  const [disconnectError, setDisconnectError] = useState<string | null>(null);
   const [useDarkBackground, setUseDarkBackground] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
@@ -136,6 +144,9 @@ const MarketingStudio: React.FC = () => {
     syncCampaignsWithSupabase().then((syncedCamps) => {
       setCampaigns(syncedCamps);
     });
+    syncConnectionsWithSupabase().then((syncedConnections) => {
+      setConnections(syncedConnections);
+    });
 
     return () => {
       window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
@@ -155,12 +166,15 @@ const MarketingStudio: React.FC = () => {
       if (state.startsWith('google_')) platform = 'youtube';
       if (state.startsWith('x_')) platform = 'x';
       if (state.startsWith('tiktok_')) platform = 'tiktok';
+      if (!platform) {
+        platform = window.sessionStorage.getItem('vitablue.oauth.provider') as SocialPlatformId | null;
+      }
 
       if (platform) {
         setIsExporting(true);
         setExportMessage(`Conectando con ${platform}...`);
         
-        handleOAuthCallback(platform, code).then((res) => {
+        handleOAuthCallback(platform, code, state).then((res) => {
           if (res.success) {
             setConnections(getConnections());
             setExportMessage(`¡Cuenta de ${platform} conectada con éxito!`);
@@ -945,7 +959,13 @@ const MarketingStudio: React.FC = () => {
                     <div className="pt-4 border-t border-slate-100/60">
                       {isConnected ? (
                         <button
-                          onClick={() => setConnections(disconnectPlatform(plat.id))}
+                          onClick={() => {
+                            if (canEdit) {
+                              setDisconnectError(null);
+                              setPendingDisconnect(plat.id);
+                            }
+                          }}
+                          disabled={!canEdit}
                           className="w-full flex items-center justify-center py-2.5 rounded-xl border border-rose-100 bg-rose-50/50 hover:bg-rose-50 text-rose-600 text-xs font-bold transition-all cursor-pointer"
                         >
                           Desconectar
@@ -970,9 +990,9 @@ const MarketingStudio: React.FC = () => {
         {section === 'campaigns' && (
           <div className="animate-fadeIn">
             {campaignId ? (
-              <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} campaignId={campaignId} />
+              <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} campaignId={campaignId} canEdit={canEdit} />
             ) : (
-              <CampaignOverview campaigns={campaigns} setCampaigns={setCampaigns} />
+              <CampaignOverview campaigns={campaigns} setCampaigns={setCampaigns} canEdit={canEdit} canDelete={canDelete} />
             )}
           </div>
         )}
@@ -983,6 +1003,27 @@ const MarketingStudio: React.FC = () => {
             <SocialGenerator />
           </div>
         )}
+        <ConfirmModal
+          open={Boolean(pendingDisconnect)}
+          variant="danger"
+          title="Desconectar cuenta"
+          description={disconnectError ?? 'Se eliminará la conexión de VitaBlue y la credencial almacenada en Vault. Tendrás que autorizarla de nuevo para volver a utilizarla.'}
+          confirmLabel="Desconectar"
+          onCancel={() => {
+            setPendingDisconnect(null);
+            setDisconnectError(null);
+          }}
+          onConfirm={async () => {
+            if (!pendingDisconnect) return;
+            try {
+              setConnections(await disconnectPlatform(pendingDisconnect));
+              setPendingDisconnect(null);
+              setDisconnectError(null);
+            } catch (error) {
+              setDisconnectError(error instanceof Error ? error.message : 'No se pudo desconectar la cuenta.');
+            }
+          }}
+        />
       </main>
     </div>
   );
