@@ -218,10 +218,13 @@ export const generateCampaignBannerSvg = (
       : `<g transform="translate(${logoX}, ${logoY}) scale(${logoScale})">${isotypeSvgPaths}</g>`;
     
     const drawFlag = title.includes('España');
-    const textX = drawFlag ? (width / 2 - 28) : (width / 2);
+    const titleFontSize = 56;
+    const titleWidthEstimate = title.length * titleFontSize * 0.55;
+    const textX = drawFlag ? (width / 2 - 30) : (width / 2);
+    const flagX = drawFlag ? (textX + titleWidthEstimate / 2 + 12) : 0;
     const flagMarkup = drawFlag
       ? `
-        <g transform="translate(${width / 2 + 198}, ${titleY - 44})">
+        <g transform="translate(${flagX}, ${titleY - 44})">
           <clipPath id="flagClipPost">
             <rect width="48" height="32" rx="6" />
           </clipPath>
@@ -242,7 +245,7 @@ export const generateCampaignBannerSvg = (
 
     layoutContent = `
       ${graphicContent}
-      <text x="${textX}" y="${titleY}" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="56">${title}</text>
+      <text x="${textX}" y="${titleY}" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="${titleFontSize}">${title}</text>
       ${flagMarkup}
       <text x="${width / 2}" y="${taglineY}" text-anchor="middle" fill="${taglineColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="28">${tagline}</text>
       <rect x="${width / 2 - pillWidth / 2}" y="960" width="${pillWidth}" height="48" rx="24" fill="#005F73" opacity="0.1" />
@@ -271,10 +274,13 @@ export const generateCampaignBannerSvg = (
       : `<g transform="translate(${logoX}, ${logoY}) scale(${logoScale})">${isotypeSvgPaths}</g>`;
 
     const drawFlag = title.includes('España');
-    const textX = drawFlag ? (width / 2 - 32) : (width / 2);
+    const titleFontSize = 64;
+    const titleWidthEstimate = title.length * titleFontSize * 0.55;
+    const textX = drawFlag ? (width / 2 - 34) : (width / 2);
+    const flagX = drawFlag ? (textX + titleWidthEstimate / 2 + 14) : 0;
     const flagMarkup = drawFlag
       ? `
-        <g transform="translate(${width / 2 + 226}, ${titleY - 50})">
+        <g transform="translate(${flagX}, ${titleY - 50})">
           <clipPath id="flagClipStory">
             <rect width="56" height="38" rx="8" />
           </clipPath>
@@ -298,7 +304,7 @@ export const generateCampaignBannerSvg = (
     layoutContent = `
       <circle cx="${width / 2}" cy="520" r="350" fill="url(#glowTop)" opacity="0.8" />
       ${graphicContent}
-      <text x="${textX}" y="${titleY}" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64">${title}</text>
+      <text x="${textX}" y="${titleY}" text-anchor="middle" fill="${titleColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="${titleFontSize}">${title}</text>
       ${flagMarkup}
       <text x="${width / 2}" y="${taglineY}" text-anchor="middle" fill="${taglineColor}" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="32">${tagline}</text>
       <g transform="translate(${(width - 450) / 2}, 1530)">
