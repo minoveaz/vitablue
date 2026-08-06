@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Boxes, Globe, Image, LayoutDashboard, Palette, Sparkles } from 'lucide-react';
+import { BarChart3, Boxes, Globe, Image, LayoutDashboard, Link2, Palette, Sparkles } from 'lucide-react';
 import SaaSShell from '@/components/layouts/SaaSShell';
 
 export const backofficeNavigation = [
@@ -8,6 +8,7 @@ export const backofficeNavigation = [
   { to: '/backoffice/marketing-studio/identidad-de-marca', label: 'Identidad de marca', icon: Palette },
   { to: '/backoffice/marketing-studio/perfiles-sociales', label: 'Perfiles sociales', icon: Image },
   { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: BarChart3 },
+  { to: '/backoffice/marketing-studio/enlaces', label: 'Enlaces de campaña', icon: Link2 },
   { to: '/backoffice/marketing-studio/conexiones', label: 'Conexiones API', icon: Globe },
   { to: '/backoffice/marketing-studio/generador-contenido', label: 'Generador de contenido', icon: Sparkles },
 ];

@@ -11,6 +11,7 @@ import { getConnections } from '@/marketing-studio/utils/connections';
 import { generateCampaignBannerSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import { CampaignDeliveryChannels } from '@/marketing-studio/components/CampaignDeliveryChannels';
 import { CampaignContentWorkspace } from '@/marketing-studio/components/CampaignContentWorkspace';
+import { CampaignLinksPanel } from '@/marketing-studio/components/CampaignLinksPanel';
 import { 
   ArrowLeft,
   Calendar, 
@@ -107,7 +108,8 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         asset.type,
         theme,
         title,
-        tagline
+        tagline,
+        asset.illustration
       );
       
       await downloadSvgAsPng(svgString, asset.dimensions.width, asset.dimensions.height, filename);
@@ -122,7 +124,9 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
 
   const handlePrepareInstagram = async () => {
     try {
-      const asset = campaign.assets.find((item) => item.type === previewAssetType) ?? campaign.assets[0];
+      const asset = campaign.assets.find((item) => item.type === previewAssetType && item.id.includes('instagram'))
+        ?? campaign.assets.find((item) => item.type === previewAssetType)
+        ?? campaign.assets[0];
       if (!asset) return;
 
       await handleExportAsset(asset);
@@ -200,6 +204,8 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
           {/* Platform selection and delivery mode */}
           <CampaignDeliveryChannels campaign={campaign} connections={connections} onChange={updateCampaignFields} />
         </section>
+
+        <CampaignLinksPanel campaign={campaign} />
 
         <CampaignContentWorkspace
           campaign={campaign}

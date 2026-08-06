@@ -39,7 +39,9 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
   onPrepareInstagram,
 }) => {
   const selectedPlatform = platformConfigs.find((item) => item.id === platform);
-  const selectedAsset = campaign.assets.find((asset) => asset.type === assetType) ?? campaign.assets[0];
+  const selectedAsset = campaign.assets.find((asset) => asset.type === assetType && asset.id.includes(platform))
+    ?? campaign.assets.find((asset) => asset.type === assetType)
+    ?? campaign.assets[0];
   const selectedAssetIndex = selectedAsset ? campaign.assets.indexOf(selectedAsset) : -1;
   const hasVideo = campaign.contentTypes?.includes('video');
 
@@ -80,7 +82,7 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
       </div>
 
       {campaign.platforms.length > 0 && (
-        <div className="grid gap-6 xl:grid-cols-[minmax(220px,0.8fr)_minmax(320px,1fr)_minmax(240px,0.8fr)]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.95fr)_minmax(420px,1.25fr)_minmax(280px,0.9fr)]">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Contenido de {selectedPlatform?.name}</span>
@@ -89,10 +91,10 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
             <textarea
               value={campaign.copies[platform] || ''}
               onChange={(event) => onCopyChange(platform, event.target.value)}
-              className="min-h-[180px] w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs font-semibold leading-relaxed text-slate-600 outline-none transition-all focus:border-primary focus:bg-white"
+              className="min-h-[320px] w-full resize-y rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm font-semibold leading-relaxed text-slate-700 outline-none transition-all focus:border-primary focus:bg-white"
               placeholder={`Escribe el copy promocional para ${selectedPlatform?.name}...`}
             />
-            <div className="rounded-2xl bg-slate-50 p-3 text-[10px] font-semibold leading-relaxed text-slate-400">
+            <div className="rounded-2xl bg-slate-50 p-3 text-xs font-semibold leading-relaxed text-slate-500">
               El copy generado automáticamente se puede modificar antes de preparar o descargar la publicación.
             </div>
           </div>

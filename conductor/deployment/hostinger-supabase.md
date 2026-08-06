@@ -19,10 +19,12 @@ No configurar en Hostinger:
 
 ## URLs de producción
 
-Dominio de producción actual: `https://vitablue.es`
+Dominio canónico de producción: `https://www.vitablue.es`
+
+Hostinger redirige el dominio sin `www` hacia esta URL canónica.
 
 ```text
-https://vitablue.es/backoffice/marketing-studio/conexiones
+https://www.vitablue.es/backoffice/marketing-studio/conexiones
 ```
 
 Debe añadirse exactamente en:
@@ -33,7 +35,7 @@ Debe añadirse exactamente en:
 Para conservar desarrollo local, separar ambas URLs con coma:
 
 ```text
-http://localhost:5173/backoffice/marketing-studio/conexiones,https://vitablue.es/backoffice/marketing-studio/conexiones
+http://localhost:5173/backoffice/marketing-studio/conexiones,https://www.vitablue.es/backoffice/marketing-studio/conexiones
 ```
 
 ## Comprobación posterior

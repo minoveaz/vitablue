@@ -30,6 +30,7 @@ const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'))
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
 const ProductCatalog = lazy(() => import('@/pages/backoffice/ProductCatalog'));
+const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'));
 
 const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
   .filter((route) => route.path.startsWith('/backoffice'))
@@ -85,8 +86,10 @@ const AppLayout: React.FC = () => {
             <Route path="/marketing-studio/conexiones" element={<Navigate to="/backoffice/marketing-studio/conexiones" replace />} />
             <Route path="/marketing-studio/generador-contenido" element={<Navigate to="/backoffice/marketing-studio/generador-contenido" replace />} />
             <Route path="/marketing-studio/*" element={<Navigate to="/backoffice/marketing-studio" replace />} />
+            <Route path="/r/:slug" element={<MarketingRedirect />} />
             {generatedBackofficeRoutes.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
             {/* Seguros de Salud - Nueva Estructura Jerárquica */}
+            <Route path="/estudiantes" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes" replace />} />
             <Route path="/productos/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguros-salud/seguro-medico-estudiantes" element={<StudentInsurance />} />
             <Route path="/en/health-insurance-student-visa-spain" element={<StudentInsurance />} />

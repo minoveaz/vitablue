@@ -1,0 +1,7 @@
+# Local Supabase CLI configuration.
+# The marketing-link-redirect function is intentionally public: it receives
+# anonymous campaign clicks and records them server-side before returning the
+# WhatsApp URL.
+
+[functions.marketing-link-redirect]
+verify_jwt = false

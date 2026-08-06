@@ -13,6 +13,7 @@ import {
   Youtube,
   Music2,
   Globe,
+  Link2,
 } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
@@ -47,8 +48,9 @@ import {
   SocialConnections
 } from '@/marketing-studio/utils/connections';
 import BrandIdentityPanel from '@/marketing-studio/components/BrandIdentityPanel';
+import MarketingLinks from '@/marketing-studio/MarketingLinks';
 
-type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'connections' | 'content';
+type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content';
 type PlatformId = SocialPlatformId;
 type SocialAssetType = 'profile' | 'cover';
 
@@ -104,6 +106,8 @@ const MarketingStudio: React.FC = () => {
     section = 'profiles';
   } else if (pathname.includes('/campanas')) {
     section = 'campaigns';
+  } else if (pathname.includes('/enlaces')) {
+    section = 'links';
   } else if (pathname.includes('/conexiones')) {
     section = 'connections';
   } else if (pathname.includes('/generador-contenido')) {
@@ -254,6 +258,9 @@ const MarketingStudio: React.FC = () => {
             <Link to="/marketing-studio/campanas" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'campaigns' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Sparkles size={16} className="text-[#94D2BD] shrink-0" /> Gestión de Campañas
             </Link>
+            <Link to="/backoffice/marketing-studio/enlaces" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'links' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+              <Link2 size={16} /> Enlaces de campaña
+            </Link>
             <Link to="/marketing-studio/conexiones" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'connections' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Globe size={16} className="shrink-0" /> Conexiones API
             </Link>
@@ -287,6 +294,7 @@ const MarketingStudio: React.FC = () => {
               {section === 'identity' && 'Identidad de Marca & Sistema Visual'}
               {section === 'profiles' && 'Gestión de Perfiles Sociales'}
               {section === 'campaigns' && 'Planificador de Campañas Multicanal'}
+              {section === 'links' && 'Enlaces de campaña'}
               {section === 'connections' && 'Configuración de Conexiones de API'}
               {section === 'content' && 'Generador Automático de Contenido'}
             </h2>
@@ -1000,6 +1008,8 @@ const MarketingStudio: React.FC = () => {
             )}
           </div>
         )}
+
+        {section === 'links' && <MarketingLinks />}
 
         {/* CONTENT GENERATOR MODULE */}
         {section === 'content' && (

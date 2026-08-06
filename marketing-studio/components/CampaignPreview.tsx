@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
+import { StudentIllustration } from '@/components/illustrations/health/Student';
 import { CampaignAsset } from '@/marketing-studio/utils/campaigns';
 import { SocialPlatformId } from '@/utils/socialProfiles';
 
@@ -60,14 +61,52 @@ export const CampaignPreview: React.FC<CampaignPreviewProps> = ({
       <div className={`w-full ${getPreviewAspect(platform, asset.type)} rounded-xl overflow-hidden relative flex items-center justify-center border border-slate-100 ${background}`}>
         <div className="absolute -right-16 -top-16 h-36 w-36 rounded-full bg-brand-cyan/20 blur-xl" />
         <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-brand-cyan/10 blur-xl" />
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-5">
-          <Logo iconSize={asset.type === 'story' ? 38 : 32} showText={false} showTagline={false} variant="colored-on-dark" />
-          <p className={`mt-2 font-display font-black text-sm leading-tight ${textColor}`}>
-            {asset.customTitle || 'VitaBlue Seguros'}
-          </p>
-          <p className={`mt-1 font-semibold text-[8px] leading-tight max-w-[180px] ${taglineColor}`}>
-            {asset.customTagline || 'Protección que se adapta a tu vida'}
-          </p>
+        <div className="relative z-10 flex flex-col items-center justify-between h-full w-full text-center p-4 min-h-[220px]">
+          {/* Small top logo for student illustration layout */}
+          {asset.illustration === 'student' ? (
+            <div className="flex items-center gap-2 justify-center mt-2">
+              <div className="w-7 h-7 shrink-0 flex items-center justify-center">
+                <Logo iconSize={26} showText={false} showTagline={false} variant={asset.theme === 'light' ? 'default' : 'colored-on-dark'} />
+              </div>
+              <span className={`font-display font-black text-sm tracking-tight ${textColor}`}>VitaBlue</span>
+            </div>
+          ) : (
+            <div className="h-6" />
+          )}
+
+          {/* Center Graphic */}
+          {asset.illustration === 'student' ? (
+            <div className="relative w-44 h-28 flex items-center justify-center my-1 select-none">
+              {/* Soft radial glow circle */}
+              <div className="absolute inset-0 m-auto w-26 h-26 rounded-full bg-brand-cyan/25 blur-sm pointer-events-none" />
+              <div className="relative z-10 w-36 h-26 text-primary shrink-0 flex items-center justify-center">
+                <StudentIllustration />
+              </div>
+            </div>
+          ) : (
+            <div className="my-3 flex items-center justify-center">
+              <Logo iconSize={asset.type === 'story' ? 44 : 36} showText={false} showTagline={false} variant="colored-on-dark" />
+            </div>
+          )}
+
+          {/* Bottom Texts */}
+          <div className="mb-1 w-full">
+            <div className="flex items-center gap-1.5 justify-center">
+              <p className={`font-display font-black text-sm leading-tight ${textColor}`}>
+                {asset.customTitle || 'VitaBlue Seguros'}
+              </p>
+              {(asset.customTitle || '').includes('España') && (
+                <div className="w-5 h-3.5 rounded-[3px] overflow-hidden border border-slate-200/20 flex flex-col shrink-0">
+                  <div className="h-[25%] bg-[#AA151B]" />
+                  <div className="h-[50%] bg-[#F1BF00]" />
+                  <div className="h-[25%] bg-[#AA151B]" />
+                </div>
+              )}
+            </div>
+            <p className={`mt-1 font-semibold text-[9px] leading-tight max-w-[200px] mx-auto ${taglineColor}`}>
+              {asset.customTagline || 'Protección que se adapta a tu vida'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

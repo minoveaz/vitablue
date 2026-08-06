@@ -1,0 +1,75 @@
+import React, { useMemo, useState } from 'react';
+import { Activity, BarChart3, Check, Copy, ExternalLink, Globe2, Link2, MessageCircle, Monitor, Pencil, Plus, Power, Save, Smartphone, Trash2, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { getCampaigns } from '@/marketing-studio/utils/campaigns';
+import { buildWhatsAppUrl, getMarketingLinkClicks, getMarketingLinks, getPublicMarketingLinkUrl, MarketingLink, MarketingLinkChannel, MarketingLinkClick, saveMarketingLinks, saveMarketingLinksToSupabase, syncMarketingLinksWithSupabase } from '@/marketing-studio/utils/marketingLinks';
+
+const channels: Array<{ id: MarketingLinkChannel; label: string }> = [
+  { id: 'tiktok', label: 'TikTok' }, { id: 'instagram', label: 'Instagram' }, { id: 'facebook', label: 'Facebook' },
+  { id: 'youtube', label: 'YouTube' }, { id: 'linkedin', label: 'LinkedIn' }, { id: 'x', label: 'X' }, { id: 'other', label: 'Otro' },
+];
+const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const emptyDraft = { name: '', slug: '', channel: 'tiktok' as MarketingLinkChannel, phone: '34694583452', message: '' };
+const formatClickDate = (value: string) => new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+
+const MarketingLinks: React.FC = () => {
+  const navigate = useNavigate(); const campaigns = getCampaigns();
+  const [links, setLinks] = useState<MarketingLink[]>(getMarketingLinks);
+  const [clicks, setClicks] = useState<MarketingLinkClick[]>([]);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [scope, setScope] = useState<'all' | 'global' | 'campaign'>('all');
+  const [copiedId, setCopiedId] = useState<string | null>(null); const [showForm, setShowForm] = useState(false); const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState(emptyDraft); const [formError, setFormError] = useState<string | null>(null); const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const visibleLinks = useMemo(() => links.filter((link) => scope === 'all' || (scope === 'global' ? !link.campaignId : Boolean(link.campaignId))), [links, scope]);
+  const update = (next: MarketingLink[]) => { setLinks(next); saveMarketingLinks(next); void saveMarketingLinksToSupabase(next); };
+  React.useEffect(() => {
+    void Promise.all([syncMarketingLinksWithSupabase(), getMarketingLinkClicks()]).then(([syncedLinks, recentClicks]) => {
+      setLinks(syncedLinks);
+      setClicks(recentClicks);
+      setStatsLoading(false);
+    });
+  }, []);
+  const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0);
+  const activeLinks = links.filter((link) => link.active).length;
+  const mobileClicks = clicks.filter((click) => click.device === 'mobile').length;
+  const desktopClicks = clicks.filter((click) => click.device === 'desktop').length;
+  const countryCounts = useMemo(() => Array.from(clicks.reduce((counts, click) => {
+    if (click.countryCode) counts.set(click.countryCode, (counts.get(click.countryCode) || 0) + 1);
+    return counts;
+  }, new Map<string, number>()).entries()).sort(([, first], [, second]) => second - first), [clicks]);
+  const recentClicks = clicks.slice(0, 5);
+  const openCreate = () => { setEditingId(null); setDraft(emptyDraft); setShowForm(true); setFormError(null); setFormSuccess(null); };
+  const openEdit = (link: MarketingLink) => { setEditingId(link.id); setDraft({ name: link.name, slug: link.slug, channel: link.channel, phone: link.phone, message: link.message }); setShowForm(true); setFormError(null); setFormSuccess(null); };
+  const saveGlobal = (event: React.FormEvent) => {
+    event.preventDefault(); const name = draft.name.trim(); const slug = slugify(draft.slug || name); const message = draft.message.trim(); const phone = draft.phone.replace(/\D/g, '');
+    if (!name || !slug || !message || !phone) { setFormError('Completa todos los campos.'); return; }
+    if (links.some((link) => link.slug === slug && link.id !== editingId)) { setFormError(`El slug “${slug}” ya existe.`); return; }
+    const now = new Date().toISOString();
+    if (editingId) update(links.map((link) => link.id === editingId ? { ...link, ...draft, name, slug, phone, updatedAt: now } : link));
+    else update([{ ...draft, id: `marketing-link-${Date.now()}`, name, slug, phone, campaignId: '', active: true, clicks: 0, createdAt: now, updatedAt: now }, ...links]);
+    setDraft(emptyDraft); setEditingId(null); setShowForm(false); setFormError(null); setFormSuccess(editingId ? 'Enlace global actualizado.' : 'Enlace global creado.'); setScope('global');
+  };
+  const copy = async (link: MarketingLink) => { await navigator.clipboard?.writeText(getPublicMarketingLinkUrl(link.slug)); setCopiedId(link.id); window.setTimeout(() => setCopiedId(null), 1600); };
+  const toggle = (link: MarketingLink) => { if (!link.campaignId) update(links.map((item) => item.id === link.id ? { ...item, active: !item.active } : item)); };
+  const remove = (link: MarketingLink) => { if (!link.campaignId) update(links.filter((item) => item.id !== link.id)); };
+
+  return <div className="space-y-6 text-left">
+    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Marketing Studio</p><h2 className="mt-1 font-display text-3xl font-black text-slate-900">Enlaces de campaña</h2><p className="mt-2 max-w-2xl text-sm text-slate-500">Gestiona enlaces globales y consulta el rendimiento de los enlaces creados dentro de cada campaña.</p></div><div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3"><BarChart3 size={17} className="text-primary" /><span className="text-sm font-black text-slate-800">{totalClicks} clics</span></div></div>
+    <div className="flex flex-wrap gap-2"><button onClick={openCreate} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-[10px] font-black text-white"><Plus size={14} /> Nuevo enlace global</button><span className="rounded-xl bg-slate-100 px-3 py-2 text-[10px] font-bold text-slate-500">Los enlaces de campaña se editan desde su campaña</span></div>
+    {formSuccess && <p className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">{formSuccess}</p>}
+    <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-wide text-slate-400">Clics totales</p><BarChart3 size={16} className="text-primary" /></div><p className="mt-2 text-2xl font-black text-slate-900">{totalClicks}</p><p className="mt-1 text-[10px] text-slate-400">En todos los enlaces</p></div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-wide text-slate-400">Enlaces activos</p><Link2 size={16} className="text-primary" /></div><p className="mt-2 text-2xl font-black text-slate-900">{activeLinks}</p><p className="mt-1 text-[10px] text-slate-400">De {links.length} registrados</p></div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-wide text-slate-400">Dispositivos</p><Smartphone size={16} className="text-primary" /></div><p className="mt-2 text-2xl font-black text-slate-900">{mobileClicks} móvil</p><p className="mt-1 inline-flex items-center gap-1 text-[10px] text-slate-400"><Monitor size={11} /> {desktopClicks} escritorio · últimos 100</p></div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-wide text-slate-400">Países detectados</p><Globe2 size={16} className="text-primary" /></div><p className="mt-2 text-2xl font-black text-slate-900">{countryCounts.length}</p><p className="mt-1 text-[10px] text-slate-400">Según la red del visitante</p></div>
+    </section>
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2"><Activity size={17} className="text-primary" /><h3 className="font-display text-lg font-black">Actividad reciente</h3></div><span className="text-[10px] font-bold text-slate-400">{statsLoading ? 'Cargando…' : 'Últimos 100 clics'}</span></div>{recentClicks.length === 0 ? <p className="mt-3 rounded-2xl bg-slate-50 p-4 text-xs text-slate-500">Aún no hay actividad registrada.</p> : <div className="mt-3 divide-y divide-slate-100">{recentClicks.map((click) => { const link = links.find((item) => item.id === click.linkId); return <div key={click.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0"><div><p className="text-xs font-black text-slate-700">{link?.name || 'Enlace eliminado'}</p><p className="mt-1 text-[10px] text-slate-400">{formatClickDate(click.clickedAt)} · {click.device || 'dispositivo desconocido'}{click.countryCode ? ` · ${click.countryCode}` : ''}</p></div><span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-black text-emerald-700">WhatsApp</span></div>; })}</div>}</section>
+    {showForm && <form onSubmit={saveGlobal} className="grid gap-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-2"><div className="flex items-center justify-between sm:col-span-2"><p className="text-sm font-black text-slate-800">{editingId ? 'Editar enlace global' : 'Nuevo enlace global'}</p><button type="button" onClick={() => setShowForm(false)}><X size={16} className="text-slate-400" /></button></div><input required placeholder="Nombre del enlace global" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2 text-sm" /><input required placeholder="slug-global" value={draft.slug} onChange={(e) => setDraft({ ...draft, slug: slugify(e.target.value) })} className="rounded-xl border border-slate-200 px-3 py-2 font-mono text-sm" /><select value={draft.channel} onChange={(e) => setDraft({ ...draft, channel: e.target.value as MarketingLinkChannel })} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">{channels.map((channel) => <option key={channel.id} value={channel.id}>{channel.label}</option>)}</select><input required value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2 text-sm" /><textarea required placeholder="Mensaje inicial de WhatsApp" value={draft.message} onChange={(e) => setDraft({ ...draft, message: e.target.value })} className="min-h-20 rounded-xl border border-slate-200 px-3 py-2 text-sm sm:col-span-2" />{formError && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 sm:col-span-2">{formError}</p>}<button type="submit" className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-black text-white sm:col-span-2">{editingId ? <Save size={14} /> : <Plus size={14} />} {editingId ? 'Guardar cambios' : 'Crear enlace global'}</button></form>}
+    <section className="space-y-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div className="flex items-center gap-2"><MessageCircle size={17} className="text-whatsapp" /><h3 className="font-display text-lg font-black">Biblioteca y estadísticas</h3></div><div className="flex gap-1 rounded-xl bg-slate-100 p-1">{([['all', 'Todos'], ['global', 'Globales'], ['campaign', 'Campañas']] as const).map(([value, label]) => <button key={value} onClick={() => setScope(value)} className={`rounded-lg px-2.5 py-1.5 text-[10px] font-black ${scope === value ? 'bg-white text-primary shadow-sm' : 'text-slate-500'}`}>{label}</button>)}</div></div>
+      {visibleLinks.length === 0 && <p className="rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">No hay enlaces en este filtro.</p>}
+      {visibleLinks.map((link) => { const campaign = campaigns.find((item) => item.id === link.campaignId); return <article key={link.id} className={`rounded-2xl border p-4 ${link.active ? 'border-slate-200' : 'border-dashed border-slate-300 opacity-60'}`}><div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><h4 className="text-sm font-black text-slate-800">{link.name}</h4><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black uppercase text-slate-500">{link.channel}</span></div><p className="mt-1 font-mono text-xs text-primary">{getPublicMarketingLinkUrl(link.slug)}</p><p className="mt-1 text-[10px] font-bold text-slate-400">{campaign ? `Campaña: ${campaign.name}` : 'Enlace global'}</p></div><span className="shrink-0 text-xs font-black text-slate-500">{link.clicks} clics</span></div><p className="mt-3 line-clamp-2 text-xs text-slate-500">{link.message}</p><div className="mt-4 flex flex-wrap gap-2"><button onClick={() => copy(link)} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-[10px] font-black text-white">{copiedId === link.id ? <Check size={13} /> : <Copy size={13} />} {copiedId === link.id ? 'Copiado' : 'Copiar'}</button><a href={buildWhatsAppUrl(link)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-[10px] font-black text-emerald-700"><ExternalLink size={13} /> Probar</a>{campaign && <button onClick={() => navigate(`/backoffice/marketing-studio/campanas/${campaign.id}`)} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-[10px] font-black text-slate-600"><Link2 size={13} /> Abrir campaña</button>}{!link.campaignId && <><button onClick={() => openEdit(link)} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-[10px] font-black text-slate-600"><Pencil size={13} /> Editar</button><button onClick={() => toggle(link)} className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-[10px] font-black text-slate-600"><Power size={13} /> {link.active ? 'Desactivar' : 'Activar'}</button><button onClick={() => remove(link)} className="inline-flex items-center gap-1.5 rounded-lg bg-rose-50 px-3 py-2 text-[10px] font-black text-rose-600"><Trash2 size={13} /> Borrar</button></>}</div></article>; })}
+    </section>
+    <button onClick={() => navigate('/backoffice/marketing-studio/campanas')} className="text-xs font-black text-slate-500 hover:text-primary">← Volver a campañas</button>
+  </div>;
+};
+export default MarketingLinks;

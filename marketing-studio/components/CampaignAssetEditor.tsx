@@ -38,6 +38,17 @@ export const CampaignAssetEditor: React.FC<CampaignAssetEditorProps> = ({
 
       <div className="space-y-2">
         <label className="flex flex-col gap-1">
+          <span className="text-[9px] font-bold text-slate-400 uppercase">Diseño / Ilustración</span>
+          <select
+            value={asset.illustration ?? 'logo'}
+            onChange={(event) => onChange({ illustration: event.target.value as CampaignAsset['illustration'] })}
+            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white focus:border-primary outline-none cursor-pointer"
+          >
+            <option value="logo">Logotipo Corporativo VitaBlue</option>
+            <option value="student">Ilustración de Estudiante (Visado)</option>
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
           <span className="text-[9px] font-bold text-slate-400 uppercase">Título de Banner</span>
           <input
             type="text"

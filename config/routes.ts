@@ -72,6 +72,7 @@ export const dynamicRoutes: RouteDefinition[] = [
   { path: '/blog/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/en/blog/:slug', kind: 'dynamic', locale: 'en', indexable: true, prerender: true, sitemap: true },
   { path: '/backoffice/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/r/:slug', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
 
 /**
@@ -79,6 +80,7 @@ export const dynamicRoutes: RouteDefinition[] = [
  * are implemented and verified in production.
  */
 export const legacyRoutes: RouteDefinition[] = [
+  legacy('/estudiantes', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html', '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud'),
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html', '/productos/seguro-mascotas/sanitas-mascotas'),
   legacy('/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html', '/productos/seguro-para-decesos/asistencia-familiar'),
@@ -113,6 +115,7 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/backoffice/marketing-studio/identidad-de-marca', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/perfiles-sociales', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/campanas', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/enlaces', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/conexiones', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/generador-contenido', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
