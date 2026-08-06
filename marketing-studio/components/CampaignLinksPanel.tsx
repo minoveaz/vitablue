@@ -9,10 +9,11 @@ interface CampaignLinksPanelProps { campaign: Campaign; }
 export const CampaignLinksPanel: React.FC<CampaignLinksPanelProps> = ({ campaign }) => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState<string | null>(null);
+  const [linksVersion, setLinksVersion] = useState(0);
   const [editing, setEditing] = useState<MarketingLink | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<{ name: string; slug: string; channel: MarketingLink['channel']; phone: string; message: string }>({ name: '', slug: '', channel: 'tiktok', phone: '34694583452', message: '' });
-  const links = useMemo(() => getMarketingLinks().filter((link) => link.campaignId === campaign.id), [campaign.id]);
+  const links = useMemo(() => getMarketingLinks().filter((link) => link.campaignId === campaign.id), [campaign.id, linksVersion]);
 
   const slugify = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   const openCreate = () => { setEditing(null); setForm({ name: `${campaign.name} · TikTok`, slug: '', channel: 'tiktok', phone: '34694583452', message: 'Hola, vengo de TikTok de VitaBlue y necesito información sobre esta campaña.' }); setShowForm(true); };
@@ -32,9 +33,9 @@ export const CampaignLinksPanel: React.FC<CampaignLinksPanelProps> = ({ campaign
     void saveMarketingLinksToSupabase(nextLinks);
     setShowForm(false);
     setEditing(null);
-    window.location.reload();
+    setLinksVersion((version) => version + 1);
   };
-  const remove = (id: string) => { const nextLinks = getMarketingLinks().filter((link) => link.id !== id); saveMarketingLinks(nextLinks); void saveMarketingLinksToSupabase(nextLinks); window.location.reload(); };
+  const remove = (id: string) => { const nextLinks = getMarketingLinks().filter((link) => link.id !== id); saveMarketingLinks(nextLinks); void saveMarketingLinksToSupabase(nextLinks); setLinksVersion((version) => version + 1); };
 
   const copy = async (slug: string) => {
     await navigator.clipboard?.writeText(getPublicMarketingLinkUrl(slug));

@@ -149,7 +149,10 @@ const MarketingStudio: React.FC = () => {
       setSocialProfiles(synced);
     });
     syncCampaignsWithSupabase().then((syncedCamps) => {
-      setCampaigns(syncedCamps);
+      setCampaigns((currentCampaigns) => {
+        const currentById = new Map(currentCampaigns.map((campaign) => [campaign.id, campaign]));
+        return syncedCamps.map((syncedCampaign) => currentById.get(syncedCampaign.id) ?? syncedCampaign);
+      });
     });
     syncConnectionsWithSupabase().then((syncedConnections) => {
       setConnections(syncedConnections);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Campaign,
@@ -13,9 +13,13 @@ import { CampaignDeliveryChannels } from '@/marketing-studio/components/Campaign
 import { CampaignContentWorkspace } from '@/marketing-studio/components/CampaignContentWorkspace';
 import { CampaignLinksPanel } from '@/marketing-studio/components/CampaignLinksPanel';
 import { CampaignPublicationsPanel } from '@/marketing-studio/components/CampaignPublicationsPanel';
+import { CampaignReadinessPanel } from '@/marketing-studio/components/CampaignReadinessPanel';
 import { 
   ArrowLeft,
   Calendar, 
+  Check,
+  CircleAlert,
+  LoaderCircle,
   Sparkles
 } from 'lucide-react';
 
@@ -33,10 +37,16 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
 
   const [mockupPlatform, setMockupPlatform] = useState<SocialPlatformId>('instagram');
   const [previewAssetType, setPreviewAssetType] = useState<'post' | 'story'>('post');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const saveTimerRef = useRef<number | null>(null);
 
   const campaign = campaigns.find((item) => item.id === campaignId);
   const socialProfiles = getSocialProfiles();
   const connections = getConnections();
+
+  useEffect(() => () => {
+    if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
+  }, []);
 
   if (!campaign) {
     return (
@@ -54,18 +64,30 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     );
   }
 
+  const persistCampaign = (nextCampaign: Campaign) => {
+    saveCampaigns(campaigns.map((item) => item.id === nextCampaign.id ? nextCampaign : item));
+    setSaveState('saving');
+    if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = window.setTimeout(() => {
+      void saveCampaignToSupabase(nextCampaign).then((saved) => {
+        setSaveState(saved ? 'saved' : 'error');
+      }).catch(() => {
+        setSaveState('error');
+      });
+    }, 450);
+  };
+
   const updateCampaignField = (field: keyof Campaign, value: unknown) => {
     if (!canEdit) return;
     const updated = campaigns.map(c => {
       if (c.id === campaign.id) {
         const next = { ...c, [field]: value };
-        saveCampaignToSupabase(next); // Sync background to Supabase
+        persistCampaign(next);
         return next;
       }
       return c;
     });
     setCampaigns(updated);
-    saveCampaigns(updated);
   };
 
   const updateCampaignFields = (fields: Partial<Campaign>) => {
@@ -73,13 +95,12 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     const updated = campaigns.map(c => {
       if (c.id === campaign.id) {
         const next = { ...c, ...fields };
-        saveCampaignToSupabase(next);
+        persistCampaign(next);
         return next;
       }
       return c;
     });
     setCampaigns(updated);
-    saveCampaigns(updated);
   };
 
   const updateCopy = (platform: SocialPlatformId, text: string) => {
@@ -123,22 +144,22 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     }
   };
 
-  const handlePrepareInstagram = async () => {
+  const handlePreparePublication = async () => {
     try {
-      const asset = campaign.assets.find((item) => item.type === previewAssetType && item.id.includes('instagram'))
+      const asset = campaign.assets.find((item) => item.type === previewAssetType && item.id.includes(mockupPlatform))
         ?? campaign.assets.find((item) => item.type === previewAssetType)
         ?? campaign.assets[0];
       if (!asset) return;
 
       await handleExportAsset(asset);
-      const caption = campaign.copies.instagram || '';
+      const caption = campaign.copies[mockupPlatform] || '';
       if (caption && navigator.clipboard) {
         await navigator.clipboard.writeText(caption);
       }
-      setExportMessage(`Activo de ${previewAssetType === 'story' ? 'Story' : 'Post'} descargado y caption copiado para Instagram.`);
+      setExportMessage(`Activo de ${previewAssetType === 'story' ? 'Story' : 'Post'} descargado y copy copiado para ${mockupPlatform}.`);
     } catch (error) {
-      console.error('Error preparing Instagram publication:', error);
-      setExportMessage('No se pudo preparar la publicación de Instagram. Descarga el activo manualmente.');
+      console.error('Error preparing publication:', error);
+      setExportMessage('No se pudo preparar la publicación. Descarga el activo manualmente.');
     }
   };
 
@@ -156,12 +177,20 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6 text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary mb-1">Campaña Activa</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">Configuración de campaña</p>
+                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-black ${saveState === 'error' ? 'bg-rose-50 text-rose-600' : saveState === 'saving' ? 'bg-amber-50 text-amber-700' : saveState === 'saved' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`} aria-live="polite">
+                  {saveState === 'saving' && <LoaderCircle size={11} className="animate-spin" />}
+                  {saveState === 'saved' && <Check size={11} />}
+                  {saveState === 'error' && <CircleAlert size={11} />}
+                  {saveState === 'saving' ? 'Guardando...' : saveState === 'saved' ? 'Guardado' : saveState === 'error' ? 'Error al guardar' : 'Guardado automático'}
+                </span>
+              </div>
               <input
                 type="text"
                 value={campaign.name}
                 onChange={(e) => updateCampaignField('name', e.target.value)}
-                className="font-display text-2xl font-black text-slate-800 bg-transparent hover:bg-slate-50 border-b border-transparent hover:border-slate-200 focus:bg-slate-50 focus:border-primary px-2 py-1 outline-none rounded-lg w-full sm:w-[400px]"
+                className="mt-1 w-full rounded-lg border-b border-transparent bg-transparent px-2 py-1 font-display text-2xl font-black text-slate-800 outline-none transition-colors hover:border-slate-200 hover:bg-slate-50 focus:border-primary focus:bg-slate-50 sm:w-[400px]"
               />
             </div>
             
@@ -206,6 +235,8 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
           <CampaignDeliveryChannels campaign={campaign} connections={connections} onChange={updateCampaignFields} />
         </section>
 
+        <CampaignReadinessPanel campaign={campaign} />
+
         <CampaignLinksPanel campaign={campaign} />
 
         <CampaignPublicationsPanel campaign={campaign} canEdit={canEdit} />
@@ -223,7 +254,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
           onCopyChange={updateCopy}
           onAssetChange={updateAsset}
           onDownload={handleExportAsset}
-          onPrepareInstagram={handlePrepareInstagram}
+          onPreparePublication={handlePreparePublication}
         />
       </div>
     </div>

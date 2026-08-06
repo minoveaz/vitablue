@@ -41,10 +41,47 @@ const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
 
 // Scroll to top on route change
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
+  const { pathname, search } = useLocation();
+  const scrollKey = `${pathname}${search}`;
 
+  React.useEffect(() => {
+    const storageKey = `vitablue.scroll.${scrollKey}`;
+    const restoreScroll = () => {
+      const savedScroll = sessionStorage.getItem(storageKey);
+      window.scrollTo({ top: savedScroll ? Number(savedScroll) : 0, behavior: 'auto' });
+    };
+
+    window.history.scrollRestoration = 'manual';
+    const navigationType = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    if (navigationType?.type === 'reload' || navigationType?.type === 'back_forward') {
+      requestAnimationFrame(restoreScroll);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    const saveScroll = () => {
+      sessionStorage.setItem(storageKey, String(window.scrollY));
+    };
+    const restoreWhenVisible = () => {
+      if (document.visibilityState === 'visible') restoreScroll();
+    };
+    window.addEventListener('scroll', saveScroll, { passive: true });
+    window.addEventListener('pagehide', saveScroll);
+    window.addEventListener('pageshow', restoreScroll);
+    window.addEventListener('focus', restoreWhenVisible);
+    document.addEventListener('visibilitychange', restoreWhenVisible);
+
+    return () => {
+      saveScroll();
+      window.removeEventListener('scroll', saveScroll);
+      window.removeEventListener('pagehide', saveScroll);
+      window.removeEventListener('pageshow', restoreScroll);
+      window.removeEventListener('focus', restoreWhenVisible);
+      document.removeEventListener('visibilitychange', restoreWhenVisible);
+    };
+  }, [scrollKey]);
+
+  React.useEffect(() => {
     const isLocalOnlyPath = pathname === '/styleguide'
       || pathname.startsWith('/styleguide/')
       || pathname === '/login'

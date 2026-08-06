@@ -204,7 +204,7 @@ export const syncCampaignsWithSupabase = async (): Promise<Campaign[]> => {
 /**
  * Uploads/Updates a single campaign to Supabase.
  */
-export const saveCampaignToSupabase = async (campaign: Campaign): Promise<void> => {
+export const saveCampaignToSupabase = async (campaign: Campaign): Promise<boolean> => {
   try {
     // Database payload structure
     const dbPayload = {
@@ -227,9 +227,12 @@ export const saveCampaignToSupabase = async (campaign: Campaign): Promise<void> 
     const { error } = await query;
     if (error) {
       console.warn('Could not upload campaign to Supabase:', error.message);
+      return false;
     }
+    return true;
   } catch (err) {
     console.warn('Network error saving campaign to Supabase:', err);
+    return false;
   }
 };
 

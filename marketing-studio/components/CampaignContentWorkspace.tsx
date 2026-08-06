@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, MonitorPlay } from 'lucide-react';
+import { Check, Clipboard, FileText, MonitorPlay } from 'lucide-react';
 import { Campaign, CampaignAsset } from '@/marketing-studio/utils/campaigns';
 import { SocialPlatformId, SocialProfiles } from '@/utils/socialProfiles';
 import { CampaignAssetEditor } from '@/marketing-studio/components/CampaignAssetEditor';
@@ -20,7 +20,7 @@ interface CampaignContentWorkspaceProps {
   onCopyChange: (platform: SocialPlatformId, text: string) => void;
   onAssetChange: (assetId: string, fields: Partial<CampaignAsset>) => void;
   onDownload: (asset: CampaignAsset) => void;
-  onPrepareInstagram: () => void;
+  onPreparePublication: () => void;
 }
 
 export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> = ({
@@ -36,14 +36,23 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
   onCopyChange,
   onAssetChange,
   onDownload,
-  onPrepareInstagram,
+  onPreparePublication,
 }) => {
+  const [copyMessage, setCopyMessage] = React.useState<string | null>(null);
   const selectedPlatform = platformConfigs.find((item) => item.id === platform);
   const selectedAsset = campaign.assets.find((asset) => asset.type === assetType && asset.id.includes(platform))
     ?? campaign.assets.find((asset) => asset.type === assetType)
     ?? campaign.assets[0];
   const selectedAssetIndex = selectedAsset ? campaign.assets.indexOf(selectedAsset) : -1;
   const hasVideo = campaign.contentTypes?.includes('video');
+
+  const copyCurrentCaption = async () => {
+    const copy = campaign.copies[platform] || '';
+    if (!copy || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(copy);
+    setCopyMessage(`Copy de ${selectedPlatform?.name ?? platform} copiado.`);
+    window.setTimeout(() => setCopyMessage(null), 1800);
+  };
 
   return (
     <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8">
@@ -84,9 +93,15 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
       {campaign.platforms.length > 0 && (
         <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.95fr)_minmax(420px,1.25fr)_minmax(280px,0.9fr)]">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Contenido de {selectedPlatform?.name}</span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary"><FileText size={12} /> Texto</span>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={copyCurrentCaption} disabled={!campaign.copies[platform]} className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1.5 text-[10px] font-black text-slate-600 transition-colors hover:bg-brand-cyan hover:text-primary disabled:cursor-not-allowed disabled:opacity-40" title="Copiar copy actual">
+                  {copyMessage ? <Check size={12} /> : <Clipboard size={12} />}
+                  {copyMessage ? 'Copiado' : 'Copiar copy'}
+                </button>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary"><FileText size={12} /> Texto</span>
+              </div>
             </div>
             <textarea
               value={campaign.copies[platform] || ''}
@@ -127,14 +142,14 @@ export const CampaignContentWorkspace: React.FC<CampaignContentWorkspaceProps> =
                 copy={campaign.copies[platform] || ''}
               />
             </div>
-            {platform === 'instagram' && (
+            {(platform === 'instagram' || platform === 'facebook') && (
               <button
                 type="button"
-                onClick={onPrepareInstagram}
+                onClick={onPreparePublication}
                 disabled={isExporting || !selectedAsset}
-                className="w-full rounded-xl bg-[#D946EF] px-3 py-2.5 text-[10px] font-black text-white transition-colors hover:bg-[#c026d3] disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-xl bg-primary px-3 py-2.5 text-[10px] font-black text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Preparar Instagram
+                Preparar {selectedPlatform?.name}
               </button>
             )}
           </div>

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Check, LogOut } from 'lucide-react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigationType } from 'react-router-dom';
 import Button from '@/components/atoms/Button';
 import Logo from '@/components/atoms/Logo';
 import { useAuth } from '@/context/AuthContext';
@@ -23,6 +23,43 @@ interface SaaSShellProps {
 
 const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyebrow = 'Panel de Administración', productName = 'Marketing Studio', workspaceLabel = 'Dev Workspace' }) => {
   const { user, role, signOut } = useAuth();
+  const { pathname, search } = useLocation();
+  const navigationType = useNavigationType();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
+    const storageKey = `vitablue.backoffice.scroll.${pathname}${search}`;
+    const restoreScroll = () => {
+      const savedScroll = sessionStorage.getItem(storageKey);
+      main.scrollTo({ top: savedScroll ? Number(savedScroll) : 0, behavior: 'auto' });
+    };
+    const saveScroll = () => {
+      sessionStorage.setItem(storageKey, String(main.scrollTop));
+    };
+    const restoreWhenVisible = () => {
+      if (document.visibilityState === 'visible') restoreScroll();
+    };
+
+    if (navigationType === 'POP') {
+      requestAnimationFrame(restoreScroll);
+    } else {
+      main.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    main.addEventListener('scroll', saveScroll, { passive: true });
+    window.addEventListener('focus', restoreWhenVisible);
+    document.addEventListener('visibilitychange', restoreWhenVisible);
+
+    return () => {
+      saveScroll();
+      main.removeEventListener('scroll', saveScroll);
+      window.removeEventListener('focus', restoreWhenVisible);
+      document.removeEventListener('visibilitychange', restoreWhenVisible);
+    };
+  }, [navigationType, pathname, search]);
 
   return (
     <div className="flex min-h-screen flex-row bg-slate-100 text-slate-800 max-md:flex-col">
@@ -41,7 +78,7 @@ const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyeb
           <div className="flex flex-wrap items-center gap-3 lg:block lg:space-y-3"><Link to="/" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 transition-colors hover:text-white">Salir al sitio <span aria-hidden="true">↗</span></Link><Button variant="ghost" size="sm" className="text-slate-400 hover:bg-slate-800 hover:text-white" onClick={() => { void signOut(); }}><LogOut className="mr-1.5 size-3.5" aria-hidden="true" />Cerrar sesión</Button></div>
         </div>
       </aside>
-      <main className="h-screen min-w-0 flex-grow overflow-y-auto p-4 sm:p-6 md:p-10"><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8"><header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 text-left sm:flex-row sm:items-center"><div><div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" /><span className="text-[10px] font-black uppercase tracking-wider text-primary">{eyebrow}</span></div><h1 className="mt-1 font-display text-xl font-black text-slate-800">{title}</h1></div><div className="flex flex-wrap items-center gap-2.5"><div className="flex items-center gap-1.5 rounded-xl border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-[10px] font-bold text-primary"><Check className="size-3" aria-hidden="true" />Base de Datos Sincronizada</div><div className="rounded-xl border border-slate-200/60 bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500">Entorno Local: Activo</div></div></header>{children}</div></main>
+      <main ref={mainRef} className="h-screen min-w-0 flex-grow overflow-y-auto p-4 sm:p-6 md:p-10"><div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8"><header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 text-left sm:flex-row sm:items-center"><div><div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" /><span className="text-[10px] font-black uppercase tracking-wider text-primary">{eyebrow}</span></div><h1 className="mt-1 font-display text-xl font-black text-slate-800">{title}</h1></div><div className="flex flex-wrap items-center gap-2.5"><div className="flex items-center gap-1.5 rounded-xl border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-[10px] font-bold text-primary"><Check className="size-3" aria-hidden="true" />Base de Datos Sincronizada</div><div className="rounded-xl border border-slate-200/60 bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500">Entorno Local: Activo</div></div></header>{children}</div></main>
     </div>
   );
 };
