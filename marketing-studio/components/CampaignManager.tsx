@@ -12,6 +12,7 @@ import { generateCampaignBannerSvg, downloadSvgAsPng } from '@/utils/svgGenerato
 import { CampaignDeliveryChannels } from '@/marketing-studio/components/CampaignDeliveryChannels';
 import { CampaignContentWorkspace } from '@/marketing-studio/components/CampaignContentWorkspace';
 import { CampaignLinksPanel } from '@/marketing-studio/components/CampaignLinksPanel';
+import { CampaignPublicationsPanel } from '@/marketing-studio/components/CampaignPublicationsPanel';
 import { 
   ArrowLeft,
   Calendar, 
@@ -206,6 +207,8 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
         </section>
 
         <CampaignLinksPanel campaign={campaign} />
+
+        <CampaignPublicationsPanel campaign={campaign} canEdit={canEdit} />
 
         <CampaignContentWorkspace
           campaign={campaign}
