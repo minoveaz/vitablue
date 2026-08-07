@@ -18,16 +18,28 @@ interface ReadinessItem {
 export const CampaignReadinessPanel: React.FC<CampaignReadinessPanelProps> = ({ campaign }) => {
   const connections = getConnections();
   const campaignLinks = getMarketingLinks().filter((link) => link.campaignId === campaign.id);
+  const hasCreative = campaign.assets.length > 0;
   const configuredPlatforms = campaign.platforms.filter((platform) => {
     const copyReady = Boolean(campaign.copies[platform]?.trim());
-    const assetReady = campaign.assets.some((asset) => asset.id.includes(platform));
-    return copyReady && assetReady;
+    const assetReady = hasCreative;
+    const linkReady = campaignLinks.some((link) => link.channel === platform && link.active);
+    return copyReady && assetReady && linkReady;
+  });
+  const platformWarnings = campaign.platforms.flatMap((platform) => {
+    const warnings: string[] = [];
+    const copyLength = campaign.copies[platform]?.trim().length ?? 0;
+    if (!copyLength) warnings.push('falta copy');
+    if (!hasCreative) warnings.push('falta creativo');
+    if (!campaignLinks.some((link) => link.channel === platform)) warnings.push('falta enlace');
+    if ((platform === 'facebook' || platform === 'instagram') && !connections[platform]?.connected) warnings.push('sin conexión');
+    if (platform === 'x' && copyLength > 280) warnings.push('copy supera 280 caracteres');
+    return warnings.length ? [{ platform, warnings }] : [];
   });
   const readinessItems: ReadinessItem[] = [
     { label: 'Nombre y objetivo', complete: Boolean(campaign.name.trim() && campaign.objective.trim()), detail: 'Identidad y propósito definidos' },
     { label: 'Fecha y estado', complete: Boolean(campaign.startDate && campaign.status), detail: 'Planificación temporal configurada' },
-    { label: 'Canales preparados', complete: campaign.platforms.length > 0 && configuredPlatforms.length === campaign.platforms.length, detail: `${configuredPlatforms.length} de ${campaign.platforms.length} plataformas con copy y activo` },
-    { label: 'Enlaces de campaña', complete: campaignLinks.length > 0, detail: campaignLinks.length ? `${campaignLinks.length} enlace${campaignLinks.length === 1 ? '' : 's'} con tracking` : 'Añade un enlace para medir clics' },
+    { label: 'Canales preparados', complete: campaign.platforms.length > 0 && configuredPlatforms.length === campaign.platforms.length, detail: `${configuredPlatforms.length} de ${campaign.platforms.length} plataformas con copy, activo y enlace` },
+    { label: 'Enlaces de campaña', complete: campaign.platforms.length > 0 && configuredPlatforms.length === campaign.platforms.length, detail: campaignLinks.length ? `${configuredPlatforms.length} de ${campaign.platforms.length} plataformas con enlace activo y tracking` : 'Añade un enlace por plataforma para medir clics' },
   ];
   const completed = readinessItems.filter((item) => item.complete).length;
   const percentage = Math.round((completed / readinessItems.length) * 100);
@@ -67,7 +79,7 @@ export const CampaignReadinessPanel: React.FC<CampaignReadinessPanelProps> = ({ 
         {campaign.platforms.map((platform) => {
           const config = getPlatformConfig(platform);
           const copyReady = Boolean(campaign.copies[platform]?.trim());
-          const assetReady = campaign.assets.some((asset) => asset.id.includes(platform));
+          const assetReady = hasCreative;
           const connectionReady = connections[platform]?.connected ?? false;
           return (
             <div key={platform} className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
@@ -84,6 +96,7 @@ export const CampaignReadinessPanel: React.FC<CampaignReadinessPanelProps> = ({ 
           );
         })}
       </div>
+      {platformWarnings.length > 0 && <div className="border-t border-amber-100 bg-amber-50/50 p-6 sm:p-8"><p className="text-[10px] font-black uppercase tracking-wider text-amber-700">Revisión antes de publicar</p><div className="mt-3 grid gap-2 sm:grid-cols-2">{platformWarnings.map(({ platform, warnings }) => <p key={platform} className="text-xs font-semibold text-amber-800"><strong>{getPlatformConfig(platform).name}:</strong> {warnings.join(' · ')}</p>)}</div></div>}
     </section>
   );
 };

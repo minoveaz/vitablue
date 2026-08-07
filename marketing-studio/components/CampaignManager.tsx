@@ -14,6 +14,7 @@ import { CampaignContentWorkspace } from '@/marketing-studio/components/Campaign
 import { CampaignLinksPanel } from '@/marketing-studio/components/CampaignLinksPanel';
 import { CampaignPublicationsPanel } from '@/marketing-studio/components/CampaignPublicationsPanel';
 import { CampaignReadinessPanel } from '@/marketing-studio/components/CampaignReadinessPanel';
+import { CampaignActivityEntry, CampaignActivityPanel } from '@/marketing-studio/components/CampaignActivityPanel';
 import { 
   ArrowLeft,
   Calendar, 
@@ -38,6 +39,9 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   const [mockupPlatform, setMockupPlatform] = useState<SocialPlatformId>('instagram');
   const [previewAssetType, setPreviewAssetType] = useState<'post' | 'story'>('post');
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [activity, setActivity] = useState<CampaignActivityEntry[]>(() => {
+    try { return JSON.parse(window.localStorage.getItem(`vitablue.campaign-activity.${campaignId}`) || '[]'); } catch { return []; }
+  });
   const saveTimerRef = useRef<number | null>(null);
 
   const campaign = campaigns.find((item) => item.id === campaignId);
@@ -65,6 +69,12 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   }
 
   const persistCampaign = (nextCampaign: Campaign) => {
+    const previous = campaigns.find((item) => item.id === nextCampaign.id);
+    const changedField = previous && previous.name !== nextCampaign.name ? 'nombre' : previous && previous.objective !== nextCampaign.objective ? 'objetivo' : previous && previous.status !== nextCampaign.status ? 'estado' : previous && previous.startDate !== nextCampaign.startDate ? 'fecha' : previous && JSON.stringify(previous.platforms) !== JSON.stringify(nextCampaign.platforms) ? 'canales' : 'contenido';
+    const entry: CampaignActivityEntry = { id: crypto.randomUUID(), label: `Se actualizó el ${changedField} de la campaña`, createdAt: new Date().toISOString() };
+    const nextActivity = [entry, ...activity].slice(0, 12);
+    setActivity(nextActivity);
+    window.localStorage.setItem(`vitablue.campaign-activity.${nextCampaign.id}`, JSON.stringify(nextActivity));
     saveCampaigns(campaigns.map((item) => item.id === nextCampaign.id ? nextCampaign : item));
     setSaveState('saving');
     if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
@@ -237,10 +247,6 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
 
         <CampaignReadinessPanel campaign={campaign} />
 
-        <CampaignLinksPanel campaign={campaign} />
-
-        <CampaignPublicationsPanel campaign={campaign} canEdit={canEdit} />
-
         <CampaignContentWorkspace
           campaign={campaign}
           socialProfiles={socialProfiles}
@@ -256,6 +262,12 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
           onDownload={handleExportAsset}
           onPreparePublication={handlePreparePublication}
         />
+
+        <CampaignLinksPanel campaign={campaign} />
+
+        <CampaignPublicationsPanel campaign={campaign} canEdit={canEdit} />
+
+        <CampaignActivityPanel entries={activity} />
       </div>
     </div>
   );
