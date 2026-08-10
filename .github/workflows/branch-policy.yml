@@ -1,0 +1,23 @@
+name: Branch Policy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  main-source:
+    name: Branch Policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require develop as source for main
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
+        run: |
+          echo "Only pull requests from develop may target main."
+          exit 1
+      - name: Branch policy accepted
+        if: github.base_ref == 'main' && github.head_ref == 'develop'
+        run: echo "develop is the accepted source branch for main."
