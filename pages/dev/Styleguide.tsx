@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Shield, ArrowRight, Check, HelpCircle, AlertCircle, Sparkles, MessageSquare } from 'lucide-react';
+import { Mail, Shield, ArrowRight, Check, HelpCircle, AlertCircle, Sparkles, MessageSquare, Phone } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import Button from '@/components/atoms/Button';
 import InputText from '@/components/atoms/InputText';
@@ -23,7 +23,14 @@ import ConversationalHero from '@/components/organisms/ConversationalHero';
 import ProductCard from '@/components/molecules/ProductCard';
 import TransparencyBlock from '@/components/molecules/TransparencyBlock';
 import AdvisorCard from '@/components/molecules/AdvisorCard';
-import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
+import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import TrustCardGrid from '@/components/molecules/TrustCardGrid';
+import SectionIntro from '@/components/molecules/SectionIntro';
+import ProcessSteps from '@/components/molecules/ProcessSteps';
+import ContactChannelCard from '@/components/molecules/ContactChannelCard';
+import CtaBanner from '@/components/molecules/CtaBanner';
+import BrandHero from '@/components/organisms/BrandHero';
+import { CoverageIllustration, HealthIllustration, PetIllustration, TravelIllustration, PiggyBankIllustration, SupportIllustration } from '@/components/illustrations';
 
 const Styleguide = () => {
   const [inputTextVal, setInputTextVal] = useState('');
@@ -375,7 +382,94 @@ const Styleguide = () => {
           </div>
         </section>
 
-        {/* Section 7: Interactive Advanced Components (Phase 5) */}
+        {/* Section 7: VitaBlue reusable composition patterns */}
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+          <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-accent" /> 7. Patrones reutilizables VitaBlue
+          </h2>
+
+          <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Hero de marca (BrandHero)</span>
+              <BrandHero
+                eyebrow="Asesoramiento independiente"
+                title="Encuentra una opción clara para tu situación"
+                description="Comparamos alternativas de salud, viaje y protección familiar para ayudarte a decidir con información sencilla y acompañamiento humano."
+                action={{ label: 'Ver opciones', href: '/productos/seguros-salud' }}
+              >
+                <div className="rounded-3xl border border-white/15 bg-white/10 p-6 text-brand-cyan">
+                  <CoverageIllustration />
+                </div>
+              </BrandHero>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Introducción de sección (SectionIntro)</span>
+              <SectionIntro
+                eyebrow="Cómo te ayudamos"
+                title="Una explicación clara antes de contratar"
+                description="Usa este patrón para presentar el contexto de una sección con jerarquía tipográfica consistente, tanto alineado a la izquierda como centrado."
+                align="center"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Tarjetas de categorías (ProductCategoryCard)</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ProductCategoryCard
+                  title="Seguros de salud"
+                  description="Cobertura médica amplia para atención privada, especialistas y pruebas diagnósticas sin esperas."
+                  badge="Salud"
+                  badgeColor="accent"
+                  href="/productos/seguros-salud"
+                  illustration={HealthIllustration}
+                  detailsLabel="Ver detalle"
+                />
+                <ProductCategoryCard
+                  title="Seguro médico internacional para estudiantes extranjeros"
+                  description="Texto largo de prueba para comprobar que la tarjeta conserva su composición cuando el título y la descripción ocupan más líneas."
+                  badge="Estudios"
+                  badgeColor="secondary"
+                  href="/wizard"
+                  illustration={TravelIllustration}
+                  detailsLabel="View details"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Tarjetas de confianza (TrustCardGrid)</span>
+              <TrustCardGrid
+                items={[
+                  { title: 'Te ayudamos a elegir', description: 'Comparamos opciones de varias compañías para que veas cuál encaja mejor contigo.', illustration: CoverageIllustration, tone: 'neutral' },
+                  { title: 'Sin coste', description: 'El servicio no añade recargos al precio. Si contratas, la retribución viene de la aseguradora.', illustration: PiggyBankIllustration, tone: 'cyan' },
+                  { title: 'Soporte humano', description: 'Si te atascas, un asesor real te ayuda por WhatsApp y te acompaña en el trámite.', illustration: SupportIllustration, tone: 'accent' },
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Proceso y canales de contacto</span>
+              <ProcessSteps steps={['Cuéntanos tu perfil y necesidades', 'Comparamos las opciones disponibles', 'Te acompañamos hasta contratar']} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <ContactChannelCard href="mailto:info@vitablue.es" icon={<Mail className="h-5 w-5" />} title="Email" description="info@vitablue.es" />
+                <ContactChannelCard href="tel:+34694583452" icon={<Phone className="h-5 w-5" />} title="Teléfono" description="+34 694 58 34 52" />
+                <ContactChannelCard href="https://wa.me/34694583452" icon={<MessageSquare className="h-5 w-5" />} title="WhatsApp" description="Habla con un asesor" external />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary/70">Llamada a la acción (CtaBanner)</span>
+              <CtaBanner
+                title="¿Todavía tienes dudas?"
+                description="Un asesor puede ayudarte a comparar sin compromiso y resolver la letra pequeña."
+                action={{ label: 'Contactar', href: '/contacto' }}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Section 8: Interactive Advanced Components (Phase 5) */}
         <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" /> 7. Componentes Avanzados e Interactivos (Fase 5)
