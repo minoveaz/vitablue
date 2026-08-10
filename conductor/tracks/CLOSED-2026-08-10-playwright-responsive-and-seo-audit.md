@@ -65,8 +65,22 @@ Tomando como referencia el patrón de testing E2E implementado en `loopdev`:
 - [x] Check de `noindex` en páginas legales (si está declarado en robots meta).
 
 ### 2.2 Integración de Unlighthouse / Lighthouse CI (Opcional/Complementario)
-- [ ] Evaluar e integrar auditoría de puntuación SEO y Core Web Vitals usando `unlighthouse` o `lhci` en el build estático.
-- [ ] Establecer un threshold mínimo de puntuación SEO (ej. 95+/100) en el CI.
+- [x] Evaluar y dejar disponible la auditoría local con `unlighthouse` mediante `npm run audit:lh` y `npm run audit:lh:ci`.
+- [ ] Integrar Lighthouse/Unlighthouse en GitHub Actions sobre el build estático.
+- [ ] Establecer thresholds reproducibles para Performance, SEO, Accessibility y Core Web Vitals.
+- [ ] Convertir el resultado de Lighthouse en un check del Quality Gate del CI.
+
+### 2.3 Siguiente fase: Lighthouse en CI
+
+Esta fase queda planificada como trabajo posterior y no forma parte del cierre funcional de este track. El objetivo será ejecutar una auditoría de laboratorio en CI para cada PR, usando el `dist` generado por el build y umbrales versionados en el repositorio.
+
+El alcance previsto es:
+
+- Ejecutar Lighthouse/Unlighthouse contra las rutas públicas prioritarias.
+- Validar Performance, SEO, Accessibility y Best Practices.
+- Medir LCP, CLS e INP en condiciones de laboratorio.
+- Fallar el Quality Gate si se incumplen los thresholds acordados.
+- Mantener la revisión de datos reales de usuarios mediante PageSpeed Insights/Chrome UX Report como control posterior al despliegue.
 
 ---
 
@@ -118,5 +132,5 @@ El pipeline de GitHub Actions fallará si:
 ## Notas de Implementación
 
 - **Visual Baselines (screenshots):** Se ha omitido la creación de snapshots iniciales en este track. Los `toHaveScreenshot()` requieren una aprobación manual inicial (`npx playwright test --update-snapshots`). Se recomienda ejecutarlos por primera vez localmente y commitear los snapshots al repositorio.
-- **Unlighthouse/LHCI:** Evaluado pero no integrado en este track — puede ser un track separado. Requiere instalación adicional (`@unlighthouse/cli` o `@lhci/cli`) y configuración de threshold.
+- **Unlighthouse/LHCI:** Unlighthouse ya está instalado y disponible para auditorías locales. La integración automática en CI y la definición de thresholds quedan planificadas para la siguiente fase.
 - **Prerenderizado en CI:** El build SSG usa Puppeteer con `--no-sandbox`. En GitHub Actions Ubuntu, esto funciona directamente. El `executablePath` local de macOS sólo aplica en desarrollo.
