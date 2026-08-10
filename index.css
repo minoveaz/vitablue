@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 @layer base {
   :root {
     --color-primary: #005F73;
@@ -17,13 +19,13 @@
     --illustration-surface-nomad: #EAF5F0;
     --illustration-surface-pet: #FDF3F5;
     --illustration-surface-family: #EDEFFB;
-    --illustration-cyan: #00B4C8;
-    --illustration-cyan-light: #33C2D6;
-    --illustration-ocean-light: #00809B;
-    --illustration-blue: #0079C8;
-    --illustration-coral: #FF8FA3;
-    --illustration-red: #FF4D6D;
-    --illustration-indigo: #4F46E5;
+    --illustration-cyan: #007F91;
+    --illustration-cyan-light: #006B78;
+    --illustration-ocean-light: #006B78;
+    --illustration-blue: #005F73;
+    --illustration-coral: #C24156;
+    --illustration-red: #9F1239;
+    --illustration-indigo: #3730A3;
   }
 
   html {
@@ -85,3 +87,4 @@
 body.mobile-menu-open .whatsapp-float-widget {
   display: none !important;
 }
+/* End of CSS file */

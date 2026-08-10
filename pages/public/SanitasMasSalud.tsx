@@ -103,7 +103,7 @@ export const SanitasMasSalud: React.FC = () => {
       desc: 'Pagas una cuota fija mensual más económica y un importe muy bajo por cada consulta o prueba médica (entre 3€ y 7€). La hospitalización sigue cubierta al 100% sin copago.',
       priceDetail: 'Copagos de 3€ a 7€ por visita',
       tag: 'Uso Moderado',
-      badgeColor: 'bg-[#94D2BD]/10 text-primary border border-[#94D2BD]/20',
+      badgeColor: 'bg-brand-cyan/10 text-primary border border-brand-cyan/20',
       isFeatured: false
     },
     {
@@ -324,15 +324,15 @@ export const SanitasMasSalud: React.FC = () => {
             {/* Left Content column */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
                   <Activity className="w-4 h-4" /> Seguro de Salud Completo
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
                   Blua Digital Incluido Gratis
                 </span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight tracking-tight">
+              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
                 Sanitas Más Salud
               </h1>
               <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
@@ -351,8 +351,8 @@ export const SanitasMasSalud: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Sin límite de permanencia</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Acceso a Hospitales Sanitas</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Sin límite de permanencia</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Acceso a Hospitales Sanitas</span>
               </div>
             </div>
 
@@ -360,7 +360,7 @@ export const SanitasMasSalud: React.FC = () => {
             <div className="lg:col-span-5 w-full">
               <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
                 <div>
-                  <h3 className="text-xl font-display font-black text-text-main">Estimador de Cuota</h3>
+                  <h3 className="text-h3 font-display font-black text-text-main">Estimador de Cuota</h3>
                   <p className="text-xs text-text-secondary font-semibold mt-1">Calcula un precio aproximado según tu edad y modalidad.</p>
                 </div>
 
@@ -461,7 +461,7 @@ export const SanitasMasSalud: React.FC = () => {
       {/* Authorized Providers Logos */}
       <section className="py-10 bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales homologadas</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary">Aseguradoras oficiales homologadas</p>
           <div className="flex justify-center items-center gap-12 sm:gap-16">
             <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
             <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
@@ -553,7 +553,7 @@ export const SanitasMasSalud: React.FC = () => {
               return (
                 <div key={idx} className="flex flex-col gap-4 p-6 bg-white rounded-3xl border border-slate-150 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <div className="flex items-center justify-between">
-                    <span className="text-3xl font-sans font-black text-primary/20">{item.step}</span>
+                    <span className="text-3xl font-sans font-black text-primary/65">{item.step}</span>
                     <div className="size-10 rounded-2xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
                       <Icon className="w-5 h-5" />
                     </div>
@@ -639,7 +639,7 @@ export const SanitasMasSalud: React.FC = () => {
               <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Promoción Especial</span>
               <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Nuevos Asegurados</span>
             </div>
-            <h3 className="text-3xl font-display font-black leading-tight tracking-tight mb-2">Blua Gratis para Siempre</h3>
+            <h3 className="text-h2 font-display font-black leading-tight tracking-tight mb-2">Blua Gratis para Siempre</h3>
             <p className="text-sm text-slate-200 font-medium leading-relaxed max-w-2xl">
               Contrata ahora a través de VitaBlue y llévate gratis para siempre el módulo de medicina digital Blua, valorado en 8€/mes por persona, con videoconsultas ilimitadas y reembolso de farmacia.
             </p>
@@ -680,7 +680,7 @@ export const SanitasMasSalud: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-display font-black text-text-main leading-snug">{item.name}</h3>
+                  <h3 className="text-h2 font-display font-black text-text-main leading-snug">{item.name}</h3>
                   <p className="text-xs text-text-secondary font-bold uppercase tracking-wider">{item.subtitle}</p>
                 </div>
 
@@ -787,7 +787,7 @@ export const SanitasMasSalud: React.FC = () => {
       <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
           <div className="space-y-1">
-            <h3 className="text-2xl font-display font-extrabold text-text-main">¿Necesitas ayuda para elegir tu modalidad de copago?</h3>
+            <h3 className="text-h2 font-display font-extrabold text-text-main">¿Necesitas ayuda para elegir tu modalidad de copago?</h3>
             <p className="text-body-reg text-text-secondary font-medium">Sanitas Más Salud está disponible con copago bajo o sin copagos. Te ayudamos a calcular cuál es más rentable para tu nivel de visitas al médico de forma totalmente gratuita.</p>
           </div>
           <AdvisorCard 

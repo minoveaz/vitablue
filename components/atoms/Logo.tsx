@@ -218,7 +218,7 @@ export const Logo: React.FC<LogoProps> = ({
           } ${
             isTextWhite ? 'text-white' : 'text-text-main'
           }`}>
-            vita<span className="text-primary">blue</span>
+            vita<span className={isTextWhite ? 'text-brand-cyan' : 'text-primary'}>blue</span>
           </span>
           
           {showTagline && (

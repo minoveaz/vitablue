@@ -373,15 +373,15 @@ export const AsistenciaFamiliar: React.FC = () => {
             {/* Left Content column */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#94D2BD]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
                   <Shield className="w-4 h-4" /> Seguro de Decesos Familiar
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-light">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
                   Cobertura de traslado internacional
                 </span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight tracking-tight">
+              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
                 Asistencia Familiar Iplus
               </h1>
               <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
@@ -400,8 +400,8 @@ export const AsistenciaFamiliar: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Testamento online gratis</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-[#94D2BD]" /> Trámites de herencia</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Testamento online gratis</span>
+                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Trámites de herencia</span>
               </div>
             </div>
 
@@ -409,7 +409,7 @@ export const AsistenciaFamiliar: React.FC = () => {
             <div className="lg:col-span-5 w-full">
               <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
                 <div>
-                  <h3 className="text-xl font-display font-black text-text-main">Tarificador de Decesos</h3>
+                  <h3 className="text-h3 font-display font-black text-text-main">Tarificador de Decesos</h3>
                   <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu prima según tu edad y estructura de pago.</p>
                 </div>
 
@@ -506,7 +506,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       {/* Providers Logos */}
       <section className="py-10 bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales homologadas</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary">Aseguradoras oficiales homologadas</p>
           <div className="flex justify-center items-center gap-12 sm:gap-16">
             <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
             <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
@@ -584,7 +584,7 @@ export const AsistenciaFamiliar: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-display font-black text-text-main leading-snug">{item.name}</h3>
+                  <h3 className="text-h2 font-display font-black text-text-main leading-snug">{item.name}</h3>
                   <p className="text-xs text-text-secondary font-bold uppercase tracking-wider">{item.subtitle}</p>
                 </div>
 
@@ -677,7 +677,7 @@ export const AsistenciaFamiliar: React.FC = () => {
               return (
                 <div key={idx} className="flex flex-col gap-4 p-6 bg-white rounded-3xl border border-slate-150 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <div className="flex items-center justify-between">
-                    <span className="text-3xl font-sans font-black text-primary/20">{item.step}</span>
+                    <span className="text-3xl font-sans font-black text-primary/65">{item.step}</span>
                     <div className="size-10 rounded-2xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
                       <Icon className="w-5 h-5" />
                     </div>
@@ -740,7 +740,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
           <div className="space-y-1">
-            <h3 className="text-2xl font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada para tu unidad familiar?</h3>
+            <h3 className="text-h2 font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada para tu unidad familiar?</h3>
             <p className="text-body-reg text-text-secondary font-medium">Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita.</p>
           </div>
           <AdvisorCard 

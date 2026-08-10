@@ -166,7 +166,7 @@ export const BlogList: React.FC = () => {
                   {/* Body Content */}
                   <div className="flex-1 flex flex-col p-6 sm:p-8 space-y-4">
                     {/* Meta info row */}
-                    <div className="flex items-center gap-4 text-[11px] font-bold text-text-secondary/70">
+                    <div className="flex items-center gap-4 text-[11px] font-bold text-text-secondary">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-primary/60" /> {post.date}
                       </span>
@@ -204,7 +204,7 @@ export const BlogList: React.FC = () => {
                             {post.author.name}
                             {post.author.verified && <ShieldCheck className="w-3 h-3 text-sky-500 fill-sky-50" />}
                           </p>
-                          <span className="text-[8px] text-text-secondary/70 font-semibold block mt-0.5">Asesor experto</span>
+                          <span className="text-[8px] text-text-secondary font-semibold block mt-0.5">Asesor experto</span>
                         </div>
                       </div>
 
@@ -257,10 +257,10 @@ export const BlogList: React.FC = () => {
               href="https://wa.me/34694583452?text=Hola!%20Vengo%20del%20blog%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20m%C3%A9dicos%20para%20tr%C3%A1mites%20legales."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-whatsapp hover:bg-whatsapp-dark text-white font-bold rounded-xl text-sm px-6 py-3.5 shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+              className="inline-flex items-center gap-2 bg-whatsapp-dark hover:bg-whatsapp text-white font-bold rounded-xl text-sm px-6 py-3.5 shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
             >
               <WhatsAppIcon size={18} className="fill-white" />
-              <span>Hablar con un Asesor por WhatsApp</span>
+              <span>Preguntar por WhatsApp</span>
             </a>
           </div>
         </div>

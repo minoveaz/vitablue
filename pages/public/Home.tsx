@@ -441,8 +441,8 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           <div className="flex flex-col gap-6 lg:hidden">
             <div className="inline-flex items-center gap-2.5 self-start rounded-full border border-primary/10 bg-primary/5 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-primary mb-3">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B4C8] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00B4C8]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
               <span>{isEnglish ? 'Find your insurance' : 'Encuentra tu seguro'}</span>
             </div>
@@ -495,8 +495,8 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
             <div className="flex flex-col gap-6">
               <div className="inline-flex items-center gap-2.5 self-start rounded-full border border-primary/10 bg-white/80 backdrop-blur px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-primary shadow-sm mb-3">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B4C8] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00B4C8]"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
                 <span>{isEnglish ? 'Find your insurance' : 'Encuentra tu seguro'}</span>
               </div>
@@ -741,11 +741,11 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                   <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary">
                     {guides[0].tag}
                   </span>
-                  <span className="text-[11px] font-semibold text-text-secondary/70">
+                  <span className="text-[11px] font-semibold text-text-secondary">
                     {guides[0].readTime} {isEnglish ? 'read' : 'de lectura'}
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-display font-black text-text-main group-hover:text-primary transition-colors leading-tight">
+                <h3 className="text-h3 font-display font-black text-text-main group-hover:text-primary transition-colors leading-tight">
                   {guides[0].title}
                 </h3>
                 <p className="text-body-reg text-text-secondary leading-relaxed max-w-2xl">
@@ -767,7 +767,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                   <span className="rounded-full bg-brand-cyan/15 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary">
                     {guides[1].tag}
                   </span>
-                  <span className="text-[11px] font-semibold text-text-secondary/70">
+                  <span className="text-[11px] font-semibold text-text-secondary">
                     {guides[1].readTime} {isEnglish ? 'read' : 'de lectura'}
                   </span>
                 </div>
@@ -793,7 +793,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                   <span className="rounded-full bg-accent/15 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-text-main">
                     {guides[2].tag}
                   </span>
-                  <span className="text-[11px] font-semibold text-text-secondary/70">
+                  <span className="text-[11px] font-semibold text-text-secondary">
                     {guides[2].readTime} {isEnglish ? 'read' : 'de lectura'}
                   </span>
                 </div>
@@ -828,7 +828,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                 <span className="rounded-full bg-white/20 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
                   {isEnglish ? 'Immediate Support' : 'Soporte Inmediato'}
                 </span>
-                <h3 className="text-xl font-display font-black leading-tight">
+                <h3 className="text-h3 font-display font-black leading-tight">
                   {isEnglish ? 'Have doubts about any terms or coverage?' : '¿Tienes dudas sobre algún término o cobertura?'}
                 </h3>
                 <p className="text-sm text-white/80 leading-relaxed">
@@ -837,7 +837,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                     : 'Escríbenos directamente por WhatsApp. Una asesora real te explicará la letra pequeña sin prisa ni compromisos de contratación.'}
                 </p>
               </div>
-              <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp hover:bg-whatsapp-dark px-6 py-3.5 text-sm font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200">
+              <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp-dark hover:bg-whatsapp px-6 py-3.5 text-sm font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200">
                 <WhatsAppIcon size={18} />
                 {isEnglish ? 'Ask on WhatsApp' : 'Preguntar por WhatsApp'}
               </span>

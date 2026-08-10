@@ -20,7 +20,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
   onWhatsAppClick,
   onPhoneClick,
   phoneText = '+34 900 839 240',
-  whatsAppText = 'Escribir por WhatsApp'
+  whatsAppText = 'Preguntar por WhatsApp'
 }) => {
   return (
     <div className="w-full bg-gradient-to-br from-white via-white to-primary/[0.02] rounded-[2rem] border border-slate-200/80 shadow-md shadow-slate-900/[0.02] overflow-hidden flex flex-col md:flex-row hover:shadow-lg hover:border-primary/20 transition-all duration-300">
@@ -41,7 +41,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
             <span className="text-[9px] font-black text-primary uppercase tracking-[0.25em] flex items-center justify-center sm:justify-start gap-1">
               <Shield className="w-3.5 h-3.5 text-accent fill-current" /> Asesora Asignada
             </span>
-            <h4 className="text-xl font-display font-extrabold text-text-main leading-tight tracking-tight">{name}</h4>
+            <h4 className="text-h3 font-display font-extrabold text-text-main leading-tight tracking-tight">{name}</h4>
             <p className="text-caption text-text-secondary/80 font-bold uppercase tracking-wider">{role}</p>
           </div>
 
@@ -63,11 +63,11 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
       </div>
 
       {/* Advisor CTAs Column */}
-      <div className="w-full md:w-[260px] bg-slate-50/30 p-6 sm:p-8 border-t md:border-t-0 md:border-l border-slate-100/80 flex flex-col justify-center gap-4">
+      <div className="w-full md:w-64 bg-slate-50/30 p-6 sm:p-8 border-t md:border-t-0 md:border-l border-slate-100/80 flex flex-col justify-center gap-4">
         {/* WhatsApp chat button with official WhatsApp logo */}
         <button 
           onClick={onWhatsAppClick}
-          className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+          className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-700/25 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-700/20"
         >
           <WhatsAppIcon size={20} />
           {whatsAppText}

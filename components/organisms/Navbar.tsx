@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen } from 'lucide-react';
+import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen, Shield, GraduationCap, Globe2, Laptop, Star, PawPrint, House } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { navbarTranslations } from '@/utils/translations';
 
 // Custom Premium SVG Illustrations (VitaBlue Style)
-const SaludGeneralIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacySaludGeneralIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-health)" />
     <path d="M20 8C14 10 12 12 12 17V23C12 28 17 31 20 32C23 31 28 28 28 23V17C28 12 26 10 20 8Z" fill="url(#sg-grad)" opacity="0.12" />
     <path d="M20 8C14 10 12 12 12 17V23C12 28 17 31 20 32C23 31 28 28 28 23V17C28 12 26 10 20 8Z" stroke="url(#sg-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -21,8 +21,8 @@ const SaludGeneralIcon: React.FC = () => (
   </svg>
 );
 
-const EstudiantesIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacyEstudiantesIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-student)" />
     <path d="M20 10L10 15L20 20L30 15L20 10Z" fill="url(#est-grad)" opacity="0.2" />
     <path d="M20 10L10 15L20 20L30 15L20 10Z" stroke="url(#est-grad)" strokeWidth="2" strokeLinejoin="round" />
@@ -38,8 +38,8 @@ const EstudiantesIcon: React.FC = () => (
   </svg>
 );
 
-const ExpatriadosIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacyExpatriadosIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-expat)" />
     <circle cx="20" cy="20" r="9" fill="url(#exp-grad)" opacity="0.12" />
     <circle cx="20" cy="20" r="9" stroke="url(#exp-grad)" strokeWidth="2" />
@@ -56,8 +56,8 @@ const ExpatriadosIcon: React.FC = () => (
   </svg>
 );
 
-const NomadasIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacyNomadasIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-nomad)" />
     <rect x="13" y="14" width="14" height="9" rx="1.5" stroke="url(#nom-grad)" strokeWidth="2" />
     <path d="M10 25H30" stroke="url(#nom-grad)" strokeWidth="2.5" strokeLinecap="round" />
@@ -72,8 +72,8 @@ const NomadasIcon: React.FC = () => (
   </svg>
 );
 
-const SanitasIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacySanitasIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-expat)" />
     <path d="M20 9L23 14H29L25 18L27.5 24L22 22L20 26L18 22L12.5 24L15 18L11 14H17L20 9Z" fill="url(#san-grad)" opacity="0.15" />
     <path d="M20 9L23 14H29L25 18L27.5 24L22 22L20 26L18 22L12.5 24L15 18L11 14H17L20 9Z" stroke="url(#san-grad)" strokeWidth="2" strokeLinejoin="round" />
@@ -87,8 +87,8 @@ const SanitasIcon: React.FC = () => (
   </svg>
 );
 
-const MascotasIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacyMascotasIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-pet)" />
     {/* Metacarpal pad: typical three-lobed bottom shape */}
     <path 
@@ -116,8 +116,8 @@ const MascotasIcon: React.FC = () => (
   </svg>
 );
 
-const FamiliarIcon: React.FC = () => (
-  <svg className="w-10 h-10 shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LegacyFamiliarIcon: React.FC = () => (
+  <svg className="w-10 h-10 shrink-0 product-menu-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="12" fill="var(--illustration-surface-family)" />
     <path d="M12 21V28C12 29.1 12.9 30 14 30H26C27.1 30 28 29.1 28 28V21" stroke="url(#fam-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M10 21L20 13L30 21" stroke="url(#fam-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -130,6 +130,30 @@ const FamiliarIcon: React.FC = () => (
     </defs>
   </svg>
 );
+
+void LegacySaludGeneralIcon;
+void LegacyEstudiantesIcon;
+void LegacyExpatriadosIcon;
+void LegacyNomadasIcon;
+void LegacySanitasIcon;
+void LegacyMascotasIcon;
+void LegacyFamiliarIcon;
+
+type ProductIconProps = { icon: React.ElementType; surface: string };
+
+const ProductIcon: React.FC<ProductIconProps> = ({ icon: Icon, surface }) => (
+  <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${surface}`}>
+    <Icon className="size-5 text-primary" strokeWidth={2.2} aria-hidden="true" />
+  </span>
+);
+
+const SaludGeneralIcon = () => <ProductIcon icon={Shield} surface="bg-[#E6F7F8]" />;
+const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-[#EBF7F4]" />;
+const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-[#E6F2F5]" />;
+const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-[#EAF5F0]" />;
+const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-[#E6F2F5]" />;
+const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-[#FDF3F5]" />;
+const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-[#EDEFFB]" />;
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -246,7 +270,7 @@ export const Navbar: React.FC = () => {
               </button>
               
               {/* Dropdown Menu Container */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[560px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-2 gap-8 text-left">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[92vw] max-w-lg sm:w-[560px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
                 {/* Column 1: Seguros de Salud */}
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
@@ -396,7 +420,7 @@ export const Navbar: React.FC = () => {
                   window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_desktop' });
                 }
               }}
-              className="inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] bg-whatsapp hover:bg-whatsapp-dark text-white shadow-sm shadow-whatsapp/10 text-xs px-3.5 py-2 gap-1.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20 cursor-pointer"
+              className="inline-flex items-center justify-center font-sans font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] bg-whatsapp-dark hover:bg-whatsapp text-white shadow-sm shadow-whatsapp/10 text-xs px-3.5 py-2 gap-1.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20 cursor-pointer"
             >
               <WhatsAppIcon size={16} />
               <span>{t.whatsappCta}</span>
@@ -617,10 +641,10 @@ export const Navbar: React.FC = () => {
                     window.dataLayer.push({ event: 'click_whatsapp', location: 'navbar_mobile' });
                   }
                 }}
-                className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+                className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp-dark hover:bg-whatsapp text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
               >
                 <WhatsAppIcon size={18} />
-                Escribir por WhatsApp
+                Preguntar por WhatsApp
               </a>
               
               <a 

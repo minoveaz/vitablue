@@ -436,7 +436,7 @@ export const HealthInsurance: React.FC = () => {
                 Seguros de Salud Multimarca
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black leading-tight tracking-tight">
+              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
                 El mejor cuadro médico privado, al mejor precio
               </h1>
               
@@ -491,12 +491,12 @@ export const HealthInsurance: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-display font-black text-text-main leading-tight">{item.title}</h3>
-                  <span className="text-[11px] font-semibold text-text-secondary/70 uppercase tracking-wider">{item.subtitle}</span>
+                  <span className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">{item.subtitle}</span>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed font-medium">{item.desc}</p>
               </div>
               <div className="border-t border-slate-50 pt-4 mt-6">
-                <span className="text-[10px] font-bold text-text-secondary/60 block">Perfil Recomendado:</span>
+                <span className="text-[10px] font-bold text-text-secondary block">Perfil Recomendado:</span>
                 <p className="text-xs font-bold text-text-main mt-1 leading-snug">{item.profile}</p>
                 <span className="inline-block mt-3 rounded-full bg-slate-100 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                   {item.priceText}
@@ -565,7 +565,7 @@ export const HealthInsurance: React.FC = () => {
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-text-secondary">
                     Básico (Sin Hospitalización)
                   </span>
-                  <h3 className="text-2xl font-display font-black text-text-main mt-3">Seguro Básico</h3>
+                  <h3 className="text-h2 font-display font-black text-text-main mt-3">Seguro Básico</h3>
                 </div>
 
                 <div className="flex items-baseline gap-1 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
@@ -614,7 +614,7 @@ export const HealthInsurance: React.FC = () => {
                   <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary">
                     Completo con Copago
                   </span>
-                  <h3 className="text-2xl font-display font-black text-text-main mt-3">Seguro Copago</h3>
+                  <h3 className="text-h2 font-display font-black text-text-main mt-3">Seguro Copago</h3>
                 </div>
 
                 <div className="flex items-baseline gap-1 bg-primary/10 p-4 rounded-2xl border border-primary/10">
@@ -660,7 +660,7 @@ export const HealthInsurance: React.FC = () => {
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-text-secondary">
                     Completo sin Copago
                   </span>
-                  <h3 className="text-2xl font-display font-black text-text-main mt-3">Seguro Sin Copago</h3>
+                  <h3 className="text-h2 font-display font-black text-text-main mt-3">Seguro Sin Copago</h3>
                 </div>
 
                 <div className="flex items-baseline gap-1 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
@@ -718,7 +718,7 @@ export const HealthInsurance: React.FC = () => {
                 <Globe className="w-3.5 h-3.5" /> Especialidad Extranjería
               </div>
               
-              <h2 className="text-2xl sm:text-3xl font-display font-black text-text-main leading-tight">
+              <h2 className="text-h2 font-display font-black text-text-main leading-tight">
                 ¿Vienes a España y necesitas un seguro para el Visado?
               </h2>
               
@@ -772,7 +772,7 @@ export const HealthInsurance: React.FC = () => {
               <Sparkle className="w-3.5 h-3.5 text-primary" /> Especialista Sanitas
             </div>
             
-            <h2 className="text-2xl sm:text-3xl font-display font-black text-text-main leading-tight">
+            <h2 className="text-h2 font-display font-black text-text-main leading-tight">
               Seguros de Salud Especializados Sanitas
             </h2>
             
@@ -897,7 +897,7 @@ export const HealthInsurance: React.FC = () => {
       {/* Human Advisor Help section */}
       <section className="py-16 w-full max-w-4xl mx-auto px-6 sm:px-8 space-y-8">
         <div className="text-left space-y-1">
-          <h3 className="text-2xl font-display font-extrabold text-text-main">¿Dudas sobre carencias o coberturas previas?</h3>
+          <h3 className="text-h2 font-display font-extrabold text-text-main">¿Dudas sobre carencias o coberturas previas?</h3>
           <p className="text-body-reg text-text-secondary font-medium">Nuestros asesores de salud autorizados están a tu disposición por WhatsApp para resolver dudas médicas, analizar preexistencias y gestionar el alta oficial.</p>
         </div>
         <AdvisorCard 

@@ -11,9 +11,9 @@ export interface ProductPlan {
 
 export const sanitasMascotasPlans = [
     {
-      name: 'Mascotas BÃ¡sica',
+      name: 'Mascotas Básica',
       subtitle: 'Solo consultas',
-      desc: 'Perfecto para la prevenciÃ³n diaria. Cubre consultas veterinarias gratuitas ilimitadas y la vacuna de la rabia obligatoria, pagando tarifas especiales por cirugÃ­as.',
+      desc: 'Perfecto para la prevención diaria. Cubre consultas veterinarias gratuitas ilimitadas y la vacuna de la rabia obligatoria, pagando tarifas especiales por cirugías.',
       priceDetail: 'Consultar coberturas y límites',
       tag: 'Esencial',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
@@ -21,8 +21,8 @@ export const sanitasMascotasPlans = [
     },
     {
       name: 'Mascotas Completa',
-      subtitle: 'ClÃ­nicas + CirugÃ­a',
-      desc: 'El plan mÃ¡s equilibrado. AÃ±ade cobertura total de hospitalizaciÃ³n veterinaria y cirugÃ­as por enfermedad o accidente dentro de la amplia red de Sanitas.',
+      subtitle: 'Clínicas + Cirugía',
+      desc: 'El plan más equilibrado. Añade cobertura total de hospitalización veterinaria y cirugías por enfermedad o accidente dentro de la amplia red de Sanitas.',
       priceDetail: 'Consultar coberturas y límites',
       tag: 'Recomendado',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
@@ -31,9 +31,9 @@ export const sanitasMascotasPlans = [
     {
       name: 'Mascotas Reembolso',
       subtitle: 'Cualquier veterinario',
-      desc: 'MÃ¡xima libertad de elecciÃ³n. Te permite acudir a cualquier clÃ­nica veterinaria de EspaÃ±a (incluso fuera del cuadro de Sanitas) y te reembolsamos el 80% de la factura.',
+      desc: 'Máxima libertad de elección. Te permite acudir a cualquier clínica veterinaria de España (incluso fuera del cuadro de Sanitas) y te reembolsamos el 80% de la factura.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'Libre ElecciÃ³n',
+      tag: 'Libre Elección',
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25',
       isFeatured: false
     }
@@ -42,27 +42,27 @@ export const sanitasMascotasPlans = [
 
 export const travelPlans = [
     {
-      name: 'Viaje EstÃ¡ndar',
+      name: 'Viaje Estándar',
       subtitle: 'Escapadas y vacaciones',
-      desc: 'La cobertura clÃ¡sica para viajes vacacionales cortos. Cubre asistencia mÃ©dica de urgencia hasta 50.000â‚¬, repatriaciÃ³n ilimitada y pÃ©rdida bÃ¡sica de equipaje.',
+      desc: 'La cobertura clásica para viajes vacacionales cortos. Cubre asistencia médica de urgencia hasta 50.000€, repatriación ilimitada y pérdida básica de equipaje.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'MÃ¡s EconÃ³mico',
+      tag: 'Más Económico',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     },
     {
       name: 'Viaje Estrella',
-      subtitle: 'ProtecciÃ³n Ampliada',
-      desc: 'Perfecto para viajes transoceÃ¡nicos o fuera de Europa. Eleva la cobertura mÃ©dica hasta los 150.000â‚¬ e incluye cobertura de cancelaciÃ³n de viaje por fuerza mayor.',
+      subtitle: 'Protección Ampliada',
+      desc: 'Perfecto para viajes transoceánicos o fuera de Europa. Eleva la cobertura médica hasta los 150.000€ e incluye cobertura de cancelación de viaje por fuerza mayor.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'MÃ¡s Recomendado',
+      tag: 'Más Recomendado',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: true
     },
     {
       name: 'Viaje Premium',
       subtitle: 'Larga Estancia / Multiviaje',
-      desc: 'DiseÃ±ado para nÃ³madas y viajeros frecuentes. Permite cubrir viajes de larga duraciÃ³n o contratar una pÃ³liza anual que cubre todos tus viajes del aÃ±o hasta 90 dÃ­as por salida.',
+      desc: 'Diseñado para nómadas y viajeros frecuentes. Permite cubrir viajes de larga duración o contratar una póliza anual que cubre todos tus viajes del año hasta 90 días por salida.',
       priceDetail: 'Consultar coberturas y límites',
       tag: 'Alta Cobertura',
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25',
@@ -74,10 +74,10 @@ export const travelPlans = [
 export const lifePlans = [
     {
       name: 'Vida Esencial',
-      subtitle: 'ProtecciÃ³n familiar bÃ¡sica',
-      desc: 'Perfecto para quienes buscan cubrir el capital mÃ­nimo de sepelio y asegurar el sustento bÃ¡sico de sus hijos. Cubre fallecimiento por cualquier causa a coste mÃ­nimo.',
+      subtitle: 'Protección familiar básica',
+      desc: 'Perfecto para quienes buscan cubrir el capital mínimo de sepelio y asegurar el sustento básico de sus hijos. Cubre fallecimiento por cualquier causa a coste mínimo.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'MÃ¡s EconÃ³mico',
+      tag: 'Más Económico',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     },
@@ -86,16 +86,16 @@ export const lifePlans = [
       subtitle: 'Fallecimiento e Invalidez',
       desc: 'El plan recomendado. Une la cobertura de fallecimiento y el pago de invalidez permanente absoluta, protegiendo tanto tu estabilidad futura como la de tus hijos.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'MÃ¡s Recomendado',
+      tag: 'Más Recomendado',
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: true
     },
     {
       name: 'Vida Hipotecas',
-      subtitle: 'Saldo pendiente del prÃ©stamo',
-      desc: 'Especialmente adaptado para vincularse al prÃ©stamo de tu vivienda. En caso de siniestro, el capital se destina a amortizar el saldo pendiente con el banco.',
+      subtitle: 'Saldo pendiente del préstamo',
+      desc: 'Especialmente adaptado para vincularse al préstamo de tu vivienda. En caso de siniestro, el capital se destina a amortizar el saldo pendiente con el banco.',
       priceDetail: 'Consultar coberturas y límites',
-      tag: 'ProtecciÃ³n Hogar',
+      tag: 'Protección Hogar',
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25',
       isFeatured: false
     }

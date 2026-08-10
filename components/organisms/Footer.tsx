@@ -69,7 +69,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-10 border-b border-slate-800">
           <div className="flex flex-col gap-2">
             <Logo iconSize={44} variant="colored-on-dark" showTagline={false} />
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+            <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
               Comparador independiente de seguros
             </p>
           </div>
@@ -84,6 +84,7 @@ export const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="Facebook"
+              aria-label="Ir a nuestro perfil de Facebook"
             >
               <FacebookIcon />
             </a>
@@ -93,6 +94,7 @@ export const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="Instagram"
+              aria-label="Ir a nuestro perfil de Instagram"
             >
               <InstagramIcon />
             </a>
@@ -100,6 +102,7 @@ export const Footer: React.FC = () => {
               href={socialProfiles.linkedin.url || '#'} 
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="LinkedIn"
+              aria-label="Ir a nuestro perfil de LinkedIn"
               onClick={(e) => e.preventDefault()}
             >
               <LinkedinIcon />
@@ -110,6 +113,7 @@ export const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="TikTok"
+              aria-label="Ir a nuestro perfil de TikTok"
             >
               <TiktokIcon />
             </a>
@@ -119,6 +123,7 @@ export const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="YouTube"
+              aria-label="Ir a nuestro canal de YouTube"
             >
               <YoutubeIcon />
             </a>
@@ -128,6 +133,7 @@ export const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="X (Twitter)"
+              aria-label="Ir a nuestro perfil de X"
             >
               <XIcon />
             </a>
@@ -275,7 +281,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Regulatory Disclaimer & Credits */}
-        <div className="pt-8 flex flex-col gap-4 text-[10px] text-slate-500 leading-relaxed font-medium text-left">
+        <div className="pt-8 flex flex-col gap-4 text-[10px] text-slate-400 leading-relaxed font-medium text-left">
           <div className="flex items-start gap-2.5 bg-slate-900/40 p-4 rounded-xl border border-slate-800/60">
             <Shield className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
             <p>

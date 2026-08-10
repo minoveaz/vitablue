@@ -30,12 +30,12 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: true,
-        whyItFits: 'Para la residencia no lucrativa, ExtranjerÃ­a exige un seguro equivalente al pÃºblico. Adeslas es la opciÃ³n mÃ¡s segura por su aceptaciÃ³n garantizada en consulados y su red nacional.'
+        whyItFits: 'Para la residencia no lucrativa, Extranjería exige un seguro equivalente al público. Adeslas es la opción más segura por su aceptación garantizada en consulados y su red nacional.'
       },
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: false,
-        whyItFits: 'Una alternativa de alta calidad con servicios digitales premium que tambiÃ©n cumple los requisitos legales para tu residencia.'
+        whyItFits: 'Una alternativa de alta calidad con servicios digitales premium que también cumple los requisitos legales para tu residencia.'
       }
     ];
   }
@@ -46,12 +46,12 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Para inversores y Golden Visa, Sanitas ofrece el nivel de servicio y exclusividad que buscas, con acceso a sus propios hospitales premium y gestiÃ³n digital VIP.'
+        whyItFits: 'Para inversores y Golden Visa, Sanitas ofrece el nivel de servicio y exclusividad que buscas, con acceso a sus propios hospitales premium y gestión digital VIP.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'La opciÃ³n con la red de especialistas mÃ¡s extensa de EspaÃ±a, ideal si prefieres tener la mÃ¡xima libertad de elecciÃ³n de centros fÃ­sicos.'
+        whyItFits: 'La opción con la red de especialistas más extensa de España, ideal si prefieres tener la máxima libertad de elección de centros físicos.'
       }
     ];
   }
@@ -62,13 +62,13 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Como trabajador en EspaÃ±a ya tendrÃ¡s acceso a la sanidad pÃºblica. Te recomendamos esta opciÃ³n para agilizar tus visitas a especialistas y pruebas mÃ©dicas con el mejor soporte digital.'
+        whyItFits: 'Como trabajador en España ya tendrás acceso a la sanidad pública. Te recomendamos esta opción para agilizar tus visitas a especialistas y pruebas médicas con el mejor soporte digital.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
         price: 'Precio personalizado',
-        whyItFits: 'Si buscas ahorro, esta alternativa con copagos te permite acceder a la red mÃ©dica lÃ­der por una cuota mensual mÃ­nima, ideal como complemento a la Seguridad Social.'
+        whyItFits: 'Si buscas ahorro, esta alternativa con copagos te permite acceder a la red médica líder por una cuota mensual mínima, ideal como complemento a la Seguridad Social.'
       }
     ];
   }
@@ -78,7 +78,7 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
     const sanitasResult = { 
       ...PRODUCTS_BASE.sanitas, 
       isRecommended: true,
-      whyItFits: `Al viajar con frecuencia${includesUSA ? ' (incluyendo NorteamÃ©rica)' : ''}, necesitas el respaldo de una red global. Sanitas, junto a Bupa, te ofrece la mejor asistencia internacional y telemedicina 24/7 estÃ©s donde estÃ©s.`
+      whyItFits: `Al viajar con frecuencia${includesUSA ? ' (incluyendo Norteamérica)' : ''}, necesitas el respaldo de una red global. Sanitas, junto a Bupa, te ofrece la mejor asistencia internacional y telemedicina 24/7 estés donde estés.`
     };
 
     if (includesUSA) {
@@ -91,7 +91,7 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'Una opciÃ³n sÃ³lida si buscas la mayor red de mÃ©dicos fÃ­sicos en EspaÃ±a para cuando regreses de tus viajes.'
+        whyItFits: 'Una opción sólida si buscas la mayor red de médicos físicos en España para cuando regreses de tus viajes.'
       }
     ];
   }
@@ -102,12 +102,12 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: true,
-        whyItFits: 'Es la opciÃ³n mÃ¡s robusta para trÃ¡mites de extranjerÃ­a. Su certificado es aceptado sin excepciones y ofrece la red de mÃ©dicos mÃ¡s amplia de EspaÃ±a.'
+        whyItFits: 'Es la opción más robusta para trámites de extranjería. Su certificado es aceptado sin excepciones y ofrece la red de médicos más amplia de España.'
       },
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: false,
-        whyItFits: 'Una excelente alternativa si ademÃ¡s del visado buscas la mejor experiencia digital y videoconsultas mÃ©dicas 24/7.'
+        whyItFits: 'Una excelente alternativa si además del visado buscas la mejor experiencia digital y videoconsultas médicas 24/7.'
       }
     ];
   }
@@ -118,12 +118,12 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
       { 
         ...PRODUCTS_BASE.sanitas, 
         isRecommended: true,
-        whyItFits: 'Ideal por su liderazgo en telemedicina y su red internacional. Perfecto si prefieres gestionar todo desde el mÃ³vil y acceder a hospitales propios premium.'
+        whyItFits: 'Ideal por su liderazgo en telemedicina y su red internacional. Perfecto si prefieres gestionar todo desde el móvil y acceder a hospitales propios premium.'
       },
       { 
         ...PRODUCTS_BASE.adeslas, 
         isRecommended: false,
-        whyItFits: 'La alternativa sÃ³lida si buscas tener el mÃ¡ximo nÃºmero de especialistas y clÃ­nicas disponibles en cualquier rincÃ³n del paÃ­s.'
+        whyItFits: 'La alternativa sólida si buscas tener el máximo número de especialistas y clínicas disponibles en cualquier rincón del país.'
       }
     ];
   }
@@ -133,12 +133,12 @@ export const getRecommendations = (criteria: FilterCriteria): Recommendation[] =
     { 
       ...PRODUCTS_BASE.adeslas, 
       isRecommended: true,
-      whyItFits: 'Nuestra recomendaciÃ³n general por equilibrio entre precio y cobertura en la red mÃ©dica mÃ¡s grande del paÃ­s.'
+      whyItFits: 'Nuestra recomendación general por equilibrio entre precio y cobertura en la red médica más grande del país.'
     },
     { 
       ...PRODUCTS_BASE.sanitas, 
       isRecommended: false,
-      whyItFits: 'Una opciÃ³n superior en servicios digitales y acceso a centros mÃ©dicos exclusivos de alta calidad.'
+      whyItFits: 'Una opción superior en servicios digitales y acceso a centros médicos exclusivos de alta calidad.'
     }
   ];
 };

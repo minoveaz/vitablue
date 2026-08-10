@@ -75,20 +75,20 @@ export const BlogPost: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumb row & Back button */}
-      <div className="bg-white border-b border-slate-100 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 text-xs font-bold text-text-secondary/70">
+      <div className="bg-white border-b border-slate-100 py-4 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 text-xs font-bold text-text-secondary min-w-0">
           <Link 
             to={isPostEnglish ? "/en/blog" : "/blog"} 
-            className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+            className="inline-flex items-center gap-1 hover:text-primary transition-colors shrink-0"
           >
             <ChevronLeft className="w-4 h-4" /> {isPostEnglish ? 'Back to blog' : 'Volver al blog'}
           </Link>
-          <div className="flex items-center gap-1.5 select-none">
-            <Link to={isPostEnglish ? "/en" : "/"} className="hover:text-primary transition-colors">{isPostEnglish ? 'Home' : 'Inicio'}</Link>
-            <span>/</span>
-            <Link to={isPostEnglish ? "/en/blog" : "/blog"} className="hover:text-primary transition-colors">Blog</Link>
-            <span>/</span>
-            <span className="text-text-main/80 truncate max-w-[200px] sm:max-w-xs">{post.title}</span>
+          <div className="flex items-center gap-1.5 select-none min-w-0 overflow-hidden">
+            <Link to={isPostEnglish ? "/en" : "/"} className="hover:text-primary transition-colors shrink-0">{isPostEnglish ? 'Home' : 'Inicio'}</Link>
+            <span className="shrink-0">/</span>
+            <Link to={isPostEnglish ? "/en/blog" : "/blog"} className="hover:text-primary transition-colors shrink-0">Blog</Link>
+            <span className="shrink-0">/</span>
+            <span className="text-text-main/80 truncate">{post.title}</span>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ export const BlogPost: React.FC = () => {
                 {post.title}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-b border-slate-100 pb-6 text-xs font-bold text-text-secondary/70">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 border-b border-slate-100 pb-6 text-xs font-bold text-text-secondary">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-4 h-4 text-primary/60" /> {post.date}
                 </span>
@@ -131,7 +131,7 @@ export const BlogPost: React.FC = () => {
                   className="w-12 h-12 rounded-full object-cover border border-slate-200"
                 />
                 <div className="text-left">
-                  <span className="text-[9px] text-text-secondary/70 font-black uppercase tracking-wider block">{isPostEnglish ? 'Written by' : 'Redactado por'}</span>
+                  <span className="text-[9px] text-text-secondary font-black uppercase tracking-wider block">{isPostEnglish ? 'Written by' : 'Redactado por'}</span>
                   <h4 className="text-sm font-bold text-text-main flex items-center gap-1 leading-none mt-0.5">
                     {post.author.name}
                     {post.author.verified && <ShieldCheck className="w-3.5 h-3.5 text-sky-500 fill-sky-50 shrink-0" />}
@@ -261,7 +261,7 @@ export const BlogPost: React.FC = () => {
                 <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-0.5 text-[9px] font-black text-text-secondary select-none shadow-sm uppercase tracking-wider">
                   {isPostEnglish ? 'Immediate Consultation' : 'Consulta Inmediata'}
                 </span>
-                <h3 className="text-xl font-display font-black text-text-main leading-tight">
+                <h3 className="text-h3 font-display font-black text-text-main leading-tight">
                   {isPostEnglish ? 'Do you have questions about the visa health requirements?' : '¿Tienes dudas sobre los requisitos del seguro para tu visado?'}
                 </h3>
                 <p className="text-xs text-text-secondary leading-relaxed">
@@ -282,7 +282,7 @@ export const BlogPost: React.FC = () => {
                     window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_bottom_${post.slug}` });
                   }
                 }}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp hover:bg-whatsapp-dark px-6 py-3.5 text-xs font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-whatsapp-dark hover:bg-whatsapp px-6 py-3.5 text-xs font-black text-white shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
               >
                 <WhatsAppIcon size={16} />
                 <span>{isPostEnglish ? 'Ask on WhatsApp' : 'Preguntar por WhatsApp'}</span>
@@ -349,7 +349,7 @@ export const BlogPost: React.FC = () => {
                       window.dataLayer.push({ event: 'click_whatsapp', location: `blog_post_sidebar_${post.slug}` });
                     }
                   }}
-                  className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-xs font-bold shadow-md shadow-whatsapp/10 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+                  className="w-full flex h-11 items-center justify-center gap-1.5 rounded-xl bg-whatsapp-dark hover:bg-whatsapp text-white text-xs font-bold shadow-md shadow-whatsapp/10 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
                 >
                   <WhatsAppIcon size={16} className="fill-white" />
                   <span>{isPostEnglish ? 'Consult on WhatsApp' : 'Consultar por WhatsApp'}</span>

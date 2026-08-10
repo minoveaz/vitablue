@@ -14,7 +14,7 @@ export const LegalNotice: React.FC = () => {
       <div className="max-w-3xl mx-auto bg-white rounded-[2rem] border border-slate-200/60 shadow-sm p-6 sm:p-8 lg:p-10 text-left space-y-6">
         <div className="flex items-center gap-3 text-primary pb-4 border-b border-slate-100">
           <ShieldAlert className="w-8 h-8" />
-          <h1 className="text-3xl font-display font-black text-text-main tracking-tight">Aviso Legal</h1>
+          <h1 className="text-h1 font-display font-black text-text-main tracking-tight">Aviso Legal</h1>
         </div>
         
         <p className="text-body-reg text-text-secondary leading-relaxed font-semibold">
@@ -22,7 +22,7 @@ export const LegalNotice: React.FC = () => {
         </p>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-display font-bold text-text-main">1. Información General</h2>
+          <h2 className="text-h3 font-display font-bold text-text-main">1. Información General</h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
             De conformidad con el deber de información dispuesto en la Ley 34/2002 de Servicios de la Sociedad de la Información y el Comercio Electrónico (LSSI-CE), se facilitan a continuación los siguientes datos informativos generales de este sitio web:
           </p>
@@ -34,21 +34,21 @@ export const LegalNotice: React.FC = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-display font-bold text-text-main">2. Condiciones Generales de Uso</h2>
+          <h2 className="text-h3 font-display font-bold text-text-main">2. Condiciones Generales de Uso</h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
             El acceso y uso de este portal atribuyen la condición de USUARIO, que acepta, desde dicho acceso y/o uso, las Condiciones Generales de Uso aquí reflejadas. Las citadas condiciones serán de aplicación independientemente de las Condiciones Generales de Contratación que en su caso resulten de obligado cumplimiento.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-display font-bold text-text-main">3. Propiedad Intelectual e Industrial</h2>
+          <h2 className="text-h3 font-display font-bold text-text-main">3. Propiedad Intelectual e Industrial</h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
             VitaBlue es titular de todos los derechos de propiedad intelectual e industrial de su página web, así como de los elementos contenidos en la misma (a título enunciativo: logotipos, imágenes, textos, marcas o combinaciones de colores). Quedan expresamente prohibidas la reproducción, distribución y comunicación pública de la totalidad o parte de los contenidos de esta página web con fines comerciales.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-display font-bold text-text-main">4. Exclusión de Responsabilidad</h2>
+          <h2 className="text-h3 font-display font-bold text-text-main">4. Exclusión de Responsabilidad</h2>
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
             VitaBlue no se hace responsable, en ningún caso, de los daños y perjuicios de cualquier naturaleza que pudieran ocasionar, a título enunciativo: errores u omisiones en los contenidos, falta de disponibilidad del portal o la transmisión de virus o programas maliciosos, a pesar de haber adoptado todas las medidas tecnológicas necesarias para evitarlo.
           </p>

@@ -8,6 +8,8 @@
     "build": "vite build && node post_build_cleanup.cjs",
     "preview": "vite preview",
     "sync-blog": "node scripts/sync_blog.cjs",
+    "audit:front": "node scripts/audit_front.cjs",
+    "validate": "node scripts/audit_front.cjs && node scripts/validate_routes.cjs && node scripts/validate_sitemap.cjs && node scripts/validate_route_registry.cjs",
     "validate-routes": "node scripts/validate_routes.cjs",
     "validate-routes:strict": "node scripts/validate_routes.cjs --strict",
     "validate-sitemap": "node scripts/validate_sitemap.cjs",
@@ -15,10 +17,18 @@
     "generate-sitemap:check": "node scripts/generate_sitemap.cjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test:encoding": "node scripts/check_encoding.cjs",
     "validate-products": "node scripts/validate_product_inventory.cjs",
     "validate-route-registry": "node scripts/validate_route_registry.cjs",
-    "test": "vitest run",
-    "test:rls": "node scripts/test_rls_matrix.cjs"
+    "test": "vitest run --exclude 'e2e/**'",
+    "test:rls": "node scripts/test_rls_matrix.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile --project=mobile-compact",
+    "test:e2e:desktop": "playwright test --project=desktop",
+    "test:e2e:seo": "playwright test e2e/seo.audit.spec.ts --project=desktop",
+    "test:e2e:responsive": "playwright test e2e/responsive.diagnostic.spec.ts",
+    "audit:lh": "npx unlighthouse --site http://localhost:4173",
+    "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",
@@ -35,9 +45,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@unlighthouse/cli": "^0.18.0",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.24",
     "eslint": "^10.8.0",
@@ -48,6 +60,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.66.0",
+    "unlighthouse": "^0.18.0",
     "vite": "^6.2.0",
     "vitest": "^4.1.10"
   }

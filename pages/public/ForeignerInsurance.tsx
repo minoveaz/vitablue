@@ -218,7 +218,7 @@ export const ForeignerInsurance: React.FC = () => {
         <div className="max-w-6xl mx-auto px-6 sm:px-8">
           <div className="max-w-3xl flex flex-col gap-5">
             <span className="text-xs font-black uppercase tracking-wider text-brand-cyan">Trámites de Extranjería & Consulados</span>
-            <h1 className="text-4xl sm:text-5xl font-display font-black leading-tight tracking-tight">
+            <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
               Seguros de salud para extranjeros en España
             </h1>
             <p className="text-lg text-slate-200 leading-relaxed font-medium">
@@ -253,7 +253,7 @@ export const ForeignerInsurance: React.FC = () => {
                         {profile.subtitle}
                       </span>
                     </div>
-                    <h3 className="text-2xl font-display font-black text-text-main leading-snug">
+                    <h3 className="text-h2 font-display font-black text-text-main leading-snug">
                       {profile.title}
                     </h3>
                     <p className="text-sm text-text-secondary leading-relaxed font-semibold">
@@ -320,7 +320,7 @@ export const ForeignerInsurance: React.FC = () => {
       {/* Authorized Providers Logos */}
       <section className="py-10 bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-5">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary/70">Aseguradoras oficiales homologadas para visado español</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary">Aseguradoras oficiales homologadas para visado español</p>
           <div className="flex justify-center items-center gap-12 sm:gap-16">
             <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
             <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
@@ -412,7 +412,7 @@ export const ForeignerInsurance: React.FC = () => {
       {/* Help Section */}
       <section className="py-16 max-w-4xl mx-auto px-6 sm:px-8 w-full text-left space-y-8">
         <div className="space-y-2">
-          <h3 className="text-3xl font-display font-extrabold text-text-main">¿No estás seguro de qué visado te corresponde?</h3>
+          <h3 className="text-h2 font-display font-extrabold text-text-main">¿No estás seguro de qué visado te corresponde?</h3>
           <p className="text-base text-text-secondary font-semibold leading-relaxed">
             Nuestros asesores senior en extranjería te atenderán directamente por WhatsApp o llamada gratuita para guiarte en los requisitos específicos del consulado de tu país de origen.
           </p>

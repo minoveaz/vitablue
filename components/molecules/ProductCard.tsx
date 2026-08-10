@@ -118,7 +118,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Right Column: Pricing & Action Buttons */}
-      <div className={`w-full lg:w-[280px] flex flex-col p-6 sm:p-8 lg:p-10 justify-center items-center text-center gap-6 ${
+      <div className={`w-full lg:w-72 flex flex-col p-6 sm:p-8 lg:p-10 justify-center items-center text-center gap-6 ${
         isRecommended ? 'bg-primary/[0.02]' : 'bg-slate-50/30'
       }`}>
         <div className="space-y-1">
@@ -127,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-5xl font-display font-black text-text-main tracking-tight">{price}</span>
             <span className="text-body-reg font-bold text-text-secondary">/{pricePeriod}</span>
           </div>
-          <p className="text-[10px] text-text-secondary/70 font-semibold tracking-wide">Precio final garantizado</p>
+          <p className="text-[10px] text-text-secondary font-semibold tracking-wide">Precio final garantizado</p>
         </div>
         
         <div className="w-full flex flex-col gap-3">
@@ -145,7 +145,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* WhatsApp human support button with official WhatsApp SVG logo */}
           <button 
             onClick={onWhatsAppClick}
-            className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
+            className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-whatsapp-dark hover:bg-whatsapp text-white text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
           >
             <WhatsAppIcon size={20} />
             Hablar con Asesor
