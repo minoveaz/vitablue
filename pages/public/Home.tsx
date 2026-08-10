@@ -14,6 +14,7 @@ import InfiniteMarquee from '@/components/molecules/InfiniteMarquee';
 import Accordion from '@/components/molecules/Accordion';
 import Card from '@/components/molecules/Card';
 import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import TrustCardGrid from '@/components/molecules/TrustCardGrid';
 import type { ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
 import TestimonialCard from '@/components/molecules/TestimonialCard';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
@@ -459,27 +460,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
 
             <ConversationalHero onSearch={handleHeroSearch} />
 
-            {/* Trust Cards Grid for Mobile */}
-            <div className="grid gap-4 sm:grid-cols-3 mt-4">
-              {trustCards.map((item, index) => (
-                <div
-                  key={item.title}
-                  className={`rounded-3xl border p-5 shadow-sm text-left ${
-                    index === 0
-                      ? 'border-primary/15 bg-white'
-                      : index === 1
-                        ? 'border-brand-cyan/20 bg-brand-cyan/10'
-                        : 'border-accent/20 bg-accent/10'
-                  }`}
-                >
-                  <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                    <item.illustration />
-                  </div>
-                  <h2 className="text-h3 font-display font-bold text-text-main">{item.title}</h2>
-                  <p className="mt-2 text-body-reg text-text-secondary leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+            <TrustCardGrid items={trustCards.map((item, index) => ({
+              title: item.title,
+              description: item.desc,
+              illustration: item.illustration,
+              tone: index === 0 ? 'neutral' : index === 1 ? 'cyan' : 'accent',
+            }))} />
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-3 py-1 text-caption font-semibold text-text-secondary">
@@ -511,26 +497,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                {trustCards.map((item, index) => (
-                  <div
-                    key={item.title}
-                    className={`rounded-3xl border p-5 shadow-sm ${
-                      index === 0
-                        ? 'border-primary/15 bg-white'
-                        : index === 1
-                          ? 'border-brand-cyan/20 bg-brand-cyan/10'
-                          : 'border-accent/20 bg-accent/10'
-                    }`}
-                  >
-                    <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                      <item.illustration />
-                    </div>
-                    <h2 className="text-h3 font-display font-bold text-text-main">{item.title}</h2>
-                    <p className="mt-2 text-body-reg text-text-secondary leading-relaxed">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
+              <TrustCardGrid items={trustCards.map((item, index) => ({
+                title: item.title,
+                description: item.desc,
+                illustration: item.illustration,
+                tone: index === 0 ? 'neutral' : index === 1 ? 'cyan' : 'accent',
+              }))} />
 
               <div className="flex flex-wrap gap-3">
                 <button type="button" onClick={scrollToHowItWorks} className="inline-flex">
