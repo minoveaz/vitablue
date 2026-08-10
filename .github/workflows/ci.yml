@@ -200,7 +200,72 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   # ────────────────────────────────────────────────────────────────────
-  # JOB 4: Gate de calidad — Todos los checks deben pasar
+  # JOB 4: Lighthouse — Performance, SEO, Accessibility & CWV de laboratorio
+  # ────────────────────────────────────────────────────────────────────
+  lighthouse:
+    name: 🚦 Lighthouse Audit
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download dist Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vitablue-dist-${{ github.sha }}
+          path: dist
+
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Start preview server
+        run: npm run preview -- --host 127.0.0.1 > /tmp/vitablue-preview.log 2>&1 &
+
+      - name: Wait for preview server
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/vitablue-preview.log
+          exit 1
+
+      - name: Run Lighthouse audit with budgets
+        run: npm run audit:lh:ci
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report-${{ github.sha }}
+          path: .unlighthouse/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload preview log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-preview-log-${{ github.sha }}
+          path: /tmp/vitablue-preview.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────
+  # JOB 5: Gate de calidad — Todos los checks deben pasar
   # ────────────────────────────────────────────────────────────────────
   quality-gate:
     name: ✅ Quality Gate
@@ -209,6 +274,7 @@ jobs:
       - build
       - playwright
       - seo-audit
+      - lighthouse
     if: always()
 
     steps:
@@ -226,6 +292,10 @@ jobs:
             echo "❌ SEO Audit falló"
             exit 1
           fi
+          if [[ "${{ needs.lighthouse.result }}" != "success" ]]; then
+            echo "❌ Lighthouse Audit falló (budgets o Core Web Vitals)"
+            exit 1
+          fi
           echo "✅ Todos los checks pasaron — Quality Gate superado"
 
       - name: CI Summary
@@ -239,6 +309,7 @@ jobs:
             echo "| 🏗️ Build SSG | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
             echo "| 🎭 Playwright E2E | ${{ needs.playwright.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
             echo "| 🔍 SEO Audit | ${{ needs.seo-audit.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
+            echo "| 🚦 Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
             echo ""
             echo "> Commit: \`${{ github.sha }}\` | Branch: \`${{ github.ref_name }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
