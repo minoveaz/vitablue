@@ -150,9 +150,9 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
-                <a href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'About Us' : 'Quiénes Somos'}
-                </a>
+                </Link>
               </li>
               <li>
                 <a href={isEnglish ? "/en#opiniones" : "/#opiniones"} className="hover:text-accent transition-colors duration-150">

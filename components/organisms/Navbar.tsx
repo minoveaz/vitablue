@@ -374,9 +374,9 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Link 2: Sobre Nosotros */}
-            <a href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.aboutUs}
-            </a>
+            </Link>
 
             {/* Link 3: Blog */}
             <Link to="/blog" className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
@@ -384,9 +384,9 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Link 4: Contacto */}
-            <a href={isEnglish ? "/en#contacto" : "/#contacto"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/contact" : "/contacto"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.contact}
-            </a>
+            </Link>
 
             {/* Language Switcher Desktop */}
             <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4 text-[10px] font-black tracking-wider select-none">
@@ -555,8 +555,8 @@ export const Navbar: React.FC = () => {
               </div>
 
               {/* Link 2: Sobre Nosotros */}
-              <a
-                href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"}
+              <Link
+                to={isEnglish ? "/en/about-us" : "/sobre-nosotros"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -569,7 +569,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-text-secondary/40 shrink-0" />
-              </a>
+              </Link>
 
               {/* Link 3: Blog */}
               <Link
@@ -589,8 +589,8 @@ export const Navbar: React.FC = () => {
               </Link>
 
               {/* Link 4: Contacto */}
-              <a
-                href={isEnglish ? "/en#contacto" : "/#contacto"}
+              <Link
+                to={isEnglish ? "/en/contact" : "/contacto"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -603,7 +603,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-text-secondary/40 shrink-0" />
-              </a>
+              </Link>
             </nav>
           </div>
 
