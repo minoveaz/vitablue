@@ -1,0 +1,29 @@
+name: Documentation Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - 'conductor/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - 'conductor/**'
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    name: ✅ Quality Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Documentation changes accepted
+        run: echo "✅ Solo se modificó documentación; no requiere build ni E2E."
