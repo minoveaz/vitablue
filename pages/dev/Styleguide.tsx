@@ -55,14 +55,14 @@ const Styleguide = () => {
       </div>
 
       <div className="flex flex-col gap-12">
-        <div className="order-0 border-l-4 border-success-strong bg-success-strong/5 px-5 py-4">
+        <div className="border-l-4 border-success-strong bg-success-strong/5 px-5 py-4">
           <p className="text-xs font-bold uppercase tracking-wider text-success-strong">Bloque 1</p>
           <h2 className="mt-1 text-2xl font-display font-extrabold text-primary">Componentes consolidados</h2>
           <p className="mt-2 text-sm text-text-secondary">Componentes con API propia y uso confirmado en la aplicación.</p>
         </div>
 
         {/* Section 1: Logo & Colors */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" /> 1. Logotipo y Tokens de Color
           </h2>
@@ -127,7 +127,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 2: Buttons */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Check className="w-5 h-5 text-accent" /> 2. Componentes de Acción (Botones)
           </h2>
@@ -176,7 +176,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 3: Forms Inputs */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Mail className="w-5 h-5 text-accent" /> 3. Inputs de Formulario y Campos
           </h2>
@@ -235,7 +235,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 4: Badges */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-accent" /> 4. Badges / Etiquetas
           </h2>
@@ -252,7 +252,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 5: Molecules */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-accent" /> 5. Moléculas (Componentes Compuestos)
           </h2>
@@ -310,7 +310,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 6: Marketing, Testimonials & Mockups */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" /> 6. Componentes de Conversión y Marketing
           </h2>
@@ -388,14 +388,14 @@ const Styleguide = () => {
           </div>
         </section>
 
-        <div className="order-20 border-l-4 border-accent bg-accent/10 px-5 py-4">
+        <div style={{ order: 1 }} className="border-l-4 border-accent bg-accent/10 px-5 py-4">
           <p className="text-xs font-bold uppercase tracking-wider text-accent">Bloque 2</p>
           <h2 className="mt-1 text-2xl font-display font-extrabold text-primary">Componentes incompletos</h2>
           <p className="mt-2 text-sm text-text-secondary">Patrones ya extraídos, pero pendientes de adopción amplia, tokenización o pruebas visuales.</p>
         </div>
 
         {/* Section 7: VitaBlue reusable composition patterns */}
-        <section className="order-20 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section style={{ order: 1 }} className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" /> 7. Patrones reutilizables VitaBlue
           </h2>
@@ -482,7 +482,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 8: Interactive Advanced Components (Phase 5) */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" /> 6. Componentes Avanzados e Interactivos (Fase 5)
           </h2>
@@ -544,7 +544,7 @@ const Styleguide = () => {
         </section>
 
         {/* Section 8: Trust & Transparency Components (Fase 2 - Core Logic Track) */}
-        <section className="order-10 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
             <Shield className="w-5 h-5 text-accent" /> 7. Confianza y Transparencia Radical (Fase 2)
           </h2>
