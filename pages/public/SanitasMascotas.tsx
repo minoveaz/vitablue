@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { sanitasMascotasPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
+  ShieldCheck, Clock, Award, Check, Heart,
   FileText, CreditCard, Dog
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -12,6 +12,8 @@ import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
 import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { 
   PetIllustration,
@@ -25,25 +27,6 @@ import {
 export const SanitasMascotas: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
-
-  // State for interactive pricing estimator
-  const [mascotType, setMascotType] = useState<'dog' | 'cat'>('dog');
-  const [mascotAge, setMascotAge] = useState<number>(3);
-  const [mascotPlan, setMascotPlan] = useState<'basic' | 'complete' | 'reimbursement'>('complete');
-
-  const calculateMascotPrice = () => {
-    let base = mascotType === 'dog' ? 12.50 : 9.90;
-    
-    if (mascotPlan === 'basic') {
-      base = mascotType === 'dog' ? 9.90 : 7.50;
-    } else if (mascotPlan === 'reimbursement') {
-      base = mascotType === 'dog' ? 24.90 : 19.95;
-    } else {
-      // Complete plan
-      if (mascotAge > 5) base += 4.50;
-    }
-    return base.toFixed(2);
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -142,8 +125,6 @@ export const SanitasMascotas: React.FC = () => {
     }
   ];
 
-  const priceEstimate = calculateMascotPrice();
-  
   const canonicalUrl = 'https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas';
   const title = 'Sanitas Mascotas | Seguro Veterinario para Perros y Gatos | VitaBlue';
   const description = 'Protege a tu perro o gato con Sanitas Mascotas. Seguro médico veterinario con consultas ilimitadas, vacunas incluidas y acceso a red nacional.';
@@ -282,147 +263,40 @@ export const SanitasMascotas: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator Card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Dog className="w-4 h-4" /> Seguro Veterinario Oficial
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  Sin exclusión por raza
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                Sanitas Mascotas
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Cuidado integral veterinario para tu perro o gato. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Póliza Online
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    Llamar Gratis
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Limpieza dental anual gratis</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Urgencias 24h</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">Tarificador de Mascota</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Calcula la cuota mensual aproximada de tu mascota.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Mascot Type Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Tipo de Mascota</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setMascotType('dog')}
-                        className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
-                          mascotType === 'dog' 
-                            ? 'border-primary bg-primary/5 text-primary' 
-                            : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                        }`}
-                      >
-                        Perro
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMascotType('cat')}
-                        className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
-                          mascotType === 'cat' 
-                            ? 'border-primary bg-primary/5 text-primary' 
-                            : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                        }`}
-                      >
-                        Gato
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Age Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Edad de la Mascota: <span className="text-sm font-sans font-black text-primary ml-1">{mascotAge} {mascotAge === 1 ? 'año' : 'años'}</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="1" 
-                        max="9" 
-                        value={mascotAge} 
-                        onChange={(e) => setMascotAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Plan Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Plan Veterinario</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'basic', label: 'Básico' },
-                        { id: 'complete', label: 'Completo' },
-                        { id: 'reimbursement', label: 'Reembolso' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setMascotPlan(item.id as typeof mascotPlan)}
-                          className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
-                            mascotPlan === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Cuota Estimada:</span>
-                  <div className="text-right">
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                      <span className="text-[10px] font-bold text-text-secondary">€/mes</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      {/* Reusable ProductHero comparison */}
+      <ProductHero
+        badges={[
+          { label: 'Seguro Veterinario Oficial', icon: <Dog className="h-4 w-4" /> },
+          { label: 'Sin exclusión por raza', tone: 'accent' },
+        ]}
+        title="Sanitas Mascotas"
+        description="Cuidado integral veterinario para tu perro o gato. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
+        primaryAction={{ label: 'Calcular Póliza Online', onClick: handleStartQuoting }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        highlights={['Limpieza dental anual gratis', 'Urgencias 24h']}
+      >
+        <QuoteEstimator
+          title="Tarificador de Mascota"
+          description="Calcula la cuota mensual aproximada de tu mascota."
+          ageLabel="Edad de la mascota"
+          initialAge={3}
+          minAge={1}
+          maxAge={9}
+          options={[
+            { id: 'basic', label: 'Básico' },
+            { id: 'complete', label: 'Completo' },
+            { id: 'reimbursement', label: 'Reembolso' },
+          ]}
+          initialOption="complete"
+          modalityLabel="Plan veterinario"
+          calculatePrice={(selectedAge, option) => {
+            if (option === 'basic') return '9.90';
+            if (option === 'reimbursement') return '24.90';
+            return (12.5 + (selectedAge > 5 ? 4.5 : 0)).toFixed(2);
+          }}
+          onSubmit={handleStartQuoting}
+        />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">

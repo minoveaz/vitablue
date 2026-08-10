@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
+  ShieldCheck, Clock, Award, Check, Heart,
   FileText, CreditCard, Shield
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -11,6 +11,8 @@ import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
 import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { 
   FamilyIllustration,
@@ -23,24 +25,6 @@ import {
 export const AsistenciaFamiliar: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
-
-  // State for interactive pricing estimator
-  const [age, setAge] = useState<number>(40);
-  const [premiumType, setPremiumType] = useState<'levelled' | 'natural' | 'mixed'>('mixed');
-
-  const calculateDecesosPrice = () => {
-    let base: number;
-    
-    if (premiumType === 'levelled') {
-      base = age < 30 ? 11.50 : age < 50 ? 19.80 : 29.50;
-    } else if (premiumType === 'natural') {
-      base = age < 30 ? 3.90 : age < 50 ? 6.50 : 12.80;
-    } else {
-      // Mixed
-      base = age < 30 ? 5.80 : age < 50 ? 9.90 : 18.50;
-    }
-    return base.toFixed(2);
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -168,8 +152,6 @@ export const AsistenciaFamiliar: React.FC = () => {
     }
   ];
 
-  const priceEstimate = calculateDecesosPrice();
-  
   const canonicalUrl = 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar';
   const title = 'Asistencia Familiar Iplus | Seguro de Decesos | VitaBlue';
   const description = 'Protege a tu familia frente a imprevistos con Asistencia Familiar Iplus. Seguro de decesos completo con cobertura de traslado, asesoramiento legal y testamento.';
@@ -363,118 +345,38 @@ export const AsistenciaFamiliar: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator Card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Shield className="w-4 h-4" /> Seguro de Decesos Familiar
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  Cobertura de traslado internacional
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                Asistencia Familiar Iplus
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Cuota Familiar
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    Llamar Gratis
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Testamento online gratis</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Trámites de herencia</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">Tarificador de Decesos</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu prima según tu edad y estructura de pago.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Age Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Edad del Asegurado: <span className="text-sm font-sans font-black text-primary ml-1">{age} años</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="75" 
-                        value={age} 
-                        onChange={(e) => setAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Premium Type Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Tipo de Prima</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'levelled', label: 'Nivelada' },
-                        { id: 'mixed', label: 'Mixta' },
-                        { id: 'natural', label: 'Natural' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setPremiumType(item.id as typeof premiumType)}
-                          className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
-                            premiumType === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Cuota Estimada:</span>
-                  <div className="text-right">
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                      <span className="text-[10px] font-bold text-text-secondary">€/mes</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      {/* Reusable ProductHero comparison */}
+      <ProductHero
+        badges={[
+          { label: 'Seguro de Decesos Familiar', icon: <Shield className="h-4 w-4" /> },
+          { label: 'Cobertura de traslado internacional', tone: 'accent' },
+        ]}
+        title="Asistencia Familiar Iplus"
+        description="Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar."
+        primaryAction={{ label: 'Calcular Cuota Familiar', onClick: handleStartQuoting }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        highlights={['Testamento online gratis', 'Trámites de herencia']}
+      >
+        <QuoteEstimator
+          title="Tarificador de Decesos"
+          description="Estima tu prima según tu edad y estructura de pago."
+          initialAge={40}
+          maxAge={75}
+          options={[
+            { id: 'levelled', label: 'Nivelada' },
+            { id: 'mixed', label: 'Mixta' },
+            { id: 'natural', label: 'Natural' },
+          ]}
+          initialOption="mixed"
+          modalityLabel="Tipo de prima"
+          calculatePrice={(selectedAge, option) => {
+            if (option === 'levelled') return (selectedAge < 30 ? 11.5 : selectedAge < 50 ? 19.8 : 29.5).toFixed(2);
+            if (option === 'natural') return (selectedAge < 30 ? 3.9 : selectedAge < 50 ? 6.5 : 12.8).toFixed(2);
+            return (selectedAge < 30 ? 5.8 : selectedAge < 50 ? 9.9 : 18.5).toFixed(2);
+          }}
+          onSubmit={handleStartQuoting}
+        />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">

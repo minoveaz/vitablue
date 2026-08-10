@@ -8,3 +8,5 @@ export { default as ProcessSteps } from './ProcessSteps';
 export { default as ContactChannelCard } from './ContactChannelCard';
 export { default as ProductCategoryCard } from './ProductCategoryCard';
 export type { ProductCategoryBadgeColor } from './ProductCategoryCard';
+export { default as QuoteEstimator } from './QuoteEstimator';
+export type { QuoteEstimatorOption, QuoteEstimatorProps } from './QuoteEstimator';

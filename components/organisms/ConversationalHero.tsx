@@ -98,7 +98,6 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
             </select>
             <ChevronDown className="absolute right-0 top-1/2 -translate-y-[60%] text-accent pointer-events-none w-5 h-5 stroke-[3]" />
           </div>
-          <span className="whitespace-nowrap">.</span>
         </div>
 
         {/* Action Button & Trust elements */}

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { travelPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  ShieldCheck, Clock, Award, Check, Heart, ArrowRight,
+  ShieldCheck, Clock, Award, Check, Heart,
   FileText, CreditCard, Globe
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -12,6 +12,8 @@ import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
 import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { 
   TravelIllustration,
@@ -24,21 +26,6 @@ import {
 export const TravelInsurance: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, setVisaRequired, resetWizard } = useWizard();
-
-  // State for interactive travel pricing estimator
-  const [duration, setDuration] = useState<'escapade' | 'short' | 'long' | 'annual'>('escapade');
-  const [destination, setDestination] = useState<'europe' | 'world-no-usa' | 'world-all'>('europe');
-
-  const calculateTravelPrice = () => {
-    let base = 18.50;
-    if (duration === 'short') base = 32.20;
-    if (duration === 'long') base = 59.90;
-    if (duration === 'annual') base = 124.00;
-    
-    if (destination === 'world-no-usa') base *= 1.4;
-    if (destination === 'world-all') base *= 1.8;
-    return base.toFixed(2);
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -133,8 +120,6 @@ export const TravelInsurance: React.FC = () => {
       a: 'La modalidad Estrella y Premium cubren la práctica de deportes de aventura estándar (senderismo, kayak, bicicleta). Para actividades de alto riesgo (como buceo profundo, esquí o montañismo), se debe añadir el suplemento deportivo específico al contratar.'
     }
   ];
-
-  const priceEstimate = calculateTravelPrice();
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -275,129 +260,43 @@ export const TravelInsurance: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator Card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Globe className="w-4 h-4" /> Seguros de Viaje
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  Asistencia médica mundial 24h
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                Seguro de Viaje Internacional
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Viaja protegido ante cualquier imprevisto de salud, equipaje o vuelos. Cobertura de gastos médicos internacionales de urgencia y repatriación con soporte continuo.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Seguro Online
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    Llamar Gratis
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Cobertura de equipaje</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Opción de anulación</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">Tarificador de Viaje</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima la prima de tu seguro de viaje al instante.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Duration Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Duración del Viaje</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { id: 'escapade', label: 'Escapada (<15d)' },
-                        { id: 'short', label: 'Viaje Corto (<30d)' },
-                        { id: 'long', label: 'Larga Estancia' },
-                        { id: 'annual', label: 'Anual Multiviaje' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setDuration(item.id as typeof duration)}
-                          className={`text-xs font-bold py-2 px-1 rounded-xl border text-center transition-all ${
-                            duration === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Destination Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Destino</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'europe', label: 'Europa/Schengen' },
-                        { id: 'world-no-usa', label: 'Mundo (sin USA)' },
-                        { id: 'world-all', label: 'Mundo Completo' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setDestination(item.id as typeof destination)}
-                          className={`text-xs font-bold py-2 px-0.5 rounded-xl border text-center transition-all ${
-                            destination === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Cuota Estimada:</span>
-                  <div className="text-right">
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                      <span className="text-[10px] font-bold text-text-secondary">€</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      {/* Reusable ProductHero comparison */}
+      <ProductHero
+        badges={[
+          { label: 'Seguros de Viaje', icon: <Globe className="h-4 w-4" /> },
+          { label: 'Asistencia médica mundial 24h', tone: 'accent' },
+        ]}
+        title="Seguro de Viaje Internacional"
+        description="Viaja protegido ante cualquier imprevisto de salud, equipaje o vuelos. Cobertura de gastos médicos internacionales de urgencia y repatriación con soporte continuo."
+        primaryAction={{ label: 'Calcular Seguro Online', onClick: handleStartQuoting }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        highlights={['Cobertura de equipaje', 'Opción de anulación']}
+      >
+        <QuoteEstimator
+          title="Tarificador de Viaje"
+          description="Estima la prima de tu seguro de viaje al instante."
+          options={[
+            { id: 'escapade', label: 'Escapada' },
+            { id: 'short', label: 'Viaje corto' },
+            { id: 'long', label: 'Larga estancia' },
+            { id: 'annual', label: 'Anual' },
+          ]}
+          initialOption="escapade"
+          modalityLabel="Duración del viaje"
+          ageLabel="Referencia de destino"
+          initialAge={1}
+          minAge={1}
+          maxAge={3}
+          calculatePrice={(_, option) => {
+            if (option === 'short') return '32.20';
+            if (option === 'long') return '59.90';
+            if (option === 'annual') return '124.00';
+            return '18.50';
+          }}
+          priceSuffix="€"
+          onSubmit={handleStartQuoting}
+        />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">

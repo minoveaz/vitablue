@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, Heart, ArrowRight, Smartphone,
+  Activity, ShieldCheck, Clock, Award, Check, Heart, Smartphone,
   FileText, CreditCard
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -10,6 +10,8 @@ import Breadcrumbs from '../../components/molecules/Breadcrumbs';
 import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { 
   HealthIllustration, 
@@ -23,30 +25,6 @@ import {
 export const SanitasMasSalud: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
-
-  // State for interactive pricing estimator widget
-  const [age, setAge] = useState<number>(30);
-  const [modality, setModality] = useState<'no-copay' | 'low-copay' | 'pro-copay'>('low-copay');
-
-  const calculateEstimatePrice = () => {
-    if (age < 18) return '21.50';
-    if (age >= 18 && age <= 30) {
-      if (modality === 'no-copay') return '39.20';
-      if (modality === 'low-copay') return '29.50';
-      return '24.10';
-    }
-    if (age > 30 && age <= 45) {
-      if (modality === 'no-copay') return '45.90';
-      if (modality === 'low-copay') return '34.80';
-      return '28.50';
-    }
-    if (age > 45 && age <= 60) {
-      if (modality === 'no-copay') return '59.90';
-      if (modality === 'low-copay') return '46.20';
-      return '37.90';
-    }
-    return 'Consultar';
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -160,7 +138,6 @@ export const SanitasMasSalud: React.FC = () => {
     }
   ];
 
-  const priceEstimate = calculateEstimatePrice();
   
   const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud';
   const title = 'Sanitas Más Salud | Seguro Médico Completo | VitaBlue';
@@ -314,122 +291,51 @@ export const SanitasMasSalud: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Activity className="w-4 h-4" /> Seguro de Salud Completo
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  Blua Digital Incluido Gratis
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                Sanitas Más Salud
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                La póliza integral de Sanitas más contratada en España. Cuadro médico de excelencia, hospitalización completa en habitación individual y videoconsultas en 5 minutos.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Comparar Precios Online
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    Llamar Gratis
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Sin límite de permanencia</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Acceso a Hospitales Sanitas</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget (Perfect V1 layout) */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">Estimador de Cuota</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Calcula un precio aproximado según tu edad y modalidad.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Age Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Edad del Asegurado: <span className="text-sm font-sans font-black text-primary ml-1">{age} años</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="65" 
-                        value={age} 
-                        onChange={(e) => setAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Modality Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Modalidad de Copago</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'no-copay', label: 'Sin Copago' },
-                        { id: 'low-copay', label: 'Copago Bajo' },
-                        { id: 'pro-copay', label: 'Progresivo' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setModality(item.id as typeof modality)}
-                          className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
-                            modality === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Cuota Estimada:</span>
-                  <div className="text-right">
-                    {priceEstimate === 'Consultar' ? (
-                      <span className="text-sm font-black text-primary">Consultar asesor</span>
-                    ) : (
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                        <span className="text-[10px] font-bold text-text-secondary">€/mes</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      <ProductHero
+        badges={[
+          { label: 'Seguro de Salud Completo', icon: <Activity className="h-4 w-4" /> },
+          { label: 'Blua Digital Incluido Gratis', tone: 'accent' },
+        ]}
+        title="Sanitas Más Salud"
+        description="La póliza integral de Sanitas más contratada en España. Cuadro médico de excelencia, hospitalización completa en habitación individual y videoconsultas en 5 minutos."
+        primaryAction={{ label: 'Comparar Precios Online', onClick: handleStartQuoting }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        highlights={['Sin límite de permanencia', 'Acceso a Hospitales Sanitas']}
+      >
+        <QuoteEstimator
+          title="Estimador de Cuota"
+          description="Calcula un precio aproximado según tu edad y modalidad."
+          initialAge={30}
+          minAge={18}
+          maxAge={65}
+          options={[
+            { id: 'no-copay', label: 'Sin Copago' },
+            { id: 'low-copay', label: 'Copago Bajo' },
+            { id: 'pro-copay', label: 'Progresivo' },
+          ]}
+          initialOption="low-copay"
+          calculatePrice={(selectedAge, selectedModality) => {
+            if (selectedAge < 18) return '21.50';
+            if (selectedAge <= 30) {
+              if (selectedModality === 'no-copay') return '39.20';
+              if (selectedModality === 'low-copay') return '29.50';
+              return '24.10';
+            }
+            if (selectedAge <= 45) {
+              if (selectedModality === 'no-copay') return '45.90';
+              if (selectedModality === 'low-copay') return '34.80';
+              return '28.50';
+            }
+            if (selectedAge <= 60) {
+              if (selectedModality === 'no-copay') return '59.90';
+              if (selectedModality === 'low-copay') return '46.20';
+              return '37.90';
+            }
+            return 'Consultar';
+          }}
+          onSubmit={handleStartQuoting}
+        />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">

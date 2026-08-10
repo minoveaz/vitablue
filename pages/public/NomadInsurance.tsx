@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  ShieldCheck, Check, Heart, ArrowRight, Laptop,
+  ShieldCheck, Check, Heart, Laptop,
   FileText, CreditCard, Globe
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -11,6 +11,8 @@ import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
 import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { nomadTranslations } from '../../utils/translations';
 import { 
@@ -29,10 +31,6 @@ export const NomadInsurance: React.FC = () => {
   const isEnglish = location.pathname.startsWith('/en');
   const lang = isEnglish ? 'en' : 'es';
   const t = nomadTranslations[lang];
-
-  // State for interactive nomad pricing estimator
-  const [age, setAge] = useState<number>(32);
-  const [stayArea, setStayArea] = useState<'major' | 'coasts' | 'rest'>('major');
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -412,132 +410,9 @@ export const NomadInsurance: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator Card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Laptop className="w-4 h-4" /> {t.heroTag}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  {isEnglish ? 'Valid for UGE & telework visa' : 'Apto para visado UGE y teletrabajo'}
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                {t.heroTitle}
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                {t.heroSubtitle}
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  {t.ctaButton}
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    {t.callAdvisor}
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> {isEnglish ? '24/7 Telemedicine in English' : 'Telemedicina 24/7 en inglés'}</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> {isEnglish ? 'Travel assistance coverage' : 'Cobertura en viajes'}</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">
-                    {isEnglish ? 'Digital Nomad Estimator' : 'Tarificador Nómada'}
-                  </h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">
-                    {isEnglish ? 'Calculate your monthly quote with zero copays immediately.' : 'Calcula tu cuota mensual sin copagos de forma inmediata.'}
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Age Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">
-                      {isEnglish ? 'Nomad Age:' : 'Edad del Nómada:'} <span className="text-sm font-sans font-black text-primary ml-1">{age} {isEnglish ? 'years old' : 'años'}</span>
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="65" 
-                        value={age} 
-                        onChange={(e) => setAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Main Stay Area Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">
-                      {isEnglish ? 'Primary Stay Location' : 'Zona de Estancia Principal'}
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'major', label: 'Madrid / Bcn' },
-                        { id: 'coasts', label: isEnglish ? 'Islands/Coasts' : 'Islas/Costas' },
-                        { id: 'rest', label: isEnglish ? 'Other' : 'Resto' }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setStayArea(item.id as typeof stayArea)}
-                          className={`text-xs font-bold py-2.5 px-1 rounded-xl border text-center transition-all ${
-                            stayArea === item.id 
-                              ? 'border-primary bg-primary/5 text-primary' 
-                              : 'border-slate-150 bg-white text-text-secondary hover:bg-slate-50'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">
-                    {isEnglish ? 'Estimated Premium:' : 'Cuota Estimada:'}
-                  </span>
-                  <div className="text-right">
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-2xl font-sans font-black text-text-main">
-                        {isEnglish ? 'Personalized price' : 'Precio personalizado'}
-                      </span>
-                      <span className="text-[10px] font-bold text-text-secondary">
-                        {isEnglish ? '€/month' : '€/mes'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  {isEnglish ? 'Start Online Application' : 'Iniciar Contratación Online'}
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      <ProductHero badges={[{ label: t.heroTag, icon: <Laptop className="h-4 w-4" /> }, { label: isEnglish ? 'Digital Nomad Visa' : 'Visado Nómada Digital', tone: 'accent' }]} title={t.heroTitle} description={t.heroSubtitle} primaryAction={{ label: t.ctaButton, onClick: handleStartQuoting }} secondaryAction={{ label: t.callAdvisor, href: 'tel:+34900839240' }} highlights={[isEnglish ? 'International assistance' : 'Asistencia internacional', isEnglish ? 'No copays' : 'Sin copagos']}>
+        <QuoteEstimator title={isEnglish ? 'Digital Nomad Estimator' : 'Tarificador Nómada'} description={isEnglish ? 'Calculate your monthly quote with zero copays immediately.' : 'Calcula tu cuota mensual sin copagos de forma inmediata.'} initialAge={32} options={[{ id: 'major', label: isEnglish ? 'Major cities' : 'Grandes ciudades' }, { id: 'coasts', label: isEnglish ? 'Coasts' : 'Costas' }, { id: 'rest', label: isEnglish ? 'Rest of Spain' : 'Resto de España' }]} initialOption="major" calculatePrice={() => 'Personalizado'} personalizedPriceLabel={isEnglish ? 'Personalized price' : 'Precio personalizado'} priceSuffix={isEnglish ? '€/month' : '€/mes'} onSubmit={handleStartQuoting} />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">

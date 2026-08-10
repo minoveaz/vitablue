@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { lifePlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { 
-  Activity, ShieldCheck, Clock, Award, Check, Heart, ArrowRight, Stethoscope,
+  Activity, ShieldCheck, Clock, Award, Check, Heart, Stethoscope,
   FileText, CreditCard, Shield
 } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
@@ -12,6 +12,8 @@ import AdvisorCard from '../../components/molecules/AdvisorCard';
 import Accordion from '../../components/molecules/Accordion';
 import TestimonialCard from '../../components/molecules/TestimonialCard';
 import TransparencyBlock from '../../components/molecules/TransparencyBlock';
+import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import ProductHero from '../../components/organisms/ProductHero';
 import { Button } from '../../components/atoms/Button';
 import { 
   FamilyIllustration,
@@ -24,19 +26,6 @@ import {
 export const LifeInsurance: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
-
-  // State for interactive life pricing estimator
-  const [age, setAge] = useState<number>(35);
-  const [capital, setCapital] = useState<number>(100000);
-
-  const calculateLifePrice = () => {
-    let factor = 0.00012;
-    if (age > 30) factor = 0.00018;
-    if (age > 45) factor = 0.00038;
-    if (age > 55) factor = 0.00085;
-    const base = (capital * factor) / 12;
-    return base.toFixed(2);
-  };
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -130,8 +119,6 @@ export const LifeInsurance: React.FC = () => {
       a: 'El capital asegurado lo reciben los beneficiarios expresamente designados por el asegurado en la póliza (ej. cónyuge, hijos). En caso de no designarse beneficiarios específicos, se abonará a los herederos legales según ley.'
     }
   ];
-
-  const priceEstimate = calculateLifePrice();
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -272,109 +259,39 @@ export const LifeInsurance: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Banner with Estimator Card on the right */}
-      <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="grid gap-12 lg:grid-cols-12 items-center">
-            
-            {/* Left Content column */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-cyan">
-                  <Shield className="w-4 h-4" /> Seguros de Vida
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 border border-accent/30 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-dark">
-                  Apto para vinculación hipotecaria
-                </span>
-              </div>
-              
-              <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
-                Seguro de Vida Familiar
-              </h1>
-              <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
-                Asegura la tranquilidad y el futuro financiero de tus seres queridos. Cubre préstamos, hipotecas y garantiza la estabilidad familiar con cuotas mínimas mensuales.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
-                  Calcular Seguro Online
-                </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    Llamar Gratis
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Sin reconocimientos médicos</span>
-                <span className="flex items-center gap-2"><Check className="w-4 h-4 text-brand-cyan" /> Cobertura de invalidez</span>
-              </div>
-            </div>
-
-            {/* Right Estimator Card Widget */}
-            <div className="lg:col-span-5 w-full">
-              <div className="bg-white text-text-main rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 flex flex-col gap-6 text-left">
-                <div>
-                  <h3 className="text-h3 font-display font-black text-text-main">Tarificador de Vida</h3>
-                  <p className="text-xs text-text-secondary font-semibold mt-1">Estima tu cuota según edad y capital asegurado.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Age Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Edad del Asegurado: <span className="text-sm font-sans font-black text-primary ml-1">{age} años</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="65" 
-                        value={age} 
-                        onChange={(e) => setAge(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Capital Selector */}
-                  <div>
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wider block mb-2">Capital a Asegurar: <span className="text-sm font-sans font-black text-primary ml-1">{capital.toLocaleString('es-ES')} €</span></label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="range" 
-                        min="50000" 
-                        max="300000" 
-                        step="10000"
-                        value={capital} 
-                        onChange={(e) => setCapital(parseInt(e.target.value))} 
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Cuota Estimada:</span>
-                  <div className="text-right">
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-2xl font-sans font-black text-text-main">Desde {priceEstimate}</span>
-                      <span className="text-[10px] font-bold text-text-secondary">€/mes</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button variant="accent" className="w-full font-bold shadow-md shadow-accent/15" onClick={handleStartQuoting}>
-                  Iniciar Contratación Online
-                </Button>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      {/* Reusable ProductHero comparison */}
+      <ProductHero
+        badges={[
+          { label: 'Seguros de Vida', icon: <Shield className="h-4 w-4" /> },
+          { label: 'Apto para vinculación hipotecaria', tone: 'accent' },
+        ]}
+        title="Seguro de Vida Familiar"
+        description="Asegura la tranquilidad y el futuro financiero de tus seres queridos. Cubre préstamos, hipotecas y garantiza la estabilidad familiar con cuotas mínimas mensuales."
+        primaryAction={{ label: 'Calcular Seguro Online', onClick: handleStartQuoting }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        highlights={['Sin reconocimientos médicos', 'Cobertura de invalidez']}
+      >
+        <QuoteEstimator
+          title="Tarificador de Vida"
+          description="Estima tu cuota según edad y capital asegurado."
+          options={[
+            { id: '100000', label: '100.000 €' },
+            { id: '150000', label: '150.000 €' },
+            { id: '250000', label: '250.000 €' },
+          ]}
+          initialOption="100000"
+          modalityLabel="Capital a asegurar"
+          calculatePrice={(selectedAge, option) => {
+            const selectedCapital = Number(option);
+            let factor = 0.00012;
+            if (selectedAge > 30) factor = 0.00018;
+            if (selectedAge > 45) factor = 0.00038;
+            if (selectedAge > 55) factor = 0.00085;
+            return ((selectedCapital * factor) / 12).toFixed(2);
+          }}
+          onSubmit={handleStartQuoting}
+        />
+      </ProductHero>
 
       {/* Trust Badges */}
       <section className="py-8 bg-slate-50 border-b border-slate-100">
