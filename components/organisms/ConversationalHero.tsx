@@ -56,7 +56,7 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-primary/10 bg-white/80 px-4 py-5 sm:px-5 sm:py-6 text-xl sm:text-2xl md:text-3.5xl font-display font-bold leading-relaxed sm:leading-loose text-text-main shadow-sm">
+        <div className="rounded-2xl border border-primary/10 bg-white/80 px-4 py-5 sm:px-5 sm:py-6 text-xl sm:text-2xl md:text-3.5xl font-display font-bold leading-relaxed sm:leading-loose text-text-main shadow-sm break-words">
           {isEnglish ? 'I am ' : 'Tengo '}
           <input 
             type="number" 
@@ -73,7 +73,7 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
             <select 
               value={needType}
               onChange={(e) => setNeedType(e.target.value)}
-              className={`${inputClasses} appearance-none pr-8 hover:border-primary/60 hover:bg-primary/5 focus:ring-0 min-w-52 bg-brand-cyan/5`}
+              className={`${inputClasses} appearance-none pr-8 hover:border-primary/60 hover:bg-primary/5 focus:ring-0 min-w-0 w-[min(100%,14rem)] sm:min-w-52 sm:w-auto bg-brand-cyan/5`}
               aria-label="Necesidad principal"
             >
               {isEnglish ? (
@@ -98,7 +98,7 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
             </select>
             <ChevronDown className="absolute right-0 top-1/2 -translate-y-[60%] text-accent pointer-events-none w-5 h-5 stroke-[3]" />
           </div>
-          .
+          <span className="whitespace-nowrap">.</span>
         </div>
 
         {/* Action Button & Trust elements */}
