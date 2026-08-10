@@ -147,13 +147,13 @@ const ProductIcon: React.FC<ProductIconProps> = ({ icon: Icon, surface }) => (
   </span>
 );
 
-const SaludGeneralIcon = () => <ProductIcon icon={Shield} surface="bg-[#E6F7F8]" />;
-const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-[#EBF7F4]" />;
-const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-[#E6F2F5]" />;
-const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-[#EAF5F0]" />;
-const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-[#E6F2F5]" />;
-const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-[#FDF3F5]" />;
-const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-[#EDEFFB]" />;
+const SaludGeneralIcon = () => <ProductIcon icon={Shield} surface="bg-illustration-surface-health" />;
+const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-illustration-surface-student" />;
+const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-illustration-surface-expat" />;
+const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-illustration-surface-nomad" />;
+const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-illustration-surface-expat" />;
+const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-illustration-surface-pet" />;
+const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-illustration-surface-family" />;
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
