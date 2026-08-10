@@ -9,10 +9,18 @@ on:
     branches:
       - main
       - develop
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'conductor/**'
   push:
     branches:
       - main
       - develop
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'conductor/**'
 
 # Sólo un job de CI activo a la vez por rama para evitar derroche de runners
 concurrency:
