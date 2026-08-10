@@ -13,6 +13,8 @@ import ConversationalHero from '@/components/organisms/ConversationalHero';
 import InfiniteMarquee from '@/components/molecules/InfiniteMarquee';
 import Accordion from '@/components/molecules/Accordion';
 import Card from '@/components/molecules/Card';
+import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import type { ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
 import TestimonialCard from '@/components/molecules/TestimonialCard';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
@@ -603,47 +605,16 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {productCards.map((card) => (
-              <Link
+              <ProductCategoryCard
                 key={card.title}
-                to={card.href}
-                className={`group rounded-3xl border bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
-                  card.badgeColor === 'primary'
-                    ? 'border-primary/15 hover:border-primary/30'
-                    : card.badgeColor === 'accent'
-                      ? 'border-accent/20 hover:border-accent/30'
-                      : card.badgeColor === 'secondary'
-                        ? 'border-brand-cyan/20 hover:border-brand-cyan/30'
-                        : 'border-slate-200/80 hover:border-primary/20'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-auto aspect-[4/3] flex items-center justify-start text-primary">
-                        <card.illustration />
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
-                        card.badgeColor === 'primary'
-                          ? 'bg-primary/10 text-primary'
-                          : card.badgeColor === 'accent'
-                            ? 'bg-accent/15 text-text-main'
-                            : card.badgeColor === 'secondary'
-                              ? 'bg-brand-cyan/15 text-primary'
-                              : 'bg-slate-100 text-text-secondary'
-                      }`}>
-                        {card.badge}
-                      </span>
-                    </div>
-                    <h3 className="text-h3 font-display font-black text-text-main group-hover:text-primary transition-colors">
-                      {card.title}
-                    </h3>
-                    <p className="text-body-reg text-text-secondary leading-relaxed max-w-md">{card.desc}</p>
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary">
-                  {isEnglish ? 'View details' : 'Ver detalle'} <ArrowRight className="w-4 h-4" />
-                </div>
-              </Link>
+                title={card.title}
+                description={card.desc}
+                badge={card.badge}
+                badgeColor={card.badgeColor as ProductCategoryBadgeColor}
+                href={card.href}
+                illustration={card.illustration}
+                detailsLabel={isEnglish ? 'View details' : 'Ver detalle'}
+              />
             ))}
           </div>
         </div>
