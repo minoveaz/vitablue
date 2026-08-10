@@ -73,7 +73,7 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
             <select 
               value={needType}
               onChange={(e) => setNeedType(e.target.value)}
-              className={`${inputClasses} appearance-none pr-8 hover:border-primary/60 hover:bg-primary/5 focus:ring-0 min-w-[210px] bg-brand-cyan/5`}
+              className={`${inputClasses} appearance-none pr-8 hover:border-primary/60 hover:bg-primary/5 focus:ring-0 min-w-52 bg-brand-cyan/5`}
               aria-label="Necesidad principal"
             >
               {isEnglish ? (

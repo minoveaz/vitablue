@@ -28,7 +28,7 @@ export const ProductPromoCard: React.FC<ProductPromoCardProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`relative flex flex-col items-center pb-8 w-full max-w-[340px] sm:max-w-[360px] ${className}`}>
+    <div className={`relative flex flex-col items-center pb-8 w-full max-w-xs sm:max-w-sm ${className}`}>
       
       {/* Outer Glow & Base Card Wrapper */}
       <div className="relative w-full rounded-[2.2rem] bg-gradient-to-br from-primary to-primary-dark p-5 sm:p-7 text-white shadow-2xl shadow-primary/20 overflow-hidden select-none border border-white/10 group active:scale-[0.99] transition-all duration-300">

@@ -73,7 +73,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           <span className="font-sans text-xs font-bold text-text-main">
             {author}
           </span>
-          <span className="text-[10px] text-text-secondary/70 font-semibold mt-0.5">
+          <span className="text-[10px] text-text-secondary font-semibold mt-0.5">
             {meta}
           </span>
         </div>

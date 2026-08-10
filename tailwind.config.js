@@ -21,7 +21,7 @@ export default {
         "primary": "#005F73",       // Primary links & headers -> Ocean
         "primary-dark": "#001219",  // Hover & Dark text -> Midnight
         "accent": "#EE9B00",        // Call to action buttons -> Gold
-        "accent-dark": "#D48900",   // Gold hover state
+          "accent-dark": "#7A4F00",   // Gold text with accessible contrast
         "brand-cyan": "#94D2BD",    // Badges & Success metrics -> Mint
         "success-strong": "#0F766E", // Accessible success text on light surfaces
         "whatsapp": "#25D366",      // WhatsApp action

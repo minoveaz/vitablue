@@ -43,7 +43,7 @@ export const Wizard: React.FC = () => {
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em] flex items-center justify-center sm:justify-start gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-brand-cyan fill-current" /> Comparador Oficial
             </span>
-            <h1 className="text-3xl font-display font-black text-text-main leading-tight tracking-tight">
+            <h1 className="text-h1 font-display font-black text-text-main leading-tight tracking-tight">
               Calcula tu seguro de salud
             </h1>
             <p className="text-body-reg text-text-secondary font-medium leading-relaxed">

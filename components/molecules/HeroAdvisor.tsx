@@ -42,7 +42,7 @@ export const HeroAdvisor: React.FC<HeroAdvisorProps> = ({
               </div>
             )}
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black leading-tight tracking-tight text-text-main">
+            <h1 className="text-h1 font-display font-black leading-tight tracking-tight text-text-main">
               {title}
             </h1>
             

@@ -24,6 +24,9 @@ vitablue.code-workspace
 
 # testing
 coverage/
+playwright-report/
+test-results/
+.temp/
 
 # misc
 *.local
