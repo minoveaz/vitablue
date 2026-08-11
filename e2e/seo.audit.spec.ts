@@ -241,164 +241,133 @@ const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({
 
 test.describe('🔍 SEO Audit — Páginas Públicas Indexables', () => {
   for (const route of indexableRoutes) {
-    test.describe(`[${route.name}] ${route.path}`, () => {
-      test.beforeEach(async ({ page }) => {
-        const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
+    test(`[${route.name}] ${route.path} cumple todos los criterios SEO`, async ({ page }) => {
+      const response = await page.goto(route.path, { waitUntil: 'networkidle' });
 
-        // Check 1: HTTP 200 OK
-        expect(
-          response?.status(),
-          `${route.path}: Expected HTTP 200, got ${response?.status()}`,
-        ).toBe(200);
-      });
+      // Check 1: HTTP 200 OK
+      expect(
+        response?.status(),
+        `${route.path}: Expected HTTP 200, got ${response?.status()}`,
+      ).toBe(200);
 
       // ── Title ──────────────────────────────────────────
-      test('tiene <title> con longitud adecuada', async ({ page }) => {
-        const title = await page.title();
-        expect(
-          title.length,
-          `${route.path}: <title> está vacío (length=0)`,
-        ).toBeGreaterThan(0);
+      const title = await page.title();
+      expect(
+        title.length,
+        `${route.path}: <title> está vacío (length=0)`,
+      ).toBeGreaterThan(0);
 
-        expect(
-          title.length,
-          `${route.path}: <title> demasiado corto (${title.length} chars < 10). Título: "${title}"`,
-        ).toBeGreaterThanOrEqual(10);
+      expect(
+        title.length,
+        `${route.path}: <title> demasiado corto (${title.length} chars < 10). Título: "${title}"`,
+      ).toBeGreaterThanOrEqual(10);
 
-        expect(
-          title.length,
-          `${route.path}: <title> demasiado largo (${title.length} chars > 120). Título: "${title}"`,
-        ).toBeLessThanOrEqual(120);
-      });
+      expect(
+        title.length,
+        `${route.path}: <title> demasiado largo (${title.length} chars > 120). Título: "${title}"`,
+      ).toBeLessThanOrEqual(120);
 
       // ── Meta Description ───────────────────────────────
-      test('tiene <meta name="description"> con longitud adecuada', async ({ page }) => {
-        const description = await page
-          .locator('meta[name="description"]')
-          .getAttribute('content');
+      const description = await page
+        .locator('meta[name="description"]')
+        .getAttribute('content');
 
-        expect(
-          description,
-          `${route.path}: Falta <meta name="description">`,
-        ).not.toBeNull();
+      expect(
+        description,
+        `${route.path}: Falta <meta name="description">`,
+      ).not.toBeNull();
 
-        expect(
-          description!.length,
-          `${route.path}: meta description demasiado corta (${description!.length} chars < 50). Desc: "${description}"`,
-        ).toBeGreaterThanOrEqual(50);
+      expect(
+        description!.length,
+        `${route.path}: meta description demasiado corta (${description!.length} chars < 50). Desc: "${description}"`,
+      ).toBeGreaterThanOrEqual(50);
 
-        expect(
-          description!.length,
-          `${route.path}: meta description demasiado larga (${description!.length} chars > 300). Desc: "${description!.slice(0, 60)}..."`,
-        ).toBeLessThanOrEqual(300);
-      });
+      expect(
+        description!.length,
+        `${route.path}: meta description demasiado larga (${description!.length} chars > 300). Desc: "${description!.slice(0, 60)}..."`,
+      ).toBeLessThanOrEqual(300);
 
       // ── H1 único ───────────────────────────────────────
-      test('tiene exactamente un <h1> semántico', async ({ page }) => {
-        // Esperar a que el h1 aparezca en el DOM (el SSG HTML lo incluye, pero
-        // React puede rehidratar y moverlo en el árbol temporalmente)
-        try {
-          await page.waitForSelector('h1', { timeout: 10_000 });
-        } catch {
-          // Si no aparece el h1 en 10s, el test fallará con count=0 a continuación
-        }
+      try {
+        await page.waitForSelector('h1', { timeout: 10_000 });
+      } catch {
+        // Si no aparece el h1 en 10s, el test fallará con count=0 a continuación
+      }
 
-        const h1Count = await page.locator('h1').count();
+      const h1Count = await page.locator('h1').count();
+      expect(
+        h1Count,
+        `${route.path}: Se encontraron ${h1Count} elementos <h1>. Debe haber exactamente 1 por página indexable.`,
+      ).toBe(1);
 
-        expect(
-          h1Count,
-          `${route.path}: Se encontraron ${h1Count} elementos <h1>. Debe haber exactamente 1 por página indexable.`,
-        ).toBe(1);
-
-        // El h1 debe tener contenido
-        const h1Text = await page.locator('h1').first().textContent();
-        expect(
-          h1Text?.trim().length,
-          `${route.path}: El <h1> está vacío`,
-        ).toBeGreaterThan(0);
-      });
+      const h1Text = await page.locator('h1').first().textContent();
+      expect(
+        h1Text?.trim().length,
+        `${route.path}: El <h1> está vacío`,
+      ).toBeGreaterThan(0);
 
       // ── Canonical ─────────────────────────────────────
-      test('tiene <link rel="canonical"> coherente', async ({ page }) => {
-        const canonical = await page
-          .locator('link[rel="canonical"]')
-          .getAttribute('href');
+      const canonicalLocator = page.locator('link[rel="canonical"]');
+      await expect(canonicalLocator).toBeAttached({ timeout: 5000 });
 
-        expect(
-          canonical,
-          `${route.path}: Falta <link rel="canonical">`,
-        ).not.toBeNull();
+      await expect(canonicalLocator).toHaveAttribute(
+        'href',
+        new RegExp(route.expectedCanonical),
+        { timeout: 5000 }
+      );
 
-        // El canonical debe contener la ruta esperada
-        expect(
-          canonical,
-          `${route.path}: canonical href "${canonical}" no contiene la ruta esperada "${route.expectedCanonical}"`,
-        ).toContain(route.expectedCanonical);
-
-        // El canonical no debe tener fragmentos (#)
-        expect(
-          canonical,
-          `${route.path}: canonical no debe contener fragmentos (#)`,
-        ).not.toContain('#');
-      });
+      const canonical = await canonicalLocator.getAttribute('href');
+      expect(
+        canonical,
+        `${route.path}: canonical no debe contener fragmentos (#)`,
+      ).not.toContain('#');
 
       // ── Open Graph ────────────────────────────────────
-      test('tiene metadatos Open Graph completos', async ({ page }) => {
-        const ogTitle = await page
-          .locator('meta[property="og:title"]')
-          .getAttribute('content');
-        const ogDescription = await page
-          .locator('meta[property="og:description"]')
-          .getAttribute('content');
-        const ogImage = await page
-          .locator('meta[property="og:image"]')
-          .getAttribute('content');
+      const ogTitle = await page
+        .locator('meta[property="og:title"]')
+        .getAttribute('content');
+      const ogDescription = await page
+        .locator('meta[property="og:description"]')
+        .getAttribute('content');
+      const ogImage = await page
+        .locator('meta[property="og:image"]')
+        .getAttribute('content');
 
-        expect(ogTitle, `${route.path}: Falta og:title`).not.toBeNull();
-        expect(
-          ogTitle!.length,
-          `${route.path}: og:title está vacío`,
-        ).toBeGreaterThan(0);
+      expect(ogTitle, `${route.path}: Falta og:title`).not.toBeNull();
+      expect(
+        ogTitle!.length,
+        `${route.path}: og:title está vacío`,
+      ).toBeGreaterThan(0);
 
-        expect(ogDescription, `${route.path}: Falta og:description`).not.toBeNull();
-        expect(
-          ogDescription!.length,
-          `${route.path}: og:description está vacío`,
-        ).toBeGreaterThan(0);
+      expect(ogDescription, `${route.path}: Falta og:description`).not.toBeNull();
+      expect(
+        ogDescription!.length,
+        `${route.path}: og:description está vacío`,
+      ).toBeGreaterThan(0);
 
-        expect(ogImage, `${route.path}: Falta og:image`).not.toBeNull();
-        expect(
-          ogImage!.length,
-          `${route.path}: og:image está vacío`,
-        ).toBeGreaterThan(0);
-      });
+      expect(ogImage, `${route.path}: Falta og:image`).not.toBeNull();
+      expect(
+        ogImage!.length,
+        `${route.path}: og:image está vacío`,
+      ).toBeGreaterThan(0);
 
       // ── SSG Prerender Check ───────────────────────────
-      test('el HTML pre-renderizado contiene texto clave (SSG verificado)', async ({ page }) => {
-        // Verificar en body.innerHTML (no innerText) para evitar problemas con
-        // elementos ocultos temporalmente durante la hidratación de React.
-        // Esto valida que el texto KEY existe en el HTML estático servido.
-        const bodyHtml = await page.evaluate(() => document.body.innerHTML);
-        const bodyText = await page.evaluate(() => document.body.textContent ?? '');
+      const bodyHtml = await page.evaluate(() => document.body.innerHTML);
+      const bodyText = await page.evaluate(() => document.body.textContent ?? '');
 
-        const keyword = route.prerenderedKeyword.toLowerCase();
+      const keyword = route.prerenderedKeyword.toLowerCase();
+      const foundInHtml = bodyHtml.toLowerCase().includes(keyword);
+      const foundInText = bodyText.toLowerCase().includes(keyword);
 
-        // Verificar en innerHTML (incluye texto de elementos con opacity:0, etc.)
-        const foundInHtml = bodyHtml.toLowerCase().includes(keyword);
-        // O en textContent (texto completo del DOM independiente de visibilidad CSS)
-        const foundInText = bodyText.toLowerCase().includes(keyword);
+      expect(
+        foundInHtml || foundInText,
+        `${route.path}: El HTML no contiene la palabra clave "${route.prerenderedKeyword}". Posible error de prerendering (SPA vacía).`,
+      ).toBe(true);
 
-        expect(
-          foundInHtml || foundInText,
-          `${route.path}: El HTML no contiene la palabra clave "${route.prerenderedKeyword}". Posible error de prerendering (SPA vacía). Verificar que el SSG pre-renderizó correctamente la ruta.`,
-        ).toBe(true);
-
-        // Verificar que el body tenga contenido significativo (no es un skeleton vacío)
-        expect(
-          bodyText.trim().length,
-          `${route.path}: body.textContent tiene menos de 100 caracteres (posible SPA vacía sin prerender)`,
-        ).toBeGreaterThan(100);
-      });
+      expect(
+        bodyText.trim().length,
+        `${route.path}: body.textContent tiene menos de 100 caracteres (posible SPA vacía sin prerender)`,
+      ).toBeGreaterThan(100);
     });
   }
 });

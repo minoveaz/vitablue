@@ -179,7 +179,7 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Run SEO Audit — Desktop Only
-        run: npx playwright test e2e/seo.audit.spec.ts --project=desktop --workers=1
+        run: npx playwright test e2e/seo.audit.spec.ts --project=desktop
         env:
           CI: true
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173

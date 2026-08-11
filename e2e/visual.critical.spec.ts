@@ -12,26 +12,13 @@ const waitForStablePage = async (page: Page) => {
   await page.waitForTimeout(250);
 };
 
-test.describe('Visual baseline - all public pages', () => {
+test.describe('Visual and geometry diagnostics - all public pages', () => {
   for (const route of visualRoutes) {
-    test(`${route.name} mantiene una captura estable`, async ({ page }) => {
-      await page.goto(route.path, { waitUntil: 'networkidle' });
-      await waitForStablePage(page);
-      await expect(page).toHaveScreenshot(`${route.name}.png`, {
-        fullPage: true,
-        animations: 'disabled',
-        caret: 'hide',
-      });
-    });
-  }
-});
-
-test.describe('Visual geometry diagnostics - all public pages', () => {
-  for (const route of visualRoutes) {
-    test(`${route.name} no tiene componentes visualmente comprimidos`, async ({ page }) => {
+    test(`${route.name} mantiene captura estable y geometría correcta`, async ({ page }) => {
       await page.goto(route.path, { waitUntil: 'networkidle' });
       await waitForStablePage(page);
 
+      // 1. Diagnósticos de geometría visual
       const diagnostics = await page.evaluate(() => {
         const viewportWidth = document.documentElement.clientWidth;
         const tables = [...document.querySelectorAll('table')].map((table) => ({
@@ -55,6 +42,14 @@ test.describe('Visual geometry diagnostics - all public pages', () => {
         `${route.path}: tabla comprimida o con celdas cortadas: ${JSON.stringify(diagnostics.tables)}`).toEqual([]);
       expect(diagnostics.headings, `${route.path}: hay headings truncados`).toBe(0);
       expect(diagnostics.gridOverflow, `${route.path}: hay grids fuera del viewport`).toBe(0);
+
+      // 2. Captura de pantalla (Visual Regression)
+      await expect(page).toHaveScreenshot(`${route.name}.png`, {
+        fullPage: true,
+        animations: 'disabled',
+        caret: 'hide',
+        timeout: 20000,
+      });
     });
   }
 });
