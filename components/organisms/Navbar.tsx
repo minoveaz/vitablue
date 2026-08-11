@@ -147,13 +147,13 @@ const ProductIcon: React.FC<ProductIconProps> = ({ icon: Icon, surface }) => (
   </span>
 );
 
-const SaludGeneralIcon = () => <ProductIcon icon={Shield} surface="bg-[#E6F7F8]" />;
-const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-[#EBF7F4]" />;
-const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-[#E6F2F5]" />;
-const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-[#EAF5F0]" />;
-const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-[#E6F2F5]" />;
-const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-[#FDF3F5]" />;
-const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-[#EDEFFB]" />;
+const SaludGeneralIcon = () => <ProductIcon icon={Shield} surface="bg-illustration-surface-health" />;
+const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-illustration-surface-student" />;
+const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-illustration-surface-expat" />;
+const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-illustration-surface-nomad" />;
+const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-illustration-surface-expat" />;
+const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-illustration-surface-pet" />;
+const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-illustration-surface-family" />;
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -270,7 +270,7 @@ export const Navbar: React.FC = () => {
               </button>
               
               {/* Dropdown Menu Container */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[92vw] max-w-lg sm:w-[560px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[92vw] max-w-5xl sm:w-[760px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
                 {/* Column 1: Seguros de Salud */}
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
@@ -324,10 +324,31 @@ export const Navbar: React.FC = () => {
                         </span>
                       </div>
                     </Link>
+
                   </div>
                 </div>
 
-                {/* Column 2: Otros Ramos */}
+                {/* Column 2: Seguros de Viaje */}
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
+                    {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
+                  </h4>
+                  <div className="flex flex-col gap-3.5">
+                    <Link to="/productos/seguro-viaje" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                      <Globe2 className="mt-0.5 size-10 shrink-0 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
+                      <div>
+                        <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
+                          {isEnglish ? 'Travel Insurance' : 'Seguro de Viaje'}
+                        </p>
+                        <span className="text-[10px] font-semibold text-text-secondary/80 mt-1 block leading-tight">
+                          {isEnglish ? 'Medical assistance and repatriation' : 'Asistencia médica y repatriación'}
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Column 3: Otros Ramos */}
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
                     {isEnglish ? 'Specialties' : 'Especialidades'}
@@ -374,9 +395,9 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Link 2: Sobre Nosotros */}
-            <a href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.aboutUs}
-            </a>
+            </Link>
 
             {/* Link 3: Blog */}
             <Link to="/blog" className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
@@ -384,9 +405,9 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Link 4: Contacto */}
-            <a href={isEnglish ? "/en#contacto" : "/#contacto"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/contact" : "/contacto"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.contact}
-            </a>
+            </Link>
 
             {/* Language Switcher Desktop */}
             <div className="flex items-center gap-1.5 border-l border-slate-200 pl-4 text-[10px] font-black tracking-wider select-none">
@@ -394,7 +415,6 @@ export const Navbar: React.FC = () => {
                 to={isEnglish ? getLanguageTogglePath() : '#'}
                 className={`flex items-center gap-1 py-1 px-2 rounded-lg transition-all ${!isEnglish ? 'bg-primary/10 text-primary font-black border border-primary/25' : 'text-text-secondary hover:text-primary'}`}
               >
-                <span>🇪🇸</span>
                 <span>ES</span>
               </Link>
               <span className="text-slate-300">|</span>
@@ -402,7 +422,6 @@ export const Navbar: React.FC = () => {
                 to={!isEnglish ? getLanguageTogglePath() : '#'}
                 className={`flex items-center gap-1 py-1 px-2 rounded-lg transition-all ${isEnglish ? 'bg-primary/10 text-primary font-black border border-primary/25' : 'text-text-secondary hover:text-primary'}`}
               >
-                <span>🇬🇧</span>
                 <span>EN</span>
               </Link>
             </div>
@@ -454,7 +473,6 @@ export const Navbar: React.FC = () => {
                     to={isEnglish ? getLanguageTogglePath() : '#'}
                     className={`flex items-center gap-1 py-1 px-2 rounded-lg ${!isEnglish ? 'bg-primary/10 text-primary border border-primary/25' : 'text-text-secondary'}`}
                   >
-                    <span>🇪🇸</span>
                     <span>ES</span>
                   </Link>
                   <span className="text-slate-300">|</span>
@@ -462,7 +480,6 @@ export const Navbar: React.FC = () => {
                     to={!isEnglish ? getLanguageTogglePath() : '#'}
                     className={`flex items-center gap-1 py-1 px-2 rounded-lg ${isEnglish ? 'bg-primary/10 text-primary border border-primary/25' : 'text-text-secondary'}`}
                   >
-                    <span>🇬🇧</span>
                     <span>EN</span>
                   </Link>
                 </div>
@@ -529,6 +546,16 @@ export const Navbar: React.FC = () => {
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
+                    <div className="border-b border-slate-100/60 px-6 py-3 text-[10px] font-black uppercase tracking-[0.25em] text-primary">
+                      {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
+                    </div>
+                    <Link to="/productos/seguro-viaje" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                      <div className="flex items-center gap-3">
+                        <Globe2 className="size-10 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
+                        <span>{isEnglish ? 'Travel Insurance' : 'Seguro de Viaje'}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-text-secondary/30" />
+                    </Link>
                     <Link to="/productos/seguros-salud/seguros-sanitas" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <SanitasIcon />
@@ -555,8 +582,8 @@ export const Navbar: React.FC = () => {
               </div>
 
               {/* Link 2: Sobre Nosotros */}
-              <a
-                href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"}
+              <Link
+                to={isEnglish ? "/en/about-us" : "/sobre-nosotros"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -569,7 +596,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-text-secondary/40 shrink-0" />
-              </a>
+              </Link>
 
               {/* Link 3: Blog */}
               <Link
@@ -589,8 +616,8 @@ export const Navbar: React.FC = () => {
               </Link>
 
               {/* Link 4: Contacto */}
-              <a
-                href={isEnglish ? "/en#contacto" : "/#contacto"}
+              <Link
+                to={isEnglish ? "/en/contact" : "/contacto"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -603,7 +630,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-text-secondary/40 shrink-0" />
-              </a>
+              </Link>
             </nav>
           </div>
 

@@ -7,6 +7,8 @@ import { dynamicRoutes, privateRoutes } from '@/config/routes';
 
 // Import new page views (Phase 3 & 4)
 const Home = lazy(() => import('@/pages/public/Home'));
+const AboutUs = lazy(() => import('@/pages/public/AboutUs'));
+const Contact = lazy(() => import('@/pages/public/Contact'));
 const Styleguide = lazy(() => import('@/pages/dev/Styleguide'));
 const Wizard = lazy(() => import('@/pages/funnel/Wizard'));
 const Results = lazy(() => import('@/pages/funnel/Results'));
@@ -114,6 +116,10 @@ const AppLayout: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/en" element={<Home />} />
+            <Route path="/sobre-nosotros" element={<AboutUs />} />
+            <Route path="/en/about-us" element={<AboutUs />} />
+            <Route path="/contacto" element={<Contact />} />
+            <Route path="/en/contact" element={<Contact />} />
             {import.meta.env.DEV && <Route path="/styleguide" element={<Styleguide />} />}
             <Route path="/login" element={<MarketingLogin />} />
             <Route path="/marketing-studio/login" element={<Navigate to="/login" replace />} />

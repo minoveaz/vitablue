@@ -11,9 +11,12 @@ import {
 import { useWizard } from '@/context/WizardContext';
 import ConversationalHero from '@/components/organisms/ConversationalHero';
 import InfiniteMarquee from '@/components/molecules/InfiniteMarquee';
-import Accordion from '@/components/molecules/Accordion';
+import FaqSection from '@/components/organisms/FaqSection';
 import Card from '@/components/molecules/Card';
-import TestimonialCard from '@/components/molecules/TestimonialCard';
+import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import TrustCardGrid from '@/components/molecules/TrustCardGrid';
+import type { ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
+import TestimonialGrid from '@/components/organisms/TestimonialGrid';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
 import { 
@@ -175,7 +178,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Travel Insurance',
       desc: 'Assistance abroad, international medical coverage, luggage, and repatriation for your getaways or short stays.',
       illustration: TravelIllustration,
-      href: '/wizard',
+      href: '/productos/seguro-viaje',
       badge: 'Travel',
       badgeColor: 'secondary',
     },
@@ -216,7 +219,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de viaje',
       desc: 'Asistencia en el extranjero, cobertura médica internacional, equipajes y repatriación para tus escapadas o estancias cortas.',
       illustration: TravelIllustration,
-      href: '/wizard',
+      href: '/productos/seguro-viaje',
       badge: 'Viaje',
       badgeColor: 'secondary',
     },
@@ -457,27 +460,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
 
             <ConversationalHero onSearch={handleHeroSearch} />
 
-            {/* Trust Cards Grid for Mobile */}
-            <div className="grid gap-4 sm:grid-cols-3 mt-4">
-              {trustCards.map((item, index) => (
-                <div
-                  key={item.title}
-                  className={`rounded-3xl border p-5 shadow-sm text-left ${
-                    index === 0
-                      ? 'border-primary/15 bg-white'
-                      : index === 1
-                        ? 'border-brand-cyan/20 bg-brand-cyan/10'
-                        : 'border-accent/20 bg-accent/10'
-                  }`}
-                >
-                  <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                    <item.illustration />
-                  </div>
-                  <h2 className="text-h3 font-display font-bold text-text-main">{item.title}</h2>
-                  <p className="mt-2 text-body-reg text-text-secondary leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+            <TrustCardGrid items={trustCards.map((item, index) => ({
+              title: item.title,
+              description: item.desc,
+              illustration: item.illustration,
+              tone: index === 0 ? 'neutral' : index === 1 ? 'cyan' : 'accent',
+            }))} />
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-3 py-1 text-caption font-semibold text-text-secondary">
@@ -509,26 +497,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                {trustCards.map((item, index) => (
-                  <div
-                    key={item.title}
-                    className={`rounded-3xl border p-5 shadow-sm ${
-                      index === 0
-                        ? 'border-primary/15 bg-white'
-                        : index === 1
-                          ? 'border-brand-cyan/20 bg-brand-cyan/10'
-                          : 'border-accent/20 bg-accent/10'
-                    }`}
-                  >
-                    <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                      <item.illustration />
-                    </div>
-                    <h2 className="text-h3 font-display font-bold text-text-main">{item.title}</h2>
-                    <p className="mt-2 text-body-reg text-text-secondary leading-relaxed">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
+              <TrustCardGrid items={trustCards.map((item, index) => ({
+                title: item.title,
+                description: item.desc,
+                illustration: item.illustration,
+                tone: index === 0 ? 'neutral' : index === 1 ? 'cyan' : 'accent',
+              }))} />
 
               <div className="flex flex-wrap gap-3">
                 <button type="button" onClick={scrollToHowItWorks} className="inline-flex">
@@ -603,76 +577,29 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {productCards.map((card) => (
-              <Link
+              <ProductCategoryCard
                 key={card.title}
-                to={card.href}
-                className={`group rounded-3xl border bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
-                  card.badgeColor === 'primary'
-                    ? 'border-primary/15 hover:border-primary/30'
-                    : card.badgeColor === 'accent'
-                      ? 'border-accent/20 hover:border-accent/30'
-                      : card.badgeColor === 'secondary'
-                        ? 'border-brand-cyan/20 hover:border-brand-cyan/30'
-                        : 'border-slate-200/80 hover:border-primary/20'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-auto aspect-[4/3] flex items-center justify-start text-primary">
-                        <card.illustration />
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
-                        card.badgeColor === 'primary'
-                          ? 'bg-primary/10 text-primary'
-                          : card.badgeColor === 'accent'
-                            ? 'bg-accent/15 text-text-main'
-                            : card.badgeColor === 'secondary'
-                              ? 'bg-brand-cyan/15 text-primary'
-                              : 'bg-slate-100 text-text-secondary'
-                      }`}>
-                        {card.badge}
-                      </span>
-                    </div>
-                    <h3 className="text-h3 font-display font-black text-text-main group-hover:text-primary transition-colors">
-                      {card.title}
-                    </h3>
-                    <p className="text-body-reg text-text-secondary leading-relaxed max-w-md">{card.desc}</p>
-                  </div>
-                </div>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary">
-                  {isEnglish ? 'View details' : 'Ver detalle'} <ArrowRight className="w-4 h-4" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonios" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100">
-        <div className="mx-auto w-full max-w-6xl space-y-12">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Real reviews' : 'Opiniones reales'}</span>
-            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'The experience of those who already trust us' : 'La experiencia de quienes ya confían en nosotros'}</h2>
-            <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
-              {isEnglish ? 'Hundreds of people have already found their medical or travel insurance without phone spam and with the support of real human advisors.' : 'Cientos de personas ya han encontrado su seguro médico o de viaje sin sufrir spam telefónico y con el respaldo de asesores humanos reales.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((item) => (
-              <TestimonialCard
-                key={item.author}
-                author={item.author}
-                meta={item.meta}
-                comment={item.comment}
-                avatarUrl={item.avatarUrl}
+                title={card.title}
+                description={card.desc}
+                badge={card.badge}
+                badgeColor={card.badgeColor as ProductCategoryBadgeColor}
+                href={card.href}
+                illustration={card.illustration}
+                detailsLabel={isEnglish ? 'View details' : 'Ver detalle'}
               />
             ))}
           </div>
         </div>
       </section>
+
+      <div id="testimonios">
+        <TestimonialGrid
+          eyebrow={isEnglish ? 'Real reviews' : 'Opiniones reales'}
+          title={isEnglish ? 'The experience of those who already trust us' : 'La experiencia de quienes ya confían en nosotros'}
+          description={isEnglish ? 'Hundreds of people have already found their medical or travel insurance without phone spam and with the support of real human advisors.' : 'Cientos de personas ya han encontrado su seguro médico o de viaje sin sufrir spam telefónico y con el respaldo de asesores humanos reales.'}
+          items={testimonials}
+        />
+      </div>
 
       {/* Blog/Guides Section - Bento Grid */}
       <section id="guias" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/50 border-b border-slate-100">
@@ -846,25 +773,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         </div>
       </section>
 
-      <section id="faq" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-brand-cyan/5 to-white">
-        <div className="mx-auto w-full max-w-4xl">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Frequently asked questions' : 'Preguntas frecuentes'}</span>
-            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'Common doubts before choosing insurance' : 'Dudas habituales antes de elegir seguro'}</h2>
-          </div>
-          <div className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-inner divide-y divide-slate-100">
-            {faqs.map((faq, index) => (
-              <Accordion 
-                key={index} 
-                title={faq.q}
-                defaultOpen={index === 0}
-              >
-                {faq.a}
-              </Accordion>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FaqSection
+        id="faq"
+        eyebrow={isEnglish ? 'Frequently asked questions' : 'Preguntas frecuentes'}
+        title={isEnglish ? 'Common doubts before choosing insurance' : 'Dudas habituales antes de elegir seguro'}
+        items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}
+      />
 
     </div>
   );

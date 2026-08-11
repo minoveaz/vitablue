@@ -43,6 +43,10 @@ const legacy = (path: string, redirectTo: string): RouteDefinition => ({
 export const canonicalRoutes: RouteDefinition[] = [
   canonical('/', { locale: 'es', canonical: '/', alternate: '/en', indexable: true, prerender: true, sitemap: true }),
   canonical('/en', { locale: 'en', canonical: '/en', alternate: '/', indexable: true, prerender: true, sitemap: true }),
+  canonical('/sobre-nosotros', { locale: 'es', canonical: '/sobre-nosotros', alternate: '/en/about-us', indexable: true, prerender: true, sitemap: true }),
+  canonical('/en/about-us', { locale: 'en', canonical: '/en/about-us', alternate: '/sobre-nosotros', indexable: true, prerender: true, sitemap: true }),
+  canonical('/contacto', { locale: 'es', canonical: '/contacto', alternate: '/en/contact', indexable: true, prerender: true, sitemap: true }),
+  canonical('/en/contact', { locale: 'en', canonical: '/en/contact', alternate: '/contacto', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud', { locale: 'es', canonical: '/productos/seguros-salud', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes', alternate: '/en/health-insurance-student-visa-spain', indexable: true, prerender: true, sitemap: true }),
   canonical('/en/health-insurance-student-visa-spain', { locale: 'en', canonical: '/en/health-insurance-student-visa-spain', alternate: '/productos/seguros-salud/seguro-medico-estudiantes', indexable: true, prerender: true, sitemap: true }),
