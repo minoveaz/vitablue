@@ -270,7 +270,7 @@ export const Navbar: React.FC = () => {
               </button>
               
               {/* Dropdown Menu Container */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[92vw] max-w-lg sm:w-[560px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[92vw] max-w-5xl sm:w-[760px] bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-[120] grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
                 {/* Column 1: Seguros de Salud */}
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
@@ -324,10 +324,31 @@ export const Navbar: React.FC = () => {
                         </span>
                       </div>
                     </Link>
+
                   </div>
                 </div>
 
-                {/* Column 2: Otros Ramos */}
+                {/* Column 2: Seguros de Viaje */}
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
+                    {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
+                  </h4>
+                  <div className="flex flex-col gap-3.5">
+                    <Link to="/productos/seguro-viaje" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                      <Globe2 className="mt-0.5 size-10 shrink-0 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
+                      <div>
+                        <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
+                          {isEnglish ? 'Travel Insurance' : 'Seguro de Viaje'}
+                        </p>
+                        <span className="text-[10px] font-semibold text-text-secondary/80 mt-1 block leading-tight">
+                          {isEnglish ? 'Medical assistance and repatriation' : 'Asistencia médica y repatriación'}
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Column 3: Otros Ramos */}
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] border-b border-slate-50 pb-2">
                     {isEnglish ? 'Specialties' : 'Especialidades'}
@@ -526,6 +547,16 @@ export const Navbar: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <NomadasIcon />
                         <span>{isEnglish ? 'Digital Nomads' : 'Nómadas Digitales'}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-text-secondary/30" />
+                    </Link>
+                    <div className="border-b border-slate-100/60 px-6 py-3 text-[10px] font-black uppercase tracking-[0.25em] text-primary">
+                      {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
+                    </div>
+                    <Link to="/productos/seguro-viaje" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                      <div className="flex items-center gap-3">
+                        <Globe2 className="size-10 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
+                        <span>{isEnglish ? 'Travel Insurance' : 'Seguro de Viaje'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>

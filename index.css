@@ -11,7 +11,7 @@
     --color-pastel: #94D2BD;
     --color-neutral: #f8fafc;
     --color-whatsapp: #25D366;
-    --color-whatsapp-dark: #20BA5A;
+    --color-whatsapp-dark: #087443;
     --color-on-brand: #FFFFFF;
     --illustration-surface-health: #E6F7F8;
     --illustration-surface-student: #EBF7F4;
@@ -54,9 +54,13 @@
 }
 
 @layer utilities {
+  .text-slate-400 { color: #475569; }
+  .text-slate-500 { color: #475569; }
+  .text-emerald-600 { color: #047857; }
+
   /* Shared social CTA tokens; kept explicit so Vite HMR cannot drop them when
      the Tailwind config changes during local development. */
-  .bg-whatsapp { background-color: var(--color-whatsapp); }
+  .bg-whatsapp { background-color: var(--color-whatsapp-dark); }
   .hover\:bg-whatsapp-dark:hover { background-color: var(--color-whatsapp-dark); }
   .text-whatsapp { color: var(--color-whatsapp); }
   .shadow-whatsapp\/10 { --tw-shadow-color: color-mix(in srgb, var(--color-whatsapp) 10%, transparent); --tw-shadow: var(--tw-shadow-colored); }

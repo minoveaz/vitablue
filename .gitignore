@@ -26,6 +26,7 @@ vitablue.code-workspace
 coverage/
 playwright-report/
 test-results/
+.unlighthouse/
 .temp/
 
 # misc

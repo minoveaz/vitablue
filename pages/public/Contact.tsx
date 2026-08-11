@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Mail, MessageCircle, Phone } from 'lucide-react';
+import BrandHero from '../../components/organisms/BrandHero';
 
 const Contact: React.FC = () => {
   const isEnglish = window.location.pathname.startsWith('/en');
@@ -28,20 +29,16 @@ const Contact: React.FC = () => {
     <Helmet>
       <title>{content.title}</title>
       <meta name="description" content={content.description} />
+      <meta property="og:title" content={content.title} />
+      <meta property="og:description" content={content.description} />
+      <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
       <link rel="canonical" href={`https://www.vitablue.es${content.contactPath}`} />
       <script type="application/ld+json">{JSON.stringify({ '@context': 'https://schema.org', '@type': 'ContactPage', name: content.title, description: content.description, url: `https://www.vitablue.es${content.contactPath}`, mainEntity: { '@type': 'Organization', name: 'VitaBlue', email: 'info@vitablue.es', telephone: '+34694583452' } })}</script>
     </Helmet>
 
     <main>
       <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-6 lg:px-8"><div className="mx-auto max-w-6xl text-xs font-bold text-text-secondary">VitaBlue <span className="px-2 text-slate-300">/</span> {isEnglish ? 'Contact' : 'Contacto'}</div></div>
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-slate-900 px-6 py-16 text-white sm:px-8 lg:py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        <div className="relative mx-auto max-w-6xl">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-cyan">{content.eyebrow}</div>
-          <h1 className="mt-6 max-w-3xl text-h1 font-black leading-tight">{content.heading}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">{content.intro}</p>
-        </div>
-      </section>
+      <BrandHero eyebrow={content.eyebrow} title={content.heading} description={content.intro} />
 
       <section className="px-6 py-14 sm:px-8 lg:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">

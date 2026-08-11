@@ -11,12 +11,12 @@ import {
 import { useWizard } from '@/context/WizardContext';
 import ConversationalHero from '@/components/organisms/ConversationalHero';
 import InfiniteMarquee from '@/components/molecules/InfiniteMarquee';
-import Accordion from '@/components/molecules/Accordion';
+import FaqSection from '@/components/organisms/FaqSection';
 import Card from '@/components/molecules/Card';
 import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
 import TrustCardGrid from '@/components/molecules/TrustCardGrid';
 import type { ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
-import TestimonialCard from '@/components/molecules/TestimonialCard';
+import TestimonialGrid from '@/components/organisms/TestimonialGrid';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 
 import { 
@@ -178,7 +178,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Travel Insurance',
       desc: 'Assistance abroad, international medical coverage, luggage, and repatriation for your getaways or short stays.',
       illustration: TravelIllustration,
-      href: '/wizard',
+      href: '/productos/seguro-viaje',
       badge: 'Travel',
       badgeColor: 'secondary',
     },
@@ -219,7 +219,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de viaje',
       desc: 'Asistencia en el extranjero, cobertura médica internacional, equipajes y repatriación para tus escapadas o estancias cortas.',
       illustration: TravelIllustration,
-      href: '/wizard',
+      href: '/productos/seguro-viaje',
       badge: 'Viaje',
       badgeColor: 'secondary',
     },
@@ -592,30 +592,14 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonios" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100">
-        <div className="mx-auto w-full max-w-6xl space-y-12">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Real reviews' : 'Opiniones reales'}</span>
-            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'The experience of those who already trust us' : 'La experiencia de quienes ya confían en nosotros'}</h2>
-            <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
-              {isEnglish ? 'Hundreds of people have already found their medical or travel insurance without phone spam and with the support of real human advisors.' : 'Cientos de personas ya han encontrado su seguro médico o de viaje sin sufrir spam telefónico y con el respaldo de asesores humanos reales.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((item) => (
-              <TestimonialCard
-                key={item.author}
-                author={item.author}
-                meta={item.meta}
-                comment={item.comment}
-                avatarUrl={item.avatarUrl}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <div id="testimonios">
+        <TestimonialGrid
+          eyebrow={isEnglish ? 'Real reviews' : 'Opiniones reales'}
+          title={isEnglish ? 'The experience of those who already trust us' : 'La experiencia de quienes ya confían en nosotros'}
+          description={isEnglish ? 'Hundreds of people have already found their medical or travel insurance without phone spam and with the support of real human advisors.' : 'Cientos de personas ya han encontrado su seguro médico o de viaje sin sufrir spam telefónico y con el respaldo de asesores humanos reales.'}
+          items={testimonials}
+        />
+      </div>
 
       {/* Blog/Guides Section - Bento Grid */}
       <section id="guias" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/50 border-b border-slate-100">
@@ -789,25 +773,12 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         </div>
       </section>
 
-      <section id="faq" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-brand-cyan/5 to-white">
-        <div className="mx-auto w-full max-w-4xl">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Frequently asked questions' : 'Preguntas frecuentes'}</span>
-            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'Common doubts before choosing insurance' : 'Dudas habituales antes de elegir seguro'}</h2>
-          </div>
-          <div className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-inner divide-y divide-slate-100">
-            {faqs.map((faq, index) => (
-              <Accordion 
-                key={index} 
-                title={faq.q}
-                defaultOpen={index === 0}
-              >
-                {faq.a}
-              </Accordion>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FaqSection
+        id="faq"
+        eyebrow={isEnglish ? 'Frequently asked questions' : 'Preguntas frecuentes'}
+        title={isEnglish ? 'Common doubts before choosing insurance' : 'Dudas habituales antes de elegir seguro'}
+        items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}
+      />
 
     </div>
   );

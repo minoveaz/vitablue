@@ -24,8 +24,8 @@ export default {
           "accent-dark": "#7A4F00",   // Gold text with accessible contrast
         "brand-cyan": "#94D2BD",    // Badges & Success metrics -> Mint
         "success-strong": "#0F766E", // Accessible success text on light surfaces
-        "whatsapp": "#25D366",      // WhatsApp action
-        "whatsapp-dark": "#20BA5A", // WhatsApp hover state
+        "whatsapp": "#087443",      // WhatsApp action with white text
+        "whatsapp-dark": "#087443", // WhatsApp action state with accessible contrast
         "background-light": "#f8fafc",
         "background-dark": "#001219",
         "surface-soft": "#f4f7f8",

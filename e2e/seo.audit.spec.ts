@@ -20,6 +20,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { indexablePublicRoutes } from './fixtures/publicRoutes';
 
 // ─────────────────────────────────────────────
 // RUTAS INDEXABLES (indexable: true en routes.ts)
@@ -35,7 +36,14 @@ interface SeoRoute {
   expectedCanonical: string;
 }
 
-const indexableRoutes: SeoRoute[] = [
+const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({
+  name: route.name,
+  path: route.path,
+  prerenderedKeyword: route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.replace(/-/g, ' ') || 'VitaBlue',
+  expectedCanonical: route.expectedCanonical,
+}));
+
+/*
   {
     name: 'home-es',
     path: '/',
@@ -199,7 +207,7 @@ const indexableRoutes: SeoRoute[] = [
     prerenderedKeyword: 'non-lucrative',
     expectedCanonical: '/en/blog/health-insurance-spain-non-lucrative-visa-requirements',
   },
-];
+]; */
 
 // ─────────────────────────────────────────────
 // SUITE DE AUDITORÍA SEO

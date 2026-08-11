@@ -1,28 +1,36 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Activity, ShieldCheck, Clock, Award, Check, Heart, Smartphone,
-  FileText, CreditCard
+import {
+  Activity, ShieldCheck, Clock, Award, Check, Smartphone
 } from 'lucide-react';
+import ProductProcessSection from '../../components/organisms/ProductProcessSection';
 import { useWizard } from '../../context/WizardContext';
-import Breadcrumbs from '../../components/molecules/Breadcrumbs';
-import AdvisorCard from '../../components/molecules/AdvisorCard';
-import Accordion from '../../components/molecules/Accordion';
-import TestimonialCard from '../../components/molecules/TestimonialCard';
+import ProductBreadcrumbBar from '../../components/organisms/ProductBreadcrumbBar';
+import FaqSection from '../../components/organisms/FaqSection';
+import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
+import SanitasTrustSection from '../../components/organisms/SanitasTrustSection';
+import TestimonialGrid from '../../components/organisms/TestimonialGrid';
 import QuoteEstimator from '../../components/molecules/QuoteEstimator';
+import CoverageGrid from '../../components/organisms/CoverageGrid';
 import ProductHero from '../../components/organisms/ProductHero';
+import ProductTrustBar from '../../components/organisms/ProductTrustBar';
+import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
+import PlanComparisonSection from '../../components/organisms/PlanComparisonSection';
+import ProductPromotionSection from '../../components/organisms/ProductPromotionSection';
+import DigitalServicesSection from '../../components/organisms/DigitalServicesSection';
 import { Button } from '../../components/atoms/Button';
-import { 
-  HealthIllustration, 
-  MedicalAttentionIllustration, 
-  DentalIllustration, 
+import {
+  HealthIllustration,
+  MedicalAttentionIllustration,
+  DentalIllustration,
   PreventionIllustration,
   FamilyIllustration,
   TravelIllustration
 } from '../../components/illustrations';
 
 export const SanitasMasSalud: React.FC = () => {
+  const showModalities = false;
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
 
@@ -138,7 +146,7 @@ export const SanitasMasSalud: React.FC = () => {
     }
   ];
 
-  
+
   const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud';
   const title = 'Sanitas Más Salud | Seguro Médico Completo | VitaBlue';
   const description = 'Detalles, coberturas y modalidades de Sanitas Más Salud. Seguro médico de cuadro completo con hospitalización, 50.000 médicos y Blua digital gratis.';
@@ -267,7 +275,7 @@ export const SanitasMasSalud: React.FC = () => {
         <meta property="og:description" content={description} />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
         <meta property="og:url" content={canonicalUrl} />
-        
+
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
@@ -279,17 +287,7 @@ export const SanitasMasSalud: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <div className="bg-slate-50/50 border-b border-slate-100 py-3 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <Breadcrumbs 
-            items={[
-              { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-              { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' },
-              { label: 'Sanitas Más Salud', href: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud' }
-            ]} 
-          />
-        </div>
-      </div>
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }, { label: 'Sanitas Más Salud', href: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud' }]} />
 
       <ProductHero
         badges={[
@@ -337,224 +335,77 @@ export const SanitasMasSalud: React.FC = () => {
         />
       </ProductHero>
 
-      {/* Trust Badges */}
-      <section className="py-8 bg-slate-50 border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-          <div className="flex items-center gap-3.5">
-            <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Homologación Oficial</h4>
-              <p className="text-xs text-text-secondary font-semibold">Pólizas oficiales autorizadas por la DGSFP.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Clock className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Gestión Inmediata</h4>
-              <p className="text-xs text-text-secondary font-semibold">Alta y emisión de tarjetas médicas en 24 horas.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Award className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Asistencia Máxima</h4>
-              <p className="text-xs text-text-secondary font-semibold">Acceso completo sin copagos o copagos mínimos.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductTrustBar items={[
+          { icon: <ShieldCheck />, title: 'Homologación Oficial', description: 'Pólizas oficiales autorizadas por la DGSFP.' },
+          { icon: <Clock />, title: 'Gestión Inmediata', description: 'Alta y emisión de tarjetas médicas en 24 horas.' },
+          { icon: <Award />, title: 'Asistencia Máxima', description: 'Acceso completo sin copagos o copagos mínimos.' },
+      ]} />
 
-      {/* Authorized Providers Logos */}
-      <section className="py-10 bg-white border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary">Aseguradoras oficiales homologadas</p>
-          <div className="flex justify-center items-center gap-12 sm:gap-16">
-            <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
-            <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
-          </div>
-        </div>
-      </section>
+      <ProviderLogoBar
+        eyebrow="Aseguradoras oficiales homologadas"
+        providers={[
+          { name: 'Sanitas', logoSrc: '/images/logo-sanitas.svg' },
+          { name: 'Adeslas', logoSrc: '/images/logo-adeslas.svg' },
+        ]}
+      />
 
-      {/* Coberturas Esenciales (Symmetric standard grid with clean illustrations) */}
-      <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Garantías Médicas</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Coberturas Esenciales del Plan
-          </h2>
-          <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            Descubre las especificaciones técnicas del seguro médico. Coberturas completas sin límites ocultos.
-          </p>
-        </div>
+      <PlanComparisonSection
+        eyebrow="Modalidades"
+        title="Elige la estructura de copago a tu medida"
+        description="Sanitas Más Salud cuenta con tres alternativas de contratación para equilibrar el coste mensual y el coste por visita."
+        plans={modalitiesList.map((item) => ({ name: item.name, subtitle: item.subtitle, desc: item.desc, priceDetail: item.priceDetail, tag: item.tag, isFeatured: item.isFeatured }))}
+        onPlanAction={handleStartQuoting}
+        actionLabel="Comparar esta opción"
+      />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {coverages.map((item, index) => {
-            const Illustration = item.illustration;
-            return (
-              <div 
-                key={index} 
-                className="rounded-3xl border border-slate-150 bg-white p-6 sm:p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-300"
-              >
-                <div className="space-y-4">
-                  {/* Clean illustration container (h-16, direct rendering without heavy boxes) */}
-                  <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                    <Illustration />
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-display font-black text-text-main leading-tight">{item.title}</h3>
-                    <p className="text-xs text-text-secondary font-semibold leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <CoverageGrid
+        eyebrow="Garantías Médicas"
+        title="Coberturas Esenciales del Plan"
+        description="Descubre las especificaciones técnicas del seguro médico. Coberturas completas sin límites ocultos."
+        items={coverages.map(({ title, desc, illustration }) => ({ title, description: desc, illustration }))}
+      />
 
       {/* How to hire in 4 steps Onboarding timeline */}
-      <section className="py-16 sm:py-20 max-w-6xl mx-auto px-6 sm:px-8 text-left border-t border-slate-100">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Proceso</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Cómo contratar en 4 pasos
-          </h2>
-          <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Proceso 100% online, rápido y seguro con el acompañamiento personalizado de VitaBlue.
-          </p>
-        </div>
+      <ProductProcessSection
+        eyebrow="Proceso"
+        title="Cómo contratar en 4 pasos"
+        description="Proceso 100% online, rápido y seguro con el acompañamiento personalizado de VitaBlue."
+        steps={[
+          {
+            title: 'Rellena el formulario',
+            description: 'Indica tu edad y elige tu modalidad (sin copago, copago reducido o progresivo) en nuestro cotizador.'
+          },
+          {
+            title: 'Elige forma de pago',
+            description: 'Pago mensual o pago anual; te indicamos los descuentos aplicables y la promoción vigente en tu cuota.'
+          },
+          {
+            title: 'Cuestionario de salud',
+            description: 'Completa un breve cuestionario digital necesario para activar coberturas y valorar carencias médicas.'
+          },
+          {
+            title: 'Recibe tu póliza',
+            description: 'Obtén tu documentación oficial y tarjetas médicas digitales listas para empezar a usar desde el primer día.'
+          }
+        ]}
+      />
 
-        <div className="relative">
-          {/* Horizontal dashed line connecting the steps (visible on desktop) */}
-          <div className="absolute top-[48px] left-[12%] right-[12%] h-0.5 border-t border-dashed border-slate-200 z-0 hidden lg:block" />
+      <TestimonialGrid eyebrow="Opiniones reales" title="La experiencia de quienes ya confían en nosotros" items={testimonials} />
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
-            {[
-              { 
-                step: '01', 
-                title: 'Rellena el formulario', 
-                desc: 'Indica tu edad y elige tu modalidad (sin copago, copago reducido o progresivo) en nuestro cotizador.',
-                icon: FileText
-              },
-              { 
-                step: '02', 
-                title: 'Elige forma de pago', 
-                desc: 'Pago mensual o pago anual; te indicamos los descuentos aplicables y la promoción vigente en tu cuota.',
-                icon: CreditCard
-              },
-              { 
-                step: '03', 
-                title: 'Cuestionario de salud', 
-                desc: 'Completa un breve cuestionario digital necesario para activar coberturas y valorar carencias médicas.',
-                icon: Heart
-              },
-              { 
-                step: '04', 
-                title: 'Recibe tu póliza', 
-                desc: 'Obtén tu documentación oficial y tarjetas médicas digitales listas para empezar a usar desde el primer día.',
-                icon: ShieldCheck
-              }
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className="flex flex-col gap-4 p-6 bg-white rounded-3xl border border-slate-150 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-sans font-black text-primary/65">{item.step}</span>
-                    <div className="size-10 rounded-2xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h4 className="text-base font-bold text-text-main">{item.title}</h4>
-                  <p className="text-xs text-text-secondary font-semibold leading-relaxed">{item.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 sm:py-20 bg-slate-50/50 border-y border-slate-100 w-full text-left">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-12">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Opiniones reales</span>
-            <h2 className="text-h2 font-display font-black text-text-main">La experiencia de quienes ya confían en nosotros</h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((item, idx) => (
-              <TestimonialCard
-                key={idx}
-                author={item.author}
-                meta={item.meta}
-                comment={item.comment}
-                stars={item.stars}
-                avatarUrl={item.avatarUrl}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Sanitas & Bupa Trust Stats Section */}
-      <section className="py-16 sm:py-20 max-w-6xl mx-auto px-6 sm:px-8 text-left">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Garantía Sanitas & Bupa</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Líder en salud con respaldo internacional
-          </h2>
-          <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Sanitas es la compañía líder en España con más de 70 años de experiencia, respaldada por el grupo global Bupa.
-          </p>
-        </div>
-
-        <div className="grid gap-6 grid-cols-2 lg:grid-cols-4 text-center mb-12">
-          {[
-            { val: '50.000+', desc: 'Médicos y profesionales' },
-            { val: '4.200+', desc: 'Centros médicos asociados' },
-            { val: '190+', desc: 'Países de cobertura Bupa' },
-            { val: '70+', desc: 'Años de experiencia médica' }
-          ].map((item, idx) => (
-            <div key={idx} className="bg-slate-50/50 border border-slate-100 rounded-3xl p-6 flex flex-col gap-1 shadow-sm">
-              <span className="text-3xl font-sans font-black text-primary">{item.val}</span>
-              <span className="text-xs font-bold text-text-secondary">{item.desc}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {[
-            { title: 'Hospitales Propios de Prestigio', text: 'Acceso a los hospitales La Zarzuela, La Moraleja, CIMA Barcelona y Virgen del Mar con tecnología médica avanzada.' },
-            { title: 'Todo Digital con App Mi Sanitas', text: 'Gestiona videoconsultas de urgencia 24/7, autorizaciones médicas, reembolsos y recetas desde tu móvil en segundos.' },
-            { title: 'Respaldo del Grupo Bupa', text: 'Con el soporte de una red de salud internacional que cuida a más de 38 millones de clientes en todo el mundo.' }
-          ].map((item, idx) => (
-            <div key={idx} className="bg-white border border-slate-150 rounded-3xl p-6 space-y-2 shadow-sm">
-              <h4 className="text-base font-bold text-text-main">{item.title}</h4>
-              <p className="text-xs text-text-secondary font-semibold leading-relaxed">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <SanitasTrustSection />
 
       {/* Active Promotion Banner */}
-      <section className="py-12 bg-white border-y border-slate-100">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8">
-          <div className="rounded-3xl bg-gradient-to-br from-primary to-primary-dark p-8 sm:p-10 text-white text-left relative overflow-hidden shadow-lg">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(148,210,189,0.12),transparent_50%)] pointer-events-none" />
-            <div className="flex flex-wrap gap-2.5 mb-4">
-              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Promoción Especial</span>
-              <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Nuevos Asegurados</span>
-            </div>
-            <h3 className="text-h2 font-display font-black leading-tight tracking-tight mb-2">Blua Gratis para Siempre</h3>
-            <p className="text-sm text-slate-200 font-medium leading-relaxed max-w-2xl">
-              Contrata ahora a través de VitaBlue y llévate gratis para siempre el módulo de medicina digital Blua, valorado en 8€/mes por persona, con videoconsultas ilimitadas y reembolso de farmacia.
-            </p>
-          </div>
-        </div>
-      </section>
+      <ProductPromotionSection
+        badges={[
+          <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Promoción Especial</span>,
+          <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Nuevos Asegurados</span>
+        ]}
+        title="Blua Gratis para Siempre"
+        description="Contrata ahora a través de VitaBlue y llévate gratis para siempre el módulo de medicina digital Blua, valorado en 8€/mes por persona, con videoconsultas ilimitadas y reembolso de farmacia."
+      />
 
       {/* Modalities Comparison Grid */}
-      <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
+      {showModalities && <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
         <div className="text-center space-y-4 mb-12">
           <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades</span>
           <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
@@ -567,11 +418,11 @@ export const SanitasMasSalud: React.FC = () => {
 
         <div className="grid gap-8 md:grid-cols-3">
           {modalitiesList.map((item, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`rounded-3xl border p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 bg-white hover:shadow-md ${
-                item.isFeatured 
-                  ? 'border-primary shadow-sm shadow-primary/5 ring-2 ring-primary/5' 
+                item.isFeatured
+                  ? 'border-primary shadow-sm shadow-primary/5 ring-2 ring-primary/5'
                   : 'border-slate-150'
               }`}
             >
@@ -601,8 +452,8 @@ export const SanitasMasSalud: React.FC = () => {
                   <span className="text-xs font-bold text-text-main">{item.priceDetail}</span>
                 </div>
 
-                <Button 
-                  variant={item.isFeatured ? 'primary' : 'outline'} 
+                <Button
+                  variant={item.isFeatured ? 'primary' : 'outline'}
                   className="w-full font-bold"
                   onClick={handleStartQuoting}
                 >
@@ -612,31 +463,14 @@ export const SanitasMasSalud: React.FC = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section>}
 
-      {/* Digital Services & Blua Features */}
-      <section className="py-16 sm:py-20 bg-slate-50 border-y border-slate-100 w-full text-left">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 grid gap-12 lg:grid-cols-12 items-center">
-          
-          <div className="lg:col-span-6 space-y-6">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Telemedicina blua</span>
-            <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-              Ventajas digitales integradas
-            </h2>
-            <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
-              No esperes en salas de urgencias ni te desplaces innecesariamente. Blua pone a todo el equipo médico de Sanitas en la pantalla de tu móvil o tablet.
-            </p>
-
-            <ul className="grid gap-4 sm:grid-cols-2 text-sm font-semibold text-text-main">
-              <li className="flex gap-2.5"><Check className="w-5 h-5 text-primary shrink-0" /> Videoconsulta urgente 24/7</li>
-              <li className="flex gap-2.5"><Check className="w-5 h-5 text-primary shrink-0" /> Receta médica oficial</li>
-              <li className="flex gap-2.5"><Check className="w-5 h-5 text-primary shrink-0" /> Reembolso en farmacia</li>
-              <li className="flex gap-2.5"><Check className="w-5 h-5 text-primary shrink-0" /> Planes de salud guiados</li>
-            </ul>
-          </div>
-
-          <div className="lg:col-span-6 flex justify-center">
-            {/* Phone Mockup rendering digital dashboard */}
+      <DigitalServicesSection
+        eyebrow="Telemedicina blua"
+        title="Ventajas digitales integradas"
+        description="No esperes en salas de urgencias ni te desplaces innecesariamente. Blua pone a todo el equipo médico de Sanitas en la pantalla de tu móvil o tablet."
+        benefits={['Videoconsulta urgente 24/7', 'Receta médica oficial', 'Reembolso en farmacia', 'Planes de salud guiados']}
+        visual={(
             <div className="relative w-full max-w-[280px] aspect-[9/18] bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800">
               <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-900 rounded-full z-20" />
               <div className="w-full h-full bg-primary rounded-[2rem] overflow-hidden p-4 text-white relative flex flex-col justify-between">
@@ -656,52 +490,22 @@ export const SanitasMasSalud: React.FC = () => {
                     <p className="text-[9px] text-slate-200">Disponible y homologada</p>
                   </div>
                 </div>
-                
+
                 <div className="text-[9px] font-bold text-center text-slate-200/60 pb-2">
                   Cifrado de datos médicos SSL
                 </div>
               </div>
             </div>
-          </div>
+        )}
+      />
 
-        </div>
-      </section>
+      <FaqSection eyebrow="Preguntas Frecuentes" title="Resolver dudas sobre Sanitas Más Salud" items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
 
-      {/* Accordion FAQs Section */}
-      <section className="py-16 sm:py-20 w-full max-w-4xl mx-auto px-6 sm:px-8 text-left">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preguntas Frecuentes</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Resolver dudas sobre Sanitas Más Salud
-          </h2>
-        </div>
-
-        <div className="bg-white border border-slate-100 rounded-3xl p-4 sm:p-6 shadow-inner divide-y divide-slate-200/60">
-          {faqs.map((faq, index) => (
-            <Accordion 
-              key={index} 
-              title={faq.q}
-              defaultOpen={index === 0}
-            >
-              {faq.a}
-            </Accordion>
-          ))}
-        </div>
-      </section>
-
-      {/* Human Advisor Help section */}
-      <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
-          <div className="space-y-1">
-            <h3 className="text-h2 font-display font-extrabold text-text-main">¿Necesitas ayuda para elegir tu modalidad de copago?</h3>
-            <p className="text-body-reg text-text-secondary font-medium">Sanitas Más Salud está disponible con copago bajo o sin copagos. Te ayudamos a calcular cuál es más rentable para tu nivel de visitas al médico de forma totalmente gratuita.</p>
-          </div>
-          <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Sanitas%20M%C3%A1s%20Salud.', '_blank')}
-            onPhoneClick={() => window.open('tel:+34900839240')}
-          />
-        </div>
-      </section>
+      <AdvisorHelpSection
+        title="¿Necesitas ayuda para elegir tu modalidad de copago?"
+        description="Sanitas Más Salud está disponible con copago bajo o sin copagos. Te ayudamos a calcular cuál es más rentable para tu nivel de visitas al médico de forma totalmente gratuita."
+        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Sanitas%20M%C3%A1s%20Salud."
+      />
     </div>
   );
 };

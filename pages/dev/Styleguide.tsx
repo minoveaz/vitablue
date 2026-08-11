@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Shield, ArrowRight, Check, HelpCircle, AlertCircle, Sparkles, MessageSquare, Phone, Copy, CheckCheck } from 'lucide-react';
+import { Mail, Shield, ArrowRight, Check, HelpCircle, AlertCircle, Sparkles, MessageSquare, Phone, Copy, CheckCheck, ShieldCheck, Clock, Award } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import Button from '@/components/atoms/Button';
 import InputText from '@/components/atoms/InputText';
@@ -24,14 +24,40 @@ import ProductCard from '@/components/molecules/ProductCard';
 import TransparencyBlock from '@/components/molecules/TransparencyBlock';
 import AdvisorCard from '@/components/molecules/AdvisorCard';
 import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import BlogHeader from '@/components/molecules/BlogHeader';
+import BlogFilterBar from '@/components/molecules/BlogFilterBar';
+import BlogPostCard from '@/components/molecules/BlogPostCard';
+import ArticleHeader from '@/components/molecules/ArticleHeader';
+import ArticleToc from '@/components/molecules/ArticleToc';
+import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
+import BlogAdvisorCta from '@/components/molecules/BlogAdvisorCta';
+import { blogPosts } from '@/utils/blogData';
 import TrustCardGrid from '@/components/molecules/TrustCardGrid';
 import SectionIntro from '@/components/molecules/SectionIntro';
 import ProcessSteps from '@/components/molecules/ProcessSteps';
 import ContactChannelCard from '@/components/molecules/ContactChannelCard';
 import CtaBanner from '@/components/molecules/CtaBanner';
+import CoverageCard from '@/components/molecules/CoverageCard';
+import InsuranceProductCard from '@/components/molecules/InsuranceProductCard';
+import PlanCard from '@/components/molecules/PlanCard';
+import PlanComparisonSection from '@/components/organisms/PlanComparisonSection';
 import QuoteEstimator from '@/components/molecules/QuoteEstimator';
 import BrandHero from '@/components/organisms/BrandHero';
+import CoverageGrid from '@/components/organisms/CoverageGrid';
 import ProductHero from '@/components/organisms/ProductHero';
+import ProductBreadcrumbBar from '@/components/organisms/ProductBreadcrumbBar';
+import RequirementsComparisonTable from '@/components/organisms/RequirementsComparisonTable';
+import ProductTransparencySection from '@/components/organisms/ProductTransparencySection';
+import ProductProcessSection from '@/components/organisms/ProductProcessSection';
+import ProductRequirementsSection from '@/components/organisms/ProductRequirementsSection';
+import ProductPromotionSection from '@/components/organisms/ProductPromotionSection';
+import DigitalServicesSection from '@/components/organisms/DigitalServicesSection';
+import TestimonialGrid from '@/components/organisms/TestimonialGrid';
+import FaqSection from '@/components/organisms/FaqSection';
+import SanitasTrustSection from '@/components/organisms/SanitasTrustSection';
+import AdvisorHelpSection from '@/components/organisms/AdvisorHelpSection';
+import ProductTrustBar from '@/components/organisms/ProductTrustBar';
+import ProviderLogoBar from '@/components/organisms/ProviderLogoBar';
 import IllustrationGallery from '@/components/organisms/IllustrationGallery';
 import { CoverageIllustration, HealthIllustration, TravelIllustration, PiggyBankIllustration, SupportIllustration } from '@/components/illustrations';
 
@@ -70,6 +96,7 @@ const ComponentReference = ({ name, path }: ComponentReferenceProps) => {
 };
 
 const Styleguide = () => {
+  void [BlogHeader, BlogFilterBar, ArticleHeader, ArticleToc, BlogSectionRenderer, BlogAdvisorCta];
   const [inputTextVal, setInputTextVal] = useState('');
   const [selectVal, setSelectVal] = useState('');
   const [isChecked, setIsChecked] = useState(false);
@@ -401,6 +428,18 @@ const Styleguide = () => {
 
           {/* Illustrations Showcase */}
           <div className="flex flex-col gap-4 mt-10 pt-10 border-t border-slate-100">
+            <ComponentReference name="ProductPromotionSection" path="components/organisms/ProductPromotionSection.tsx" />
+            <ProductPromotionSection
+              badges={[
+                <span key="promotion" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Promoción Especial</span>,
+                <span key="insured" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Nuevos Asegurados</span>
+              ]}
+              title="Blua Gratis para Siempre"
+              description="Contrata ahora a través de VitaBlue y disfruta de medicina digital incluida para siempre."
+            />
+          </div>
+
+          <div className="flex flex-col gap-4 mt-10 pt-10 border-t border-slate-100">
             <ComponentReference name="IllustrationGallery" path="components/organisms/IllustrationGallery.tsx" />
             <IllustrationGallery />
           </div>
@@ -476,6 +515,20 @@ const Styleguide = () => {
               <ComponentReference name="ProcessSteps" path="components/molecules/ProcessSteps.tsx" />
               <ComponentReference name="ContactChannelCard" path="components/molecules/ContactChannelCard.tsx" />
               <ProcessSteps steps={['Cuéntanos tu perfil y necesidades', 'Comparamos las opciones disponibles', 'Te acompañamos hasta contratar']} />
+              <ComponentReference name="ProductProcessSection" path="components/organisms/ProductProcessSection.tsx" />
+              <ProductProcessSection
+                eyebrow="Proceso"
+                title="Contrata en tres pasos"
+                description="Un recorrido breve y acompañado para elegir tu póliza."
+                steps={['Cuéntanos tu perfil', 'Comparamos opciones', 'Te acompañamos hasta contratar']}
+              />
+              <ComponentReference name="ProductRequirementsSection" path="components/organisms/ProductRequirementsSection.tsx" />
+              <ProductRequirementsSection
+                eyebrow="Requisitos"
+                title="Condiciones claras"
+                description="Los puntos esenciales de una póliza adecuada."
+                items={[{ label: 'Sin copagos inesperados' }, { label: 'Cobertura desde el primer día' }]}
+              />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <ContactChannelCard href="mailto:info@vitablue.es" icon={<Mail className="h-5 w-5" />} title="Email" description="info@vitablue.es" />
                 <ContactChannelCard href="tel:+34694583452" icon={<Phone className="h-5 w-5" />} title="Teléfono" description="+34 694 58 34 52" />
@@ -491,13 +544,28 @@ const Styleguide = () => {
                 action={{ label: 'Contactar', href: '/contacto' }}
               />
             </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="DigitalServicesSection" path="components/organisms/DigitalServicesSection.tsx" />
+              <DigitalServicesSection
+                eyebrow="Servicios digitales"
+                title="Tu salud también puede estar en tu móvil"
+                description="Una composición reutilizable para presentar servicios digitales junto a sus beneficios y una demostración visual específica del producto."
+                benefits={['Videoconsulta médica', 'Receta electrónica', 'Seguimiento desde la app', 'Programas de bienestar']}
+                visual={(
+                  <div className="flex aspect-[9/12] w-full max-w-[180px] items-center justify-center rounded-[2rem] bg-primary p-5 text-center text-sm font-bold text-white shadow-xl">
+                    Demo visual del servicio
+                  </div>
+                )}
+              />
+            </div>
           </div>
         </section>
 
         {/* Section 8: Interactive Advanced Components (Phase 5) */}
         <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-accent" /> 6. Componentes Avanzados e Interactivos (Fase 5)
+            <Sparkles className="w-5 h-5 text-accent" /> 8. Componentes Avanzados e Interactivos (Fase 5)
           </h2>
 
           <div className="flex flex-col gap-10">
@@ -562,7 +630,7 @@ const Styleguide = () => {
         {/* Section 8: Trust & Transparency Components (Fase 2 - Core Logic Track) */}
         <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-6 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-accent" /> 7. Confianza y Transparencia Radical (Fase 2)
+            <Shield className="w-5 h-5 text-accent" /> 9. Confianza y Transparencia Radical (Fase 2)
           </h2>
 
           <div className="flex flex-col gap-8">
@@ -622,6 +690,41 @@ const Styleguide = () => {
                   'Tratamientos de cirugía plástica o medicina estética.'
                 ]}
               />
+              <ComponentReference name="ProductTransparencySection" path="components/organisms/ProductTransparencySection.tsx" />
+              <ProductTransparencySection
+                title="Seguro para Visado de Estudiante Extranjero"
+                description="Compara de forma neutral los requisitos del consulado y lo que cubren nuestras pólizas seleccionadas."
+                inclusions={[
+                  'Repatriación ilimitada al país de origen por enfermedad o fallecimiento.',
+                  'Sin copagos por acto médico (cobertura médica 100% gratuita al ir a consulta).',
+                  'Sin periodos de carencia (cobertura activa desde el primer día para visado).',
+                  'Acceso completo a especialidades, hospitalización y cirugías.'
+                ]}
+                exclusions={[
+                  'Tratamientos dentales complejos (ortodoncia, implantes).',
+                  'Enfermedades preexistentes no declaradas en el cuestionario de salud.',
+                  'Tratamientos de cirugía plástica o medicina estética.'
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4 md:col-span-2">
+              <ComponentReference name="ProductTrustBar" path="components/organisms/ProductTrustBar.tsx" />
+              <ProductTrustBar
+                items={[
+                  { icon: <ShieldCheck />, title: 'Homologación oficial', description: 'Pólizas autorizadas y revisadas.' },
+                  { icon: <Clock />, title: 'Gestión en 24 horas', description: 'Recibe tu documentación rápidamente.' },
+                  { icon: <Award />, title: 'Soporte continuo', description: 'Te acompañamos durante todo el proceso.' },
+                ]}
+              />
+              <ComponentReference name="ProviderLogoBar" path="components/organisms/ProviderLogoBar.tsx" />
+              <ProviderLogoBar
+                eyebrow="Aseguradoras oficiales homologadas"
+                providers={[
+                  { name: 'Sanitas', logoSrc: '/images/logo-sanitas.svg' },
+                  { name: 'Adeslas', logoSrc: '/images/logo-adeslas.svg' },
+                ]}
+              />
             </div>
           </div>
         </section>
@@ -635,7 +738,7 @@ const Styleguide = () => {
 
         <section className="bg-white rounded-2xl border border-accent/25 p-8 shadow-sm">
           <h2 className="text-xl font-display font-extrabold text-primary mb-8 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-accent" /> 8. Patrones de páginas de producto
+            <Sparkles className="w-5 h-5 text-accent" /> 10. Patrones de páginas de producto
           </h2>
 
           <div className="flex flex-col gap-12">
@@ -796,58 +899,114 @@ const Styleguide = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <ComponentReference name="CoverageGrid (candidato)" path="components/organisms/CoverageGrid.tsx (por extraer)" />
-              <SectionIntro eyebrow="Coberturas principales" title="Todo lo que incluye tu póliza" description="Patrón repetido en las páginas de estudiante, expatriado, nómada, viaje y mascotas." />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  ['Hospitalización completa', 'Acceso a especialistas, pruebas y hospitalización en una red médica amplia.', HealthIllustration],
-                  ['Asistencia 24 horas', 'Atención urgente y soporte humano cuando más lo necesitas.', SupportIllustration],
-                  ['Repatriación sanitaria', 'Traslado médico incluido para cumplir los requisitos de tu situación.', TravelIllustration],
-                ].map(([title, description, Illustration]) => {
-                  const CoverageIllustration = Illustration as React.ComponentType;
-                  return (
-                    <Card key={title as string} className="flex flex-col gap-3">
-                      <div className="h-20 w-24 text-primary"><CoverageIllustration /></div>
-                      <h3 className="font-display font-bold text-text-main">{title as string}</h3>
-                      <p className="text-sm leading-relaxed text-text-secondary">{description as string}</p>
-                    </Card>
-                  );
-                })}
+              <ComponentReference name="CoverageCard" path="components/molecules/CoverageCard.tsx" />
+              <div className="max-w-sm">
+                <CoverageCard
+                  title="Hospitalización completa"
+                  description="Acceso a especialistas, pruebas y hospitalización en una red médica amplia."
+                  illustration={HealthIllustration}
+                />
               </div>
             </div>
 
             <div className="flex flex-col gap-4">
-              <ComponentReference name="InsurancePlanCard (candidato)" path="components/molecules/InsurancePlanCard.tsx (por extraer)" />
+              <ComponentReference name="CoverageGrid" path="components/organisms/CoverageGrid.tsx" />
+              <CoverageGrid
+                eyebrow="Coberturas principales"
+                title="Todo lo que incluye tu póliza"
+                description="Patrón reutilizable para mostrar las garantías principales de cada producto."
+                items={[
+                  { title: 'Hospitalización completa', description: 'Acceso a especialistas, pruebas y hospitalización en una red médica amplia.', illustration: HealthIllustration },
+                  { title: 'Asistencia 24 horas', description: 'Atención urgente y soporte humano cuando más lo necesitas.', illustration: SupportIllustration },
+                  { title: 'Repatriación sanitaria', description: 'Traslado médico incluido para cumplir los requisitos de tu situación.', illustration: TravelIllustration },
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="TestimonialGrid" path="components/organisms/TestimonialGrid.tsx" />
+              <TestimonialGrid
+                eyebrow="Opiniones reales"
+                title="La experiencia de quienes ya confían en nosotros"
+                items={[
+                  { author: 'María García', meta: 'Asegurada VitaBlue', comment: 'Un asesoramiento claro, rápido y muy humano.', stars: 5 },
+                  { author: 'Carlos López', meta: 'Cliente desde 2024', comment: 'Encontré la póliza que necesitaba sin llamadas comerciales.', stars: 5 },
+                  { author: 'Ana Martín', meta: 'Asegurada familiar', comment: 'Todo el proceso fue sencillo y transparente.', stars: 5 },
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="PlanComparisonSection" path="components/organisms/PlanComparisonSection.tsx" />
+              <PlanComparisonSection
+                eyebrow="Modalidades"
+                title="Compara tu protección"
+                description="Tres alternativas para elegir con claridad."
+                plans={[
+                  { name: 'Seguro Básico', subtitle: 'Acceso esencial', desc: 'Cobertura médica para el día a día.', profile: 'Personas que buscan una cuota ajustada.', priceText: 'Consultar' },
+                  { name: 'Seguro Completo', subtitle: 'Cobertura amplia', desc: 'Hospitalización y especialistas incluidos.', profile: 'Familias y uso frecuente.', priceText: 'Recomendado', isFeatured: true },
+                  { name: 'Seguro Premium', subtitle: 'Máxima libertad', desc: 'Reembolso y elección de centros.', profile: 'Quienes priorizan flexibilidad.', priceText: 'Consultar' },
+                ]}
+              />
+              <ComponentReference name="PlanCard" path="components/molecules/PlanCard.tsx" />
               <SectionIntro eyebrow="Modalidades" title="Elige cómo quieres estar protegido" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  ['Sin copago', 'Cuota fija y uso ilimitado sin pagos adicionales.', 'Desde 35€/mes', true],
-                  ['Copago reducido', 'Una cuota mensual menor con un pequeño coste por visita.', 'Desde 22€/mes', false],
-                  ['Reembolso', 'Libertad para elegir médico y recuperar parte del gasto.', 'Consultar', false],
-                ].map(([name, description, price, featured]) => (
-                  <Card key={name as string} className={featured ? 'border-primary ring-2 ring-primary/10' : ''}>
-                    <div className="flex flex-col gap-4">
-                      <Badge variant={featured ? 'accent' : 'neutral'}>{featured ? 'Recomendado' : 'Alternativa'}</Badge>
-                      <h3 className="text-xl font-display font-black text-text-main">{name as string}</h3>
-                      <p className="text-sm leading-relaxed text-text-secondary">{description as string}</p>
-                      <p className="text-2xl font-display font-black text-primary">{price as string}</p>
-                      <Button variant={featured ? 'primary' : 'outline'} className="w-full">Ver modalidad</Button>
-                    </div>
-                  </Card>
-                ))}
+                <PlanCard title="Seguro sin copago" subtitle="Tarifa plana mensual" description="Cobertura total e ilimitada sin pagos adicionales al utilizar el seguro." profile="Familias y personas que usan especialistas con frecuencia." priceText="Tranquilidad total" illustration={HealthIllustration} />
+                <PlanCard title="Seguro con copago" subtitle="Cuota reducida" description="Una cuota mensual menor con un pequeño coste por cada visita médica." profile="Personas que acuden al médico pocas veces al año." priceText="Ahorro a largo plazo" illustration={PiggyBankIllustration} />
+                <PlanCard title="Seguro de reembolso" subtitle="Libertad de elección" description="Elige cualquier médico o centro y recupera parte del gasto elegible." profile="Quienes priorizan la libertad de médicos y centros." priceText="Consultar" illustration={CoverageIllustration} />
               </div>
             </div>
 
             <div className="flex flex-col gap-4">
-              <ComponentReference name="FaqSection (candidato)" path="components/organisms/FaqSection.tsx (por extraer)" />
-              <SectionIntro eyebrow="Preguntas frecuentes" title="Resolvemos tus dudas antes de contratar" />
-              <div className="max-w-3xl border border-slate-100 rounded-2xl px-5 bg-slate-50/50">
-                <Accordion title="¿El seguro cumple los requisitos de mi visado?" defaultOpen>
-                  <p>Sí. Mostramos las condiciones relevantes de cada póliza para que puedas comprobar copagos, carencias, hospitalización y repatriación.</p>
-                </Accordion>
-                <Accordion title="¿Puedo recibir ayuda antes de decidir?"><p>Sí, un asesor puede resolver tus dudas sin compromiso.</p></Accordion>
-                <Accordion title="¿Cuándo recibiré la documentación?"><p>La documentación se envía en formato digital después de completar la contratación.</p></Accordion>
+              <ComponentReference name="InsuranceProductCard" path="components/molecules/InsuranceProductCard.tsx" />
+              <div className="grid max-w-2xl gap-4 md:grid-cols-2">
+                <InsuranceProductCard
+                  title="Sanitas Más Salud"
+                  tagline="Cobertura médica completa"
+                  description="Hospitalización, especialistas y servicios digitales en una póliza completa."
+                  features={['Hospitalización incluida', 'Blua Digital']}
+                  price="Desde 35€/mes"
+                  badge="Más vendido"
+                  link="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud"
+                />
+                <InsuranceProductCard
+                  title="Sanitas Profesionales"
+                  tagline="Protección para autónomos"
+                  description="Cobertura especializada con asesoramiento personalizado de VitaBlue."
+                  features={['Red médica nacional', 'Asesoramiento humano']}
+                  price="Consultar"
+                  badge="Premium"
+                  link="https://wa.me/34694583452"
+                  external
+                />
               </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="FaqSection" path="components/organisms/FaqSection.tsx" />
+              <FaqSection
+                eyebrow="Preguntas frecuentes"
+                title="Resolvemos tus dudas antes de contratar"
+                items={[
+                  { question: '¿El seguro cumple los requisitos de mi visado?', answer: 'Sí. Mostramos las condiciones relevantes de cada póliza para que puedas comprobar copagos, carencias, hospitalización y repatriación.' },
+                  { question: '¿Puedo recibir ayuda antes de decidir?', answer: 'Sí, un asesor puede resolver tus dudas sin compromiso.' },
+                  { question: '¿Cuándo recibiré la documentación?', answer: 'La documentación se envía en formato digital después de completar la contratación.' },
+                ]}
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="SanitasTrustSection" path="components/organisms/SanitasTrustSection.tsx" />
+              <SanitasTrustSection />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ComponentReference name="AdvisorHelpSection" path="components/organisms/AdvisorHelpSection.tsx" />
+              <AdvisorHelpSection
+                title="¿Necesitas ayuda para elegir tu seguro?"
+                description="Nuestros asesores te orientan de forma gratuita y sin compromiso."
+                whatsappUrl="https://wa.me/34694583452?text=Hola%20VitaBlue"
+              />
             </div>
 
             <div className="flex flex-col gap-4">
@@ -884,18 +1043,8 @@ const Styleguide = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <ComponentReference name="BlogPostCard (candidato)" path="components/molecules/BlogPostCard.tsx (por extraer)" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {['Guía de copagos y carencias', 'Requisitos del seguro para visado', 'Nueva ley de mascotas en España'].map((title, index) => (
-                  <Card key={title} className="flex flex-col gap-4">
-                    <div className={`h-28 rounded-2xl bg-gradient-to-br ${index === 0 ? 'from-primary/10 to-primary/5' : index === 1 ? 'from-brand-cyan/20 to-brand-cyan/5' : 'from-accent/20 to-accent/5'}`} />
-                    <Badge variant="primary">Guía VitaBlue</Badge>
-                    <h3 className="text-lg font-display font-black text-text-main">{title}</h3>
-                    <p className="text-sm leading-relaxed text-text-secondary">Contenido práctico para entender mejor tu seguro.</p>
-                    <Button variant="ghost" className="self-start">Leer guía <ArrowRight className="h-4 w-4" /></Button>
-                  </Card>
-                ))}
-              </div>
+              <ComponentReference name="BlogPostCard" path="components/molecules/BlogPostCard.tsx" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{blogPosts.filter((post) => post.lang !== 'en').slice(0, 3).map((post) => <BlogPostCard key={post.slug} post={post} />)}</div>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -917,6 +1066,24 @@ const Styleguide = () => {
           </div>
         </section>
       </div>
+
+      <section className="mt-12 flex flex-col gap-8 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+        <h2 className="text-xl font-display font-extrabold text-primary">Organismos de producto</h2>
+        <div className="flex flex-col gap-4">
+          <ComponentReference name="ProductBreadcrumbBar" path="components/organisms/ProductBreadcrumbBar.tsx" />
+          <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Ejemplo de producto' }]} />
+        </div>
+        <div className="flex flex-col gap-4">
+          <ComponentReference name="RequirementsComparisonTable" path="components/organisms/RequirementsComparisonTable.tsx" />
+          <RequirementsComparisonTable
+            tableClassName="bg-white text-sm text-text-secondary"
+            headClassName="bg-slate-50 text-xs font-black uppercase text-text-main"
+            bodyClassName="divide-y divide-slate-100"
+            columns={[{ key: 'requirement', label: 'Requisito', className: 'p-4' }, { key: 'status', label: 'Estado', className: 'p-4' }]}
+            rows={[{ key: 'coverage', cells: [<span className="p-4 font-bold text-text-main">Sin copagos</span>, <span className="p-4 text-success-strong">Incluido</span>] }]}
+          />
+        </div>
+      </section>
 
       {/* Slide-out Drawer Component test */}
       <Drawer 
