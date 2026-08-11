@@ -27,7 +27,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
         <li className="flex min-w-0 items-center gap-1">
           <Link
             to="/"
-            className="flex items-center gap-1 text-text-secondary/70 hover:text-primary transition-colors duration-150"
+            className="flex items-center gap-1 text-text-secondary hover:text-primary transition-colors duration-150"
             aria-label="Vitablue - Inicio"
           >
             <Home className="w-3.5 h-3.5" />
