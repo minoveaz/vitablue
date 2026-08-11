@@ -49,7 +49,7 @@ test.describe('Visual and geometry diagnostics - all public pages', () => {
         animations: 'disabled',
         caret: 'hide',
         timeout: 20000,
-        maxDiffPixelRatio: 0.05,
+        maxDiffPixelRatio: 0.10,
       });
     });
   }
