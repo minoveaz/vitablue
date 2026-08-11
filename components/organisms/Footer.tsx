@@ -145,9 +145,9 @@ export const Footer: React.FC = () => {
           
           {/* Col 1: Sobre VitaBlue */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               {isEnglish ? 'About VitaBlue' : 'Sobre VitaBlue'}
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
                 <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
@@ -179,9 +179,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Seguros de Salud */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               {isEnglish ? 'Health Insurance' : 'Seguros de Salud'}
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
                 <Link to="/productos/seguros-salud" className="hover:text-accent transition-colors duration-150">
@@ -213,9 +213,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 3: Especialidades & Herramientas */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               Herramientas y Más
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
                 <Link to="/productos/seguro-mascotas/sanitas-mascotas" className="hover:text-accent transition-colors duration-150">
@@ -253,9 +253,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 4: Contacto & Legal */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               Contacto y Legal
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-accent shrink-0" />
@@ -270,13 +270,13 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="pt-2 border-t border-slate-800 flex flex-col gap-1.5">
-                <Link to="/aviso-legal" className="hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/aviso-legal" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Aviso Legal
                 </Link>
-                <Link to="/privacidad" className="hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/privacidad" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Privacidad
                 </Link>
-                <Link to="/cookies" className="hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/cookies" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Cookies
                 </Link>
               </li>

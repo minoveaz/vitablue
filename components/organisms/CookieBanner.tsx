@@ -37,7 +37,7 @@ export const CookieBanner: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => setIsVisible(false)}
-                  className="p-2 text-text-secondary/50 hover:text-text-main transition-colors"
+                  className="p-2 text-text-secondary hover:text-text-main transition-colors"
                   aria-label="Cerrar aviso"
                 >
                   <X size={20} />
@@ -47,7 +47,7 @@ export const CookieBanner: React.FC = () => {
               <div className="space-y-2">
                 <h3 className="text-h3 font-display font-extrabold text-text-main leading-tight">Tu privacidad importa</h3>
                 <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                  Utilizamos cookies para optimizar tu experiencia y analizar el tráfico publicitario. Puedes aceptar todas o ver detalles en la <Link to="/cookies" className="text-primary font-bold underline underline-offset-4">Política de Cookies</Link>.
+                  Utilizamos cookies para optimizar tu experiencia y analizar el tráfico publicitario. Puedes aceptar todas o ver detalles en la <Link to="/cookies" className="text-primary-dark font-bold underline underline-offset-4">Política de Cookies</Link>.
                 </p>
               </div>
 
@@ -63,15 +63,15 @@ export const CookieBanner: React.FC = () => {
                 <Button 
                   variant="ghost" 
                   size="md" 
-                  className="!text-text-secondary hover:!text-text-main w-full sm:flex-1"
+                  className="!text-text-main hover:!text-primary-dark w-full sm:flex-1"
                   onClick={() => { rejectOptional(); setIsVisible(false); }}
                 >
                   Rechazar
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest !text-text-secondary">
-                <Shield size={12} className="text-primary" /> Navegación Segura & RGPD
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-main">
+                <Shield size={12} className="text-primary-dark" /> Navegación Segura & RGPD
               </div>
             </div>
           </div>
