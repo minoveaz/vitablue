@@ -19,6 +19,7 @@ export interface RequirementsComparisonTableProps {
   tableClassName?: string;
   headClassName?: string;
   bodyClassName?: string;
+  ariaLabel?: string;
 }
 
 const RequirementsComparisonTable: React.FC<RequirementsComparisonTableProps> = ({
@@ -28,8 +29,14 @@ const RequirementsComparisonTable: React.FC<RequirementsComparisonTableProps> = 
   tableClassName = '',
   headClassName = '',
   bodyClassName = '',
+  ariaLabel = 'Tabla comparativa de requisitos',
 }) => (
-  <div className={`overflow-x-auto rounded-3xl border border-slate-100 shadow-sm ${className}`}>
+  <div
+    role="region"
+    aria-label={ariaLabel}
+    tabIndex={0}
+    className={`overflow-x-auto rounded-3xl border border-slate-100 shadow-sm ${className}`}
+  >
     <table className={`w-full min-w-[980px] table-fixed border-collapse text-left ${tableClassName}`}>
       <thead className={headClassName}>
         <tr>
