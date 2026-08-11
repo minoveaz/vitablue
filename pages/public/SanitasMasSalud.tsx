@@ -480,18 +480,18 @@ export const SanitasMasSalud: React.FC = () => {
                   </div>
                   <h4 className="text-lg font-display font-black leading-snug">Mi Sanitas App</h4>
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                    <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">Videoconsulta</span>
+                    <span className="text-[8px] font-black uppercase tracking-wider text-white">Videoconsulta</span>
                     <p className="text-xs font-bold leading-tight">Médico de urgencia</p>
                     <p className="text-[9px] text-slate-200">Espera estimada: &lt; 5 min</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                    <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">Mi Receta</span>
+                    <span className="text-[8px] font-black uppercase tracking-wider text-white">Mi Receta</span>
                     <p className="text-xs font-bold leading-tight">Prescripción médica</p>
                     <p className="text-[9px] text-slate-200">Disponible y homologada</p>
                   </div>
                 </div>
 
-                <div className="text-[9px] font-bold text-center text-slate-200/60 pb-2">
+                <div className="text-[9px] font-bold text-center text-white/80 pb-2">
                   Cifrado de datos médicos SSL
                 </div>
               </div>

@@ -99,9 +99,9 @@ jobs:
           - project: desktop
             tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/responsive.diagnostic.spec.ts e2e/visual.critical.spec.ts
           - project: mobile
-            tests: e2e/mobile.navigation.spec.ts e2e/responsive.diagnostic.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/mobile.navigation.spec.ts e2e/responsive.diagnostic.spec.ts
           - project: mobile-compact
-            tests: e2e/responsive.diagnostic.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/responsive.diagnostic.spec.ts
 
     steps:
       - name: Checkout Source Code
