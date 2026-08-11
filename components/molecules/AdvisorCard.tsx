@@ -63,11 +63,11 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
       </div>
 
       {/* Advisor CTAs Column */}
-      <div className="w-full md:w-64 bg-slate-50/30 p-6 sm:p-8 border-t md:border-t-0 md:border-l border-slate-100/80 flex flex-col justify-center gap-4">
+      <div className="w-full md:w-72 bg-slate-50/30 p-6 sm:p-8 border-t md:border-t-0 md:border-l border-slate-100/80 flex flex-col justify-center gap-4">
         {/* WhatsApp chat button with official WhatsApp logo */}
         <button 
           onClick={onWhatsAppClick}
-          className="w-full flex h-12 items-center justify-center gap-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-700/25 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-700/20"
+          className="w-full min-h-12 whitespace-nowrap flex items-center justify-center gap-2 rounded-xl bg-whatsapp hover:bg-whatsapp-dark text-white text-xs sm:text-sm font-bold shadow-md shadow-whatsapp/20 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20"
         >
           <WhatsAppIcon size={20} />
           {whatsAppText}

@@ -21,7 +21,7 @@ import { getRecommendations } from '@/utils/recommendationEngine';
 import { getWhatsAppLink } from '@/utils/whatsappRedirect';
 import ProductCard from '@/components/molecules/ProductCard';
 import AdvisorCard from '@/components/molecules/AdvisorCard';
-import TransparencyBlock from '@/components/molecules/TransparencyBlock';
+import ProductTransparencySection from '@/components/organisms/ProductTransparencySection';
 import Button from '@/components/atoms/Button';
 
 const profileTitles: Record<string, string> = {
@@ -364,14 +364,13 @@ const Results: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="px-2">
-                      <TransparencyBlock
+                    <ProductTransparencySection
+                      className="px-2"
                         title={`Transparencia: ${product.name}`}
                         inclusions={product.inclusions}
                         exclusions={product.exclusions}
                         description="Es importante que sepas tanto lo que está cubierto como lo que queda fuera, para evitar sorpresas."
                       />
-                    </div>
                   </div>
                 </React.Fragment>
               ))}

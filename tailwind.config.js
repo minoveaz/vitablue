@@ -24,12 +24,25 @@ export default {
           "accent-dark": "#7A4F00",   // Gold text with accessible contrast
         "brand-cyan": "#94D2BD",    // Badges & Success metrics -> Mint
         "success-strong": "#0F766E", // Accessible success text on light surfaces
-        "whatsapp": "#25D366",      // WhatsApp action
-        "whatsapp-dark": "#20BA5A", // WhatsApp hover state
+        "whatsapp": "#087443",      // WhatsApp action with white text
+        "whatsapp-dark": "#087443", // WhatsApp action state with accessible contrast
         "background-light": "#f8fafc",
         "background-dark": "#001219",
         "surface-soft": "#f4f7f8",
         "surface-muted": "#e8edef",
+        "surface-border": "#e2e8f0",
+        "surface-subtle": "#f1f5f9",
+        "danger": "#be123c",
+        "danger-soft": "#fff1f2",
+        "success": "#0f766e",
+        "success-soft": "#ecfdf5",
+        "on-dark-muted": "#cbd5e1",
+        "illustration-surface-health": "#E6F7F8",
+        "illustration-surface-student": "#EBF7F4",
+        "illustration-surface-expat": "#E6F2F5",
+        "illustration-surface-nomad": "#EAF5F0",
+        "illustration-surface-pet": "#FDF3F5",
+        "illustration-surface-family": "#EDEFFB",
         "text-main": "#001219",     // Main text body -> Midnight
         "text-secondary": "#4a5568",
       },

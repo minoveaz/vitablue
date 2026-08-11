@@ -3,10 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, ShieldCheck, Clock, Award, Check } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
-import Breadcrumbs from '../../components/molecules/Breadcrumbs';
-import AdvisorCard from '../../components/molecules/AdvisorCard';
-import Accordion from '../../components/molecules/Accordion';
+import ProductBreadcrumbBar from '../../components/organisms/ProductBreadcrumbBar';
+import RequirementsComparisonTable from '../../components/organisms/RequirementsComparisonTable';
+import FaqSection from '../../components/organisms/FaqSection';
+import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
 import { Button } from '../../components/atoms/Button';
+import ProductTrustBar from '../../components/organisms/ProductTrustBar';
+import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { StudentIllustration, ProfileIllustration, TravelIllustration } from '../../components/illustrations';
 
 export const ForeignerInsurance: React.FC = () => {
@@ -200,16 +203,7 @@ export const ForeignerInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <div className="bg-slate-50/50 border-b border-slate-100 py-3 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <Breadcrumbs 
-            items={[
-              { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-              { label: 'Seguro para Extranjeros', href: '/productos/seguros-salud/seguro-salud-extranjeros' }
-            ]} 
-          />
-        </div>
-      </div>
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguro para Extranjeros', href: '/productos/seguros-salud/seguro-salud-extranjeros' }]} />
 
       {/* Hero Header */}
       <section className="relative overflow-hidden py-16 lg:py-20 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
@@ -290,43 +284,19 @@ export const ForeignerInsurance: React.FC = () => {
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-8 bg-slate-50 border-y border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-          <div className="flex items-center gap-3.5">
-            <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Homologación Oficial</h4>
-              <p className="text-xs text-text-secondary font-semibold">Válido para Extranjería y todos los consulados de España.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Clock className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Gestión en 24 Horas</h4>
-              <p className="text-xs text-text-secondary font-semibold">Emitimos las pólizas y el certificado oficial en 24h.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Award className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Compromiso de Devolución</h4>
-              <p className="text-xs text-text-secondary font-semibold">Reembolso del 100% de la prima en caso de denegación.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductTrustBar items={[
+        { icon: <ShieldCheck />, title: 'Homologación Oficial', description: 'Válido para Extranjería y todos los consulados de España.' },
+        { icon: <Clock />, title: 'Gestión en 24 Horas', description: 'Emitimos las pólizas y el certificado oficial en 24h.' },
+        { icon: <Award />, title: 'Compromiso de Devolución', description: 'Reembolso del 100% de la prima en caso de denegación.' },
+      ]} />
 
-      {/* Authorized Providers Logos */}
-      <section className="py-10 bg-white border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 text-center space-y-5">
-          <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary">Aseguradoras oficiales homologadas para visado español</p>
-          <div className="flex justify-center items-center gap-12 sm:gap-16">
-            <img src="/images/logo-sanitas.svg" alt="Sanitas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
-            <img src="/images/logo-adeslas.svg" alt="Adeslas" className="h-8 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-200" />
-          </div>
-        </div>
-      </section>
+      <ProviderLogoBar
+        eyebrow="Aseguradoras oficiales homologadas para visado español"
+        providers={[
+          { name: 'Sanitas', logoSrc: '/images/logo-sanitas.svg' },
+          { name: 'Adeslas', logoSrc: '/images/logo-adeslas.svg' },
+        ]}
+      />
 
       {/* Visa Requirements Comparative Table */}
       <section className="py-16 sm:py-20 w-full max-w-5xl mx-auto px-6 sm:px-8 text-left">
@@ -340,88 +310,34 @@ export const ForeignerInsurance: React.FC = () => {
           </p>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl border border-slate-150 shadow-sm bg-white">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-150">
-                <th className="p-5 text-xs font-black text-text-secondary uppercase tracking-wider">Criterio Legal</th>
-                <th className="p-5 text-xs font-black text-text-secondary uppercase tracking-wider">Estudiantes</th>
-                <th className="p-5 text-xs font-black text-text-secondary uppercase tracking-wider">Expatriados / Residentes</th>
-                <th className="p-5 text-xs font-black text-text-secondary uppercase tracking-wider">Nómadas Digitales</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-150 text-sm font-semibold text-text-main">
-              <tr>
-                <td className="p-5 font-bold text-text-secondary">Trámite Principal</td>
-                <td className="p-5">Visado de Estudios / Estancia</td>
-                <td className="p-5">Residencia No Lucrativa / Golden Visa</td>
-                <td className="p-5">Visado de Teletrabajo Internacional</td>
-              </tr>
-              <tr>
-                <td className="p-5 font-bold text-text-secondary">Copagos y Franquicias</td>
-                <td className="p-5 text-primary flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</td>
-                <td className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</span></td>
-                <td className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</span></td>
-              </tr>
-              <tr>
-                <td className="p-5 font-bold text-text-secondary">Carencias de Servicio</td>
-                <td className="p-5 text-primary flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</td>
-                <td className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</span></td>
-                <td className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</span></td>
-              </tr>
-              <tr>
-                <td className="p-5 font-bold text-text-secondary">Repatriación Sanitaria</td>
-                <td className="p-5 text-primary font-bold">Obligatoria e Incluida</td>
-                <td className="p-5 text-text-secondary font-medium">No obligatoria (Recomendada)</td>
-                <td className="p-5 text-text-secondary font-medium">No obligatoria (Recomendada)</td>
-              </tr>
-              <tr>
-                <td className="p-5 font-bold text-text-secondary">Requisito Clave</td>
-                <td className="p-5">Matrícula en centro autorizado</td>
-                <td className="p-5">Fondos &gt; 28.800€/año o inversión</td>
-                <td className="p-5">Ingresos remotos &gt; 2.600€/mes</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* FAQs General Section */}
-      <section className="py-16 sm:py-20 bg-slate-50/50 border-t border-slate-100 w-full">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preguntas y Respuestas</span>
-            <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-              Dudas sobre el seguro médico para extranjeros
-            </h2>
-          </div>
-          <div className="bg-white border border-slate-100 rounded-3xl p-4 sm:p-6 shadow-inner divide-y divide-slate-200/60">
-            {faqs.map((faq, index) => (
-              <Accordion 
-                key={index} 
-                title={faq.q}
-                defaultOpen={index === 0}
-              >
-                {faq.a}
-              </Accordion>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Help Section */}
-      <section className="py-16 max-w-4xl mx-auto px-6 sm:px-8 w-full text-left space-y-8">
-        <div className="space-y-2">
-          <h3 className="text-h2 font-display font-extrabold text-text-main">¿No estás seguro de qué visado te corresponde?</h3>
-          <p className="text-base text-text-secondary font-semibold leading-relaxed">
-            Nuestros asesores senior en extranjería te atenderán directamente por WhatsApp o llamada gratuita para guiarte en los requisitos específicos del consulado de tu país de origen.
-          </p>
-        </div>
-        <AdvisorCard 
-          onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros.', '_blank')}
-          onPhoneClick={() => window.open('tel:+34900839240')}
+        <RequirementsComparisonTable
+          className="border-slate-150 bg-white"
+          tableClassName="w-full text-left border-collapse"
+          headClassName=""
+          bodyClassName="divide-y divide-slate-150 text-sm font-semibold text-text-main"
+          columns={[
+            { key: 'criterion', label: 'Criterio Legal', className: 'p-5 text-xs font-black text-text-secondary uppercase tracking-wider bg-slate-50/80 border-b border-slate-150' },
+            { key: 'students', label: 'Estudiantes', className: 'p-5 text-xs font-black text-text-secondary uppercase tracking-wider bg-slate-50/80 border-b border-slate-150' },
+            { key: 'expats', label: 'Expatriados / Residentes', className: 'p-5 text-xs font-black text-text-secondary uppercase tracking-wider bg-slate-50/80 border-b border-slate-150' },
+            { key: 'nomads', label: 'Nómadas Digitales', className: 'p-5 text-xs font-black text-text-secondary uppercase tracking-wider bg-slate-50/80 border-b border-slate-150' },
+          ]}
+          rows={[
+            { key: 'main-process', cells: [<span className="p-5 font-bold text-text-secondary">Trámite Principal</span>, <span className="p-5">Visado de Estudios / Estancia</span>, <span className="p-5">Residencia No Lucrativa / Golden Visa</span>, <span className="p-5">Visado de Teletrabajo Internacional</span>] },
+            { key: 'copays', cells: [<span className="p-5 font-bold text-text-secondary">Copagos y Franquicias</span>, <span className="p-5 text-primary flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</span>, <span className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</span></span>, <span className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin copagos (Todo incluido)</span></span>] },
+            { key: 'waiting-periods', cells: [<span className="p-5 font-bold text-text-secondary">Carencias de Servicio</span>, <span className="p-5 text-primary flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</span>, <span className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</span></span>, <span className="p-5 text-primary"><span className="flex items-center gap-1.5"><Check className="w-4 h-4" /> Sin carencias (Día 1)</span></span>] },
+            { key: 'repatriation', cells: [<span className="p-5 font-bold text-text-secondary">Repatriación Sanitaria</span>, <span className="p-5 text-primary font-bold">Obligatoria e Incluida</span>, <span className="p-5 text-text-secondary font-medium">No obligatoria (Recomendada)</span>, <span className="p-5 text-text-secondary font-medium">No obligatoria (Recomendada)</span>] },
+            { key: 'key-requirement', cells: [<span className="p-5 font-bold text-text-secondary">Requisito Clave</span>, <span className="p-5">Matrícula en centro autorizado</span>, <span className="p-5">Fondos &gt; 28.800€/año o inversión</span>, <span className="p-5">Ingresos remotos &gt; 2.600€/mes</span>] },
+          ]}
         />
       </section>
+
+      <FaqSection eyebrow="Preguntas y Respuestas" title="Dudas sobre el seguro médico para extranjeros" items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
+
+      <AdvisorHelpSection
+        title="¿No estás seguro de qué visado te corresponde?"
+        description="Nuestros asesores senior en extranjería te atenderán directamente por WhatsApp o llamada gratuita para guiarte en los requisitos específicos del consulado de tu país de origen."
+        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros."
+      />
     </div>
   );
 };
