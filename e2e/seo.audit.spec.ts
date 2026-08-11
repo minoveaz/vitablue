@@ -36,10 +36,36 @@ interface SeoRoute {
   expectedCanonical: string;
 }
 
+const prerenderedKeywords: Record<string, string> = {
+  '/productos/seguros-salud': 'seguro',
+  '/productos/seguros-salud/seguro-medico-estudiantes': 'estudiante',
+  '/en/health-insurance-student-visa-spain': 'insurance',
+  '/productos/seguros-salud/seguro-expatriados': 'expatriado',
+  '/en/health-insurance-expatriates-spain': 'expatriate',
+  '/productos/seguros-salud/seguro-nomadas-digitales': 'nómada',
+  '/en/digital-nomad-insurance-spain': 'nomad',
+  '/productos/seguros-salud/seguro-salud-extranjeros': 'extranjero',
+  '/productos/seguros-salud/seguros-sanitas': 'Sanitas',
+  '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud': 'Sanitas',
+  '/productos/seguros-salud/seguros-sanitas/international-students': 'student',
+  '/productos/seguro-mascotas/sanitas-mascotas': 'mascota',
+  '/productos/seguro-para-decesos/asistencia-familiar': 'familiar',
+  '/productos/seguro-viaje': 'viaje',
+  '/productos/seguro-vida': 'vida',
+  '/blog/requisitos-seguro-medico-visado-estudiante-espana': 'visado',
+  '/blog/seguro-medico-residencia-no-lucrativa-espana': 'residencia',
+  '/blog/seguro-de-salud-pareja-de-hecho-nie': 'NIE',
+  '/blog/que-es-el-copago-seguro-salud': 'copago',
+  '/blog/periodos-de-carencia-seguro-medico': 'carencia',
+  '/blog/preexistencias-medicas-seguro-salud': 'preexistencia',
+  '/en/blog/student-visa-spain-health-insurance-requirements': 'visa',
+  '/en/blog/health-insurance-spain-non-lucrative-visa-requirements': 'non-lucrative',
+};
+
 const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({
   name: route.name,
   path: route.path,
-  prerenderedKeyword: route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.replace(/-/g, ' ') || 'VitaBlue',
+  prerenderedKeyword: prerenderedKeywords[route.path] ?? (route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.replace(/-/g, ' ') || 'VitaBlue'),
   expectedCanonical: route.expectedCanonical,
 }));
 
