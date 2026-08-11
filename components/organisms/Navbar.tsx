@@ -415,7 +415,6 @@ export const Navbar: React.FC = () => {
                 to={isEnglish ? getLanguageTogglePath() : '#'}
                 className={`flex items-center gap-1 py-1 px-2 rounded-lg transition-all ${!isEnglish ? 'bg-primary/10 text-primary font-black border border-primary/25' : 'text-text-secondary hover:text-primary'}`}
               >
-                <span>🇪🇸</span>
                 <span>ES</span>
               </Link>
               <span className="text-slate-300">|</span>
@@ -423,7 +422,6 @@ export const Navbar: React.FC = () => {
                 to={!isEnglish ? getLanguageTogglePath() : '#'}
                 className={`flex items-center gap-1 py-1 px-2 rounded-lg transition-all ${isEnglish ? 'bg-primary/10 text-primary font-black border border-primary/25' : 'text-text-secondary hover:text-primary'}`}
               >
-                <span>🇬🇧</span>
                 <span>EN</span>
               </Link>
             </div>
@@ -475,7 +473,6 @@ export const Navbar: React.FC = () => {
                     to={isEnglish ? getLanguageTogglePath() : '#'}
                     className={`flex items-center gap-1 py-1 px-2 rounded-lg ${!isEnglish ? 'bg-primary/10 text-primary border border-primary/25' : 'text-text-secondary'}`}
                   >
-                    <span>🇪🇸</span>
                     <span>ES</span>
                   </Link>
                   <span className="text-slate-300">|</span>
@@ -483,7 +480,6 @@ export const Navbar: React.FC = () => {
                     to={!isEnglish ? getLanguageTogglePath() : '#'}
                     className={`flex items-center gap-1 py-1 px-2 rounded-lg ${isEnglish ? 'bg-primary/10 text-primary border border-primary/25' : 'text-text-secondary'}`}
                   >
-                    <span>🇬🇧</span>
                     <span>EN</span>
                   </Link>
                 </div>
