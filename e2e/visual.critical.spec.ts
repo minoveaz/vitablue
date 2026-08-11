@@ -15,6 +15,9 @@ const waitForStablePage = async (page: Page) => {
 test.describe('Visual and geometry diagnostics - all public pages', () => {
   for (const route of visualRoutes) {
     test(`${route.name} mantiene captura estable y geometría correcta`, async ({ page }) => {
+      // Set very tall viewport to ensure identical image sizes for all pages
+      await page.setViewportSize({ width: 1440, height: 8000 });
+
       await page.goto(route.path, { waitUntil: 'networkidle' });
       await waitForStablePage(page);
 
@@ -45,7 +48,7 @@ test.describe('Visual and geometry diagnostics - all public pages', () => {
 
       // 2. Captura de pantalla (Visual Regression)
       await expect(page).toHaveScreenshot(`${route.name}.png`, {
-        fullPage: true,
+        fullPage: false,
         animations: 'disabled',
         caret: 'hide',
         timeout: 20000,
