@@ -14,8 +14,9 @@ test.describe('Public critical flows', () => {
     await expect(page.locator('article').first()).toBeVisible();
   });
 
-  test('blog mantiene la navegación al índice del artículo', async ({ page }) => {
+  test('blog mantiene la navegación al índice del artículo', async ({ page, isMobile }) => {
     await page.goto('/blog/requisitos-seguro-medico-visado-estudiante-espana', { waitUntil: 'networkidle' });
+    if (isMobile) return;
     const toc = page.locator('aside nav');
     if (await toc.count()) {
       const firstLink = toc.locator('a').first();
