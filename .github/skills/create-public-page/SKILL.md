@@ -28,14 +28,17 @@ Before the first edit, state one local hypothesis about the owning pattern and o
 
 Classify the page content before writing JSX:
 
-- Atoms: controls, labels, badges and small visual primitives.
-- Molecules: cards, section intros, breadcrumbs, process steps and repeated content blocks.
-- Organisms: heroes, grids, trust sections, FAQ sections, transparency panels and major page bands.
+- Atoms: controls, labels, badges and small visual primitives (e.g. `Logo`, `Button`, `InputText`, `Checkbox`, `WhatsAppIcon`).
+- Molecules: cards, section intros, breadcrumbs, process steps and repeated content blocks (e.g. `ContactChannelCard`, `FormField`, `TrustCardGrid`, `SectionIntro`).
+- Organisms: heroes, grids, trust sections, FAQ sections, transparency panels and major page bands (e.g. `BrandHero`, `FaqSection`, `TestimonialGrid`, `AdvisorHelpSection`).
 - Page-only inline markup: only genuinely unique editorial content, data tables, calculations or one-off interactions.
 
 Search for equivalent structures in at least two nearby public pages. If the structure is repeated, reuse or extract a component with a small, typed API. Do not duplicate a complete hero or section wrapper in a second page.
 
 Keep page files responsible for content composition and page-specific data. Keep reusable components responsible for structure, layout and behavior. Avoid broad refactors unrelated to the new page.
+
+**Mandatory Rule for Forms and Inputs:**
+Never use raw HTML inputs or direct styling for labels. Wrap form fields in the `<FormField>` molecule to guarantee the exact styling, font hierarchies, transformations (`uppercase`), and accessible focus states defined in the Styleguide.
 
 ## 3. Register and implement the route
 
@@ -57,7 +60,7 @@ Every indexable page must include:
 
 - One meaningful `<title>` between 10 and 80 characters where practical.
 - One meta description between 50 and 200 characters where practical.
-- Exactly one semantic `<h1>`.
+- Exactly one semantic `<h1>` (usually inside `BrandHero`).
 - A canonical URL supplied by the shared public SEO layer.
 - `og:title`, `og:description` and `og:image`.
 - Structured data only when it accurately describes the page.
@@ -78,8 +81,13 @@ npm run --silent audit:components:ci
 For a route-specific change, run focused Playwright tests first. Use the project configuration from `vitablue-v2`; do not run Playwright from the workspace parent:
 
 ```bash
+# Verify SEO, canonical tags, og metadatas, and single H1 on desktop
 npm exec -- playwright test e2e/seo.audit.spec.ts --project=desktop --grep='<route-or-test-name>' --reporter=line
+
+# Verify WCAG2.1 AAA Accessibility constraints (contrast, focus, etc.)
 npm exec -- playwright test e2e/accessibility.audit.spec.ts --project=desktop --grep='<route-or-test-name>' --reporter=line
+
+# Validate there is no horizontal layout overflow on mobile (375px)
 npm exec -- playwright test e2e/responsive.diagnostic.spec.ts --project=mobile --grep='<route-or-test-name>' --reporter=line
 ```
 
@@ -96,7 +104,7 @@ Do not report completion until all applicable checks pass:
 - Axe accessibility audit with no critical or serious violations.
 - Mobile overflow/responsive audit.
 - Focused visual regression, with snapshots updated only when expected.
-- `npm run --silent audit:components:ci` with no unjustified candidate blocks.
+- `npm run --silent audit:components:ci` with no unjustified candidate blocks (requires >=90% score).
 - `git diff --check`.
 
 Also inspect the final diff for duplicated sections, missing route metadata, accidental private/indexable flags, incorrect language strings, and unrelated changes.

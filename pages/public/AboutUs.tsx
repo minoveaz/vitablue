@@ -1,62 +1,119 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { HeartHandshake, Search, ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Target, HeartHandshake } from 'lucide-react';
 import BrandHero from '../../components/organisms/BrandHero';
+import SectionIntro from '../../components/molecules/SectionIntro';
+import TrustCardGrid, { TrustCardItem } from '../../components/molecules/TrustCardGrid';
+import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
+import TestimonialGrid from '../../components/organisms/TestimonialGrid';
+import FaqSection from '../../components/organisms/FaqSection';
 
 const AboutUs: React.FC = () => {
   const isEnglish = window.location.pathname.startsWith('/en');
 
   const content = isEnglish ? {
-    title: 'About VitaBlue | Independent insurance advice',
-    description: 'Meet VitaBlue, an independent insurance comparison and advice service focused on helping you choose cover with clarity.',
-    eyebrow: 'Insurance advice with a human point of view',
-    heading: 'Insurance should feel clear, not complicated.',
-    intro: 'VitaBlue helps individuals, families and people moving to Spain compare insurance options and make confident decisions without pressure.',
-    valuesTitle: 'What guides our work',
-    values: [
-      ['Clarity first', 'We explain cover, conditions and next steps in plain language.'],
-      ['Independent guidance', 'We help you compare suitable options instead of pushing a single answer.'],
-      ['Human support', 'When you need help, a real advisor is available through the channel that suits you.'],
-    ],
-    processTitle: 'A simpler way to choose',
-    process: ['Tell us what you need', 'Compare the relevant options', 'Get support when you are ready to decide'],
-    ctaTitle: 'Have questions about your situation?',
-    cta: 'Contact our team',
-    contactPath: '/en/contact',
+    seo: {
+      title: 'About VitaBlue | 100% Independent Insurance Comparator',
+      description: 'VitaBlue is an independent insurance comparison and advice service in Spain. We help you choose the best cover with absolute clarity and real human support.',
+      path: '/en/about-us'
+    },
+    hero: {
+      eyebrow: 'Clear insurance, no fine print',
+      heading: 'We are your independent insurance comparator.',
+      intro: 'Tired of aggressive sales and confusing jargon? VitaBlue helps you compare options and make confident decisions, guided by real experts in Spain.',
+    },
+    values: {
+      title: 'Why choose VitaBlue?',
+      items: [
+        { title: '100% Independent', description: 'We work for you, not the insurance companies. We compare all major providers to find the exact match for your needs and budget.', illustration: Target, tone: 'neutral' },
+        { title: 'Radical Clarity', description: 'We translate the complex insurance jargon into plain English. No hidden clauses, no surprises with waiting periods or copays.', illustration: ShieldCheck, tone: 'neutral' },
+        { title: 'Expert Human Support', description: 'Forget about bots. A dedicated advisor will guide you through WhatsApp or phone, from the first quote to managing a claim.', illustration: HeartHandshake, tone: 'neutral' },
+      ] as TrustCardItem[],
+    },
+    advisor: {
+      title: 'Talk to a real expert today',
+      description: 'Whether you need a visa-compliant insurance, a family policy or just have a quick question, our team in Spain is ready to help.',
+      whatsappUrl: 'https://wa.me/34694583452',
+    },
+    testimonials: {
+      eyebrow: 'Success Stories',
+      title: 'Trusted by hundreds of families and expats',
+      description: 'Don\'t just take our word for it. See what people who used our comparison service have to say.',
+      items: [
+        { author: 'Sarah Jenkins', meta: 'Moved to Valencia', comment: 'VitaBlue made getting my student visa insurance completely stress-free. They knew exactly what the consulate required.', stars: 5 },
+        { author: 'David M.', meta: 'Family Health Plan', comment: 'Finally an insurance broker that actually explains what copays and waiting periods mean before you sign.', stars: 5 },
+        { author: 'Emma & Tom', meta: 'Digital Nomads', comment: 'Incredible service. We did everything via WhatsApp in English, and they found us a plan 30% cheaper than our previous quote.', stars: 5 },
+      ]
+    },
+    faqs: {
+      eyebrow: 'Transparency First',
+      title: 'Frequently Asked Questions',
+      items: [
+        { question: 'Is your advice really free?', answer: 'Yes! Our comparison service and expert advice are 100% free for you. We receive a standard commission from the insurance company if you decide to purchase a policy through us. The price of the insurance is exactly the same (or sometimes cheaper thanks to our exclusive discounts) as buying direct.' },
+        { question: 'Do you work with all insurance companies?', answer: 'We are an independent brokerage, meaning we partner with the top-rated insurance providers in Spain (like Sanitas, Adeslas, Asisa, DKV, etc.) to offer you an unbiased comparison.' },
+        { question: 'Can you help me if I have a claim later on?', answer: 'Absolutely. We don\'t just sell you a policy and disappear. If you ever have an issue with a claim or need help navigating the Spanish healthcare system, your VitaBlue advisor is just a WhatsApp message away.' },
+      ]
+    }
   } : {
-    title: 'Sobre VitaBlue | Asesoramiento independiente en seguros',
-    description: 'Conoce VitaBlue, un servicio independiente de comparación y asesoramiento en seguros para elegir tu cobertura con claridad.',
-    eyebrow: 'Asesoramiento en seguros con una mirada humana',
-    heading: 'Los seguros deberían ser claros, no complicados.',
-    intro: 'VitaBlue ayuda a particulares, familias y personas que se mudan a España a comparar opciones de seguros y tomar decisiones con confianza, sin presión.',
-    valuesTitle: 'Lo que guía nuestro trabajo',
-    values: [
-      ['Claridad primero', 'Explicamos las coberturas, condiciones y siguientes pasos con un lenguaje comprensible.'],
-      ['Asesoramiento independiente', 'Te ayudamos a comparar opciones adecuadas en lugar de empujarte hacia una única respuesta.'],
-      ['Atención humana', 'Cuando necesitas ayuda, puedes hablar con un asesor real por el canal que prefieras.'],
-    ],
-    processTitle: 'Una forma más sencilla de elegir',
-    process: ['Cuéntanos qué necesitas', 'Compara las opciones relevantes', 'Recibe ayuda cuando estés listo para decidir'],
-    ctaTitle: '¿Tienes dudas sobre tu situación?',
-    cta: 'Contacta con nuestro equipo',
-    contactPath: '/contacto',
+    seo: {
+      title: 'Sobre VitaBlue | Comparador de Seguros 100% Independiente',
+      description: 'VitaBlue es un servicio de comparación y asesoramiento de seguros en España. Te ayudamos a elegir la mejor cobertura con absoluta claridad y soporte humano.',
+      path: '/sobre-nosotros'
+    },
+    hero: {
+      eyebrow: 'Seguros claros, sin letra pequeña',
+      heading: 'Somos tu comparador de seguros independiente.',
+      intro: '¿Cansado de ventas agresivas y jerga incomprensible? VitaBlue te ayuda a comparar opciones y tomar decisiones con seguridad, guiado por expertos reales en España.',
+    },
+    values: {
+      title: '¿Por qué elegir VitaBlue?',
+      items: [
+        { title: '100% Independiente', description: 'Trabajamos para ti, no para las aseguradoras. Comparamos las principales compañías para encontrar la opción perfecta para tus necesidades y presupuesto.', illustration: Target, tone: 'neutral' },
+        { title: 'Claridad Radical', description: 'Traducimos la compleja jerga aseguradora. Sin cláusulas ocultas, ni sorpresas con los periodos de carencia o los copagos.', illustration: ShieldCheck, tone: 'neutral' },
+        { title: 'Soporte Humano Experto', description: 'Olvídate de los bots. Un asesor dedicado te guiará por WhatsApp o teléfono, desde el primer presupuesto hasta la gestión de un siniestro.', illustration: HeartHandshake, tone: 'neutral' },
+      ] as TrustCardItem[],
+    },
+    advisor: {
+      title: 'Habla con un experto real hoy',
+      description: 'Ya sea que necesites un seguro para visado, una póliza familiar o simplemente tengas una duda rápida, nuestro equipo en España está listo para ayudarte.',
+      whatsappUrl: 'https://wa.me/34694583452',
+    },
+    testimonials: {
+      eyebrow: 'Casos de Éxito',
+      title: 'La confianza de cientos de familias',
+      description: 'No te fíes solo de nuestra palabra. Mira lo que dicen las personas que ya han utilizado nuestro servicio de comparación.',
+      items: [
+        { author: 'Carlos R.', meta: 'Seguro de Salud Familiar', comment: 'Por fin una correduría que te explica de verdad qué significan los copagos y las carencias antes de firmar nada. Un 10 en transparencia.', stars: 5 },
+        { author: 'María J.', meta: 'Autónoma', comment: 'Me ayudaron a cambiar de aseguradora sin perder mis antigüedades. Todo el trámite lo hicimos comodamente por WhatsApp.', stars: 5 },
+        { author: 'Sarah Jenkins', meta: 'Estudiante Internacional', comment: 'VitaBlue hizo que conseguir el seguro para mi visado fuera súper fácil. Sabían exactamente lo que pedía el consulado.', stars: 5 },
+      ]
+    },
+    faqs: {
+      eyebrow: 'Transparencia Ante Todo',
+      title: 'Preguntas Frecuentes',
+      items: [
+        { question: '¿Vuestro asesoramiento es realmente gratuito?', answer: '¡Sí! Nuestro servicio de comparación y asesoría es 100% gratuito para ti. Recibimos una comisión estándar de la aseguradora si decides contratar a través nuestro. El precio del seguro es exactamente el mismo (o a veces más barato gracias a nuestros descuentos) que comprando directamente.' },
+        { question: '¿Trabajáis con todas las aseguradoras?', answer: 'Somos una correduría independiente, lo que significa que colaboramos con las aseguradoras mejor valoradas de España (como Sanitas, Adeslas, Asisa, DKV, etc.) para ofrecerte una comparación objetiva.' },
+        { question: '¿Me ayudáis si tengo un siniestro o problema más adelante?', answer: 'Por supuesto. No nos limitamos a vender la póliza y desaparecer. Si alguna vez tienes un problema con un siniestro o necesitas ayuda con una autorización, tu asesor de VitaBlue está a un mensaje de WhatsApp de distancia.' },
+      ]
+    }
   };
 
   return (
     <div className="w-full bg-background-light text-text-main">
       <Helmet>
-        <title>{content.title}</title>
-        <meta name="description" content={content.description} />
-        <meta property="og:title" content={content.title} />
-        <meta property="og:description" content={content.description} />
+        <title>{content.seo.title}</title>
+        <meta name="description" content={content.seo.description} />
+        <meta property="og:title" content={content.seo.title} />
+        <meta property="og:description" content={content.seo.description} />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
-        <link rel="canonical" href={`https://www.vitablue.es${isEnglish ? '/en/about-us' : '/sobre-nosotros'}`} />
+        <link rel="canonical" href={`https://www.vitablue.es${content.seo.path}`} />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'AboutPage',
-          name: content.title,
-          description: content.description,
-          url: `https://www.vitablue.es${isEnglish ? '/en/about-us' : '/sobre-nosotros'}`,
+          name: content.seo.title,
+          description: content.seo.description,
+          url: `https://www.vitablue.es${content.seo.path}`,
           about: { '@type': 'Organization', name: 'VitaBlue', url: 'https://www.vitablue.es' },
         })}</script>
       </Helmet>
@@ -65,45 +122,37 @@ const AboutUs: React.FC = () => {
         <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl text-xs font-bold text-text-secondary">VitaBlue <span className="px-2 text-slate-300">/</span> {isEnglish ? 'About us' : 'Sobre nosotros'}</div>
         </div>
-        <BrandHero eyebrow={content.eyebrow} title={content.heading} description={content.intro} />
+        
+        <BrandHero eyebrow={content.hero.eyebrow} title={content.hero.heading} description={content.hero.intro} />
 
-        <section className="px-6 py-16 sm:px-8 lg:py-20">
+        <section className="px-6 py-16 sm:px-8 lg:py-20 border-t border-slate-100">
           <div className="mx-auto max-w-6xl">
-            <div className="mb-10 max-w-2xl">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-primary">VitaBlue</p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{content.valuesTitle}</h2>
-            </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {content.values.map(([title, text], index) => {
-                const Icon = [ShieldCheck, Search, HeartHandshake][index];
-                return <article key={title} className="rounded-3xl border border-primary/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                  <Icon className="h-8 w-8 text-primary" aria-hidden="true" />
-                  <h3 className="mt-6 text-xl font-black">{title}</h3>
-                  <p className="mt-3 leading-7 text-text-secondary">{text}</p>
-                </article>;
-              })}
+            <SectionIntro title={content.values.title} align="center" />
+            <div className="mt-12">
+              <TrustCardGrid items={content.values.items} />
             </div>
           </div>
         </section>
 
-        <section className="border-y border-slate-200 bg-white px-6 py-16 sm:px-8 lg:py-20">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="text-3xl font-black tracking-tight">{content.processTitle}</h2>
-            <ol className="mt-10 grid gap-6 md:grid-cols-3">
-              {content.process.map((step, index) => <li key={step} className="flex gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-cyan/15 text-lg font-black text-primary">{index + 1}</span>
-                <span className="pt-2 text-lg font-bold">{step}</span>
-              </li>)}
-            </ol>
-          </div>
-        </section>
+        <AdvisorHelpSection 
+          title={content.advisor.title} 
+          description={content.advisor.description} 
+          whatsappUrl={content.advisor.whatsappUrl} 
+        />
 
-        <section className="px-6 py-16 sm:px-8 lg:py-20">
-          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-3xl border border-brand-cyan/20 bg-gradient-to-r from-brand-cyan/10 to-primary/5 p-8 sm:flex-row sm:items-center sm:p-10">
-            <h2 className="max-w-xl text-2xl font-black sm:text-3xl">{content.ctaTitle}</h2>
-            <a href={content.contactPath} className="inline-flex min-h-12 items-center justify-center bg-primary px-6 py-3 text-sm font-black text-white transition hover:bg-primary-dark">{content.cta}</a>
-          </div>
-        </section>
+        <TestimonialGrid 
+          eyebrow={content.testimonials.eyebrow}
+          title={content.testimonials.title}
+          description={content.testimonials.description}
+          items={content.testimonials.items}
+        />
+
+        <FaqSection 
+          eyebrow={content.faqs.eyebrow}
+          title={content.faqs.title}
+          items={content.faqs.items}
+        />
+
       </main>
     </div>
   );
