@@ -48,7 +48,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   return (
     <div className="flex flex-col gap-6 rounded-3xl border border-slate-100 bg-white p-6 text-left text-text-main shadow-xl sm:p-8">
       <div>
-        <h3 className="text-h3 font-display font-black">{title}</h3>
+        <h2 className="text-h3 font-display font-black">{title}</h2>
         <p className="mt-1 text-xs font-semibold text-text-secondary">{description}</p>
       </div>
 
