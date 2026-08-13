@@ -5,7 +5,10 @@
   "main": "src/index.ts",
   "scripts": {
     "preview": "remotion preview src/index.ts",
-    "render": "remotion render src/index.ts ReelVisaRejection out/reel-visa.mp4"
+    "render": "remotion render src/index.ts ReelVisaRejection out/reel-visa-vertical.mp4",
+    "render:vertical": "remotion render src/index.ts ReelVisaRejection out/reel-visa-vertical.mp4",
+    "render:square": "remotion render src/index.ts ReelVisaRejectionSquare out/reel-visa-square.mp4",
+    "render:landscape": "remotion render src/index.ts ReelVisaRejectionLandscape out/reel-visa-landscape.mp4"
   },
   "dependencies": {
     "remotion": "4.0.228"

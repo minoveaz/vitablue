@@ -1,59 +1,70 @@
-import { useCurrentFrame, useVideoConfig, spring } from 'remotion';
-import { AdvisorCard } from '@/components/molecules/AdvisorCard';
+import { Audio, Img, interpolate, OffthreadVideo, Sequence, useCurrentFrame, useVideoConfig, spring } from 'remotion';
+import type { VideoBrandAdapter } from '../engine/brandAdapter';
+import type { VideoProject } from '../domain/videoProject';
+import { defaultVisaRejectionProject } from '../domain/defaultProject';
+import { resolveVideoTemplate } from '../engine/templateRegistry';
+import { SceneRenderer } from './SceneRenderer';
 
-export interface SlideData {
-  id: string;
-  durationFrames: number;
-  type: string;
-  content: Record<string, any>;
-}
+export type SlideData = VideoProject['scenes'][number];
 
 export interface VisaRejectionProps {
   slides: SlideData[];
+  brandAdapter: VideoBrandAdapter;
 }
 
-export const defaultVisaRejectionProps: VisaRejectionProps = {
-  slides: [
-    {
-      id: 'slide_1',
-      durationFrames: 150,
-      type: 'text_hook',
-      content: {
-        text: 'Si vas a pedir tu visado para España, no cometas el error de contratar un seguro de viaje común.',
-        badge: 'VISA READY'
-      }
-    },
-    {
-      id: 'slide_2',
-      durationFrames: 300,
-      type: 'provider_logos',
-      content: {
-        text: 'Las oficinas de Extranjería exigen pólizas emitidas por compañías autorizadas en España.'
-      }
-    },
-    {
-      id: 'slide_3',
-      durationFrames: 450,
-      type: 'requirements_list',
-      content: {
-        title: 'Requisitos Obligatorios:',
-        items: ['Cobertura Completa (100%)', 'Sin Copagos (0 €)', 'Repatriación Incluida']
-      }
-    },
-    {
-      id: 'slide_4',
-      durationFrames: 450,
-      type: 'advisor_cta',
-      content: {
-        advisorName: 'Sofía',
-        role: 'Asesora experta',
-        cta: 'Escríbenos por WhatsApp si necesitas verificar tu póliza'
-      }
-    }
-  ]
+type VisaRejectionStoryboardProps = Pick<VisaRejectionProps, 'slides'>;
+
+const TimedTextLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) => (
+  <>
+    {layers.filter((layer): layer is Extract<SlideData['layers'][number], { type: 'text' }> => layer.type === 'text' && layer.visible !== false).map((layer) => {
+      const startFrame = layer.timing?.startFrame ?? 0;
+      const durationInFrames = layer.timing?.durationInFrames ?? 1;
+      return (
+        <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
+          <div style={{ position: 'absolute', left: 60, right: 60, bottom: 260, zIndex: 20, fontSize: 34, fontWeight: 700, color: '#ffffff' }}>
+            {layer.text}
+          </div>
+        </Sequence>
+      );
+    })}
+  </>
+);
+
+const TimedMediaLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) => (
+  <>
+    {layers.filter((layer) => layer.visible !== false && layer.type !== 'text' && layer.type !== 'shape' && layer.type !== 'component').map((layer) => {
+      const src = layer.type === 'audio'
+        ? layer.src
+        : layer.type === 'image' || layer.type === 'video'
+          ? layer.asset.src
+          : undefined;
+      if (!src) return null;
+
+      const startFrame = layer.timing?.startFrame ?? 0;
+      const durationInFrames = layer.timing?.durationInFrames ?? 1;
+      return (
+        <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
+          {layer.type === 'image' && (
+            <Img src={src} style={{ position: 'absolute', inset: 60, width: 'calc(100% - 120px)', height: '55%', objectFit: 'cover', zIndex: 5, borderRadius: 24 }} />
+          )}
+          {layer.type === 'video' && (
+            <OffthreadVideo src={src} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 2, opacity: 0.7 }} />
+          )}
+          {layer.type === 'audio' && <Audio src={src} volume={layer.volume ?? 1} />}
+        </Sequence>
+      );
+    })}
+  </>
+);
+
+export const defaultVisaRejectionProps: VisaRejectionStoryboardProps = {
+  slides: defaultVisaRejectionProject.scenes,
 };
 
-export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({ slides = defaultVisaRejectionProps.slides }) => {
+export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({
+  slides = defaultVisaRejectionProps.slides,
+  brandAdapter,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -64,12 +75,12 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({ slides = defau
 
   if (slides && slides.length > 0) {
     for (const slide of slides) {
-      if (frame >= accumulatedFrames && frame < accumulatedFrames + slide.durationFrames) {
+      if (frame >= accumulatedFrames && frame < accumulatedFrames + slide.durationInFrames) {
         activeSlide = slide;
         localFrame = frame - accumulatedFrames;
         break;
       }
-      accumulatedFrames += slide.durationFrames;
+      accumulatedFrames += slide.durationInFrames;
     }
   }
 
@@ -79,6 +90,18 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({ slides = defau
     fps,
     config: { damping: 15 },
   });
+  const activeTemplate = activeSlide ? resolveVideoTemplate(activeSlide.templateId) : null;
+  const transitionDuration = Math.min(
+    activeSlide?.transition?.durationInFrames ?? 0,
+    Math.floor((activeSlide?.durationInFrames ?? 0) / 2),
+  );
+  const transitionProgress = transitionDuration > 0
+    ? interpolate(localFrame, [0, transitionDuration], [0, 1], { extrapolateRight: 'clamp' })
+    : 1;
+  const transitionType = activeSlide?.transition?.type ?? 'none';
+  const contentTransform = transitionType === 'slide'
+    ? `translateX(${interpolate(transitionProgress, [0, 1], [80, 0])}px)`
+    : undefined;
 
   return (
     <div
@@ -117,68 +140,23 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({ slides = defau
       <div style={{ zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ margin: 0, fontSize: '48px', fontWeight: 900, color: '#94D2BD', letterSpacing: '-0.02em' }}>VitaBlue</h2>
         <span style={{ fontSize: '24px', fontWeight: 700, border: '2px solid rgba(148, 210, 189, 0.4)', padding: '10px 24px', borderRadius: '9999px', letterSpacing: '0.1em' }}>
-          {activeSlide?.type === 'text_hook' ? (activeSlide.content.badge || 'INFO') : 'VISA READY'}
+          {activeSlide?.templateId === 'text_hook' && typeof activeSlide.content.badge === 'string' ? activeSlide.content.badge : 'VISA READY'}
         </span>
       </div>
 
       {/* Dynamic Slide Layouts */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10, gap: '40px', opacity: slideSpring }}>
-        {activeSlide?.type === 'text_hook' && (
-          <div>
-            <h1 style={{ fontSize: '72px', lineHeight: 1.25, fontWeight: 800, margin: 0 }}>
-              {activeSlide.content.text}
-            </h1>
-          </div>
-        )}
-
-        {activeSlide?.type === 'provider_logos' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            <h1 style={{ fontSize: '60px', lineHeight: 1.3, fontWeight: 800, margin: 0 }}>
-              {activeSlide.content.text}
-            </h1>
-            <div style={{ display: 'flex', gap: '20px', fontSize: '24px', opacity: 0.6, fontWeight: 'bold', marginTop: '20px' }}>
-              <span>SANITAS</span> · <span>ADESLAS</span> · <span>ASISA</span>
-            </div>
-          </div>
-        )}
-
-        {activeSlide?.type === 'requirements_list' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            <h2 style={{ fontSize: '48px', color: '#94D2BD', fontWeight: 800 }}>{activeSlide.content.title || 'Requisitos'}</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {(activeSlide.content.items || []).map((req: string) => (
-                <div
-                  key={req}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '24px',
-                    fontSize: '42px',
-                    fontWeight: 700,
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    padding: '24px 32px',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  <span style={{ color: '#EE9B00', fontSize: '48px' }}>✓</span>
-                  <span>{req}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeSlide?.type === 'advisor_cta' && (
-          <div style={{ transform: 'scale(1.6)', transformOrigin: 'center' }}>
-            <AdvisorCard
-              name={activeSlide.content.advisorName}
-              role={activeSlide.content.role}
-              whatsAppText={activeSlide.content.cta}
-            />
-          </div>
-        )}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10, gap: '40px', opacity: slideSpring * (transitionType === 'fade' ? transitionProgress : 1), transform: contentTransform }}>
+        {activeSlide && <SceneRenderer scene={activeSlide} brandAdapter={brandAdapter} />}
       </div>
+
+      {activeSlide && <TimedTextLayers layers={activeSlide.layers} />}
+      {activeSlide && <TimedMediaLayers layers={activeSlide.layers} />}
+
+      {!activeTemplate && (
+        <div style={{ zIndex: 10, color: '#EE9B00', fontSize: '28px' }}>
+          Plantilla de vídeo no registrada.
+        </div>
+      )}
 
       {/* Footer / CTA */}
       <div
@@ -206,7 +184,7 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({ slides = defau
             fontWeight: 700,
           }}
         >
-          {activeSlide?.type === 'advisor_cta' && activeSlide.content.cta ? activeSlide.content.cta : 'Pregúntanos'}
+          {activeSlide?.templateId === 'advisor_cta' && typeof activeSlide.content.cta === 'string' ? activeSlide.content.cta : 'Pregúntanos'}
         </div>
       </div>
     </div>

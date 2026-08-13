@@ -207,7 +207,7 @@ La timeline multicapa es importante, pero no debe bloquear la primera versión �
 - [x] Validar IDs, duraciones, formatos y referencias de plantillas.
 - [x] Definir una versión de esquema, `video-schema-v1`.
 - [x] Crear un storyboard JSON de ejemplo sin depender de la UI.
-- [ ] Añadir pruebas unitarias para duración, selección de escena y validación.
+- [x] Añadir pruebas unitarias para duración, selección de escena y validación.
 - [x] Añadir `AssetRef` opcional sin acoplarlo todavía a Storage.
 - [x] Documentar la primera versión de `VideoProjectRepository` sin implementar persistencia.
 
@@ -217,16 +217,17 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 
 ### Fase 2 - Motor Remotion y adaptador VitaBlue
 
-- [ ] Separar el motor de las importaciones directas de VitaBlue.
-- [ ] Mantener las plantillas y componentes específicos de VitaBlue fuera del dominio común.
-- [ ] Crear un registro de plantillas por `templateId`.
-- [ ] Crear un `VideoBrandAdapter` ligero para Logo, AdvisorCard, ProductCard, ilustraciones y tokens.
-- [ ] Implementar una composición genérica que renderice las escenas desde el storyboard.
-- [ ] Hacer que la duración de `Composition` derive de las escenas.
-- [ ] Resolver correctamente frames antes, durante y después de cada escena.
-- [ ] Mantener la misma composición para preview y render CLI.
+- [x] Separar el motor de las importaciones directas de VitaBlue.
+- [x] Mantener las plantillas y componentes específicos de VitaBlue fuera del dominio común.
+- [x] Crear un registro de plantillas por `templateId`.
+- [x] Crear un `VideoBrandAdapter` ligero para el componente de asesoría de VitaBlue.
+- [x] Implementar una composición genérica que renderice las escenas desde el storyboard.
+- [x] Hacer que la duración de `Composition` derive de las escenas.
+- [x] Resolver correctamente frames antes, durante y después de cada escena.
+- [x] Mantener la misma composición para preview y render CLI.
+- [x] Validar el proyecto y las plantillas antes de iniciar un render.
 - [ ] Evitar versionar vídeos generados dentro de `packages/video-studio/out/`.
-- [ ] Verificar que una composición no requiere importar un componente concreto de VitaBlue desde el core.
+- [x] Verificar que una composición no requiere importar un componente concreto de VitaBlue desde el core.
 
 **Salida:** un vídeo vertical generado desde JSON utilizando componentes de VitaBlue.
 
@@ -234,42 +235,42 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 
 - [ ] Crear una pantalla privada en Marketing Studio.
 - [ ] Mantener el editor como aplicación de VitaBlue, sin introducir todavía organización, workspace, Brand Hub ni repositorios multi-tenant.
-- [ ] Listar, seleccionar, duplicar, eliminar y reordenar escenas.
-- [ ] Editar duración y contenido de la escena activa.
-- [ ] Mostrar formularios específicos por plantilla.
-- [ ] Añadir presets de proyecto y de formato.
+- [x] Listar, seleccionar, duplicar, eliminar y reordenar escenas.
+- [x] Editar duración y contenido de la escena activa.
+- [x] Mostrar formularios específicos por plantilla.
+- [x] Añadir presets de proyecto y de formato.
 - [ ] Implementar preview con `@remotion/player`.
-- [ ] Sincronizar reproducción, pausa, reinicio, frame actual y escena activa.
-- [ ] Añadir scrubbing y salto directo a una escena.
-- [ ] Avisar de textos largos, campos faltantes y contenido que exceda límites.
-- [ ] No borrar contenido automáticamente al cambiar una plantilla sin confirmación.
-- [ ] Mantener el estado mediante memoria o una implementación local sustituible, sin poner `localStorage` dentro del dominio.
+- [x] Sincronizar reproducción, pausa, reinicio, frame actual y escena activa.
+- [x] Añadir scrubbing y salto directo a una escena.
+- [x] Avisar de textos largos, campos faltantes y contenido que exceda límites.
+- [x] No borrar contenido automáticamente al cambiar una plantilla sin confirmación.
+- [x] Mantener el estado mediante memoria o una implementación local sustituible, sin poner `localStorage` dentro del dominio.
 
 **Salida:** una persona no técnica puede crear y ajustar un vídeo sin editar código.
 
 ### Fase 4 - Timeline y edición audiovisual
 
-- [ ] Mostrar una timeline horizontal con escala temporal.
-- [ ] Representar cada escena como un bloque editable.
-- [ ] Añadir cabezal de reproducción sincronizado con el Player.
-- [ ] Permitir ajustar inicio y duración mediante interacción controlada.
+- [x] Mostrar una timeline horizontal con escala temporal.
+- [x] Representar cada escena como un bloque editable.
+- [x] Añadir cabezal de reproducción sincronizado con el Player.
+- [x] Permitir ajustar inicio y duración mediante interacción controlada.
 - [ ] Añadir tracks de texto, imagen, componente, vídeo y audio cuando el caso de uso lo justifique.
-- [ ] Añadir transiciones con presets seguros.
-- [ ] Añadir reordenación mediante drag-and-drop con teclado como alternativa accesible.
-- [ ] Mantener límites para evitar escenas imposibles de renderizar.
+- [x] Añadir transiciones con presets seguros.
+- [x] Añadir reordenación mediante drag-and-drop con teclado como alternativa accesible.
+- [x] Mantener límites para evitar escenas imposibles de renderizar.
 
 **Salida:** edición temporal suficientemente potente para producción de contenido corto, sin intentar replicar un editor profesional completo.
 
 ### Fase 5 - Exportación y biblioteca de plantillas
 
-- [ ] Crear comando de render con props del proyecto.
-- [ ] Mostrar validación previa al render.
-- [ ] Mostrar progreso, errores y ruta de salida.
-- [ ] Definir nombres de archivo y metadatos de exportación.
-- [ ] Permitir exportar variantes 9:16, 1:1 y otras configuraciones soportadas.
-- [ ] Crear biblioteca versionada de plantillas y presets.
-- [ ] Permitir duplicar una pieza y modificar solo copy, colores o CTA.
-- [ ] Añadir snapshots o fixtures visuales para detectar regresiones.
+- [x] Crear comando de render con props del proyecto.
+- [x] Mostrar validación previa al render.
+- [x] Mostrar progreso, errores y ruta de salida.
+- [x] Definir nombres de archivo y metadatos de exportación.
+- [x] Permitir exportar variantes 9:16, 1:1 y otras configuraciones soportadas.
+- [x] Crear biblioteca versionada de plantillas y presets.
+- [x] Permitir duplicar una pieza y modificar solo copy, colores o CTA.
+- [x] Añadir snapshots o fixtures visuales para detectar regresiones.
 - [ ] Separar presets y plantillas de VitaBlue de los contratos que se trasladarán al Content Engine de Loopdev.
 
 **Salida:** flujo repetible desde plantilla hasta archivo publicable.

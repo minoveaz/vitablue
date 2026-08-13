@@ -31,3 +31,6 @@ test-results/
 
 # misc
 *.local
+
+playwright/.auth/
+packages/video-studio/out/

@@ -83,6 +83,26 @@ export const validateVideoProject = (
       });
     }
 
+    for (const layer of scene.layers) {
+      const timing = layer.timing;
+      if (!timing) continue;
+
+      const isValid = Number.isInteger(timing.startFrame)
+        && timing.startFrame >= 0
+        && Number.isInteger(timing.durationInFrames)
+        && timing.durationInFrames > 0
+        && timing.startFrame + timing.durationInFrames <= scene.durationInFrames;
+
+      if (!isValid) {
+        issues.push({
+          code: 'invalid_layer_timing',
+          message: 'Layer timing must stay within its scene duration.',
+          sceneId: scene.id,
+          layerId: layer.id,
+        });
+      }
+    }
+
     if (
       scene.transition?.durationInFrames !== undefined &&
       (!Number.isInteger(scene.transition.durationInFrames) ||

@@ -17,7 +17,12 @@ export const defaultVisaRejectionProject: VideoProject = {
         text: 'Si vas a pedir tu visado para Espana, no cometas el error de contratar un seguro de viaje comun.',
         badge: 'VISA READY',
       },
-      layers: [],
+      layers: [{
+        id: 'slide_1-hook',
+        type: 'text',
+        text: 'Hook principal',
+        timing: { startFrame: 0, durationInFrames: 150 },
+      }],
     },
     {
       id: 'slide_2',

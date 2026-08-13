@@ -27,6 +27,7 @@ export default defineConfig({
     : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   use: {
     baseURL,
+    storageState: 'playwright/.auth/user.json',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

@@ -4,9 +4,22 @@ import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
 import Logo from '@/components/atoms/Logo';
-import { MessageSquare, Download, Image as ImageIcon, Video, AlertCircle } from 'lucide-react';
+import { MessageSquare, Download, Image as ImageIcon, Video, AlertCircle, Copy, Trash2, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../packages/video-studio/src/compositions/ReelVisaRejection';
+import { vitablueBrandAdapter } from '../packages/video-studio/src/adapters/vitablue';
+import { videoTemplateRegistry } from '../packages/video-studio/src/engine/templateRegistry';
+import { defaultVisaRejectionProject } from '../packages/video-studio/src/domain/defaultProject';
+import { useVideoProjectEditor } from './hooks/useVideoProjectEditor';
+import { VideoTimeline } from './components/VideoTimeline';
+
+const getSlideText = (content: Record<string, unknown>, key: string): string =>
+  typeof content[key] === 'string' ? content[key] as string : '';
+
+const getSlideItems = (content: Record<string, unknown>): string[] =>
+  Array.isArray(content.items)
+    ? content.items.filter((item): item is string => typeof item === 'string')
+    : [];
 
 export const SocialGenerator: React.FC = () => {
   // Safe-guard to prevent this page from rendering/working in production
@@ -26,55 +39,47 @@ export const SocialGenerator: React.FC = () => {
   const playerRef = useRef<PlayerRef>(null);
 
   // Structured Slide-based Storyboard State
-  const [slides, setSlides] = useState<SlideData[]>([
-    {
-      id: 'slide_1',
-      durationFrames: 150, // 5 seconds
-      type: 'text_hook',
-      content: {
-        text: 'Si vas a pedir tu visado para España, no cometas el error de contratar un seguro de viaje común.',
-        badge: 'VISA READY'
-      }
-    },
-    {
-      id: 'slide_2',
-      durationFrames: 300, // 10 seconds
-      type: 'provider_logos',
-      content: {
-        text: 'Las oficinas de Extranjería exigen pólizas emitidas por compañías autorizadas en España.'
-      }
-    },
-    {
-      id: 'slide_3',
-      durationFrames: 450, // 15 seconds
-      type: 'requirements_list',
-      content: {
-        title: 'Requisitos Obligatorios:',
-        items: ['Cobertura Completa (100%)', 'Sin Copagos (0 €)', 'Repatriación Incluida']
-      }
-    },
-    {
-      id: 'slide_4',
-      durationFrames: 450, // 15 seconds
-      type: 'advisor_cta',
-      content: {
-        advisorName: 'Sofía',
-        role: 'Asesora experta',
-        cta: 'Escríbenos por WhatsApp si necesitas verificar tu póliza'
-      }
-    }
-  ]);
+  const {
+    scenes: slides,
+    updateScene,
+    updateSceneContent,
+    addScene,
+    duplicateScene,
+    removeScene,
+    moveScene,
+    moveSceneToIndex,
+    addTextLayer,
+    addLayer,
+    removeLayer,
+    updateLayer,
+    getSceneWarnings,
+    loadPreset,
+  } = useVideoProjectEditor();
 
   const [activeSlideId, setActiveSlideId] = useState('slide_1');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [selectedLayerId, setSelectedLayerId] = useState<string>();
+  const totalFrames = slides.reduce((total, slide) => total + slide.durationInFrames, 0);
+  const totalSeconds = Math.ceil(totalFrames / 30);
+  const editorWarnings = slides.flatMap((slide) => getSceneWarnings(slide.id));
 
   React.useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
 
     const onFrameChange = (e: { detail: { frame: number } }) => {
-      setCurrentFrame(e.detail.frame);
+      const frame = e.detail.frame;
+      setCurrentFrame(frame);
+
+      let startFrame = 0;
+      const activeScene = slides.find((slide) => {
+        const isActive = frame >= startFrame && frame < startFrame + slide.durationInFrames;
+        startFrame += slide.durationInFrames;
+        return isActive;
+      });
+
+      if (activeScene) setActiveSlideId(activeScene.id);
     };
 
     const onPlay = () => setIsPlaying(true);
@@ -132,6 +137,16 @@ export const SocialGenerator: React.FC = () => {
 
   const handleExport = async () => {
     if (!previewRef.current) return;
+
+    const blockingWarnings = editorWarnings.filter((warning) => (
+      warning.includes('Falta completar') ||
+      warning.includes('mayor que cero') ||
+      warning.includes('al menos un requisito')
+    ));
+    if (blockingWarnings.length > 0) {
+      setExportError('Completa los campos obligatorios del storyboard antes de exportar.');
+      return;
+    }
 
     setIsExporting(true);
     setExportError(null);
@@ -453,7 +468,31 @@ export const SocialGenerator: React.FC = () => {
           {/* Left column: Slide Storyboard Editor */}
           <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left">
             <div>
-              <h2 className="text-lg font-bold text-text-main">Storyboard de Escenas</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold text-text-main">Storyboard de Escenas</h2>
+                <div className="flex items-center gap-2">
+                  <select
+                    aria-label="Preset de storyboard"
+                    defaultValue="visa-rejection"
+                    onChange={(event) => {
+                      if (event.target.value === 'visa-rejection') {
+                        loadPreset(defaultVisaRejectionProject.scenes);
+                        setActiveSlideId('slide_1');
+                      }
+                    }}
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[11px] font-semibold text-text-secondary"
+                  >
+                    <option value="visa-rejection">Preset Visa Rejection</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSlideId(addScene())}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1.5 text-[11px] font-bold text-white hover:bg-primary-dark"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Añadir
+                  </button>
+                </div>
+              </div>
               <p className="text-xs text-text-secondary mt-1">Organiza y edita los bloques secuenciales de tu video.</p>
             </div>
 
@@ -464,18 +503,41 @@ export const SocialGenerator: React.FC = () => {
                 {slides.map((slide, idx) => (
                   <button
                     key={slide.id}
+                    draggable
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData('text/video-scene-id', slide.id);
+                      event.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      const draggedId = event.dataTransfer.getData('text/video-scene-id');
+                      if (!draggedId || draggedId === slide.id) return;
+                      const targetIndex = slides.findIndex((item) => item.id === slide.id);
+                      moveSceneToIndex(draggedId, targetIndex);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'ArrowUp') {
+                        event.preventDefault();
+                        moveScene(slide.id, 'up');
+                      }
+                      if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        moveScene(slide.id, 'down');
+                      }
+                    }}
                     onClick={() => {
                       setActiveSlideId(slide.id);
                       if (playerRef.current) {
                         // Calculate start frame of this slide
                         const startFrame = slides
                           .slice(0, idx)
-                          .reduce((sum, s) => sum + s.durationFrames, 0);
+                          .reduce((sum, s) => sum + s.durationInFrames, 0);
                         playerRef.current.seekTo(startFrame);
                         setCurrentFrame(startFrame);
                       }
                     }}
-                    className={`flex w-full items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex w-full items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-all cursor-grab active:cursor-grabbing ${
                       activeSlideId === slide.id
                         ? 'border-primary bg-primary/5 text-primary'
                         : 'border-slate-100 hover:border-slate-200 text-text-secondary bg-slate-50/50'
@@ -485,9 +547,9 @@ export const SocialGenerator: React.FC = () => {
                       <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
                         {idx + 1}
                       </span>
-                      <span className="capitalize">{slide.type.replace('_', ' ')}</span>
+                      <span className="capitalize">{videoTemplateRegistry[slide.templateId].label}</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">{(slide.durationFrames / 30).toFixed(0)}s</span>
+                    <span className="text-[10px] text-slate-400 font-mono">{(slide.durationInFrames / 30).toFixed(0)}s</span>
                   </button>
                 ))}
               </div>
@@ -499,57 +561,137 @@ export const SocialGenerator: React.FC = () => {
               if (!activeSlide) return null;
 
               const handleSlideContentChange = (key: string, val: any) => {
-                setSlides(prev => prev.map(s => {
-                  if (s.id === activeSlideId) {
-                    return {
-                      ...s,
-                      content: {
-                        ...s.content,
-                        [key]: val
-                      }
-                    };
-                  }
-                  return s;
-                }));
+                updateSceneContent(activeSlideId, key, val);
+              };
+              const selectedLayer = activeSlide.layers.find((layer) => layer.id === selectedLayerId);
+              const updateSelectedLayerTiming = (key: 'startFrame' | 'durationInFrames', value: number) => {
+                if (!selectedLayer) return;
+                const currentTiming = selectedLayer.timing ?? {
+                  startFrame: 0,
+                  durationInFrames: activeSlide.durationInFrames,
+                };
+                const nextTiming = { ...currentTiming, [key]: value };
+                const maxDuration = activeSlide.durationInFrames - nextTiming.startFrame;
+                nextTiming.durationInFrames = Math.max(1, Math.min(nextTiming.durationInFrames, maxDuration));
+                nextTiming.startFrame = Math.max(0, Math.min(nextTiming.startFrame, activeSlide.durationInFrames - 1));
+                updateLayer(activeSlide.id, selectedLayer.id, { timing: nextTiming });
               };
 
               return (
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-black uppercase text-primary tracking-wider">Editar Escena Activa</span>
-                    <span className="text-[10px] font-mono text-slate-400">{activeSlide.id.toUpperCase()}</span>
+                    <div className="flex items-center gap-1">
+                      <button type="button" title="Subir escena" onClick={() => moveScene(activeSlide.id, 'up')} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-primary"><ChevronUp className="h-3.5 w-3.5" /></button>
+                      <button type="button" title="Bajar escena" onClick={() => moveScene(activeSlide.id, 'down')} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-primary"><ChevronDown className="h-3.5 w-3.5" /></button>
+                      <button type="button" title="Duplicar escena" onClick={() => duplicateScene(activeSlide.id)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-primary"><Copy className="h-3.5 w-3.5" /></button>
+                      <button
+                        type="button"
+                        title="Eliminar escena"
+                        onClick={() => {
+                          const nextSlide = slides.find((slide) => slide.id !== activeSlide.id);
+                          removeScene(activeSlide.id);
+                          if (nextSlide) setActiveSlideId(nextSlide.id);
+                        }}
+                        className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="ml-1 text-[10px] font-mono text-slate-400">{activeSlide.id.toUpperCase()}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Duración (segundos)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      step={1}
+                      value={(activeSlide.durationInFrames / 30).toString()}
+                      onChange={(e) => updateScene(activeSlideId, {
+                        durationInFrames: Math.max(1, Math.round(Number(e.target.value || 0) * 30)),
+                      })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                    />
                   </div>
 
                   {/* Slide Type Selection */}
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Plantilla Visual</label>
                     <select
-                      value={activeSlide.type}
+                      value={activeSlide.templateId}
                       onChange={(e) => {
-                        setSlides(prev => prev.map(s => {
-                          if (s.id === activeSlideId) {
-                            return { ...s, type: e.target.value, content: {} };
-                          }
-                          return s;
-                        }));
+                        const nextTemplateId = e.target.value as SlideData['templateId'];
+                        const hasContent = Object.values(activeSlide.content).some((value) => (
+                          Array.isArray(value) ? value.length > 0 : String(value).trim().length > 0
+                        ));
+
+                        if (
+                          hasContent &&
+                          !window.confirm('Cambiar de plantilla borrará el contenido actual de esta escena. ¿Continuar?')
+                        ) return;
+
+                        updateScene(activeSlideId, {
+                          templateId: nextTemplateId,
+                          content: {},
+                        });
                       }}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white outline-none focus:border-primary"
                     >
-                      <option value="text_hook">Gancho de Texto (Hook)</option>
-                      <option value="provider_logos">Logos de Aseguradoras</option>
-                      <option value="requirements_list">Lista de Requisitos</option>
-                      <option value="advisor_cta">Llamado a la Acción (Asesor)</option>
+                      {Object.values(videoTemplateRegistry).map((template) => (
+                        <option key={template.id} value={template.id}>{template.label}</option>
+                      ))}
                     </select>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Transición</label>
+                      <select
+                        value={activeSlide.transition?.type ?? 'none'}
+                        onChange={(event) => updateScene(activeSlideId, {
+                          transition: {
+                            type: event.target.value as 'none' | 'fade' | 'slide',
+                            durationInFrames: activeSlide.transition?.durationInFrames ?? 15,
+                          },
+                        })}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                      >
+                        <option value="none">Ninguna</option>
+                        <option value="fade">Fundido</option>
+                        <option value="slide">Deslizamiento</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Frames</label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={Math.max(0, Math.floor(activeSlide.durationInFrames / 2))}
+                        step={1}
+                        value={activeSlide.transition?.durationInFrames ?? 0}
+                        onChange={(event) => updateScene(activeSlideId, {
+                          transition: {
+                            type: activeSlide.transition?.type ?? 'none',
+                            durationInFrames: Math.min(
+                              Math.max(0, Number(event.target.value || 0)),
+                              Math.floor(activeSlide.durationInFrames / 2),
+                            ),
+                          },
+                        })}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                      />
+                    </div>
+                  </div>
+
                   {/* Context dynamic fields */}
-                  {activeSlide.type === 'text_hook' && (
+                  {activeSlide.templateId === 'text_hook' && (
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Etiqueta (Badge)</label>
                         <input
                           type="text"
-                          value={activeSlide.content.badge || ''}
+                          value={getSlideText(activeSlide.content, 'badge')}
                           onChange={(e) => handleSlideContentChange('badge', e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                           placeholder="VISA READY"
@@ -558,7 +700,7 @@ export const SocialGenerator: React.FC = () => {
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Texto Principal</label>
                         <textarea
-                          value={activeSlide.content.text || ''}
+                          value={getSlideText(activeSlide.content, 'text')}
                           onChange={(e) => handleSlideContentChange('text', e.target.value)}
                           rows={3}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white resize-none"
@@ -568,11 +710,11 @@ export const SocialGenerator: React.FC = () => {
                     </div>
                   )}
 
-                  {activeSlide.type === 'provider_logos' && (
+                  {activeSlide.templateId === 'provider_logos' && (
                     <div className="space-y-1.5">
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Texto Explicativo</label>
                       <textarea
-                        value={activeSlide.content.text || ''}
+                        value={getSlideText(activeSlide.content, 'text')}
                         onChange={(e) => handleSlideContentChange('text', e.target.value)}
                         rows={3}
                         className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white resize-none"
@@ -581,13 +723,13 @@ export const SocialGenerator: React.FC = () => {
                     </div>
                   )}
 
-                  {activeSlide.type === 'requirements_list' && (
+                  {activeSlide.templateId === 'requirements_list' && (
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Título de Sección</label>
                         <input
                           type="text"
-                          value={activeSlide.content.title || ''}
+                          value={getSlideText(activeSlide.content, 'title')}
                           onChange={(e) => handleSlideContentChange('title', e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                           placeholder="Requisitos Obligatorios"
@@ -596,7 +738,7 @@ export const SocialGenerator: React.FC = () => {
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Requisitos (separados por comas)</label>
                         <textarea
-                          value={activeSlide.content.items ? activeSlide.content.items.join(', ') : ''}
+                          value={getSlideItems(activeSlide.content).join(', ')}
                           onChange={(e) => handleSlideContentChange('items', e.target.value.split(',').map(s => s.trim()))}
                           rows={3}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white resize-none"
@@ -606,13 +748,13 @@ export const SocialGenerator: React.FC = () => {
                     </div>
                   )}
 
-                  {activeSlide.type === 'advisor_cta' && (
+                  {activeSlide.templateId === 'advisor_cta' && (
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Nombre Asesor</label>
                         <input
                           type="text"
-                          value={activeSlide.content.advisorName || ''}
+                          value={getSlideText(activeSlide.content, 'advisorName')}
                           onChange={(e) => handleSlideContentChange('advisorName', e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                           placeholder="Sofía"
@@ -622,12 +764,88 @@ export const SocialGenerator: React.FC = () => {
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Texto del Botón CTA</label>
                         <input
                           type="text"
-                          value={activeSlide.content.cta || ''}
+                          value={getSlideText(activeSlide.content, 'cta')}
                           onChange={(e) => handleSlideContentChange('cta', e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                           placeholder="Consultar WhatsApp"
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {selectedLayer && (
+                    <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-primary">Capa seleccionada</span>
+                        <span className="text-[10px] font-bold uppercase text-slate-400">{selectedLayer.type}</span>
+                      </div>
+                      {selectedLayer.type === 'text' && (
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Contenido</label>
+                          <textarea
+                            value={selectedLayer.text}
+                            onChange={(event) => updateLayer(activeSlide.id, selectedLayer.id, { text: event.target.value })}
+                            className="min-h-16 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                      )}
+                      {(selectedLayer.type === 'image' || selectedLayer.type === 'video') && (
+                        <label className="space-y-1.5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Fuente del recurso</span>
+                          <input
+                            type="text"
+                            value={selectedLayer.asset.src ?? ''}
+                            onChange={(event) => updateLayer(activeSlide.id, selectedLayer.id, { asset: { ...selectedLayer.asset, src: event.target.value } })}
+                            placeholder="/assets/mi-recurso.mp4"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                          />
+                        </label>
+                      )}
+                      {selectedLayer.type === 'audio' && (
+                        <label className="space-y-1.5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Fuente de audio</span>
+                          <input
+                            type="text"
+                            value={selectedLayer.src}
+                            onChange={(event) => updateLayer(activeSlide.id, selectedLayer.id, { src: event.target.value })}
+                            placeholder="/assets/musica.mp3"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                          />
+                        </label>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <label className="space-y-1.5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Inicio (frames)</span>
+                          <input
+                            type="number"
+                            min={0}
+                            max={Math.max(0, activeSlide.durationInFrames - 1)}
+                            value={selectedLayer.timing?.startFrame ?? 0}
+                            onChange={(event) => updateSelectedLayerTiming('startFrame', Number(event.target.value))}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                          />
+                        </label>
+                        <label className="space-y-1.5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Duración (frames)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={activeSlide.durationInFrames}
+                            value={selectedLayer.timing?.durationInFrames ?? activeSlide.durationInFrames}
+                            onChange={(event) => updateSelectedLayerTiming('durationInFrames', Number(event.target.value))}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {getSceneWarnings(activeSlide.id).length > 0 && (
+                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                      <p className="font-bold">Revisa esta escena antes de renderizar</p>
+                      <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                        {getSceneWarnings(activeSlide.id).map((warning) => <li key={warning}>{warning}</li>)}
+                      </ul>
                     </div>
                   )}
                 </div>
@@ -658,9 +876,10 @@ export const SocialGenerator: React.FC = () => {
                   ref={playerRef}
                   component={ReelVisaRejection}
                   inputProps={{
-                    slides: slides
+                    slides,
+                    brandAdapter: vitablueBrandAdapter,
                   }}
-                  durationInFrames={1800}
+                  durationInFrames={slides.reduce((total, slide) => total + slide.durationInFrames, 0)}
                   fps={30}
                   compositionWidth={1080}
                   compositionHeight={1920}
@@ -671,6 +890,35 @@ export const SocialGenerator: React.FC = () => {
                   controls={false}
                 />
               </div>
+
+              <VideoTimeline
+                scenes={slides}
+                currentFrame={currentFrame}
+                fps={30}
+                onSeek={(frame) => {
+                  playerRef.current?.seekTo(frame);
+                  setCurrentFrame(frame);
+                }}
+                onSelectScene={(sceneId, startFrame) => {
+                  setActiveSlideId(sceneId);
+                  playerRef.current?.seekTo(startFrame);
+                  setCurrentFrame(startFrame);
+                }}
+                onResizeScene={(sceneId, durationInFrames) => updateScene(sceneId, { durationInFrames })}
+                selectedLayerId={selectedLayerId}
+                onSelectLayer={setSelectedLayerId}
+                onToggleLayer={(layerId, property) => {
+                  const scene = slides.find((item) => item.id === activeSlideId);
+                  const layer = scene?.layers.find((item) => item.id === layerId);
+                  if (layer) updateLayer(activeSlideId, layerId, { [property]: layer[property] === false });
+                }}
+                onRemoveLayer={(layerId) => {
+                  removeLayer(activeSlideId, layerId);
+                  setSelectedLayerId(undefined);
+                }}
+                onAddTextLayer={() => addTextLayer(activeSlideId)}
+                onAddLayer={(type) => addLayer(activeSlideId, type)}
+              />
 
               {/* Custom External Controls & Timeline Scrubber */}
               <div className="w-full max-w-[360px] bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-4 text-left">
@@ -685,13 +933,13 @@ export const SocialGenerator: React.FC = () => {
                         return `${mins}:${secs}`;
                       })()}
                     </span>
-                    <span>01:00</span>
+                    <span>{String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:{String(totalSeconds % 60).padStart(2, '0')}</span>
                   </div>
                   <input
                     type="range"
                     min={0}
-                    max={1800}
-                    value={currentFrame}
+                    max={Math.max(0, totalFrames - 1)}
+                    value={Math.min(currentFrame, Math.max(0, totalFrames - 1))}
                     onChange={(e) => {
                       if (playerRef.current) {
                         playerRef.current.seekTo(Number(e.target.value));
@@ -717,7 +965,7 @@ export const SocialGenerator: React.FC = () => {
                       Reiniciar
                     </button>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-400">30 FPS · 1800 frames</span>
+                  <span className="text-[10px] font-bold text-slate-400">30 FPS · {totalFrames} frames</span>
                 </div>
               </div>
             </div>

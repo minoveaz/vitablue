@@ -18,41 +18,47 @@ export interface AssetRef {
   alt?: string;
 }
 
-export interface TextLayer {
-  type: 'text';
+export interface LayerTiming {
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export interface LayerBase {
   id: string;
+  timing?: LayerTiming;
+  visible?: boolean;
+  locked?: boolean;
+}
+
+export interface TextLayer extends LayerBase {
+  type: 'text';
   text: string;
 }
 
-export interface ImageLayer {
+export interface ImageLayer extends LayerBase {
   type: 'image';
-  id: string;
   asset: AssetRef;
   alt?: string;
 }
 
-export interface VideoLayer {
+export interface VideoLayer extends LayerBase {
   type: 'video';
-  id: string;
   asset: AssetRef;
 }
 
-export interface ShapeLayer {
+export interface ShapeLayer extends LayerBase {
   type: 'shape';
-  id: string;
   shape: 'rectangle' | 'circle';
 }
 
-export interface ComponentLayer {
+export interface ComponentLayer extends LayerBase {
   type: 'component';
-  id: string;
   componentId: string;
   props: Record<string, unknown>;
 }
 
-export interface AudioLayer {
+export interface AudioLayer extends LayerBase {
   type: 'audio';
-  id: string;
   src: string;
   volume?: number;
 }
@@ -121,7 +127,10 @@ export interface ProjectValidationIssue {
     | 'invalid_dimensions'
     | 'invalid_scene_duration'
     | 'empty_scene_template'
-    | 'invalid_transition_duration';
+    | 'unregistered_scene_template'
+    | 'invalid_transition_duration'
+    | 'invalid_layer_timing';
   message: string;
   sceneId?: string;
+  layerId?: string;
 }
