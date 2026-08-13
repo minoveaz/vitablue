@@ -34,6 +34,7 @@
     "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache"
   },
   "dependencies": {
+    "@remotion/player": "4.0.228",
     "@supabase/supabase-js": "^2.112.0",
     "framer-motion": "11.15.0",
     "html-to-image": "^1.11.13",

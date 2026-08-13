@@ -30,7 +30,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./', import.meta.url))
+      '@': fileURLToPath(new URL('./', import.meta.url)),
+      'react': path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      'remotion': path.resolve(__dirname, './node_modules/remotion')
     },
   },
   server: {
