@@ -277,14 +277,28 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 
 ### Fase 6 - Render server-side
 
-- [ ] Medir primero duración y consumo del render local.
-- [ ] Definir un job de render separado del request HTTP del backoffice.
-- [ ] Evaluar Remotion Lambda, worker Node dedicado o proveedor especializado.
-- [ ] Usar Edge Functions para autorización, creación del job y consulta de estado, no para ejecutar Chromium si el runtime no lo soporta adecuadamente.
-- [ ] Definir almacenamiento temporal y política de eliminación de los vídeos generados.
-- [ ] Añadir límites de concurrencia, tamaño y coste.
+> Alcance VitaBlue: esta fase queda limitada al soporte local de desarrollo. La persistencia remota, autorización, Storage y despliegue del worker se aplazan a la migración del editor al Content Engine de Loopdev.
 
-**Salida:** exportación remota fiable sin bloquear la aplicación web.
+- [x] Medir primero duración y consumo del render local.
+- [x] Definir un job de render separado del request HTTP del backoffice.
+- [x] Evaluar Remotion Lambda, worker Node dedicado o proveedor especializado.
+  - Primera decisión: usar un adaptador de worker Node local detrás de `RenderExecutor`; Remotion Lambda queda para una iteración posterior con persistencia y autorización.
+- [x] Pasar props del proyecto al render CLI y resolver la composición según el formato.
+- [ ] Usar Edge Functions para autorización, creación del job y consulta de estado, no para ejecutar Chromium si el runtime no lo soporta adecuadamente. *(Aplazado a Loopdev.)*
+- [x] Definir almacenamiento temporal y política de eliminación de los vídeos generados.
+  - Primera implementación local: `RenderArtifactStore` resuelve artefactos dentro de `out/`, elimina archivos ausentes de forma idempotente y la API purga jobs y MP4 conjuntamente.
+- [x] Exponer una API local para crear, consultar, ejecutar, cancelar y purgar jobs.
+- [x] Conectar el editor con la creación, cancelación y visualización inicial del estado del job.
+  - La UI browser-safe crea jobs `pending`; queda pendiente sustituir el adaptador local por consultas HTTP al worker para recibir progreso real.
+- [x] Añadir worker HTTP local para crear, consultar y cancelar jobs.
+  - Endpoints iniciales: `POST /render-jobs`, `GET /render-jobs/:id` y `POST /render-jobs/:id/cancel`.
+- [x] Conectar la UI al worker HTTP con polling de progreso y cancelación.
+- [x] Verificar un render vertical real extremo a extremo y eliminar el MP4 temporal después de comprobarlo.
+- [x] Añadir límites de concurrencia, tamaño y coste.
+
+**Salida VitaBlue:** editor local funcional para editar, previsualizar y exportar sin depender de persistencia remota.
+
+**Trabajo futuro en Loopdev:** exportación remota multiusuario con persistencia, autorización, Storage, limpieza automática y worker desplegado.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 

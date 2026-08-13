@@ -10,6 +10,10 @@ import { resolveVideoTemplate } from '../engine/templateRegistry';
 import { validateRenderProject } from '../engine/renderValidation';
 import { createRenderPlan } from '../engine/renderService';
 import { createPresetProject, videoTemplatePresets } from '../engine/templateLibrary';
+import { RenderJobStore, runRenderJob } from '../engine/renderJobs';
+import { createLocalRenderExecutor } from '../engine/localRenderExecutor';
+import { LocalRenderJobApi } from '../engine/localRenderJobApi';
+import { createRenderHttpServer } from '../engine/renderHttpServer';
 
 describe('video storyboard', () => {
   it('calculates scene timings and total duration', () => {
@@ -118,5 +122,137 @@ describe('video storyboard', () => {
         layerId: 'hook-copy',
       }),
     ]));
+  });
+
+  it('tracks a render job through progress and completion', () => {
+    const store = new RenderJobStore();
+    const created = store.create({ project: defaultVisaRejectionProject });
+    expect(created).toMatchObject({ status: 'pending', progress: 0, outputFileName: 'visa-rejection-reel-vertical.mp4' });
+
+    store.start(created.id);
+    expect(store.updateProgress(created.id, 42)).toMatchObject({ status: 'rendering', progress: 42 });
+    expect(store.complete(created.id, 'out/video.mp4')).toMatchObject({ status: 'completed', progress: 100, outputPath: 'out/video.mp4' });
+  });
+
+  it('rejects jobs over duration and concurrency limits', () => {
+    const limitedStore = new RenderJobStore({ maxDurationInFrames: 100, maxProjectBytes: 1_000_000, maxConcurrentJobs: 1 });
+    expect(() => limitedStore.create({ project: defaultVisaRejectionProject })).toThrow('maximum duration');
+
+    const store = new RenderJobStore();
+    const first = store.create({ project: defaultVisaRejectionProject });
+    expect(() => store.create({ project: defaultVisaRejectionProject })).toThrow('concurrency limit');
+    store.start(first.id);
+    expect(() => store.fail(first.id, 'Chromium unavailable')).not.toThrow();
+    expect(store.get(first.id)).toMatchObject({ status: 'failed', error: 'Chromium unavailable' });
+  });
+
+  it('keeps execution separate from job state', async () => {
+    const store = new RenderJobStore();
+    const job = store.create({ project: defaultVisaRejectionProject });
+    let receivedProjectId = '';
+    const completed = await runRenderJob(store, job.id, {
+      execute: async (_renderJob, onProgress, context) => {
+        receivedProjectId = context?.project.id ?? '';
+        onProgress(50);
+        return { outputFileName: 'worker-output.mp4' };
+      },
+    });
+
+    expect(completed).toMatchObject({ status: 'completed', progress: 100 });
+    expect(receivedProjectId).toBe(defaultVisaRejectionProject.id);
+  });
+
+  it('converts executor failures into failed jobs', async () => {
+    const store = new RenderJobStore();
+    const job = store.create({ project: defaultVisaRejectionProject });
+    const failed = await runRenderJob(store, job.id, {
+      execute: async () => { throw new Error('Worker failed'); },
+    });
+
+    expect(failed).toMatchObject({ status: 'failed', error: 'Worker failed' });
+  });
+
+  it('lists jobs and cancels work before it starts', () => {
+    const store = new RenderJobStore();
+    const job = store.create({ project: defaultVisaRejectionProject });
+
+    expect(store.list()).toHaveLength(1);
+    expect(store.cancel(job.id)).toMatchObject({ status: 'cancelled' });
+    expect(() => store.start(job.id)).toThrow('Only pending render jobs can start');
+  });
+
+  it('removes finished jobs and purges them by completion date', () => {
+    const store = new RenderJobStore();
+    const job = store.create({ project: defaultVisaRejectionProject });
+    store.cancel(job.id);
+
+    expect(() => store.remove(job.id)).not.toThrow();
+    expect(store.get(job.id)).toBeNull();
+
+    const secondJob = store.create({ project: defaultVisaRejectionProject });
+    store.cancel(secondJob.id);
+    expect(store.purgeCompleted(new Date(Date.now() + 1_000))).toEqual([secondJob.id]);
+    expect(store.get(secondJob.id)).toBeNull();
+  });
+
+  it('creates a local executor with deterministic Remotion arguments', () => {
+    const calls: string[][] = [];
+    const executor = createLocalRenderExecutor({
+      entryPoint: 'custom-entry.ts',
+      outputDirectory: 'tmp',
+      remotionBinary: 'remotion-cli',
+      run: async (_binary, args) => { calls.push(args); },
+    });
+
+    return executor.execute({
+      id: 'render-1', projectId: defaultVisaRejectionProject.id, format: 'landscape', status: 'rendering',
+      progress: 0, outputFileName: 'output.mp4', createdAt: new Date().toISOString(),
+    }, () => {}, { project: defaultVisaRejectionProject }).then(() => {
+      expect(calls[0]).toEqual(expect.arrayContaining([
+        'render', 'custom-entry.ts', 'ReelVisaRejectionLandscape', 'tmp/output.mp4', '--props',
+      ]));
+      expect(JSON.parse(calls[0][calls[0].length - 1])).toEqual({ slides: defaultVisaRejectionProject.scenes });
+    });
+  });
+
+  it('runs and removes a job through the local API', async () => {
+    const removedPaths: string[] = [];
+    const api = new LocalRenderJobApi({
+      executor: {
+        execute: async () => ({ outputFileName: 'render.mp4' }),
+      },
+      artifacts: {
+        resolve: (fileName) => `out/${fileName}`,
+        remove: async (fileName) => { removedPaths.push(fileName); },
+      },
+    });
+    const created = api.create(defaultVisaRejectionProject);
+    const completed = await api.run(created.id);
+    expect(completed.status).toBe('completed');
+    expect(completed.outputPath).toBe('render.mp4');
+    await api.remove(created.id);
+    expect(removedPaths).toEqual(['render.mp4']);
+    expect(api.get(created.id)).toBeNull();
+  });
+
+  it('exposes create and get through the local HTTP API', async () => {
+    const api = new LocalRenderJobApi({
+      executor: { execute: async () => ({ outputFileName: 'render.mp4' }) },
+    });
+    const httpApi = createRenderHttpServer({ api, port: 18787 });
+    await httpApi.start();
+    try {
+      const response = await fetch('http://127.0.0.1:18787/render-jobs', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ project: defaultVisaRejectionProject }),
+      });
+      expect(response.status).toBe(202);
+      const created = await response.json() as { id: string };
+      const statusResponse = await fetch(`http://127.0.0.1:18787/render-jobs/${created.id}`);
+      expect(statusResponse.status).toBe(200);
+    } finally {
+      await httpApi.stop();
+    }
   });
 });

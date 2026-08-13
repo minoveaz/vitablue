@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
 import Logo from '@/components/atoms/Logo';
-import { MessageSquare, Download, Image as ImageIcon, Video, AlertCircle, Copy, Trash2, ChevronUp, ChevronDown, Plus } from 'lucide-react';
+import { MessageSquare, Download, Image as ImageIcon, Video, AlertCircle, Copy, Trash2, ChevronUp, ChevronDown, Plus, LoaderCircle } from 'lucide-react';
 import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../packages/video-studio/src/compositions/ReelVisaRejection';
 import { vitablueBrandAdapter } from '../packages/video-studio/src/adapters/vitablue';
@@ -12,6 +12,8 @@ import { videoTemplateRegistry } from '../packages/video-studio/src/engine/templ
 import { defaultVisaRejectionProject } from '../packages/video-studio/src/domain/defaultProject';
 import { useVideoProjectEditor } from './hooks/useVideoProjectEditor';
 import { VideoTimeline } from './components/VideoTimeline';
+import { createRenderHttpClient } from '../packages/video-studio/src/engine/renderHttpClient';
+import type { RenderJob } from '../packages/video-studio/src/engine/renderJobs';
 
 const getSlideText = (content: Record<string, unknown>, key: string): string =>
   typeof content[key] === 'string' ? content[key] as string : '';
@@ -33,7 +35,7 @@ export const SocialGenerator: React.FC = () => {
   }
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<'image' | 'video'>('image');
+  const [activeTab, setActiveTab] = useState<'image' | 'video'>('video');
 
   const previewRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<PlayerRef>(null);
@@ -119,6 +121,43 @@ export const SocialGenerator: React.FC = () => {
   const [showWhatsappCta, setShowWhatsappCta] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [renderJob, setRenderJob] = useState<RenderJob | null>(null);
+  const [renderJobError, setRenderJobError] = useState<string | null>(null);
+  const [renderClient] = useState(() => createRenderHttpClient());
+  const [videoFormat, setVideoFormat] = useState<'vertical' | 'square' | 'landscape'>('vertical');
+
+  const videoDimensions = {
+    vertical: { width: 1080, height: 1920, label: 'Vertical 9:16' },
+    square: { width: 1080, height: 1080, label: 'Cuadrado 1:1' },
+    landscape: { width: 1920, height: 1080, label: 'Horizontal 16:9' },
+  }[videoFormat];
+
+  const handleQueueRender = async () => {
+    setRenderJobError(null);
+    try {
+      const job = await renderClient.create({ ...defaultVisaRejectionProject, scenes: slides }, videoFormat);
+      setRenderJob(job);
+    } catch (error) {
+      setRenderJobError(error instanceof Error ? error.message : 'No se pudo crear el job de render.');
+    }
+  };
+
+  const handleCancelRender = () => {
+    if (!renderJob || renderJob.status !== 'pending') return;
+    void renderClient.cancel(renderJob.id).then(setRenderJob).catch((error: unknown) => {
+      setRenderJobError(error instanceof Error ? error.message : 'No se pudo cancelar el job.');
+    });
+  };
+
+  React.useEffect(() => {
+    if (!renderJob || renderJob.status === 'completed' || renderJob.status === 'failed' || renderJob.status === 'cancelled') return;
+    const timer = window.setInterval(() => {
+      void renderClient.get(renderJob.id).then(setRenderJob).catch((error: unknown) => {
+        setRenderJobError(error instanceof Error ? error.message : 'No se pudo consultar el job.');
+      });
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [renderClient, renderJob]);
 
   // Background configurations
   const themeClasses = {
@@ -222,9 +261,6 @@ export const SocialGenerator: React.FC = () => {
         >
           <Video size={16} />
           <span>Generador de Video</span>
-          <span className="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-            Próximamente
-          </span>
         </button>
       </div>
 
@@ -861,6 +897,60 @@ export const SocialGenerator: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 text-left">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold text-text-main">Job de render</p>
+                  <p className="mt-1 text-[11px] text-text-secondary">
+                    Prepara este storyboard para el worker Node local.
+                  </p>
+                </div>
+                <LoaderCircle className={`h-4 w-4 shrink-0 text-primary ${renderJob?.status === 'rendering' ? 'animate-spin' : ''}`} />
+              </div>
+              <label className="mt-3 block text-[11px] font-bold text-slate-500">
+                Formato de exportación
+                <select
+                  value={videoFormat}
+                  onChange={(event) => setVideoFormat(event.target.value as typeof videoFormat)}
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700"
+                >
+                  <option value="vertical">Vertical 9:16</option>
+                  <option value="square">Cuadrado 1:1</option>
+                  <option value="landscape">Horizontal 16:9</option>
+                </select>
+              </label>
+              {!renderJob && (
+                <button
+                  type="button"
+                  onClick={handleQueueRender}
+                  className="mt-3 w-full rounded-xl bg-primary px-3 py-2 text-xs font-bold text-white hover:bg-primary-dark"
+                >
+                  Preparar render vertical
+                </button>
+              )}
+              {renderJob && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500">
+                    <span>{renderJob.status === 'pending' ? 'Pendiente de worker' : renderJob.status}</span>
+                    <span>{renderJob.progress}%</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${renderJob.progress}%` }} />
+                  </div>
+                  {renderJob.status === 'pending' && (
+                    <button
+                      type="button"
+                      onClick={handleCancelRender}
+                      className="text-[11px] font-bold text-slate-500 underline underline-offset-2"
+                    >
+                      Cancelar job
+                    </button>
+                  )}
+                </div>
+              )}
+              {renderJobError && <p className="mt-2 text-[11px] font-semibold text-red-600">{renderJobError}</p>}
+            </div>
           </div>
 
           {/* Right column: Remotion Player Visor */}
@@ -871,7 +961,7 @@ export const SocialGenerator: React.FC = () => {
 
             {/* Remotion Player element wrapper */}
             <div className="flex flex-col items-center gap-6">
-              <div className="shadow-2xl rounded-2xl overflow-hidden border border-slate-200 bg-black mt-8" style={{ width: '360px', height: '640px' }}>
+              <div className="shadow-2xl rounded-2xl overflow-hidden border border-slate-200 bg-black mt-8" style={{ width: videoFormat === 'landscape' ? '640px' : '360px', height: videoFormat === 'vertical' ? '640px' : '360px' }}>
                 <Player
                   ref={playerRef}
                   component={ReelVisaRejection}
@@ -881,8 +971,8 @@ export const SocialGenerator: React.FC = () => {
                   }}
                   durationInFrames={slides.reduce((total, slide) => total + slide.durationInFrames, 0)}
                   fps={30}
-                  compositionWidth={1080}
-                  compositionHeight={1920}
+                  compositionWidth={videoDimensions.width}
+                  compositionHeight={videoDimensions.height}
                   style={{
                     width: '100%',
                     height: '100%',

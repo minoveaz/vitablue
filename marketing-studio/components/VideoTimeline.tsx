@@ -49,6 +49,9 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   }[layer.type]);
   const layerStart = (layer: Layer): number => layer.timing?.startFrame ?? 0;
   const layerDuration = (layer: Layer, scene: Scene): number => layer.timing?.durationInFrames ?? scene.durationInFrames;
+  const hasMissingSource = (layer: Layer): boolean => (
+    (layer.type === 'image' || layer.type === 'video') && !layer.asset.src
+  ) || (layer.type === 'audio' && !layer.src);
 
   return (
     <div className="w-full max-w-[760px] rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -139,6 +142,7 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                   />
                 </div>
                 <span className="w-16 text-right font-mono text-slate-400">{(duration / fps).toFixed(1)}s</span>
+                {hasMissingSource(layer) && <span className="font-bold text-amber-600" title="Falta la fuente del recurso">Sin fuente</span>}
                 <button type="button" onClick={() => onToggleLayer(layer.id, 'visible')} className="text-slate-400" aria-label="Alternar visibilidad">{layer.visible === false ? 'Oculto' : 'Visible'}</button>
                 <button type="button" onClick={() => onRemoveLayer(layer.id)} className="text-red-400" aria-label="Eliminar capa">×</button>
               </div>
