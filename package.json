@@ -9,6 +9,9 @@
     "preview": "vite preview",
     "sync-blog": "node scripts/sync_blog.cjs",
     "audit:front": "node scripts/audit_front.cjs",
+    "audit:components": "node scripts/audit_component_usage.cjs",
+    "audit:components:json": "node scripts/audit_component_usage.cjs --format=json",
+    "audit:components:ci": "node scripts/audit_component_usage.cjs --format=json --fail-under=90",
     "validate": "node scripts/audit_front.cjs && node scripts/validate_routes.cjs && node scripts/validate_sitemap.cjs && node scripts/validate_route_registry.cjs",
     "validate-routes": "node scripts/validate_routes.cjs",
     "validate-routes:strict": "node scripts/validate_routes.cjs --strict",
@@ -44,6 +47,7 @@
     "vite-plugin-sitemap": "^0.8.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@types/node": "^22.14.0",

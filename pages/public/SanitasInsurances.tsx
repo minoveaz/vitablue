@@ -1,18 +1,22 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Activity, ShieldCheck, Clock, Award, CheckCircle2, ArrowRight,
-  Sparkle, Sparkles, Layers, Heart, FileText, CreditCard, MessageSquare
+import {
+  ShieldCheck, Clock, Award, ArrowRight,
+  Sparkles, MessageSquare
 } from 'lucide-react';
-import Breadcrumbs from '../../components/molecules/Breadcrumbs';
-import AdvisorCard from '../../components/molecules/AdvisorCard';
-import Accordion from '../../components/molecules/Accordion';
-import TestimonialCard from '../../components/molecules/TestimonialCard';
+import ProductBreadcrumbBar from '../../components/organisms/ProductBreadcrumbBar';
+import FaqSection from '../../components/organisms/FaqSection';
+import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
+import SanitasTrustSection from '../../components/organisms/SanitasTrustSection';
+import TestimonialGrid from '../../components/organisms/TestimonialGrid';
+import InsuranceProductCard from '../../components/molecules/InsuranceProductCard';
+import ProductProcessSection from '../../components/organisms/ProductProcessSection';
 import { Button } from '../../components/atoms/Button';
 import { WhatsAppIcon } from '../../components/atoms/WhatsAppIcon';
 import { useWizard } from '../../context/WizardContext';
 import { sanitasConsultProducts, sanitasFeaturedProducts } from '@/domain/products/sanitasCatalog';
+import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 
 export const SanitasInsurances: React.FC = () => {
   const navigate = useNavigate();
@@ -149,7 +153,7 @@ export const SanitasInsurances: React.FC = () => {
         <meta property="og:description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
         <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas" />
-        
+
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue" />
@@ -161,24 +165,15 @@ export const SanitasInsurances: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <div className="bg-slate-50/50 border-b border-slate-100 py-3 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <Breadcrumbs 
-            items={[
-              { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-              { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }
-            ]} 
-          />
-        </div>
-      </div>
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }]} />
 
       {/* Hero Header */}
       <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(148,210,189,0.12),transparent_60%)] pointer-events-none" />
-        
+
         <div className="max-w-6xl mx-auto px-6 sm:px-8">
           <div className="grid gap-10 lg:grid-cols-12 items-center">
-            
+
             {/* Text Column */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               <div className="flex flex-wrap gap-2">
@@ -189,11 +184,11 @@ export const SanitasInsurances: React.FC = () => {
                   Precios oficiales y promociones
                 </span>
               </div>
-              
+
               <h1 className="text-h1 font-display font-black leading-tight tracking-tight">
                 Toda la gama de Seguros Sanitas
               </h1>
-              
+
               <p className="text-lg text-slate-200 leading-relaxed font-medium max-w-xl">
                 Compara y filtra el catálogo oficial de pólizas de salud, mascotas y decesos de Sanitas. Consigue el precio oficial sin comisiones adicionales y con soporte humano real.
               </p>
@@ -203,8 +198,12 @@ export const SanitasInsurances: React.FC = () => {
                   Calcular mi tarifa online
                 </Button>
                 <a href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20los%20seguros%20de%20Sanitas." className="inline-flex items-center justify-center" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" variant="primary" className="bg-whatsapp-dark hover:bg-whatsapp text-white">
-                    <WhatsAppIcon size={18} />
+                  <Button
+                    size="lg"
+                    variant="primary"
+                    className="bg-whatsapp-dark text-white hover:bg-whatsapp"
+                    leftIcon={<WhatsAppIcon size={20} className="shrink-0" />}
+                  >
                     Preguntar por WhatsApp
                   </Button>
                 </a>
@@ -236,42 +235,21 @@ export const SanitasInsurances: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
           </div>
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-8 bg-slate-50 border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-          <div className="flex items-center gap-3.5">
-            <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Asesoría de Seguros Autorizada</h4>
-              <p className="text-xs text-text-secondary font-semibold">Precios oficiales garantizados sin recargo comercial.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Clock className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Alta Rápida en 24 Horas</h4>
-              <p className="text-xs text-text-secondary font-semibold">Gestión rápida del alta y cuestionario médico digital.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <Award className="w-8 h-8 text-primary shrink-0" />
-            <div>
-              <h4 className="text-sm font-bold text-text-main">Soporte Continuo VitaBlue</h4>
-              <p className="text-xs text-text-secondary font-semibold">Te ayudamos en la gestión diaria y autorizaciones.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductTrustBar items={[
+        { icon: <ShieldCheck />, title: 'Asesoría de Seguros Autorizada', description: 'Precios oficiales garantizados sin recargo comercial.' },
+        { icon: <Clock />, title: 'Alta Rápida en 24 Horas', description: 'Gestión rápida del alta y cuestionario médico digital.' },
+        { icon: <Award />, title: 'Soporte Continuo VitaBlue', description: 'Te ayudamos en la gestión diaria y autorizaciones.' },
+      ]} />
 
       {/* Section 1: Featured Products with own subpage */}
       <section className="py-16 sm:py-20 bg-white text-left">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
-          
+
           <div className="space-y-3">
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Contratación Online Directa</span>
             <h2 className="text-h2 font-display font-black text-text-main leading-tight">
@@ -284,53 +262,16 @@ export const SanitasInsurances: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {sanitasFeaturedProducts.map((product) => (
-              <div 
+              <InsuranceProductCard
                 key={product.id}
-                className="bg-white rounded-3xl border border-slate-150 p-6 sm:p-8 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-250 transition-all duration-300 relative overflow-hidden"
-              >
-                {product.badge && (
-                  <span className="absolute top-0 right-0 bg-primary/10 text-primary-dark text-[9px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-bl-2xl border-l border-b border-primary/5">
-                    {product.badge}
-                  </span>
-                )}
-                
-                <div className="space-y-4">
-                  <div className="size-11 rounded-2xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
-                    <Activity className="w-5 h-5" />
-                  </div>
-
-                  <div>
-                    <h3 className="text-h3 font-display font-black text-text-main leading-tight">{product.title}</h3>
-                    <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider mt-1">{product.tagline}</p>
-                  </div>
-
-                  <p className="text-xs text-text-secondary font-semibold leading-relaxed">
-                    {product.desc}
-                  </p>
-
-                  <ul className="space-y-2 pt-2 border-t border-slate-50">
-                    {product.features.map((feat, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs font-semibold text-text-secondary">
-                        <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-6 border-t border-slate-100 mt-6 flex items-center justify-between gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Tarifa</span>
-                    <span className="text-sm font-sans font-black text-text-main">{product.price}</span>
-                  </div>
-
-                  <Link to={product.link} className="shrink-0">
-                    <Button variant="primary" size="sm" className="font-bold shadow-sm" rightIcon={<ArrowRight size={14} />}>
-                      Ver detalles y cotizar
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+                title={product.title}
+                tagline={product.tagline}
+                description={product.desc}
+                features={product.features}
+                price={product.price}
+                badge={product.badge}
+                link={product.link}
+              />
             ))}
           </div>
 
@@ -340,7 +281,7 @@ export const SanitasInsurances: React.FC = () => {
       {/* Section 2: Other Specific Insurances (WhatsApp Help) */}
       <section className="py-16 sm:py-20 bg-slate-50 border-t border-b border-slate-100 text-left">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
-          
+
           <div className="space-y-3">
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Asesoramiento y Contratación Personalizada</span>
             <h2 className="text-h2 font-display font-black text-text-main leading-tight">
@@ -372,62 +313,17 @@ export const SanitasInsurances: React.FC = () => {
           {/* Bento Grid (WhatsApp CTAs) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sanitasConsultProducts.map((product) => (
-              <div 
+              <InsuranceProductCard
                 key={product.id}
-                className="bg-white rounded-3xl border border-slate-150 p-6 sm:p-8 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all duration-300 relative overflow-hidden"
-              >
-                {product.badge && (
-                  <span className="absolute top-0 right-0 bg-slate-100 text-text-secondary text-[9px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-bl-2xl border-l border-b border-slate-200">
-                    {product.badge}
-                  </span>
-                )}
-                
-                <div className="space-y-4">
-                  <div className="size-11 rounded-2xl bg-slate-50 text-slate-500 flex items-center justify-center border border-slate-150">
-                    {product.badge === 'Premium' ? (
-                      <Sparkle className="w-5 h-5 text-primary" />
-                    ) : (
-                      <Layers className="w-5 h-5 text-slate-500" />
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className="text-h3 font-display font-black text-text-main leading-tight">{product.title}</h3>
-                    <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider mt-1">{product.tagline}</p>
-                  </div>
-
-                  <p className="text-xs text-text-secondary font-semibold leading-relaxed min-h-[50px]">
-                    {product.desc}
-                  </p>
-
-                  <ul className="space-y-2 pt-2 border-t border-slate-50">
-                    {product.features.map((feat, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs font-semibold text-text-secondary">
-                        <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-6 border-t border-slate-100 mt-6 flex items-center justify-between gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Tarifa</span>
-                    <span className="text-sm font-sans font-black text-text-main">{product.price}</span>
-                  </div>
-
-                  <a href={product.link} target="_blank" rel="noopener noreferrer" className="shrink-0">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="font-bold border-emerald-500 text-emerald-600 hover:bg-emerald-50/50"
-                      leftIcon={<WhatsAppIcon size={14} className="fill-whatsapp" />}
-                    >
-                      Consultar WhatsApp
-                    </Button>
-                  </a>
-                </div>
-              </div>
+                title={product.title}
+                tagline={product.tagline}
+                description={product.desc}
+                features={product.features}
+                price={product.price}
+                badge={product.badge}
+                link={product.link}
+                external
+              />
             ))}
           </div>
 
@@ -435,124 +331,43 @@ export const SanitasInsurances: React.FC = () => {
       </section>
 
       {/* Onboarding Timeline Section */}
-      <section className="py-16 sm:py-20 max-w-6xl mx-auto px-6 sm:px-8 text-left bg-white">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Alta rápida</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Proceso de contratación oficial
-          </h2>
-          <p className="text-body-reg text-text-secondary font-medium max-w-xl mx-auto">
-            Emitimos tu póliza directamente en Sanitas de forma rápida y 100% digital.
-          </p>
-        </div>
+      <ProductProcessSection
+        className="border-t-0 bg-white"
+        eyebrow="Alta rápida"
+        title="Proceso de contratación oficial"
+        description="Emitimos tu póliza directamente en Sanitas de forma rápida y 100% digital."
+        steps={[
+          {
+            title: 'Selecciona tu póliza',
+            description: 'Compara y elige el seguro médico de Sanitas que mejor se adapte a tus necesidades y presupuesto.'
+          },
+          {
+            title: 'Completa tus datos',
+            description: 'Introduce los datos de los asegurados y selecciona el método de pago (mensual o anual con descuento).'
+          },
+          {
+            title: 'Cuestionario de salud',
+            description: 'Rellena el cuestionario médico digital obligatorio de Sanitas desde un enlace privado seguro.'
+          },
+          {
+            title: 'Firma y disfruta',
+            description: 'Recibe tu contrato por SMS para firma digital. Tu póliza quedará activa al instante y tus tarjetas en tu móvil.'
+          }
+        ]}
+      />
 
-        <div className="relative">
-          {/* Horizontal dashed line connecting the steps (visible on desktop) */}
-          <div className="absolute top-[48px] left-[12%] right-[12%] h-0.5 border-t border-dashed border-slate-200 z-0 hidden lg:block" />
+      <SanitasTrustSection />
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
-            {[
-              { 
-                step: '01', 
-                title: 'Selecciona tu póliza',
-                desc: 'Compara y elige el seguro médico de Sanitas que mejor se adapte a tus necesidades y presupuesto.',
-                icon: FileText
-              },
-              { 
-                step: '02', 
-                title: 'Completa tus datos', 
-                desc: 'Introduce los datos de los asegurados y selecciona el método de pago (mensual o anual con descuento).',
-                icon: CreditCard
-              },
-              { 
-                step: '03', 
-                title: 'Cuestionario de salud', 
-                desc: 'Rellena el cuestionario médico digital obligatorio de Sanitas desde un enlace privado seguro.',
-                icon: Heart
-              },
-              { 
-                step: '04', 
-                title: 'Firma y disfruta', 
-                desc: 'Recibe tu contrato por SMS para firma digital. Tu póliza quedará activa al instante y tus tarjetas en tu móvil.',
-                icon: ShieldCheck
-              }
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className="flex flex-col gap-4 p-6 bg-white rounded-3xl border border-slate-150 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-sans font-black text-primary/65">{item.step}</span>
-                    <div className="size-10 rounded-2xl bg-primary/5 text-primary flex items-center justify-center border border-primary/10">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h4 className="text-base font-bold text-text-main">{item.title}</h4>
-                  <p className="text-xs text-text-secondary font-semibold leading-relaxed">{item.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 sm:py-20 bg-slate-50/50 border-y border-slate-100 w-full text-left">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-12">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Opiniones reales</span>
-            <h2 className="text-h2 font-display font-black text-text-main">La experiencia de quienes ya confían en nosotros</h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((item, idx) => (
-              <TestimonialCard
-                key={idx}
-                author={item.author}
-                meta={item.meta}
-                comment={item.comment}
-                stars={item.stars}
-                avatarUrl={item.avatarUrl}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <TestimonialGrid eyebrow="Opiniones reales" title="La experiencia de quienes ya confían en nosotros" items={testimonials} />
 
       {/* Accordion FAQs Section */}
-      <section className="py-16 sm:py-20 w-full max-w-4xl mx-auto px-6 sm:px-8 text-left bg-white">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Dudas Frecuentes</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Preguntas Frecuentes sobre Seguros Sanitas
-          </h2>
-        </div>
+      <FaqSection eyebrow="Dudas Frecuentes" title="Preguntas Frecuentes sobre Seguros Sanitas" items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
 
-        <div className="bg-white border border-slate-100 rounded-3xl p-4 sm:p-6 shadow-inner divide-y divide-slate-200/60">
-          {faqs.map((faq, index) => (
-            <Accordion 
-              key={index} 
-              title={faq.q}
-              defaultOpen={index === 0}
-            >
-              {faq.a}
-            </Accordion>
-          ))}
-        </div>
-      </section>
-
-      {/* Human Advisor Help section */}
-      <section className="py-16 bg-slate-50 border-t border-slate-100 w-full">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8 space-y-8 text-left">
-          <div className="space-y-1">
-            <h3 className="text-h2 font-display font-extrabold text-text-main">¿Necesitas asesoría personalizada?</h3>
-            <p className="text-body-reg text-text-secondary font-medium">Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita.</p>
-          </div>
-          <AdvisorCard 
-            onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20los%20seguros%20de%20Sanitas.', '_blank')}
-            onPhoneClick={() => window.open('tel:+34900839240')}
-          />
-        </div>
-      </section>
+      <AdvisorHelpSection
+        title="¿Necesitas asesoría personalizada?"
+        description="Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita."
+        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20los%20seguros%20de%20Sanitas."
+      />
     </div>
   );
 };

@@ -76,13 +76,13 @@ export const Footer: React.FC = () => {
           
           {/* Social Networks Row */}
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-1">Síguenos</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mr-1">Síguenos</span>
             
             <a 
               href={socialProfiles.facebook.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="Facebook"
               aria-label="Ir a nuestro perfil de Facebook"
             >
@@ -92,7 +92,7 @@ export const Footer: React.FC = () => {
               href={socialProfiles.instagram.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="Instagram"
               aria-label="Ir a nuestro perfil de Instagram"
             >
@@ -100,7 +100,7 @@ export const Footer: React.FC = () => {
             </a>
             <a 
               href={socialProfiles.linkedin.url || '#'} 
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="LinkedIn"
               aria-label="Ir a nuestro perfil de LinkedIn"
               onClick={(e) => e.preventDefault()}
@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
               href={socialProfiles.tiktok.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="TikTok"
               aria-label="Ir a nuestro perfil de TikTok"
             >
@@ -121,7 +121,7 @@ export const Footer: React.FC = () => {
               href={socialProfiles.youtube.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="YouTube"
               aria-label="Ir a nuestro canal de YouTube"
             >
@@ -131,7 +131,7 @@ export const Footer: React.FC = () => {
               href={socialProfiles.x.url || '#'} 
               target="_blank"
               rel="noopener noreferrer"
-              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
+              className="size-9 rounded-full bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white hover:bg-primary flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98]"
               title="X (Twitter)"
               aria-label="Ir a nuestro perfil de X"
             >
@@ -145,14 +145,14 @@ export const Footer: React.FC = () => {
           
           {/* Col 1: Sobre VitaBlue */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-400">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               {isEnglish ? 'About VitaBlue' : 'Sobre VitaBlue'}
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
-                <a href={isEnglish ? "/en#sobre-nosotros" : "/#sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'About Us' : 'Quiénes Somos'}
-                </a>
+                </Link>
               </li>
               <li>
                 <a href={isEnglish ? "/en#opiniones" : "/#opiniones"} className="hover:text-accent transition-colors duration-150">
@@ -179,9 +179,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Seguros de Salud */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-400">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               {isEnglish ? 'Health Insurance' : 'Seguros de Salud'}
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
                 <Link to="/productos/seguros-salud" className="hover:text-accent transition-colors duration-150">
@@ -213,9 +213,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 3: Especialidades & Herramientas */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-400">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               Herramientas y Más
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
                 <Link to="/productos/seguro-mascotas/sanitas-mascotas" className="hover:text-accent transition-colors duration-150">
@@ -225,6 +225,11 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/productos/seguro-para-decesos/asistencia-familiar" className="hover:text-accent transition-colors duration-150">
                   Asistencia Familiar
+                </Link>
+              </li>
+              <li>
+                <Link to="/productos/seguro-viaje" className="hover:text-accent transition-colors duration-150">
+                  Seguro de Viaje
                 </Link>
               </li>
               <li>
@@ -248,9 +253,9 @@ export const Footer: React.FC = () => {
 
           {/* Col 4: Contacto & Legal */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display text-xs font-bold uppercase tracking-widest text-slate-400">
+            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-slate-300">
               Contacto y Legal
-            </h4>
+            </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-accent shrink-0" />
@@ -265,13 +270,13 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="pt-2 border-t border-slate-800 flex flex-col gap-1.5">
-                <Link to="/aviso-legal" className="hover:text-accent transition-colors text-xs text-slate-400">
+                <Link to="/aviso-legal" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Aviso Legal
                 </Link>
-                <Link to="/privacidad" className="hover:text-accent transition-colors text-xs text-slate-400">
+                <Link to="/privacidad" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Privacidad
                 </Link>
-                <Link to="/cookies" className="hover:text-accent transition-colors text-xs text-slate-400">
+                <Link to="/cookies" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Cookies
                 </Link>
               </li>
@@ -281,7 +286,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Regulatory Disclaimer & Credits */}
-        <div className="pt-8 flex flex-col gap-4 text-[10px] text-slate-400 leading-relaxed font-medium text-left">
+        <div className="pt-8 flex flex-col gap-4 text-[10px] text-slate-300 leading-relaxed font-medium text-left">
           <div className="flex items-start gap-2.5 bg-slate-900/40 p-4 rounded-xl border border-slate-800/60">
             <Shield className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
             <p>

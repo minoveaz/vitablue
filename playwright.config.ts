@@ -19,10 +19,9 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  // 2 reintentos en CI para reducir falsos positivos en redes lentas
-  retries: process.env.CI ? 2 : 0,
-  // En CI sin paralelismo para máxima estabilidad (igual que loopdev)
-  workers: process.env.CI ? 1 : undefined,
+  // Un reintento cubre fallos transitorios sin triplicar el coste de un fallo determinista.
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI
     ? [['github'], ['html', { outputFolder: 'playwright-report', open: 'never' }]]
     : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],

@@ -24,11 +24,13 @@ export interface BlogPostData {
   featuredImage: string;
   sections: BlogSection[];
   lang?: 'es' | 'en';
+  alternateSlug?: string;
 }
 
 export const blogPosts: BlogPostData[] = [
   {
     slug: 'requisitos-seguro-medico-visado-estudiante-espana',
+    alternateSlug: 'student-visa-spain-health-insurance-requirements',
     title: 'Requisitos del Seguro Médico para Visado de Estudiante en España (Guía 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
@@ -115,6 +117,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'seguro-medico-residencia-no-lucrativa-espana',
+    alternateSlug: 'health-insurance-spain-non-lucrative-visa-requirements',
     title: 'Seguro Médico para Residencia No Lucrativa en España: Qué exige Extranjería',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
@@ -466,6 +469,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'student-visa-spain-health-insurance-requirements',
+    alternateSlug: 'requisitos-seguro-medico-visado-estudiante-espana',
     title: 'Health Insurance Requirements for Spain Student Visa (2026 Guide)',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
@@ -537,6 +541,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'health-insurance-spain-non-lucrative-visa-requirements',
+    alternateSlug: 'seguro-medico-residencia-no-lucrativa-espana',
     title: 'Health Insurance for Spain Non-Lucrative Visa: What Immigration Demands',
     category: 'visados',
     categoryLabel: 'Visas & NIE',

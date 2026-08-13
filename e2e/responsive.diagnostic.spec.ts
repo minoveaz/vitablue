@@ -13,9 +13,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { publicRoutes } from './fixtures/publicRoutes';
 
-/** Rutas públicas canónicas según config/routes.ts y public/sitemap.xml */
-const publicRoutes = [
+/** Rutas públicas derivadas del registro y del contenido del blog. */
+const routes = publicRoutes.filter((route) => route.indexable);
+
+/*
   // Home & EN landing
   { name: 'home-es', path: '/' },
   { name: 'home-en', path: '/en' },
@@ -57,10 +60,10 @@ const publicRoutes = [
   { name: 'aviso-legal', path: '/aviso-legal' },
   { name: 'politica-privacidad', path: '/politica-privacidad' },
   { name: 'politica-cookies', path: '/politica-cookies' },
-];
+]; */
 
 test.describe('📐 Mobile Responsive Layout Diagnostic — Overflow-X Detection', () => {
-  for (const route of publicRoutes) {
+  for (const route of routes) {
     test(`[${route.name}] no horizontal overflow on ${route.path}`, async ({ page }) => {
       await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 

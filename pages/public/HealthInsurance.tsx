@@ -10,11 +10,13 @@ import {
   Sparkle,
 } from 'lucide-react';
 import { useWizard } from '@/context/WizardContext';
-import TransparencyBlock from '@/components/molecules/TransparencyBlock';
-import AdvisorCard from '@/components/molecules/AdvisorCard';
-import Accordion from '@/components/molecules/Accordion';
+import ProductTransparencySection from '@/components/organisms/ProductTransparencySection';
+import FaqSection from '@/components/organisms/FaqSection';
+import AdvisorHelpSection from '@/components/organisms/AdvisorHelpSection';
+import PlanComparisonSection from '@/components/organisms/PlanComparisonSection';
 import { Button } from '@/components/atoms/Button';
-import Breadcrumbs from '@/components/molecules/Breadcrumbs';
+import ProductBreadcrumbBar from '@/components/organisms/ProductBreadcrumbBar';
+import RequirementsComparisonTable from '@/components/organisms/RequirementsComparisonTable';
 import { 
   HealthIllustration, 
   ProfileIllustration,
@@ -412,15 +414,7 @@ export const HealthInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <div className="bg-slate-50/50 border-b border-slate-100 py-3 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <Breadcrumbs 
-            items={[
-              { label: 'Seguros de Salud', href: '/productos/seguros-salud' }
-            ]} 
-          />
-        </div>
-      </div>
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }]} />
 
       {/* Hero Banner */}
       <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
@@ -471,41 +465,13 @@ export const HealthInsurance: React.FC = () => {
       </section>
 
       {/* Modalidades de Seguros Section */}
-      <section className="py-16 sm:py-20 w-full max-w-6xl mx-auto px-6 sm:px-8">
-        <div className="text-center space-y-4 mb-12">
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Modalidades</span>
-          <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-            Tipos de Seguros de Salud en España
-          </h2>
-          <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-            No todas las pólizas de salud son iguales. Te explicamos los cuatro tipos de seguros privados para que elijas la estructura ideal.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {modalities.map((item) => (
-            <div key={item.title} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-300 text-left">
-              <div className="space-y-4">
-                <div className="h-16 w-auto aspect-[4/3] mb-4 flex items-center justify-start text-primary">
-                  <item.illustration />
-                </div>
-                <div>
-                  <h3 className="text-lg font-display font-black text-text-main leading-tight">{item.title}</h3>
-                  <span className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">{item.subtitle}</span>
-                </div>
-                <p className="text-xs text-text-secondary leading-relaxed font-medium">{item.desc}</p>
-              </div>
-              <div className="border-t border-slate-50 pt-4 mt-6">
-                <span className="text-[10px] font-bold text-text-secondary block">Perfil Recomendado:</span>
-                <p className="text-xs font-bold text-text-main mt-1 leading-snug">{item.profile}</p>
-                <span className="inline-block mt-3 rounded-full bg-slate-100 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-text-secondary">
-                  {item.priceText}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PlanComparisonSection
+          eyebrow="Modalidades"
+          title="Tipos de Seguros de Salud en España"
+          description="No todas las pólizas de salud son iguales. Te explicamos los cuatro tipos de seguros privados para que elijas la estructura ideal."
+          plans={modalities}
+          columns={4}
+      />
 
       {/* Interactive Age-Pricing Calculator */}
       <section className="py-16 sm:py-20 bg-slate-50 border-y border-slate-100">
@@ -836,98 +802,41 @@ export const HealthInsurance: React.FC = () => {
           </p>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl border border-slate-100 shadow-sm">
-          <table className="w-full min-w-[600px] border-collapse text-left bg-white text-sm font-semibold text-text-secondary">
-            <thead className="bg-slate-50 border-b border-slate-100 text-xs text-text-main uppercase font-black tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Aseguradora</th>
-                <th className="px-6 py-4">Modalidades</th>
-                <th className="px-6 py-4">Punto Fuerte</th>
-                <th className="px-6 py-4">Videoconsulta</th>
-                <th className="px-6 py-4">Precio Inicial</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              <tr className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-5 font-bold text-text-main">Sanitas</td>
-                <td className="px-6 py-5">Con y Sin Copago</td>
-                <td className="px-6 py-5">Medicina digital y videoconsultas inmediatas (Blua)</td>
-                <td className="px-6 py-5 text-emerald-600">✓ Incluido (Líder digital)</td>
-                <td className="px-6 py-5 text-text-main font-bold">Desde 35,90€/mes</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-5 font-bold text-text-main">Adeslas</td>
-                <td className="px-6 py-5">Con y Sin Copago</td>
-                <td className="px-6 py-5">El mayor cuadro médico y red de hospitales de España</td>
-                <td className="px-6 py-5">✓ Incluido</td>
-                <td className="px-6 py-5 text-text-main font-bold">Desde 34,00€/mes</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-5 font-bold text-text-main">DKV</td>
-                <td className="px-6 py-5">Con y Sin Copago</td>
-                <td className="px-6 py-5">Gran cobertura dental de serie y servicio al cliente</td>
-                <td className="px-6 py-5 text-emerald-600">✓ Incluido (Quiero Cuidarme)</td>
-                <td className="px-6 py-5 text-text-main font-bold">Desde 32,50€/mes</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Transparency section */}
-      <section className="py-16 sm:py-20 bg-slate-50 border-y border-slate-100 w-full">
-        <div className="max-w-5xl mx-auto px-6 sm:px-8">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Transparencia Radical</span>
-            <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-              ¿Qué incluye y qué excluye el seguro médico típico?
-            </h2>
-            <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-xl mx-auto">
-              Las aseguradoras tienen exclusiones e inclusiones estándar en España. Te las explicamos sin rodeos para que contrates con conocimiento.
-            </p>
-          </div>
-
-          <TransparencyBlock 
-            inclusions={inclusions}
-            exclusions={exclusions}
-          />
-        </div>
-      </section>
-
-      {/* Human Advisor Help section */}
-      <section className="py-16 w-full max-w-4xl mx-auto px-6 sm:px-8 space-y-8">
-        <div className="text-left space-y-1">
-          <h3 className="text-h2 font-display font-extrabold text-text-main">¿Dudas sobre carencias o coberturas previas?</h3>
-          <p className="text-body-reg text-text-secondary font-medium">Nuestros asesores de salud autorizados están a tu disposición por WhatsApp para resolver dudas médicas, analizar preexistencias y gestionar el alta oficial.</p>
-        </div>
-        <AdvisorCard 
-          onWhatsAppClick={() => window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Tengo%20dudas%20sobre%20coberturas%20de%20seguros%20de%20salud.', '_blank')}
-          onPhoneClick={() => window.open('tel:+34900839240')}
+        <RequirementsComparisonTable
+          tableClassName="bg-white text-sm font-semibold text-text-secondary"
+          headClassName="bg-slate-50 border-b border-slate-100 text-xs text-text-main uppercase font-black tracking-wider"
+          bodyClassName="divide-y divide-slate-100"
+          columns={[
+            { key: 'provider', label: 'Aseguradora', className: 'w-[14%] px-6 py-4' },
+            { key: 'plans', label: 'Modalidades', className: 'w-[17%] px-6 py-4' },
+            { key: 'strength', label: 'Punto Fuerte', className: 'w-[29%] px-6 py-4' },
+            { key: 'video', label: 'Videoconsulta', className: 'w-[23%] px-6 py-4' },
+            { key: 'price', label: 'Precio Inicial', className: 'w-[17%] px-6 py-4' },
+          ]}
+          rows={[
+            { key: 'sanitas', className: 'hover:bg-slate-50/50 transition-colors', cells: [<span className="font-bold text-text-main">Sanitas</span>, <span>Con y Sin Copago</span>, <span>Medicina digital y videoconsultas inmediatas (Blua)</span>, <span className="text-emerald-600">✓ Incluido (Líder digital)</span>, <span className="text-text-main font-bold">Desde 35,90€/mes</span>] },
+            { key: 'adeslas', className: 'hover:bg-slate-50/50 transition-colors', cells: [<span className="font-bold text-text-main">Adeslas</span>, <span>Con y Sin Copago</span>, <span>El mayor cuadro médico y red de hospitales de España</span>, <span>✓ Incluido</span>, <span className="text-text-main font-bold">Desde 34,00€/mes</span>] },
+            { key: 'dkv', className: 'hover:bg-slate-50/50 transition-colors', cells: [<span className="font-bold text-text-main">DKV</span>, <span>Con y Sin Copago</span>, <span>Gran cobertura dental de serie y servicio al cliente</span>, <span className="text-emerald-600">✓ Incluido (Quiero Cuidarme)</span>, <span className="text-text-main font-bold">Desde 32,50€/mes</span>] },
+          ]}
         />
       </section>
 
-      {/* FAQ Accordion section */}
-      <section className="py-16 sm:py-20 bg-slate-50/50 border-t border-slate-100 w-full">
-        <div className="max-w-4xl mx-auto px-6 sm:px-8">
-          <div className="text-center space-y-4 mb-12">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Dudas Frecuentes</span>
-            <h2 className="text-h2 font-display font-extrabold text-text-main leading-tight tracking-tight">
-              Preguntas sobre Seguros de Salud
-            </h2>
-          </div>
-          <div className="bg-white border border-slate-100 rounded-3xl p-4 sm:p-6 shadow-inner divide-y divide-slate-200/60">
-            {faqs.map((faq, index) => (
-              <Accordion 
-                key={index} 
-                title={faq.q}
-                defaultOpen={index === 0}
-              >
-                {faq.a}
-              </Accordion>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Transparency section */}
+      <ProductTransparencySection
+        title="¿Qué incluye y qué excluye el seguro médico típico?"
+        description="Las aseguradoras tienen exclusiones e inclusiones estándar en España. Te las explicamos sin rodeos para que contrates con conocimiento."
+        inclusions={inclusions}
+        exclusions={exclusions}
+        className="bg-slate-50 border-y border-slate-100"
+      />
+
+      <AdvisorHelpSection
+        title="¿Necesitas ayuda personalizada de salud?"
+        description="Nuestros asesores de salud autorizados están a tu disposición por WhatsApp para resolver dudas médicas, analizar preexistencias y gestionar el alta oficial."
+        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Tengo%20dudas%20sobre%20coberturas%20de%20seguros%20de%20salud."
+      />
+
+      <FaqSection eyebrow="Dudas Frecuentes" title="Preguntas sobre Seguros de Salud" items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
     </div>
   );
 };

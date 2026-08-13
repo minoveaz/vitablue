@@ -1,0 +1,58 @@
+import { test, expect, type Page } from '@playwright/test';
+import { indexablePublicRoutes } from './fixtures/publicRoutes';
+
+const visualRoutes = indexablePublicRoutes;
+
+const waitForStablePage = async (page: Page) => {
+  await expect(page.locator('body')).toBeVisible();
+  await page.waitForLoadState('networkidle');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(250);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(250);
+};
+
+test.describe('Visual and geometry diagnostics - all public pages', () => {
+  for (const route of visualRoutes) {
+    test(`${route.name} mantiene captura estable y geometría correcta`, async ({ page }) => {
+      await page.goto(route.path, { waitUntil: 'networkidle' });
+      await waitForStablePage(page);
+
+      // 1. Diagnósticos de geometría visual (Se ejecutan siempre, tanto local como en CI)
+      const diagnostics = await page.evaluate(() => {
+        const viewportWidth = document.documentElement.clientWidth;
+        const tables = [...document.querySelectorAll('table')].map((table) => ({
+          width: Math.round(table.getBoundingClientRect().width),
+          narrowCells: [...table.querySelectorAll('th, td')].filter((cell) => cell.getBoundingClientRect().width < 72).length,
+          clippedCells: [...table.querySelectorAll('th, td')].filter((cell) => cell.scrollWidth > cell.clientWidth + 2).length,
+        }));
+        const headings = [...document.querySelectorAll('h1, h2, h3')].filter((heading) => {
+          const style = getComputedStyle(heading);
+          return heading.scrollWidth > heading.clientWidth + 2 || style.textOverflow === 'ellipsis';
+        }).length;
+        const gridOverflow = [...document.querySelectorAll('[class*="grid"]')].filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.right > viewportWidth + 1;
+        }).length;
+
+        return { tables, headings, gridOverflow };
+      });
+
+      expect(diagnostics.tables.filter((table) => table.narrowCells > 0 || table.clippedCells > 0),
+        `${route.path}: tabla comprimida o con celdas cortadas: ${JSON.stringify(diagnostics.tables)}`).toEqual([]);
+      expect(diagnostics.headings, `${route.path}: hay headings truncados`).toBe(0);
+      expect(diagnostics.gridOverflow, `${route.path}: hay grids fuera del viewport`).toBe(0);
+
+      // 2. Captura de pantalla (Visual Regression) - Solo en local para evitar fallos de dimensiones/fuentes por diferencia de OS (macOS vs Linux CI)
+      if (!process.env.CI) {
+        await expect(page).toHaveScreenshot(`${route.name}.png`, {
+          fullPage: true,
+          animations: 'disabled',
+          caret: 'hide',
+          timeout: 20000,
+          maxDiffPixelRatio: 0.10,
+        });
+      }
+    });
+  }
+});
