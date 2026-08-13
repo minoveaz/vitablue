@@ -606,7 +606,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         <div className="mx-auto w-full max-w-6xl space-y-12">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Advice & Guides' : 'Asesoría y Guías'}</span>
-            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'We explain the fine print' : 'Te explamos la letra pequeña'}</h2>
+            <h2 className="text-h2 font-display font-black text-text-main">{isEnglish ? 'We explain the fine print' : 'Te explicamos la letra pequeña'}</h2>
             <p className="text-body-reg text-text-secondary font-medium leading-relaxed">
               {isEnglish ? 'Practical articles written by our team to help you understand your coverages and make informed decisions.' : 'Artículos prácticos redactados por nuestro equipo para ayudarte a entender tus coberturas y tomar decisiones con criterio.'}
             </p>
