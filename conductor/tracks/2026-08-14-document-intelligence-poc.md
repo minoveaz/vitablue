@@ -131,7 +131,7 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 - [ ] Add the `Extraer y validar` CTA with disabled, submitting, and processing/loading states.
 - [ ] Build the review state with the source preview preserved, editable fields, explicit `null` values, and overall extraction status.
 - [ ] Show the contextual validation panel only for the selected field; keep the review canvas unobstructed when no field is selected.
-- [ ] Model recoverable provider, unsupported-format, timeout, and incomplete-extraction states, including `review-with-warnings`.
+- [x] Model recoverable provider, unsupported-format, timeout, and incomplete-extraction states, including `review-with-warnings`.
 - [ ] Keep the UI mounted in the existing VitaBlue backoffice surface through the local adapter.
 - [ ] Make all extracted fields editable and preserve `null` values across preparation, processing, and review transitions.
 
@@ -145,7 +145,7 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 ### Phase 3: Review, copy, and validation hardening
 
 - [x] Add field-level format validation and clear operator feedback.
-- [ ] Define the transition from processing to review and preserve warnings when extraction is incomplete or low-confidence.
+- [x] Define the transition from processing to review and preserve warnings when extraction is incomplete or low-confidence.
 - [ ] Support copying one field and the complete reviewed payload.
 - [ ] Add deterministic tests for preparation transformations, processing transitions, correction, missing fields, invalid formats, selected-field validation, warnings, and clear-session behavior.
 - [ ] Confirm that the POC does not claim authenticity verification.
