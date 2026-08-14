@@ -1,9 +1,7 @@
 import React from 'react';
-import { Check, LogOut } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
-import Button from '@/components/atoms/Button';
 import Logo from '@/components/atoms/Logo';
-import { useAuth } from '@/context/AuthContext';
 import { backofficeNavigation } from '@/components/layouts/BackofficeShell';
 import { BackofficeShell } from '@/components/backoffice-shell';
 import type { SaaSNavItem } from '@/components/layouts/SaaSShell';
@@ -17,8 +15,6 @@ interface MarketingStudioShellProps {
 }
 
 const MarketingStudioShell: React.FC<MarketingStudioShellProps> = ({ children, title }) => {
-  const { user, role, signOut } = useAuth();
-
   return (
     <BackofficeShell
       mode="standard"
@@ -43,12 +39,6 @@ const MarketingStudioShell: React.FC<MarketingStudioShellProps> = ({ children, t
               </NavLink>
             ))}
           </nav>
-          <div className="mt-auto border-t border-slate-800/60 p-4">
-            <p className="truncate text-[10px] font-semibold text-brand-cyan">{user?.email ?? 'Usuario autenticado'} · {role ?? 'sin rol'}</p>
-            <Button variant="ghost" size="sm" className="mt-3 px-0 text-slate-400 hover:text-white" onClick={() => { void signOut(); }}>
-              <LogOut className="mr-1.5 size-3.5" aria-hidden="true" />Cerrar sesión
-            </Button>
-          </div>
         </>
       )}
       header={(

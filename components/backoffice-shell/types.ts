@@ -3,6 +3,7 @@ import type React from 'react';
 export type BackofficeShellMode = 'standard' | 'full-bleed';
 export type BackofficeModuleState = 'saved' | 'saving' | 'unsaved' | 'error';
 export type BackofficeSidebarMode = 'suite' | 'context' | 'none';
+export type BackofficeNavigationMode = 'expanded' | 'rail' | 'hidden';
 
 export interface BackofficeBreadcrumb {
   label: string;
@@ -26,4 +27,6 @@ export interface BackofficeShellProps {
   overlay?: React.ReactNode;
   mode?: BackofficeShellMode;
   contextOpen?: boolean;
+  navigationMode?: BackofficeNavigationMode;
+  onNavigationModeChange?: (mode: BackofficeNavigationMode) => void;
 }
