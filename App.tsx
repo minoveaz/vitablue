@@ -32,12 +32,19 @@ const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'))
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
 const ProductCatalog = lazy(() => import('@/pages/backoffice/ProductCatalog'));
+const DocumentIntelligence = lazy(() => import('@/pages/backoffice/DocumentIntelligence'));
 const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'));
 
 const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
   .filter((route) => route.path.startsWith('/backoffice'))
   .map((route) => {
-    const View = route.path === '/backoffice' ? BackofficeHome : route.path === '/backoffice/catalogo' ? ProductCatalog : MarketingStudio;
+    const View = route.path === '/backoffice'
+      ? BackofficeHome
+      : route.path === '/backoffice/catalogo'
+        ? ProductCatalog
+        : route.path === '/backoffice/document-intelligence'
+          ? DocumentIntelligence
+          : MarketingStudio;
     return { path: route.path, element: <ProtectedRoute><View /></ProtectedRoute> };
   });
 
