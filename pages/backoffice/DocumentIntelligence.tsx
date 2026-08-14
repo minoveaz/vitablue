@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, Clipboard, FileScan, LoaderCircle, RotateCcw, Scissors, Sparkles, Trash2, Upload, X, ZoomIn, ZoomOut } from 'lucide-react';
 import Cropper, { type Area, type Point } from 'react-easy-crop';
 import BackofficeShell from '@/components/layouts/BackofficeShell';
-import { passportExtractionFixture } from '@/features/document-intelligence/fixtures';
+import { fixtureDocumentExtractionService } from '@/features/document-intelligence/fixture-service';
 import { emptyIdentityDocumentFields, type IdentityDocumentFields } from '@/features/document-intelligence/types';
 import { validateIdentityDocumentFields } from '@/features/document-intelligence/validation';
 
@@ -60,7 +60,7 @@ const DocumentIntelligence: React.FC = () => {
   const selectFile = (next: File) => { if (previewUrl) URL.revokeObjectURL(previewUrl); setFile(next); setPreviewUrl(next.type === 'application/pdf' ? null : URL.createObjectURL(next)); setFields(emptyIdentityDocumentFields()); setRotation(0); setZoom(1); setSelectedField(null); setStage('preparation'); setNotice('Documento cargado. Confirma que está listo para extraer.'); };
   const crop = () => { if (!previewUrl || !file) { setNotice('El recorte solo está disponible para imágenes.'); return; } setCropOpen(true); };
   const applyCrop = (blob: Blob) => { if (!file) return; if (previewUrl) URL.revokeObjectURL(previewUrl); setFile(new File([blob], file.name, { type: 'image/jpeg' })); setPreviewUrl(URL.createObjectURL(blob)); setZoom(1); setCropOpen(false); setNotice('Documento recortado.'); };
-  const extract = () => { if (!file) return; setStage('processing'); setSelectedField(null); setNotice('La IA está leyendo el documento…'); window.setTimeout(() => { setFields({ ...passportExtractionFixture.fields }); setStage('review'); setNotice('Respuesta recibida. Revisa los campos extraídos.'); }, 900); };
+  const extract = () => { if (!file) return; setStage('processing'); setSelectedField(null); setNotice('La IA está leyendo el documento…'); window.setTimeout(async () => { const result = await fixtureDocumentExtractionService.extract({ fileName: file.name, mimeType: file.type as 'image/jpeg' | 'image/png' | 'application/pdf', documentReference: previewUrl ?? file.name }); setFields(result.fields); setStage('review'); setNotice('Respuesta recibida. Revisa los campos extraídos.'); }, 900); };
   const clear = () => { if (previewUrl) URL.revokeObjectURL(previewUrl); setStage('preparation'); setFile(null); setPreviewUrl(null); setFields(emptyIdentityDocumentFields()); setRotation(0); setZoom(1); setSelectedField(null); setNotice(''); };
   const copy = async (value: string | null, label: string) => { if (value) { await navigator.clipboard.writeText(value); setNotice(`${label} copiado.`); } };
   const issues = useMemo(() => Object.fromEntries(validateIdentityDocumentFields(fields).map(({ field, message }) => [field, message ?? 'Valor no válido.'])) as Partial<Record<FieldKey, string>>, [fields]);

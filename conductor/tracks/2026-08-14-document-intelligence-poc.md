@@ -120,9 +120,9 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ### Phase 0: Contract and fixtures
 
-- [ ] Define provider-independent request/result types.
-- [ ] Define supported document types and nullable field model.
-- [ ] Add redacted fixtures and extraction/validation test cases.
+- [x] Define provider-independent request/result types.
+- [x] Define supported document types and nullable field model.
+- [x] Add redacted fixtures and extraction/validation test cases.
 - [ ] Define upload limits and temporary-data lifecycle.
 
 ### Phase 1: Lightweight UI
@@ -144,7 +144,7 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ### Phase 3: Review, copy, and validation hardening
 
-- [ ] Add field-level format validation and clear operator feedback.
+- [x] Add field-level format validation and clear operator feedback.
 - [ ] Define the transition from processing to review and preserve warnings when extraction is incomplete or low-confidence.
 - [ ] Support copying one field and the complete reviewed payload.
 - [ ] Add deterministic tests for preparation transformations, processing transitions, correction, missing fields, invalid formats, selected-field validation, warnings, and clear-session behavior.
