@@ -5,3 +5,6 @@
 
 [functions.marketing-link-redirect]
 verify_jwt = false
+
+[functions.extract-identity-document]
+verify_jwt = true

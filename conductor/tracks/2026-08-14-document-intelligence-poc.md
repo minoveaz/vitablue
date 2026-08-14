@@ -137,7 +137,7 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ### Phase 2: Gemini endpoint
 
-- [ ] Add the backend boundary for Gemini without exposing credentials to the browser.
+- [x] Add the backend boundary for Gemini without exposing credentials to the browser.
 - [ ] Normalize Gemini output into the provider-independent contract.
 - [ ] Handle provider errors, unsupported documents, and incomplete results.
 - [ ] Verify that sensitive payloads are absent from logs.
