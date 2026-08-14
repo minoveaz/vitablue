@@ -27,6 +27,12 @@ export class LocalRenderJobApi {
     return this.store.get(id);
   }
 
+  resolveArtifact(id: string): string {
+    const job = this.store.get(id);
+    if (!job?.outputPath) throw new Error(`Render artifact for job "${id}" is not ready.`);
+    return this.artifacts.resolve(job.outputPath);
+  }
+
   list(): RenderJob[] {
     return this.store.list();
   }

@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { HealthIllustration, PetIllustration, TravelIllustration } from '@/components/illustrations';
 import Logo from '@/components/atoms/Logo';
-import { MessageSquare, Download, Image as ImageIcon, Video, AlertCircle, Copy, Trash2, ChevronUp, ChevronDown, Plus, LoaderCircle } from 'lucide-react';
+import { MessageSquare, Download, Video, AlertCircle, Copy, Trash2, ChevronUp, ChevronDown, Plus, LoaderCircle, Image, Music2, Type, Palette } from 'lucide-react';
 import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../packages/video-studio/src/compositions/ReelVisaRejection';
 import { vitablueBrandAdapter } from '../packages/video-studio/src/adapters/vitablue';
@@ -35,7 +35,8 @@ export const SocialGenerator: React.FC = () => {
   }
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<'image' | 'video'>('video');
+  const activeTab = 'video' as const;
+  const [activeTool, setActiveTool] = useState<string | null>(null);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<PlayerRef>(null);
@@ -223,48 +224,25 @@ export const SocialGenerator: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-200 mb-8 gap-4">
-        <div>
-          <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em] flex items-center gap-1.5">
-            <ImageIcon className="w-3.5 h-3.5" />
-            Entorno de Desarrollo Local
-          </span>
-          <h1 className="text-3xl font-display font-black text-text-main mt-1">Marketing Content Studio</h1>
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-slate-100/70 text-left">
+      <header className="flex min-h-14 items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-2.5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+            <Video className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="truncate text-sm font-black text-text-main">Marketing Video Studio</h1>
+            <p className="truncate text-[10px] font-semibold text-slate-400">Proyecto sin título · Guardado localmente</p>
+          </div>
         </div>
-        <div className="text-left md:text-right">
-          <p className="text-xs text-text-secondary font-semibold">Genera activos visuales y de vídeo optimizados para conversión</p>
-          <p className="text-[10px] font-bold text-slate-400">Páginas de recursos dinámicos locales</p>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="hidden text-[10px] font-bold uppercase tracking-wider text-emerald-600 sm:inline">Listo para editar</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+          <button type="button" className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-bold text-slate-600 hover:border-primary/30 hover:text-primary">Compartir</button>
         </div>
-      </div>
+      </header>
 
-      {/* Tabs navigation */}
-      <div className="flex border-b border-slate-200 mb-8 gap-2">
-        <button
-          onClick={() => setActiveTab('image')}
-          className={`flex items-center gap-2 py-3.5 px-6 text-sm font-bold border-b-2 transition-all cursor-pointer ${
-            activeTab === 'image'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-text-secondary hover:text-text-main hover:border-slate-300'
-          }`}
-        >
-          <ImageIcon size={16} />
-          <span>Generador de Imágenes</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('video')}
-          className={`flex items-center gap-2 py-3.5 px-6 text-sm font-bold border-b-2 transition-all cursor-pointer ${
-            activeTab === 'video'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-text-secondary hover:text-text-main hover:border-slate-300'
-          }`}
-        >
-          <Video size={16} />
-          <span>Generador de Video</span>
-        </button>
-      </div>
-
-      {activeTab === 'image' ? (
+      {false ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left column: Controls */}
           <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6">
@@ -500,9 +478,39 @@ export const SocialGenerator: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid min-h-0 flex-1 grid-cols-[76px_minmax(0,1fr)_360px] items-stretch gap-0 overflow-hidden">
+          <nav aria-label="Herramientas del editor" className="relative z-30 flex min-h-0 shrink-0 flex-col gap-2 overflow-y-hidden border-r border-slate-200 bg-white p-2.5">
+            {[
+              [Video, 'Plantillas'],
+              [Image, 'Elementos'],
+              [Type, 'Texto'],
+              [Palette, 'Marca'],
+              [Download, 'Subidos'],
+              [Music2, 'Audio'],
+              [MessageSquare, 'Subtítulos'],
+            ].map(([Icon, label]) => (
+              <button key={label as string} type="button" onClick={() => setActiveTool(activeTool === label ? null : label as string)} className={`group flex min-w-[64px] flex-col items-center gap-1 rounded-xl px-1 py-2 transition-colors lg:w-full ${activeTool === label ? 'bg-primary/10 text-primary' : 'text-slate-500 hover:bg-primary/5 hover:text-primary'}`}>
+                <Icon className="h-4 w-4" />
+                <span className="text-[9px] font-bold leading-tight">{label as string}</span>
+              </button>
+            ))}
+            {activeTool === 'Elementos' && (
+              <div className="absolute left-0 top-full z-20 w-full min-w-72 border-b border-slate-200 bg-white p-4 shadow-xl lg:left-full lg:top-0 lg:h-full lg:border-b-0 lg:border-r">
+                <div className="mb-5 border-b border-slate-100 pb-4">
+                  <p className="text-xs font-black uppercase tracking-wider text-slate-500">Elementos de vídeo</p>
+                  <p className="mt-1 text-xs text-slate-400">Añade una capa a la escena activa</p>
+                </div>
+                <div className="space-y-2">
+                  <button type="button" onClick={() => addTextLayer(activeSlideId)} className="flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-3 text-left text-xs font-bold text-primary hover:bg-primary/10"><Type className="h-4 w-4" /> Texto</button>
+                  <button type="button" onClick={() => addLayer(activeSlideId, 'image')} className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-3 py-3 text-left text-xs font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Image className="h-4 w-4" /> Imagen</button>
+                  <button type="button" onClick={() => addLayer(activeSlideId, 'video')} className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-3 py-3 text-left text-xs font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Video className="h-4 w-4" /> Vídeo</button>
+                  <button type="button" onClick={() => addLayer(activeSlideId, 'audio')} className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-3 py-3 text-left text-xs font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Music2 className="h-4 w-4" /> Audio</button>
+                </div>
+              </div>
+            )}
+          </nav>
           {/* Left column: Slide Storyboard Editor */}
-          <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left">
+          <div className="col-start-3 row-start-1 min-h-0 overflow-x-hidden overflow-y-auto border-l border-slate-200 bg-white p-4 shadow-sm space-y-6">
             <div>
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-bold text-text-main">Storyboard de Escenas</h2>
@@ -947,6 +955,15 @@ export const SocialGenerator: React.FC = () => {
                       Cancelar job
                     </button>
                   )}
+                  {renderJob.status === 'completed' && (
+                    <a
+                      href={`/render-jobs/${encodeURIComponent(renderJob.id)}/artifact`}
+                      download={renderJob.outputFileName}
+                      className="inline-flex rounded-xl bg-primary px-3 py-2 text-[11px] font-bold text-white hover:bg-primary-dark"
+                    >
+                      Descargar MP4
+                    </a>
+                  )}
                 </div>
               )}
               {renderJobError && <p className="mt-2 text-[11px] font-semibold text-red-600">{renderJobError}</p>}
@@ -954,14 +971,15 @@ export const SocialGenerator: React.FC = () => {
           </div>
 
           {/* Right column: Remotion Player Visor */}
-          <div className="lg:col-span-8 flex flex-col items-center justify-center bg-slate-50 border border-slate-200/50 rounded-3xl p-8 min-h-[600px] relative overflow-hidden">
-            <div className="absolute top-4 left-4 text-xs font-bold text-slate-400">
-              Previsualización interactiva de Remotion (Lienzo 9:16)
+          <div className="col-start-2 row-start-1 flex min-h-0 min-w-0 flex-col items-center justify-start overflow-x-auto overflow-y-hidden bg-[#eef0f4] p-4 sm:p-6">
+            <div className="mb-4 flex w-full max-w-[760px] items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Lienzo · {videoDimensions.label}</span>
+              <span>{totalSeconds}s · 30 FPS</span>
             </div>
 
             {/* Remotion Player element wrapper */}
             <div className="flex flex-col items-center gap-6">
-              <div className="shadow-2xl rounded-2xl overflow-hidden border border-slate-200 bg-black mt-8" style={{ width: videoFormat === 'landscape' ? '640px' : '360px', height: videoFormat === 'vertical' ? '640px' : '360px' }}>
+              <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-2xl" style={{ width: videoFormat === 'landscape' ? 'min(640px, 70vw)' : 'min(360px, 30vw)', height: videoFormat === 'vertical' ? 'min(640px, calc(100vh - 16rem))' : 'min(360px, calc(100vh - 16rem))' }}>
                 <Player
                   ref={playerRef}
                   component={ReelVisaRejection}
@@ -980,6 +998,58 @@ export const SocialGenerator: React.FC = () => {
                   controls={false}
                 />
               </div>
+
+              {(() => {
+                const activeScene = slides.find((scene) => scene.id === activeSlideId);
+                const selectedLayer = activeScene?.layers.find((layer) => layer.id === selectedLayerId);
+                const selectedAssetLayer = selectedLayer && (selectedLayer.type === 'image' || selectedLayer.type === 'video') ? selectedLayer : undefined;
+                const addElement = (type: 'text' | 'image' | 'video' | 'audio') => {
+                  const nextLayerId = `${activeSlideId}-${type}-${(activeScene?.layers.length ?? 0) + 1}`;
+                  if (type === 'text') addTextLayer(activeSlideId);
+                  else addLayer(activeSlideId, type);
+                  setSelectedLayerId(nextLayerId);
+                };
+
+                return (
+                  <div className="hidden w-full max-w-[760px] rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Elementos de vídeo</p>
+                        <p className="mt-1 text-[11px] text-slate-400">Añade una pista a la escena activa</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 sm:flex">
+                        <button type="button" onClick={() => addElement('text')} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-[11px] font-bold text-primary hover:bg-primary/10"><Type className="h-3.5 w-3.5" /> Texto</button>
+                        <button type="button" onClick={() => addElement('image')} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Image className="h-3.5 w-3.5" /> Imagen</button>
+                        <button type="button" onClick={() => addElement('video')} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Video className="h-3.5 w-3.5" /> Vídeo</button>
+                        <button type="button" onClick={() => addElement('audio')} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 hover:border-primary/30 hover:text-primary"><Music2 className="h-3.5 w-3.5" /> Audio</button>
+                      </div>
+                    </div>
+                    <div className="mt-4 rounded-xl border border-primary/20 bg-primary/[0.04] p-3">
+                      {selectedLayer ? (
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-black uppercase tracking-wider text-primary">Elemento seleccionado</p>
+                            <p className="mt-1 truncate text-sm font-bold text-slate-800">{selectedLayer.type === 'text' ? selectedLayer.text : selectedLayer.type === 'audio' ? (selectedLayer.src || 'Audio sin fuente') : (selectedAssetLayer?.asset.src || `${selectedLayer.type} sin fuente`)}</p>
+                          </div>
+                          {selectedLayer.type === 'text' ? (
+                            <textarea value={selectedLayer.text} onChange={(event) => updateLayer(activeSlideId, selectedLayer.id, { text: event.target.value })} className="min-h-16 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold sm:max-w-[280px]" aria-label="Contenido del elemento seleccionado" />
+                          ) : selectedLayer.type === 'audio' ? (
+                            <input value={selectedLayer.src} onChange={(event) => updateLayer(activeSlideId, selectedLayer.id, { src: event.target.value })} placeholder="/assets/audio.mp3" className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold sm:max-w-[280px]" aria-label="Fuente del elemento seleccionado" />
+                          ) : selectedAssetLayer ? (
+                            <input value={selectedAssetLayer.asset.src} onChange={(event) => updateLayer(activeSlideId, selectedAssetLayer.id, { asset: { ...selectedAssetLayer.asset, src: event.target.value } })} placeholder={`/assets/${selectedAssetLayer.type === 'video' ? 'video.mp4' : 'imagen.jpg'}`} className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold sm:max-w-[280px]" aria-label="Fuente del elemento seleccionado" />
+                          ) : null}
+                          <div className="flex shrink-0 gap-2">
+                            <button type="button" onClick={() => updateLayer(activeSlideId, selectedLayer.id, { visible: selectedLayer.visible === false })} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-bold text-slate-600 hover:text-primary">{selectedLayer.visible === false ? 'Mostrar' : 'Ocultar'}</button>
+                            <button type="button" onClick={() => { removeLayer(activeSlideId, selectedLayer.id); setSelectedLayerId(undefined); }} className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-[10px] font-bold text-red-600 hover:bg-red-50">Eliminar</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400">Selecciona una pista en la timeline para editarla aquí.</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               <VideoTimeline
                 scenes={slides}

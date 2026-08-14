@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { createReadStream } from 'node:fs';
 import type { VideoFormat, VideoProject } from '../domain/videoProject';
 import { LocalRenderJobApi } from './localRenderJobApi';
 
@@ -34,10 +35,21 @@ export const createRenderHttpServer = (options: RenderHttpServerOptions): Render
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url ?? '/', 'http://localhost');
-      const match = url.pathname.match(/^\/render-jobs(?:\/([^/]+))?(\/cancel)?$/);
+      const match = url.pathname.match(/^\/render-jobs(?:\/([^/]+))?(\/cancel|\/artifact)?$/);
       if (!match) return sendJson(response, 404, { error: 'Not found.' });
 
       const jobId = match[1];
+      if (request.method === 'GET' && jobId && match[2] === '/artifact') {
+        const job = options.api.get(jobId);
+        if (!job) return sendJson(response, 404, { error: 'Render job not found.' });
+        if (job.status !== 'completed' || !job.outputPath) {
+          return sendJson(response, 409, { error: 'Render artifact is not ready.' });
+        }
+        response.statusCode = 200;
+        response.setHeader('content-type', 'video/mp4');
+        response.setHeader('content-disposition', `attachment; filename="${job.outputFileName}"`);
+        return createReadStream(options.api.resolveArtifact(jobId)).pipe(response);
+      }
       if (request.method === 'POST' && !jobId) {
         const body = await readJson(request) as { project?: unknown; format?: VideoFormat };
         if (!isProject(body.project)) return sendJson(response, 400, { error: 'A valid project is required.' });

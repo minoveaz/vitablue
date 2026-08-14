@@ -19,9 +19,11 @@ interface SaaSShellProps {
   eyebrow?: string;
   productName?: string;
   workspaceLabel?: string;
+  hideNavigation?: boolean;
+  hideHeader?: boolean;
 }
 
-const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyebrow = 'Panel de Administración', productName = 'Marketing Studio', workspaceLabel = 'Dev Workspace' }) => {
+const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyebrow = 'Panel de Administración', productName = 'Marketing Studio', workspaceLabel = 'Dev Workspace', hideNavigation = false, hideHeader = false }) => {
   const { user, role, signOut } = useAuth();
   const { pathname, search } = useLocation();
   const navigationType = useNavigationType();
@@ -63,7 +65,7 @@ const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyeb
 
   return (
     <div className="flex min-h-screen flex-row bg-slate-100 text-slate-800 max-md:flex-col">
-      <aside className="flex min-h-screen w-64 shrink-0 flex-col justify-between bg-slate-900 text-white max-md:min-h-0 max-md:w-full" aria-label={`${productName} navegación`}>
+      {!hideNavigation && <aside className="flex min-h-screen w-64 shrink-0 flex-col justify-between bg-slate-900 text-white max-md:min-h-0 max-md:w-full" aria-label={`${productName} navegación`}>
         <div className="p-4 sm:p-6">
           <div className="mb-6 flex items-center justify-between border-b border-slate-800/60 pb-4 text-left">
             <div><p className="font-display text-xl font-black tracking-tight text-white">{productName}</p><span className="mt-1 block text-[9px] font-black uppercase tracking-wider text-brand-cyan">{workspaceLabel}</span></div>
@@ -77,8 +79,8 @@ const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyeb
           <div className="rounded-xl border border-brand-cyan/20 bg-brand-cyan/5 px-3.5 py-2.5 text-center text-[10px] font-semibold leading-relaxed text-brand-cyan">{user?.email ?? 'Usuario autenticado'} · {role ?? 'sin rol'}</div>
           <div className="flex flex-wrap items-center gap-3 lg:block lg:space-y-3"><Link to="/" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 transition-colors hover:text-white">Salir al sitio <span aria-hidden="true">↗</span></Link><Button variant="ghost" size="sm" className="text-slate-400 hover:bg-slate-800 hover:text-white" onClick={() => { void signOut(); }}><LogOut className="mr-1.5 size-3.5" aria-hidden="true" />Cerrar sesión</Button></div>
         </div>
-      </aside>
-      <main ref={mainRef} className="h-screen min-w-0 flex-grow overflow-y-auto p-4 sm:p-6 md:p-10"><div className="mx-auto flex w-full max-w-7xl flex-col gap-8"><header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 text-left sm:flex-row sm:items-center"><div><div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" /><span className="text-[10px] font-black uppercase tracking-wider text-primary">{eyebrow}</span></div><h1 className="mt-1 font-display text-h3 font-black text-slate-800">{title}</h1></div><div className="flex flex-wrap items-center gap-2.5"><div className="flex items-center gap-1.5 rounded-xl border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-[10px] font-bold text-primary"><Check className="size-3" aria-hidden="true" />Base de Datos Sincronizada</div><div className="rounded-xl border border-slate-200/60 bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500">Entorno Local: Activo</div></div></header>{children}</div></main>
+      </aside>}
+      <main ref={mainRef} className={`h-screen min-w-0 flex-grow overflow-hidden ${hideNavigation ? 'p-0' : 'overflow-y-auto p-4 sm:p-6 md:p-10'}`}><div className={`mx-auto flex h-full w-full flex-col ${hideHeader ? 'gap-0' : 'gap-8'} ${hideNavigation ? 'max-w-none' : 'max-w-7xl'}`}>{!hideHeader && <header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 text-left sm:flex-row sm:items-center"><div><div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-primary" /><span className="text-[10px] font-black uppercase tracking-wider text-primary">{eyebrow}</span></div><h1 className="mt-1 font-display text-h3 font-black text-slate-800">{title}</h1></div><div className="flex flex-wrap items-center gap-2.5"><div className="flex items-center gap-1.5 rounded-xl border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1.5 text-[10px] font-bold text-primary"><Check className="size-3" aria-hidden="true" />Base de Datos Sincronizada</div><div className="rounded-xl border border-slate-200/60 bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-500">Entorno Local: Activo</div></div></header>}{children}</div></main>
     </div>
   );
 };

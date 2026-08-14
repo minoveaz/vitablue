@@ -18,6 +18,7 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
 import SocialGenerator from '@/marketing-studio/SocialGenerator';
+import MarketingStudioShell from '@/marketing-studio/MarketingStudioShell';
 import { 
   getSocialProfiles, 
   saveSocialProfiles, 
@@ -110,7 +111,7 @@ const MarketingStudio: React.FC = () => {
     section = 'links';
   } else if (pathname.includes('/conexiones')) {
     section = 'connections';
-  } else if (pathname.includes('/generador-contenido')) {
+  } else if (pathname.includes('/generador-contenido') || pathname.includes('/dam/video/new')) {
     section = 'content';
   }
 
@@ -130,6 +131,15 @@ const MarketingStudio: React.FC = () => {
   const selectedPlatform = platforms.find((platform) => platform.id === activePlatform) ?? platforms[0];
   const selectedProfile = socialProfiles[activePlatform];
   const hasCover = Boolean(selectedPlatform.coverSize);
+  const studioTitle = section === 'identity'
+    ? 'Identidad de Marca & Sistema Visual'
+    : section === 'profiles'
+      ? 'Gestión de Perfiles Sociales'
+      : section === 'campaigns'
+        ? 'Planificador de Campañas Multicanal'
+        : section === 'connections'
+          ? 'Configuración de Conexiones de API'
+          : 'Generador Automático de Contenido';
   
   const coverDimensions = selectedPlatform.coverSize ?? { width: 1640, height: 624 };
   const coverLogoSize = coverDimensions.width >= 2000 ? 220 : 150;
@@ -241,8 +251,10 @@ const MarketingStudio: React.FC = () => {
     }
   };
 
+  const StudioShell = section === 'content' ? SaaSShell : MarketingStudioShell;
+
   return (
-    <SaaSShell navigation={backofficeNavigation} title={section === 'identity' ? 'Identidad de Marca & Sistema Visual' : section === 'profiles' ? 'Gestión de Perfiles Sociales' : section === 'campaigns' ? 'Planificador de Campañas Multicanal' : section === 'connections' ? 'Configuración de Conexiones de API' : 'Generador Automático de Contenido'}>
+    <StudioShell navigation={backofficeNavigation} {...(section === 'content' ? { hideNavigation: true, hideHeader: true, title: studioTitle } : { title: studioTitle })}>
       {/* SIDEBAR NAVIGATION */}
       <aside className="hidden">
         <div className="p-6">
@@ -1042,7 +1054,7 @@ const MarketingStudio: React.FC = () => {
           }}
         />
       </div>
-    </SaaSShell>
+    </StudioShell>
   );
 };
 
