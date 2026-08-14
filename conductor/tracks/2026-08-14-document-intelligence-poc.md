@@ -60,10 +60,19 @@ The initial operation handles one document at a time. Results are temporary by d
 ## User flow
 
 ```text
-Upload -> Preview -> Extract with Gemini -> Review/edit -> Validate -> Copy fields -> Clear session
+Preparation -> Processing -> Contextual review -> Copy fields -> Clear session
 ```
 
-The operator must be able to inspect the source document, understand which values are missing or uncertain, correct extracted values, and copy a single field or the complete reviewed payload without losing the original preview.
+The experience is intentionally split into two operator steps:
+
+1. **Preparation**: the operator uploads one document, inspects the preview, and prepares the source before sending it for extraction.
+2. **Review**: after processing completes, the operator reviews and edits the normalized result while keeping the source preview available.
+
+The preparation view must support rotation, crop, replacement of the source file, and cleanup/reset. These transformations are temporary and apply only to the document submitted for extraction. The primary CTA is `Extraer y validar`; it is disabled until a usable document is ready and changes to a clear processing state while the request is in flight.
+
+The processing state must communicate that extraction and local validation are running, prevent duplicate submissions, and preserve the prepared preview. A successful response transitions to review without discarding the source. Provider failures, unsupported files, timeouts, and incomplete results return to a recoverable preparation or review-with-warnings state with an actionable message.
+
+In review, extracted fields are editable and retain explicit `null` values. The contextual validation panel on the right is shown only when an individual field is selected; it displays that field's value, confidence/uncertainty information, and local validation feedback. With no field selected, the review canvas remains unobstructed and shows the overall extraction status instead. The operator can correct values, copy one field or the complete reviewed payload, and clear the temporary session.
 
 ## Initial document coverage
 
@@ -118,9 +127,13 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ### Phase 1: Lightweight UI
 
-- [ ] Build the upload, preview, extraction status, review form, validation feedback, copy, and clear-session states.
+- [ ] Build the preparation state with upload, source preview, rotation, crop, replacement, and cleanup/reset controls.
+- [ ] Add the `Extraer y validar` CTA with disabled, submitting, and processing/loading states.
+- [ ] Build the review state with the source preview preserved, editable fields, explicit `null` values, and overall extraction status.
+- [ ] Show the contextual validation panel only for the selected field; keep the review canvas unobstructed when no field is selected.
+- [ ] Model recoverable provider, unsupported-format, timeout, and incomplete-extraction states, including `review-with-warnings`.
 - [ ] Keep the UI mounted in the existing VitaBlue backoffice surface through the local adapter.
-- [ ] Make all extracted fields editable and preserve `null` values.
+- [ ] Make all extracted fields editable and preserve `null` values across preparation, processing, and review transitions.
 
 ### Phase 2: Gemini endpoint
 
@@ -132,8 +145,9 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 ### Phase 3: Review, copy, and validation hardening
 
 - [ ] Add field-level format validation and clear operator feedback.
+- [ ] Define the transition from processing to review and preserve warnings when extraction is incomplete or low-confidence.
 - [ ] Support copying one field and the complete reviewed payload.
-- [ ] Add deterministic tests for correction, missing fields, invalid formats, and clear-session behavior.
+- [ ] Add deterministic tests for preparation transformations, processing transitions, correction, missing fields, invalid formats, selected-field validation, warnings, and clear-session behavior.
 - [ ] Confirm that the POC does not claim authenticity verification.
 
 ### Phase 4: LoopDev migration preparation
@@ -144,10 +158,13 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ## Definition of Done
 
-- [ ] An operator can complete the upload-to-copy flow for the initial document types.
+- [ ] An operator can complete the preparation -> processing -> review -> copy flow for the initial document types.
+- [ ] Preparation supports temporary rotation, crop, replacement, and cleanup/reset without persistence.
+- [ ] `Extraer y validar` has a visible processing state and cannot be submitted twice.
 - [ ] The source preview remains available during review.
 - [ ] Every extracted field can be edited, copied, or left as `null`.
-- [ ] Local validation reports actionable field-level feedback.
+- [ ] The contextual validation panel appears only for the selected field and reports actionable field-level feedback.
+- [ ] Incomplete, low-confidence, unsupported, and provider-error responses produce recoverable states, including `review-with-warnings` where applicable.
 - [ ] Gemini credentials and raw sensitive payloads stay server-side and out of logs.
 - [ ] Temporary documents and results are cleared according to the documented lifecycle.
 - [ ] Tests cover the normalized contract, representative fixtures, and the main failure states.
