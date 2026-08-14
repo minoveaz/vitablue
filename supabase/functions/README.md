@@ -17,5 +17,6 @@ Before enabling a provider:
 
 `extract-identity-document` is the authenticated server-side boundary for identity-document extraction.
 Configure `GEMINI_API_KEY` with `supabase secrets set GEMINI_API_KEY=...`; never expose it through `VITE_*` variables.
-The function validates the session and accepted MIME types. It must resolve only private temporary Storage references and
-return the normalized `DocumentExtractionResult`; it must not log document bytes, MRZ values, prompts, or raw provider responses.
+The function validates the session, accepted MIME types, document size, and user-owned private Storage references. It
+downloads the temporary object, calls Gemini server-side, normalizes the response to the `DocumentExtractionResult`
+contract, and removes the object in `finally`. It must not log document bytes, MRZ values, prompts, or raw provider responses.
