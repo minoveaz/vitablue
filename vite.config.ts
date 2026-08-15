@@ -29,11 +29,17 @@ export default defineConfig({
     }),
   ],
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
-      '@': fileURLToPath(new URL('./', import.meta.url))
+      '@': fileURLToPath(new URL('./', import.meta.url)),
+      'react': path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      'remotion': path.resolve(__dirname, './node_modules/remotion')
     },
   },
   server: {
+    port: 5174,
+    strictPort: true,
     proxy: {
       '/api/linkedin': {
         target: 'https://api.linkedin.com',
@@ -54,6 +60,10 @@ export default defineConfig({
         target: 'https://www.googleapis.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/google/, ''),
+      },
+      '/render-jobs': {
+        target: 'http://127.0.0.1:8787',
+        changeOrigin: true,
       },
     },
   },

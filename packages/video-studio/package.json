@@ -1,0 +1,26 @@
+{
+  "name": "vitablue-video-studio",
+  "version": "1.0.0",
+  "description": "Motor agnóstico de vídeo de VitaBlue utilizando Remotion",
+  "main": "src/index.ts",
+  "scripts": {
+    "preview": "remotion preview src/index.ts",
+    "render": "remotion render src/index.ts ReelVisaRejection out/reel-visa-vertical.mp4",
+    "render:vertical": "remotion render src/index.ts ReelVisaRejection out/reel-visa-vertical.mp4",
+    "render:square": "remotion render src/index.ts ReelVisaRejectionSquare out/reel-visa-square.mp4",
+    "render:landscape": "remotion render src/index.ts ReelVisaRejectionLandscape out/reel-visa-landscape.mp4"
+  },
+  "dependencies": {
+    "remotion": "4.0.228"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0 || ^19.0.0",
+    "react-dom": ">=16.8.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.228",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.5.0"
+  }
+}
