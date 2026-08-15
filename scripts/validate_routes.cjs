@@ -35,7 +35,17 @@ const registryRoutes = [
   ...[...registry.matchAll(/path:\s*'([^']+)'/g)].map((match) => match[1]),
 ];
 const legacyRegistryRoutes = new Set([...registry.matchAll(/legacy\('([^']+)'/g)].map((match) => match[1]));
-const nonSeoRoutes = new Set(['/login', '/backoffice', '/backoffice/catalogo', '/cotizador.html', '/wizard', '/resultados']);
+const nonSeoRoutes = new Set([
+  '/login',
+  '/backoffice',
+  '/backoffice/catalogo',
+  '/backoffice/document-intelligence',
+  '/backoffice/tools',
+  '/backoffice/tools/document-intelligence',
+  '/cotizador.html',
+  '/wizard',
+  '/resultados',
+]);
 
 const unique = (routes) => [...new Set(routes)];
 const dynamicRoutes = appRoutes.filter((route) => route.includes(':'));

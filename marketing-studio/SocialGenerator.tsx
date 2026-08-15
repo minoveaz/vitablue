@@ -24,6 +24,7 @@ const getSlideItems = (content: Record<string, unknown>): string[] =>
     : [];
 
 export const SocialGenerator: React.FC = () => {
+  const showLegacyEditor = import.meta.env.VITE_LEGACY_SOCIAL_EDITOR === 'true';
   // Safe-guard to prevent this page from rendering/working in production
   if (!import.meta.env.DEV) {
     return (
@@ -242,7 +243,7 @@ export const SocialGenerator: React.FC = () => {
         </div>
       </header>
 
-      {false ? (
+      {showLegacyEditor ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left column: Controls */}
           <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6">
