@@ -35,6 +35,7 @@ permissions:
 
 jobs:
   # Detecta si el cambio puede afectar al frontend público o al artefacto dist.
+  # También se ejecuta en PRs de sincronización entre ramas protegidas.
   # Las modificaciones exclusivas de Edge Functions no necesitan E2E visual.
   changes:
     name: 🔎 Detect changed surfaces
