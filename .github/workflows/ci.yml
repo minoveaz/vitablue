@@ -21,6 +21,7 @@ on:
       - '**/*.md'
       - 'docs/**'
       - 'conductor/**'
+  workflow_dispatch:
 
 # Sólo un job de CI activo a la vez por rama para evitar derroche de runners
 concurrency:
