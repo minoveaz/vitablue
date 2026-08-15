@@ -31,6 +31,7 @@ const BlogPost = lazy(() => import('@/pages/public/BlogPost'));
 const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'));
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
+const ToolsHome = lazy(() => import('@/pages/backoffice/ToolsHome'));
 const ProductCatalog = lazy(() => import('@/pages/backoffice/ProductCatalog'));
 const DocumentIntelligence = lazy(() => import('@/pages/backoffice/DocumentIntelligence'));
 const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'));
@@ -38,11 +39,16 @@ const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'))
 const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
   .filter((route) => route.path.startsWith('/backoffice'))
   .map((route) => {
+    if (route.redirectTo) {
+      return { path: route.path, element: <Navigate to={route.redirectTo} replace /> };
+    }
     const View = route.path === '/backoffice'
       ? BackofficeHome
+      : route.path === '/backoffice/tools'
+        ? ToolsHome
       : route.path === '/backoffice/catalogo'
         ? ProductCatalog
-        : route.path === '/backoffice/document-intelligence'
+        : route.path === '/backoffice/tools/document-intelligence'
           ? DocumentIntelligence
           : MarketingStudio;
     return { path: route.path, element: <ProtectedRoute><View /></ProtectedRoute> };

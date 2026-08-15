@@ -34,11 +34,20 @@ export interface DocumentFieldValidation {
   message: string | null;
 }
 
+export interface DocumentExtractionUsage {
+  promptTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  estimatedCostUsd: number;
+}
+
 export interface DocumentExtractionResult {
   classification: DocumentClassification;
   fields: IdentityDocumentFields;
+  rawFields?: IdentityDocumentFields;
   validations: DocumentFieldValidation[];
   provider: 'fixture' | 'gemini';
+  usage?: DocumentExtractionUsage;
 }
 
 export interface DocumentExtractionRequest {

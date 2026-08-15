@@ -3,7 +3,7 @@ id: document-intelligence-poc
 title: Document Intelligence POC for identity document extraction
 status: active
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-08-15
 owner: vitablue
 lead: null
 branch: feature/document-intelligence-poc
@@ -32,7 +32,7 @@ VitaBlue needs a practical document intake workflow before the larger editor and
 
 This feature performs document classification, field extraction, operator review, and format validation. It does not verify document authenticity, liveness, ownership, fraud, or legal validity.
 
-The initial operation handles one document at a time. Results are temporary by default and are cleared explicitly by the operator or when the session ends according to the selected runtime behavior.
+The initial operation handles one document at a time. Results are temporary by default and are cleared explicitly by the operator or when the session ends according to the selected runtime behavior. The review session may be restored after an accidental page reload through temporary browser session storage; this does not persist the source document binary.
 
 ## Scope
 
@@ -44,6 +44,7 @@ The initial operation handles one document at a time. Results are temporary by d
 - Initial document classification for passport, Spanish DNI, Spanish NIE, and a generic Latin American national ID.
 - Extraction of document type, issuing country, name, surnames/full name, document number, birth date, nationality, sex, issue date, expiry date, birthplace, and MRZ when available.
 - Editable extracted values, including explicit empty or uncertain values.
+- Side-by-side traceability between the normalized editable value and the raw value returned by the provider.
 - Local format validation with field-level feedback.
 - Copy of an individual field and copy of all reviewed fields.
 - Clear-session control and temporary document cleanup.
@@ -73,6 +74,76 @@ The preparation view must support rotation, crop, replacement of the source file
 The processing state must communicate that extraction and local validation are running, prevent duplicate submissions, and preserve the prepared preview. A successful response transitions to review without discarding the source. Provider failures, unsupported files, timeouts, and incomplete results return to a recoverable preparation or review-with-warnings state with an actionable message.
 
 In review, extracted fields are editable and retain explicit `null` values. The contextual validation panel on the right is shown only when an individual field is selected; it displays that field's value, confidence/uncertainty information, and local validation feedback. With no field selected, the review canvas remains unobstructed and shows the overall extraction status instead. The operator can correct values, copy one field or the complete reviewed payload, and clear the temporary session.
+
+## Visual refinement backlog
+
+The following improvements are part of the track's next review-surface iteration. They refine the operator workflow without changing the provider-neutral extraction contract or implying authenticity verification.
+
+### Contextual right panel
+
+- [x] Show `Resumen de extracción` when no field is selected.
+- [x] Show `Detalle del campo` when an extracted field is selected.
+- [ ] Add a subtle transition between summary and field-detail states without shifting the main review canvas.
+- [ ] Keep a consistent panel header, icon, status treatment, and spacing in both states.
+- [ ] Acceptance: selection state is immediately understandable, and clearing the selection returns to the extraction summary.
+
+### Consumption and cost summary
+
+- [x] Give the estimated USD cost visual prominence in the extraction summary.
+- [x] Show a compact table for input tokens, output tokens, and total tokens.
+- [ ] Move the formula to a secondary or collapsible detail area so it remains inspectable without competing with the main status.
+- [x] Label the configured Gemini rates used by the estimate: USD 0.30 per 1M input tokens and USD 2.50 per 1M output tokens.
+- [x] Use the real `usageMetadata` returned by Gemini; never present placeholder usage values.
+- [ ] Acceptance: the displayed estimate is traceable to the visible usage values and configured rates.
+
+### Field hierarchy and states
+
+- [ ] Group extracted fields into `Identificación`, `Datos personales`, `Fechas`, and `Información adicional`.
+- [ ] Give each field a clear valid, incomplete, or questionable state.
+- [ ] Preserve explicit `null` values and make fields requiring operator attention easy to scan.
+- [ ] Acceptance: an operator can identify the field group and unresolved fields without reading the full document payload.
+
+### Review status
+
+- [ ] Replace the long warning block with a compact, scannable review-status treatment.
+- [ ] Show a pending-field counter when required or questionable fields remain.
+- [ ] Expose a general state such as `Listo para revisar`, `Revisión necesaria`, or `Validado manualmente`.
+- [ ] Keep provider errors, incomplete extraction, and low-confidence results recoverable and visibly distinct from successful validation.
+- [ ] Acceptance: the overall state and remaining review work are clear at a glance.
+
+### Document preview
+
+- [ ] Provide a clear preview toolbar for rotation, crop, zoom, replacement, and reset actions.
+- [ ] Show the filename and detected document type alongside the preview.
+- [ ] Consider a quality or legibility indicator when the extraction response provides enough signal to support one.
+- [ ] Keep the preview height stable while zooming, rotating, replacing, or switching review states.
+- [ ] Evaluate a PDF preview path for supported one-page PDFs.
+- [ ] Acceptance: preview actions remain discoverable and the review layout does not jump when the source changes.
+
+### Final review actions
+
+- [ ] Add a primary `Confirmar datos` action for the reviewed payload.
+- [ ] Add a secondary `Volver a extraer` action that returns to preparation without losing the intended source context.
+- [ ] Keep copy actions contextual to the selected field and provide a clear all-fields copy action.
+- [ ] Disable `Confirmar datos` while invalid or unresolved required fields remain.
+- [ ] Make the confirmation outcome explicit without suggesting that the document has been authenticated.
+- [ ] Acceptance: the operator can finish, correct, or re-run extraction from the review surface without ambiguity.
+
+### Data consistency and observability
+
+- [ ] Enforce or validate `totalTokens = promptTokens + outputTokens` before usage is displayed.
+- [ ] Add focused tests for usage formatting, cost calculation, and token-total consistency.
+- [ ] Consider persistent cost analytics or extraction history only as a separately scoped follow-up; it is outside the temporary-data POC by default.
+
+### Target layout
+
+The intended review composition is:
+
+```text
+[ Documento ] [ Campos extraídos ] [ Resumen / detalle ]
+```
+
+The three areas should remain visually distinct, preserve stable dimensions, and adapt to narrower viewports without hiding the review status or final actions.
 
 ## Initial document coverage
 
@@ -123,32 +194,34 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 - [x] Define provider-independent request/result types.
 - [x] Define supported document types and nullable field model.
 - [x] Add redacted fixtures and extraction/validation test cases.
-- [ ] Define upload limits and temporary-data lifecycle.
+- [x] Define upload limits and temporary-data lifecycle.
 
 ### Phase 1: Lightweight UI
 
-- [ ] Build the preparation state with upload, source preview, rotation, crop, replacement, and cleanup/reset controls.
-- [ ] Add the `Extraer y validar` CTA with disabled, submitting, and processing/loading states.
-- [ ] Build the review state with the source preview preserved, editable fields, explicit `null` values, and overall extraction status.
-- [ ] Show the contextual validation panel only for the selected field; keep the review canvas unobstructed when no field is selected.
+- [x] Build the preparation state with upload, source preview, rotation, crop, replacement, and cleanup/reset controls.
+- [x] Add the `Extraer y validar` CTA with disabled, submitting, and processing/loading states.
+- [x] Build the review state with the source preview preserved, editable fields, explicit `null` values, and overall extraction status.
+- [x] Show the contextual validation panel only for the selected field; keep the review canvas unobstructed when no field is selected.
 - [x] Model recoverable provider, unsupported-format, timeout, and incomplete-extraction states, including `review-with-warnings`.
-- [ ] Keep the UI mounted in the existing VitaBlue backoffice surface through the local adapter.
-- [ ] Make all extracted fields editable and preserve `null` values across preparation, processing, and review transitions.
+- [x] Keep the UI mounted in the existing VitaBlue backoffice surface through the local adapter.
+- [x] Make all extracted fields editable and preserve `null` values across preparation, processing, and review transitions.
 
 ### Phase 2: Gemini endpoint
 
 - [x] Add the backend boundary for Gemini without exposing credentials to the browser.
-- [ ] Normalize Gemini output into the provider-independent contract.
-- [ ] Handle provider errors, unsupported documents, and incomplete results.
-- [ ] Verify that sensitive payloads are absent from logs.
+- [x] Normalize Gemini output into the provider-independent contract.
+- [x] Return raw provider fields separately from normalized fields for operator traceability.
+- [x] Handle provider errors, unsupported documents, and incomplete results.
+- [x] Verify that sensitive payloads are absent from logs.
 
 ### Phase 3: Review, copy, and validation hardening
 
 - [x] Add field-level format validation and clear operator feedback.
 - [x] Define the transition from processing to review and preserve warnings when extraction is incomplete or low-confidence.
-- [ ] Support copying one field and the complete reviewed payload.
-- [ ] Add deterministic tests for preparation transformations, processing transitions, correction, missing fields, invalid formats, selected-field validation, warnings, and clear-session behavior.
-- [ ] Confirm that the POC does not claim authenticity verification.
+- [x] Support copying one field and the complete reviewed payload.
+- [x] Add deterministic tests for preparation transformations, processing transitions, correction, missing fields, invalid formats, selected-field validation, warnings, and clear-session behavior.
+- [x] Preserve normalized and raw review values across accidental page reloads using temporary session storage.
+- [x] Confirm that the POC does not claim authenticity verification.
 
 ### Phase 4: LoopDev migration preparation
 
@@ -158,23 +231,25 @@ Validation is local and advisory for the POC. It should cover normalized date fo
 
 ## Definition of Done
 
-- [ ] An operator can complete the preparation -> processing -> review -> copy flow for the initial document types.
-- [ ] Preparation supports temporary rotation, crop, replacement, and cleanup/reset without persistence.
-- [ ] `Extraer y validar` has a visible processing state and cannot be submitted twice.
-- [ ] The source preview remains available during review.
-- [ ] Every extracted field can be edited, copied, or left as `null`.
-- [ ] The contextual validation panel appears only for the selected field and reports actionable field-level feedback.
-- [ ] Incomplete, low-confidence, unsupported, and provider-error responses produce recoverable states, including `review-with-warnings` where applicable.
-- [ ] Gemini credentials and raw sensitive payloads stay server-side and out of logs.
-- [ ] Temporary documents and results are cleared according to the documented lifecycle.
-- [ ] Tests cover the normalized contract, representative fixtures, and the main failure states.
-- [ ] The provider-neutral boundary is documented for future LoopDev migration.
-- [ ] `npm run typecheck`, `npm test`, and `git diff --check` pass for the delivered changes.
+- [x] An operator can complete the preparation -> processing -> review -> copy flow for the initial document types.
+- [x] Preparation supports temporary rotation, crop, replacement, and cleanup/reset without persistence.
+- [x] `Extraer y validar` has a visible processing state and cannot be submitted twice.
+- [x] The source preview remains available during review.
+- [x] Every extracted field can be edited, copied, or left as `null`.
+- [x] Every extracted field exposes the normalized editable value alongside the raw provider value.
+- [x] The contextual validation panel appears only for the selected field and reports actionable field-level feedback.
+- [x] Incomplete, low-confidence, unsupported, and provider-error responses produce recoverable states, including `review-with-warnings` where applicable.
+- [x] Gemini credentials and raw sensitive payloads stay server-side and out of logs.
+- [x] Temporary documents and results are cleared according to the documented lifecycle.
+- [x] A browser reload does not discard an already completed review session; clearing the session removes its temporary browser copy.
+- [x] Tests cover the normalized contract, representative fixtures, and the main failure states.
+- [x] The provider-neutral boundary is documented for future LoopDev migration.
+- [x] `npm run typecheck`, `npm test`, and `git diff --check` pass for the delivered changes.
 
 ## Risks and pending decisions
 
-- [ ] Select the backend endpoint/runtime available in VitaBlue without introducing a second application server unnecessarily.
-- [ ] Confirm whether one-page PDF preview and Gemini input are supported by the selected implementation.
+- [x] Select the backend endpoint/runtime available in VitaBlue without introducing a second application server unnecessarily.
+- [x] Confirm whether one-page PDF preview and Gemini input are supported by the selected implementation.
 - [ ] Decide how confidence and uncertainty should be displayed without encouraging operators to treat extraction as proof of authenticity.
 - [ ] Confirm the insurer management system's eventual import/copy contract; no external write is part of this POC.
 - [ ] Confirm retention and deletion guarantees for the chosen temporary upload mechanism.

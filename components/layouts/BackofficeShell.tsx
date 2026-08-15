@@ -1,12 +1,12 @@
 import React from 'react';
-import { BarChart3, Boxes, FileScan, Globe, Image, LayoutDashboard, Link2, Palette, Sparkles, Check } from 'lucide-react';
+import { BarChart3, Boxes, Globe, Image, LayoutDashboard, Link2, Palette, Sparkles, Wrench, Check } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { BackofficeShell as PlatformBackofficeShell } from '@/components/backoffice-shell';
 
 export const backofficeNavigation = [
   { to: '/backoffice', label: 'Inicio del backoffice', icon: LayoutDashboard, end: true },
   { to: '/backoffice/catalogo', label: 'Catálogo de productos', icon: Boxes, end: true },
-  { to: '/backoffice/document-intelligence', label: 'Document Intelligence', icon: FileScan, end: true },
+  { to: '/backoffice/tools', label: 'Tools', icon: Wrench, end: true },
   { to: '/backoffice/marketing-studio/identidad-de-marca', label: 'Identidad de marca', icon: Palette },
   { to: '/backoffice/marketing-studio/perfiles-sociales', label: 'Perfiles sociales', icon: Image },
   { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: BarChart3 },
