@@ -41,6 +41,9 @@ jobs:
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
       - name: Detect frontend changes
         id: filter
         uses: dorny/paths-filter@v3
