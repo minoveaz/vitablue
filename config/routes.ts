@@ -110,6 +110,9 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/login', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/catalogo', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/document-intelligence', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/backoffice/tools/document-intelligence' },
+  { path: '/backoffice/tools', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/tools/document-intelligence', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/marketing-studio/login', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/login' },
   { path: '/cotizador.html', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
   { path: '/wizard', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
@@ -122,6 +125,7 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/backoffice/marketing-studio/enlaces', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/conexiones', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/generador-contenido', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/dam/video/new', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
 
 export const routeRegistry = [

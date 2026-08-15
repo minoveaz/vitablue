@@ -37,8 +37,6 @@ import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
 import { CampaignOverview } from '@/marketing-studio/components/CampaignOverview';
 import { useAuth } from '@/context/AuthContext';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
-import SaaSShell from '@/components/layouts/SaaSShell';
-import { backofficeNavigation } from '@/components/layouts/BackofficeShell';
 import { 
   getConnections, 
   syncConnectionsWithSupabase,
@@ -49,6 +47,7 @@ import {
 } from '@/marketing-studio/utils/connections';
 import BrandIdentityPanel from '@/marketing-studio/components/BrandIdentityPanel';
 import MarketingLinks from '@/marketing-studio/MarketingLinks';
+import BackofficeShell from '@/components/layouts/BackofficeShell';
 
 type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content';
 type PlatformId = SocialPlatformId;
@@ -110,7 +109,7 @@ const MarketingStudio: React.FC = () => {
     section = 'links';
   } else if (pathname.includes('/conexiones')) {
     section = 'connections';
-  } else if (pathname.includes('/generador-contenido')) {
+  } else if (pathname.includes('/generador-contenido') || pathname.includes('/dam/video/new')) {
     section = 'content';
   }
 
@@ -130,6 +129,15 @@ const MarketingStudio: React.FC = () => {
   const selectedPlatform = platforms.find((platform) => platform.id === activePlatform) ?? platforms[0];
   const selectedProfile = socialProfiles[activePlatform];
   const hasCover = Boolean(selectedPlatform.coverSize);
+  const studioTitle = section === 'identity'
+    ? 'Identidad de Marca & Sistema Visual'
+    : section === 'profiles'
+      ? 'Gestión de Perfiles Sociales'
+      : section === 'campaigns'
+        ? 'Planificador de Campañas Multicanal'
+        : section === 'connections'
+          ? 'Configuración de Conexiones de API'
+          : 'Generador Automático de Contenido';
   
   const coverDimensions = selectedPlatform.coverSize ?? { width: 1640, height: 624 };
   const coverLogoSize = coverDimensions.width >= 2000 ? 220 : 150;
@@ -242,7 +250,7 @@ const MarketingStudio: React.FC = () => {
   };
 
   return (
-    <SaaSShell navigation={backofficeNavigation} title={section === 'identity' ? 'Identidad de Marca & Sistema Visual' : section === 'profiles' ? 'Gestión de Perfiles Sociales' : section === 'campaigns' ? 'Planificador de Campañas Multicanal' : section === 'connections' ? 'Configuración de Conexiones de API' : 'Generador Automático de Contenido'}>
+    <BackofficeShell title={studioTitle}>
       {/* SIDEBAR NAVIGATION */}
       <aside className="hidden">
         <div className="p-6">
@@ -1017,7 +1025,26 @@ const MarketingStudio: React.FC = () => {
         {/* CONTENT GENERATOR MODULE */}
         {section === 'content' && (
           <div className="animate-fadeIn">
-            <SocialGenerator />
+            <div className="flex min-h-[min(62vh,34rem)] items-center justify-center rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center md:hidden">
+              <div className="max-w-sm">
+                <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#EBF7F4] text-primary">
+                  <Sparkles className="size-7" aria-hidden="true" />
+                </div>
+                <h2 className="mt-5 font-display text-2xl font-black text-slate-900">
+                  Generador de contenido
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  Esta herramienta todavía está en construcción para pantallas móviles.
+                  Ábrela desde un ordenador para trabajar con el editor completo.
+                </p>
+                <span className="mt-5 inline-flex rounded-full border border-brand-cyan/30 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary">
+                  Disponible en escritorio
+                </span>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <SocialGenerator />
+            </div>
           </div>
         )}
         <ConfirmModal
@@ -1042,7 +1069,7 @@ const MarketingStudio: React.FC = () => {
           }}
         />
       </div>
-    </SaaSShell>
+    </BackofficeShell>
   );
 };
 
