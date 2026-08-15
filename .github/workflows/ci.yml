@@ -21,6 +21,7 @@ on:
       - '**/*.md'
       - 'docs/**'
       - 'conductor/**'
+  workflow_dispatch:
 
 # Sólo un job de CI activo a la vez por rama para evitar derroche de runners
 concurrency:
@@ -33,6 +34,44 @@ permissions:
   pull-requests: write
 
 jobs:
+  # Detecta si el cambio puede afectar al frontend público o al artefacto dist.
+  # Las modificaciones exclusivas de Edge Functions no necesitan E2E visual.
+  changes:
+    name: 🔎 Detect changed surfaces
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Detect frontend changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'App.tsx'
+              - 'index.html'
+              - 'index.css'
+              - 'components/**'
+              - 'config/**'
+              - 'context/**'
+              - 'features/**'
+              - 'hooks/**'
+              - 'marketing-studio/**'
+              - 'pages/**'
+              - 'public/**'
+              - 'scripts/**'
+              - 'utils/**'
+              - 'vite.config.ts'
+              - 'tailwind.config.js'
+              - 'postcss.config.js'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.json'
+              - 'e2e/**'
+
   # ────────────────────────────────────────────────────────────────────
   # JOB 1: Build estático pre-renderizado (SSG)
   # ────────────────────────────────────────────────────────────────────
@@ -89,7 +128,10 @@ jobs:
   playwright:
     name: 🎭 Playwright (${{ matrix.project }})
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - changes
+    if: needs.changes.outputs.frontend == 'true'
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -154,7 +196,10 @@ jobs:
   seo-audit:
     name: 🔍 SEO Audit
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - changes
+    if: needs.changes.outputs.frontend == 'true'
 
     steps:
       - name: Checkout Source Code
@@ -208,7 +253,10 @@ jobs:
   lighthouse:
     name: 🚦 Lighthouse Audit
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - changes
+    if: needs.changes.outputs.frontend == 'true'
 
     steps:
       - name: Checkout Source Code
@@ -288,15 +336,15 @@ jobs:
             echo "❌ Build SSG falló"
             exit 1
           fi
-          if [[ "${{ needs.playwright.result }}" != "success" ]]; then
+          if [[ "${{ needs.playwright.result }}" != "success" && "${{ needs.playwright.result }}" != "skipped" ]]; then
             echo "❌ Playwright E2E falló (responsive o navegación móvil)"
             exit 1
           fi
-          if [[ "${{ needs.seo-audit.result }}" != "success" ]]; then
+          if [[ "${{ needs.seo-audit.result }}" != "success" && "${{ needs.seo-audit.result }}" != "skipped" ]]; then
             echo "❌ SEO Audit falló"
             exit 1
           fi
-          if [[ "${{ needs.lighthouse.result }}" != "success" ]]; then
+          if [[ "${{ needs.lighthouse.result }}" != "success" && "${{ needs.lighthouse.result }}" != "skipped" ]]; then
             echo "❌ Lighthouse Audit falló (budgets o Core Web Vitals)"
             exit 1
           fi
