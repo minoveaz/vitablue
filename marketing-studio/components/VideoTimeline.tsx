@@ -32,12 +32,11 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   onAddLayer,
 }) => {
   const totalFrames = scenes.reduce((total, scene) => total + scene.durationInFrames, 0);
-  let startFrame = 0;
   const activeScene = scenes.find((scene) => {
-    const sceneEnd = startFrame + scene.durationInFrames;
-    const isActive = currentFrame >= startFrame && currentFrame < sceneEnd;
-    startFrame = sceneEnd;
-    return isActive;
+    const sceneStart = scenes
+      .slice(0, scenes.indexOf(scene))
+      .reduce((total, previousScene) => total + previousScene.durationInFrames, 0);
+    return currentFrame >= sceneStart && currentFrame < sceneStart + scene.durationInFrames;
   });
   const layerLabel = (layer: Layer): string => ({
     text: 'Texto',
@@ -68,8 +67,9 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
         }}
       >
         {scenes.map((scene, index) => {
-          const sceneStart = startFrame;
-          startFrame += scene.durationInFrames;
+          const sceneStart = scenes
+            .slice(0, index)
+            .reduce((total, previousScene) => total + previousScene.durationInFrames, 0);
           const isActive = currentFrame >= sceneStart && currentFrame < sceneStart + scene.durationInFrames;
           const width = totalFrames > 0 ? `${(scene.durationInFrames / totalFrames) * 100}%` : '0%';
 
