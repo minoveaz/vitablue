@@ -13,6 +13,8 @@ export interface IdentityDocumentFields {
   fullName: NullableIdentityField;
   givenNames: NullableIdentityField;
   surnames: NullableIdentityField;
+  firstSurname?: NullableIdentityField;
+  secondSurname?: NullableIdentityField;
   documentNumber: NullableIdentityField;
   birthDate: NullableIdentityField;
   nationality: NullableIdentityField;
@@ -66,6 +68,8 @@ export const emptyIdentityDocumentFields = (): IdentityDocumentFields => ({
   fullName: null,
   givenNames: null,
   surnames: null,
+  firstSurname: null,
+  secondSurname: null,
   documentNumber: null,
   birthDate: null,
   nationality: null,

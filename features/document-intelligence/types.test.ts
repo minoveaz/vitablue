@@ -11,7 +11,7 @@ describe('document intelligence contract', () => {
   it('provides a complete nullable field model for a new session', () => {
     const fields = emptyIdentityDocumentFields();
 
-    expect(Object.keys(fields)).toHaveLength(13);
+    expect(Object.keys(fields)).toHaveLength(15);
     expect(Object.values(fields).every((value) => value === null)).toBe(true);
   });
 });

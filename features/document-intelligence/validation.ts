@@ -1,4 +1,5 @@
 import type { DocumentFieldValidation, IdentityDocumentFields } from './types';
+import { ensureAtomicSurnames } from './exportProfiles';
 
 export const isDDMMAAAA = (value: string): boolean => {
   if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return false;
@@ -62,12 +63,15 @@ export const normalizeDateToDDMMAAAA = (value: string | null): string | null => 
 
 export const normalizeIdentityDocumentDates = (
   fields: IdentityDocumentFields,
-): IdentityDocumentFields => ({
-  ...fields,
-  birthDate: normalizeDateToDDMMAAAA(fields.birthDate),
-  issueDate: normalizeDateToDDMMAAAA(fields.issueDate),
-  expiryDate: normalizeDateToDDMMAAAA(fields.expiryDate),
-});
+): IdentityDocumentFields => {
+  const withSurnames = ensureAtomicSurnames(fields);
+  return {
+    ...withSurnames,
+    birthDate: normalizeDateToDDMMAAAA(withSurnames.birthDate),
+    issueDate: normalizeDateToDDMMAAAA(withSurnames.issueDate),
+    expiryDate: normalizeDateToDDMMAAAA(withSurnames.expiryDate),
+  };
+};
 
 export const validateIdentityDocumentFields = (fields: IdentityDocumentFields): DocumentFieldValidation[] => {
   const validations: DocumentFieldValidation[] = [];

@@ -38,7 +38,7 @@ const supportedMimeTypes = new Set(['image/jpeg', 'image/png', 'application/pdf'
 const maxDocumentBytes = 10 * 1024 * 1024;
 const bucketName = 'document-intelligence-temp';
 const allowedDocumentTypes = ['passport', 'spanish-dni', 'spanish-nie', 'latin-american-national-id', 'unknown'];
-const allowedFields = ['documentType', 'issuingCountry', 'fullName', 'givenNames', 'surnames', 'documentNumber', 'birthDate', 'nationality', 'sex', 'issueDate', 'expiryDate', 'birthplace', 'mrz'];
+const allowedFields = ['documentType', 'issuingCountry', 'fullName', 'givenNames', 'surnames', 'firstSurname', 'secondSurname', 'documentNumber', 'birthDate', 'nationality', 'sex', 'issueDate', 'expiryDate', 'birthplace', 'mrz'];
 
 const extractionSchema = {
   type: 'OBJECT',
@@ -48,6 +48,8 @@ const extractionSchema = {
     fullName: { type: 'STRING', nullable: true },
     givenNames: { type: 'STRING', nullable: true },
     surnames: { type: 'STRING', nullable: true },
+    firstSurname: { type: 'STRING', nullable: true },
+    secondSurname: { type: 'STRING', nullable: true },
     documentNumber: { type: 'STRING', nullable: true },
     birthDate: { type: 'STRING', nullable: true },
     nationality: { type: 'STRING', nullable: true },

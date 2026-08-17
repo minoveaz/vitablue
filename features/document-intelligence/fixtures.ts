@@ -11,6 +11,8 @@ export const passportExtractionFixture: DocumentExtractionResult = {
     fullName: 'MARIA SAMPLE',
     givenNames: 'MARIA',
     surnames: 'SAMPLE',
+    firstSurname: 'SAMPLE',
+    secondSurname: null,
     documentNumber: 'P0000000',
     birthDate: '12/04/1988',
     nationality: 'ESP',

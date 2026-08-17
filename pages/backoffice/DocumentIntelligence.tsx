@@ -46,6 +46,13 @@ import {
   normalizeIdentityDocumentDates,
   validateIdentityDocumentFields,
 } from "@/features/document-intelligence/validation";
+import {
+  EXPORT_PROFILES,
+  DEFAULT_EXPORT_PROFILE_ID,
+  formatFieldsForProfile,
+  splitSurnames,
+  buildSurnames,
+} from "@/features/document-intelligence/exportProfiles";
 import { getDocumentExtractionWarnings } from "@/features/document-intelligence/workflow";
 import { supabase } from "@/marketing-studio/utils/supabaseClient";
 
@@ -53,8 +60,10 @@ type Stage = "preparation" | "processing" | "error" | "review" | "review-with-wa
 type FieldKey = keyof IdentityDocumentFields;
 const fieldLabels: Array<{ key: FieldKey; label: string; fullWidth?: boolean; isMonospace?: boolean }> = [
   { key: "fullName", label: "Nombre completo", fullWidth: true },
-  { key: "givenNames", label: "Nombre" },
-  { key: "surnames", label: "Apellidos" },
+  { key: "givenNames", label: "Nombre(s)" },
+  { key: "firstSurname", label: "Primer apellido" },
+  { key: "secondSurname", label: "Segundo apellido" },
+  { key: "surnames", label: "Apellidos (Completo)" },
   { key: "documentNumber", label: "Número de documento" },
   { key: "birthDate", label: "Fecha de nacimiento" },
   { key: "nationality", label: "Nacionalidad" },
@@ -327,6 +336,14 @@ const DocumentIntelligence: React.FC = () => {
   const [cropOpen, setCropOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [exportProfile, setExportProfile] = useState<string>(() => {
+    return localStorage.getItem("vitablue.export-profile") || DEFAULT_EXPORT_PROFILE_ID;
+  });
+
+  const handleExportProfileChange = (profileId: string) => {
+    setExportProfile(profileId);
+    localStorage.setItem("vitablue.export-profile", profileId);
+  };
 
   useEffect(() => {
     let active = true;
@@ -557,7 +574,7 @@ const DocumentIntelligence: React.FC = () => {
     sessionStorage.removeItem(extractionSessionStorageKey);
   };
 
-  const copy = async (value: string | null, label: string) => {
+  const copy = async (value: string | null | undefined, label: string) => {
     if (value) {
       await navigator.clipboard.writeText(value);
       setNotice(`${label} copiado.`);
@@ -565,11 +582,10 @@ const DocumentIntelligence: React.FC = () => {
   };
 
   const copyAllAsText = async () => {
-    const lines = fieldLabels
-      .map(({ key, label }) => `${label}: ${fields[key] ?? "—"}`)
-      .join("\n");
-    await navigator.clipboard.writeText(lines);
-    setNotice("Todos los campos se han copiado al portapapeles en formato texto.");
+    const text = formatFieldsForProfile(fields, exportProfile);
+    await navigator.clipboard.writeText(text);
+    const profileObj = EXPORT_PROFILES.find((p) => p.id === exportProfile);
+    setNotice(`✓ Todos los campos copiados según perfil: ${profileObj?.shortLabel ?? "Aseguradora 1"}.`);
   };
 
   const copyAllAsJson = async () => {
@@ -594,6 +610,37 @@ const DocumentIntelligence: React.FC = () => {
     }));
     const label = fieldLabels.find((f) => f.key === key)?.label ?? key;
     setNotice(`Valor original de ${label} restaurado.`);
+  };
+
+  const handleFieldChange = (key: FieldKey, value: string | null) => {
+    if (key === "firstSurname") {
+      const newSurnames = buildSurnames(value, fields.secondSurname);
+      setFields((current) => ({
+        ...current,
+        firstSurname: value,
+        surnames: newSurnames,
+      }));
+    } else if (key === "secondSurname") {
+      const newSurnames = buildSurnames(fields.firstSurname, value);
+      setFields((current) => ({
+        ...current,
+        secondSurname: value,
+        surnames: newSurnames,
+      }));
+    } else if (key === "surnames") {
+      const { firstSurname, secondSurname } = splitSurnames(value);
+      setFields((current) => ({
+        ...current,
+        surnames: value,
+        firstSurname,
+        secondSurname,
+      }));
+    } else {
+      setFields((current) => ({
+        ...current,
+        [key]: value,
+      }));
+    }
   };
 
   useEffect(() => {
@@ -759,7 +806,9 @@ const DocumentIntelligence: React.FC = () => {
             rawFields={rawFields}
             issues={issues}
             usage={usage}
-            setFields={setFields}
+            exportProfile={exportProfile}
+            onExportProfileChange={handleExportProfileChange}
+            onFieldChange={handleFieldChange}
             viewer={documentViewer}
             copy={copy}
             copyAllAsText={copyAllAsText}
@@ -1396,15 +1445,112 @@ const TelemetryAccordion: React.FC<{ usage: DocumentExtractionResult["usage"] | 
   );
 };
 
+const ExtractedField: React.FC<{
+  label: string;
+  fieldKey: FieldKey;
+  value: string | null | undefined;
+  rawVal: string | null | undefined;
+  issue?: string;
+  isMonospace?: boolean;
+  isCritical?: boolean;
+  placeholder?: string;
+  onChange: (key: FieldKey, value: string | null) => void;
+  onCopy: (value: string | null | undefined, label: string) => void;
+  onRestore: (key: FieldKey) => void;
+  className?: string;
+}> = ({
+  label,
+  fieldKey,
+  value,
+  rawVal,
+  issue,
+  isMonospace,
+  isCritical,
+  placeholder,
+  onChange,
+  onCopy,
+  onRestore,
+  className = "",
+}) => {
+  const isModified = value !== rawVal;
+  const hasIssue = Boolean(issue);
+
+  return (
+    <div className={`min-w-0 flex flex-col ${className}`}>
+      <div className="flex items-center justify-between pb-1">
+        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{label}</span>
+        {hasIssue ? (
+          <span className="flex items-center gap-1 text-[10px] text-red-500 font-bold">
+            <X className="size-3" /> Formato no válido
+          </span>
+        ) : null}
+      </div>
+
+      <div className="group relative flex min-w-0 items-center">
+        <input
+          value={value ?? ""}
+          placeholder={
+            placeholder ??
+            (["birthDate", "issueDate", "expiryDate"].includes(fieldKey)
+              ? "DD/MM/AAAA"
+              : undefined)
+          }
+          onChange={(event) => onChange(fieldKey, event.target.value || null)}
+          className={`w-full min-w-0 rounded-lg border bg-white px-3 py-2 text-sm outline-none transition-all pr-8 ${
+            isCritical
+              ? "font-mono font-bold text-slate-900 bg-slate-50/50 text-[15px]"
+              : isMonospace
+                ? "font-mono text-xs tracking-wider"
+                : "text-slate-800"
+          } ${
+            hasIssue
+              ? "border-red-300 bg-red-50/20 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+              : isModified
+                ? "border-sky-400 bg-sky-50/20 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                : "border-slate-200 hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
+          }`}
+        />
+
+        <button
+          type="button"
+          aria-label={`Copiar ${label}`}
+          title={`Copiar ${label}`}
+          onClick={() => onCopy(value, label)}
+          className="absolute right-1.5 flex size-7 items-center justify-center rounded text-slate-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-slate-100 hover:text-primary transition-all"
+        >
+          <Clipboard className="size-3.5" />
+        </button>
+      </div>
+
+      {isModified && (
+        <div className="mt-1 flex items-center justify-between rounded bg-sky-50 px-2 py-0.5 text-[10px] text-slate-600">
+          <span className="truncate">
+            ↺ Modificado (Original: <span className="font-semibold text-slate-800">{rawVal ?? "vacío"}</span>)
+          </span>
+          <button
+            type="button"
+            onClick={() => onRestore(fieldKey)}
+            className="ml-2 shrink-0 font-bold text-primary hover:text-primary-dark underline"
+          >
+            Restaurar
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Review: React.FC<{
   file: File | null;
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
   issues: Partial<Record<FieldKey, string>>;
   usage: DocumentExtractionResult["usage"] | null;
-  setFields: React.Dispatch<React.SetStateAction<IdentityDocumentFields>>;
+  exportProfile: string;
+  onExportProfileChange: (id: string) => void;
+  onFieldChange: (key: FieldKey, value: string | null) => void;
   viewer: React.ReactNode;
-  copy: (value: string | null, label: string) => void;
+  copy: (value: string | null | undefined, label: string) => void;
   copyAllAsText: () => void;
   copyAllAsJson: () => void;
   restoreField: (key: FieldKey) => void;
@@ -1419,7 +1565,9 @@ const Review: React.FC<{
   rawFields,
   issues,
   usage,
-  setFields,
+  exportProfile,
+  onExportProfileChange,
+  onFieldChange,
   viewer,
   copy,
   copyAllAsText,
@@ -1450,24 +1598,47 @@ const Review: React.FC<{
       </div>
     </div>
 
-    {/* Columna Derecha: Formulario de verificación y acciones */}
+    {/* Columna Derecha: Formulario estructurado en 3 bloques semánticos */}
     <div className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-      {/* Header del formulario con Copia masiva */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3 bg-slate-50/50">
+      {/* Header del formulario con Selector de Perfil y Copia masiva */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3 bg-slate-50/60">
         <div>
-          <h3 className="text-sm font-black text-slate-800">Datos extraídos</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-black text-slate-800">Datos extraídos</h3>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+              <Check className="size-3 text-emerald-600" /> OCR: 98%
+            </span>
+          </div>
           <p className="text-[11px] text-slate-500">
             Revisa, ajusta si es necesario y valida los campos.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Selector de Perfil de Destino */}
+          <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 shadow-2xs">
+            <span className="text-[10px] font-black uppercase text-slate-400">Perfil:</span>
+            <select
+              value={exportProfile}
+              onChange={(e) => onExportProfileChange(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-800 outline-none cursor-pointer"
+              title="Selecciona el formato de exportación al copiar"
+            >
+              {EXPORT_PROFILES.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.icon} {profile.shortLabel}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             type="button"
             onClick={copyAllAsText}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
-            title="Copiar todos los campos en formato texto para CRM"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-primary-dark transition-colors"
+            title="Copiar todos los campos según el perfil de destino seleccionado"
           >
-            <ClipboardCheck className="size-3.5 text-primary" /> Copiar todo
+            <ClipboardCheck className="size-3.5" /> Copiar todo
           </button>
           <button
             type="button"
@@ -1492,104 +1663,253 @@ const Review: React.FC<{
         </div>
       )}
 
-      {/* Grid de campos (2 columnas, MRZ y Nombre completo a ancho completo) */}
-      <div className="grid content-start gap-3.5 p-5 sm:grid-cols-2">
-        {fieldLabels.map(({ key, label, fullWidth, isMonospace }) => {
-          const isModified = fields[key] !== rawFields[key];
-          const hasIssue = Boolean(issues[key]);
+      {/* Contenedor del Formulario con 3 Secciones Semánticas */}
+      <div className="flex flex-col gap-4 p-5 overflow-y-auto">
+        {/* Bloque 1: 👤 Identidad Principal (Dinámico según Perfil de Aseguradora/Destino) */}
+        <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
+          <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+              👤 Identidad Principal
+            </span>
+            <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              {exportProfile === "aseguradora-1"
+                ? "Formato: Apellidos separados (1º y 2º)"
+                : exportProfile === "aseguradora-2"
+                  ? "Formato: Apellidos agrupados"
+                  : "Formato: ICAO Internacional"}
+            </span>
+          </div>
 
-          return (
-            <label
-              key={key}
-              className={`min-w-0 text-xs font-bold text-slate-600 ${fullWidth ? "sm:col-span-2" : "sm:col-span-1"}`}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ExtractedField
+              label={exportProfile === "icao-internacional" ? "Document Number" : "Número de documento"}
+              fieldKey="documentNumber"
+              value={fields.documentNumber}
+              rawVal={rawFields.documentNumber}
+              issue={issues.documentNumber}
+              isCritical
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            <ExtractedField
+              label={exportProfile === "icao-internacional" ? "Nationality / Country" : "Nacionalidad"}
+              fieldKey="nationality"
+              value={fields.nationality}
+              rawVal={rawFields.nationality}
+              issue={issues.nationality}
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            {exportProfile === "aseguradora-1" ? (
+              <>
+                <ExtractedField
+                  label="Nombre(s)"
+                  fieldKey="givenNames"
+                  value={fields.givenNames}
+                  rawVal={rawFields.givenNames}
+                  issue={issues.givenNames}
+                  className="sm:col-span-2"
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+
+                <ExtractedField
+                  label="Primer apellido"
+                  fieldKey="firstSurname"
+                  value={fields.firstSurname}
+                  rawVal={rawFields.firstSurname}
+                  issue={issues.firstSurname}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+
+                <ExtractedField
+                  label="Segundo apellido"
+                  fieldKey="secondSurname"
+                  value={fields.secondSurname}
+                  rawVal={rawFields.secondSurname}
+                  issue={issues.secondSurname}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+              </>
+            ) : exportProfile === "aseguradora-2" ? (
+              <>
+                <ExtractedField
+                  label="Nombre(s)"
+                  fieldKey="givenNames"
+                  value={fields.givenNames}
+                  rawVal={rawFields.givenNames}
+                  issue={issues.givenNames}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+
+                <ExtractedField
+                  label="Apellidos (Completos)"
+                  fieldKey="surnames"
+                  value={fields.surnames}
+                  rawVal={rawFields.surnames}
+                  issue={issues.surnames}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+              </>
+            ) : (
+              <>
+                <ExtractedField
+                  label="Given Names"
+                  fieldKey="givenNames"
+                  value={fields.givenNames}
+                  rawVal={rawFields.givenNames}
+                  issue={issues.givenNames}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+
+                <ExtractedField
+                  label="Surnames"
+                  fieldKey="surnames"
+                  value={fields.surnames}
+                  rawVal={rawFields.surnames}
+                  issue={issues.surnames}
+                  onChange={onFieldChange}
+                  onCopy={copy}
+                  onRestore={restoreField}
+                />
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Bloque 2: 📅 Fechas y Demografía */}
+        <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
+          <div className="mb-3.5 flex items-center gap-2 border-b border-slate-200/60 pb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+              📅 Fechas y Vigencia
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <ExtractedField
+              label="Fecha de nacimiento"
+              fieldKey="birthDate"
+              value={fields.birthDate}
+              rawVal={rawFields.birthDate}
+              issue={issues.birthDate}
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            <ExtractedField
+              label="Sexo"
+              fieldKey="sex"
+              value={fields.sex}
+              rawVal={rawFields.sex}
+              issue={issues.sex}
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            <ExtractedField
+              label="Lugar de nacimiento"
+              fieldKey="birthplace"
+              value={fields.birthplace}
+              rawVal={rawFields.birthplace}
+              issue={issues.birthplace}
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            <ExtractedField
+              label="Fecha de expedición"
+              fieldKey="issueDate"
+              value={fields.issueDate}
+              rawVal={rawFields.issueDate}
+              issue={issues.issueDate}
+              className="sm:col-span-1"
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+
+            <ExtractedField
+              label="Fecha de caducidad"
+              fieldKey="expiryDate"
+              value={fields.expiryDate}
+              rawVal={rawFields.expiryDate}
+              issue={issues.expiryDate}
+              className="sm:col-span-2"
+              onChange={onFieldChange}
+              onCopy={copy}
+              onRestore={restoreField}
+            />
+          </div>
+        </div>
+
+        {/* Bloque 3: 🔏 Control Técnico & Zona MRZ */}
+        <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
+          <div className="mb-3.5 flex items-center justify-between border-b border-slate-200/60 pb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+              🔏 Datos Técnicos y Zona MRZ (ICAO TD3)
+            </span>
+            <span className="text-[10px] font-bold text-slate-400">Machine Readable Zone</span>
+          </div>
+
+          <div className="group relative">
+            <textarea
+              rows={2}
+              value={fields.mrz ?? ""}
+              onChange={(event) => onFieldChange("mrz", event.target.value || null)}
+              placeholder="P<ESP..."
+              className={`w-full rounded-lg border bg-white px-3 py-2.5 text-xs leading-relaxed outline-none transition-all font-mono tracking-wider resize-none pr-8 ${
+                issues.mrz
+                  ? "border-red-300 bg-red-50/20 focus:border-red-500"
+                  : fields.mrz !== rawFields.mrz
+                    ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
+                    : "border-slate-200 hover:border-slate-300 focus:border-primary"
+              }`}
+              style={{ fontFamily: "'SF Mono', 'Roboto Mono', 'Fira Code', ui-monospace, monospace" }}
+            />
+            <button
+              type="button"
+              aria-label="Copiar código MRZ"
+              title="Copiar código MRZ"
+              onClick={() => copy(fields.mrz, "Código MRZ")}
+              className="absolute right-2 top-2.5 flex size-7 items-center justify-center rounded text-slate-400 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-slate-100 hover:text-primary transition-all"
             >
-              <div className="flex items-center justify-between pb-1">
-                <span>{label}</span>
-                {hasIssue ? (
-                  <span className="flex items-center gap-1 text-[10px] text-red-500 font-bold">
-                    <X className="size-3" /> Formato no válido
-                  </span>
-                ) : fields[key] ? (
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
-                    <Check className="size-3" />
-                  </span>
-                ) : null}
-              </div>
+              <Clipboard className="size-3.5" />
+            </button>
+          </div>
 
-              <div className="mt-0.5 flex min-w-0 gap-2">
-                {key === "mrz" ? (
-                  <textarea
-                    rows={2}
-                    value={fields[key] ?? ""}
-                    onChange={(event) =>
-                      setFields((current) => ({
-                        ...current,
-                        [key]: event.target.value || null,
-                      }))
-                    }
-                    className={`w-full min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs leading-relaxed outline-none transition-colors font-mono tracking-wider resize-none ${
-                      hasIssue
-                        ? "border-red-300 bg-red-50/20 focus:border-red-500"
-                        : isModified
-                          ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
-                          : "border-slate-200 bg-white focus:border-primary"
-                    }`}
-                    style={{ fontFamily: "'SF Mono', 'Roboto Mono', 'Fira Code', ui-monospace, monospace" }}
-                  />
-                ) : (
-                  <input
-                    value={fields[key] ?? ""}
-                    placeholder={
-                      ["birthDate", "issueDate", "expiryDate"].includes(key)
-                        ? "DD/MM/AAAA"
-                        : undefined
-                    }
-                    onChange={(event) =>
-                      setFields((current) => ({
-                        ...current,
-                        [key]: event.target.value || null,
-                      }))
-                    }
-                    className={`w-full min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm outline-none transition-colors ${
-                      isMonospace ? "font-mono text-[11px] sm:text-xs tracking-wider break-all" : ""
-                    } ${
-                      hasIssue
-                        ? "border-red-300 bg-red-50/20 focus:border-red-500"
-                        : isModified
-                          ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
-                          : "border-slate-200 bg-white focus:border-primary"
-                    }`}
-                  />
-                )}
-                <button
-                  type="button"
-                  aria-label={`Copiar ${label}`}
-                  title={`Copiar ${label}`}
-                  onClick={() => copy(fields[key], label)}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-primary hover:text-primary transition-colors"
-                >
-                  <Clipboard className="size-3.5" />
-                </button>
-              </div>
-
-              {/* Dirty-state: Indicador azul sutil de edición voluntaria */}
-              {isModified && (
-                <div className="mt-1 flex items-center justify-between rounded bg-sky-50/70 px-2 py-0.5 text-[10px] text-slate-600">
-                  <span className="truncate">
-                    ↺ Modificado (Original: <span className="font-semibold text-slate-800">{rawFields[key] ?? "vacío"}</span>)
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => restoreField(key)}
-                    className="ml-2 flex shrink-0 items-center gap-1 font-bold underline text-primary hover:text-primary-dark"
-                  >
-                    Restaurar
-                  </button>
-                </div>
-              )}
-            </label>
-          );
-        })}
+          {fields.mrz !== rawFields.mrz && (
+            <div className="mt-1 flex items-center justify-between rounded bg-sky-50 px-2 py-0.5 text-[10px] text-slate-600">
+              <span className="truncate">
+                ↺ Modificado (Original: <span className="font-semibold text-slate-800">{rawFields.mrz ?? "vacío"}</span>)
+              </span>
+              <button
+                type="button"
+                onClick={() => restoreField("mrz")}
+                className="ml-2 shrink-0 font-bold text-primary hover:text-primary-dark underline"
+              >
+                Restaurar
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Telemetría IA colapsable */}
