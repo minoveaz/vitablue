@@ -1118,7 +1118,7 @@ const DocumentViewer: React.FC<{
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`relative flex flex-1 min-h-[380px] max-h-[520px] w-full items-center justify-center overflow-hidden bg-slate-100 p-4 ${
+        className={`relative flex flex-1 min-h-[520px] lg:min-h-[660px] w-full items-center justify-center overflow-hidden bg-slate-100 p-4 ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
@@ -1144,7 +1144,7 @@ const DocumentViewer: React.FC<{
                 <iframe
                   src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
                   title={file?.name ?? "Documento PDF"}
-                  className={`h-[460px] w-full max-w-[560px] border-0 rounded-lg bg-white shadow-sm ${
+                  className={`h-[520px] lg:h-[640px] w-full max-w-[560px] border-0 rounded-lg bg-white shadow-sm ${
                     isDragging ? "pointer-events-none" : "pointer-events-auto"
                   }`}
                 />
@@ -1153,7 +1153,7 @@ const DocumentViewer: React.FC<{
                   src={previewUrl}
                   alt={file?.name ?? "Documento"}
                   draggable={false}
-                  className="max-h-[460px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
+                  className="max-h-[520px] lg:max-h-[640px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
                 />
               )}
               <BoundingBoxOverlay
@@ -1730,7 +1730,7 @@ const Review: React.FC<{
           </span>
         )}
       </div>
-      <div className="flex-1 p-3 bg-slate-50 flex items-center justify-center">
+      <div className="flex-1 p-3 bg-slate-50 flex items-stretch">
         {viewer}
       </div>
     </div>
