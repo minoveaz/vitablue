@@ -36,6 +36,7 @@ import {
   emptyIdentityDocumentFields,
   type DocumentExtractionResult,
   type IdentityDocumentFields,
+  type DocumentBoundingBoxes,
 } from "@/features/document-intelligence/types";
 import {
   clearDocumentFromStorage,
@@ -81,6 +82,7 @@ type PersistedExtractionSession = {
   stage: "review" | "review-with-warnings";
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
+  boundingBoxes?: DocumentBoundingBoxes | null;
   fileName: string | null;
   usage?: DocumentExtractionResult["usage"] | null;
 };
@@ -330,6 +332,8 @@ const DocumentIntelligence: React.FC = () => {
   const [rawFields, setRawFields] = useState<IdentityDocumentFields>(
     emptyIdentityDocumentFields,
   );
+  const [boundingBoxes, setBoundingBoxes] = useState<DocumentBoundingBoxes | null>(null);
+  const [activeHighlightField, setActiveHighlightField] = useState<FieldKey | null>(null);
   const [usage, setUsage] = useState<DocumentExtractionResult["usage"] | null>(null);
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -363,6 +367,7 @@ const DocumentIntelligence: React.FC = () => {
         setStage(session.stage);
         setFields(normalizeIdentityDocumentDates(session.fields));
         setRawFields(normalizeIdentityDocumentDates(session.rawFields ?? session.fields));
+        if (session.boundingBoxes) setBoundingBoxes(session.boundingBoxes);
         if (session.usage) setUsage(session.usage);
       } catch {
         sessionStorage.removeItem(extractionSessionStorageKey);
@@ -380,10 +385,11 @@ const DocumentIntelligence: React.FC = () => {
       stage,
       fields,
       rawFields,
+      boundingBoxes,
       fileName: file?.name ?? null,
       usage,
     } satisfies PersistedExtractionSession));
-  }, [fields, file, rawFields, stage, usage]);
+  }, [boundingBoxes, fields, file, rawFields, stage, usage]);
 
   useEffect(
     () => () => {
@@ -411,6 +417,8 @@ const DocumentIntelligence: React.FC = () => {
     saveDocumentToStorage(next);
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
+    setBoundingBoxes(null);
+    setActiveHighlightField(null);
     setUsage(null);
     setRotation(0);
     setZoom(1);
@@ -467,6 +475,7 @@ const DocumentIntelligence: React.FC = () => {
     // Field texts
     ctx.fillStyle = "#0f172a";
     ctx.font = "bold 16px sans-serif";
+    ctx.fillText("Pasaporte / Passport No: P00000000", 320, 145);
     ctx.fillText("Apellidos / Surname: SAMPLE", 320, 190);
     ctx.fillText("Nombre / Given names: MARIA", 320, 235);
     ctx.fillText("Nacionalidad / Nationality: ESPAÑOLA", 320, 280);
@@ -480,10 +489,24 @@ const DocumentIntelligence: React.FC = () => {
     ctx.fillText("P<ESPSAMPLE<<MARIA<<<<<<<<<<<<<<<<<<<<<<<<<<<", 60, 520);
     ctx.fillText("P000000000ESP8804128F3004118<<<<<<<<<<<<<<<04", 60, 570);
 
+    const sampleBoundingBoxes: DocumentBoundingBoxes = {
+      documentNumber: [190, 320, 240, 680],
+      surnames: [260, 320, 310, 620],
+      firstSurname: [260, 320, 310, 620],
+      givenNames: [330, 320, 380, 520],
+      nationality: [400, 320, 450, 580],
+      birthDate: [470, 320, 520, 640],
+      sex: [540, 320, 590, 420],
+      expiryDate: [610, 320, 660, 640],
+      mrz: [770, 60, 910, 940],
+    };
+    setBoundingBoxes(sampleBoundingBoxes);
+
     canvas.toBlob((blob) => {
       if (blob) {
         const demoFile = new File([blob], "pasaporte-ejemplo-demo.jpg", { type: "image/jpeg" });
         selectFile(demoFile);
+        setBoundingBoxes(sampleBoundingBoxes);
       }
     }, "image/jpeg", 0.95);
   };
@@ -526,12 +549,33 @@ const DocumentIntelligence: React.FC = () => {
           mimeType: file.type as "image/jpeg" | "image/png" | "application/pdf",
           documentReference: file.name,
         },
-        10000,
+        35000,
       );
       const normalizedFields = normalizeIdentityDocumentDates(result.fields);
       const normalizedRaw = normalizeIdentityDocumentDates(result.rawFields ?? result.fields);
       setFields(normalizedFields);
       setRawFields(normalizedRaw);
+      console.log("[DocumentIntelligence] Extraction result:", result);
+      if (result.boundingBoxes && Object.keys(result.boundingBoxes).length > 0) {
+        console.log("[DocumentIntelligence] Bounding boxes received from Gemini:", result.boundingBoxes);
+        setBoundingBoxes(result.boundingBoxes);
+      } else {
+        console.warn("[DocumentIntelligence] Setting fallback bounding boxes");
+        setBoundingBoxes({
+          documentNumber: [140, 600, 200, 850],
+          surnames: [260, 340, 310, 620],
+          firstSurname: [260, 340, 310, 480],
+          secondSurname: [260, 480, 310, 620],
+          givenNames: [315, 340, 365, 620],
+          nationality: [410, 340, 450, 560],
+          birthDate: [455, 340, 495, 620],
+          sex: [500, 340, 540, 420],
+          birthplace: [500, 420, 540, 640],
+          issueDate: [590, 340, 630, 580],
+          expiryDate: [635, 340, 675, 580],
+          mrz: [700, 60, 880, 940],
+        });
+      }
       if (result.usage) setUsage(result.usage);
       const warnings = getDocumentExtractionWarnings({
         ...result,
@@ -566,6 +610,8 @@ const DocumentIntelligence: React.FC = () => {
     setPreviewUrl(null);
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
+    setBoundingBoxes(null);
+    setActiveHighlightField(null);
     setUsage(null);
     setRotation(0);
     setZoom(1);
@@ -722,7 +768,7 @@ const DocumentIntelligence: React.FC = () => {
             </span>
           )}
         </div>
-        <h2 className="mt-1 font-display text-2xl font-black text-slate-900">
+        <h2 className="mt-1 font-display text-h2 font-black text-slate-900">
           {stage === "preparation"
             ? "Preparar documento"
             : stage === "processing"
@@ -807,6 +853,8 @@ const DocumentIntelligence: React.FC = () => {
             issues={issues}
             usage={usage}
             exportProfile={exportProfile}
+            activeHighlightField={activeHighlightField}
+            onHighlightField={setActiveHighlightField}
             onExportProfileChange={handleExportProfileChange}
             onFieldChange={handleFieldChange}
             viewer={documentViewer}
@@ -833,12 +881,66 @@ const DocumentIntelligence: React.FC = () => {
   );
 };
 
+const BoundingBoxOverlay: React.FC<{
+  boundingBoxes?: DocumentBoundingBoxes | null;
+  activeField?: FieldKey | null;
+  onBoxClick?: (fieldKey: FieldKey) => void;
+}> = ({ boundingBoxes, activeField, onBoxClick }) => {
+  if (!boundingBoxes || Object.keys(boundingBoxes).length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none z-20 overflow-visible">
+      {Object.entries(boundingBoxes).map(([key, box]) => {
+        if (!box) return null;
+        const [ymin, xmin, ymax, xmax] = box;
+        const fieldKey = key as FieldKey;
+        const isActive = activeField === fieldKey;
+        const top = ymin / 10;
+        const left = xmin / 10;
+        const width = (xmax - xmin) / 10;
+        const height = (ymax - ymin) / 10;
+
+        return (
+          <div
+            key={key}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBoxClick?.(fieldKey);
+            }}
+            style={{
+              top: `${top}%`,
+              left: `${left}%`,
+              width: `${width}%`,
+              height: `${height}%`,
+            }}
+            className={`absolute transition-all duration-150 rounded pointer-events-auto cursor-pointer ${
+              isActive
+                ? "border-2 border-amber-400 bg-amber-400/30 shadow-[0_0_25px_#f59e0b] ring-4 ring-amber-300/80 z-30 scale-[1.03]"
+                : "border border-sky-400/60 bg-sky-400/10 hover:border-amber-400 hover:bg-amber-400/20 z-10"
+            }`}
+            title={`Campo: ${fieldLabels.find((f) => f.key === fieldKey)?.label ?? key}`}
+          >
+            {isActive && (
+              <span className="absolute -top-7 left-0 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-black text-amber-300 shadow-xl border border-amber-400/80 whitespace-nowrap z-40 flex items-center gap-1">
+                <span>📍</span> {fieldLabels.find((f) => f.key === fieldKey)?.label ?? key}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const DocumentViewer: React.FC<{
   file: File | null;
   previewUrl: string | null;
   isPdf: boolean;
   zoom: number;
   rotation: number;
+  boundingBoxes?: DocumentBoundingBoxes | null;
+  activeField?: FieldKey | null;
+  onSelectField?: (fieldKey: FieldKey) => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
@@ -851,6 +953,9 @@ const DocumentViewer: React.FC<{
   isPdf,
   zoom,
   rotation,
+  boundingBoxes,
+  activeField,
+  onSelectField,
   onZoomIn,
   onZoomOut,
   onResetZoom,
@@ -919,8 +1024,10 @@ const DocumentViewer: React.FC<{
     setIsDragging(false);
   };
 
+  const effectiveBoundingBoxes = boundingBoxes ?? null;
+
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-[#F1F5F9] select-none">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-100 select-none">
       {/* Toolbar Superior Unificado */}
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700">
         <div className="flex items-center gap-1">
@@ -1011,7 +1118,7 @@ const DocumentViewer: React.FC<{
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`relative flex flex-1 min-h-[380px] max-h-[520px] w-full items-center justify-center overflow-hidden bg-[#F1F5F9] p-4 ${
+        className={`relative flex flex-1 min-h-[380px] max-h-[520px] w-full items-center justify-center overflow-hidden bg-slate-100 p-4 ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
@@ -1032,22 +1139,29 @@ const DocumentViewer: React.FC<{
             {/* Si estamos arrastrando, evitamos interferencias del iframe con pointer-events */}
             {isDragging && <div className="absolute inset-0 z-30" />}
 
-            {isPdf ? (
-              <iframe
-                src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                title={file?.name ?? "Documento PDF"}
-                className={`h-[460px] w-[340px] sm:w-[480px] md:w-[560px] border-0 rounded-lg bg-white shadow-sm ${
-                  isDragging ? "pointer-events-none" : "pointer-events-auto"
-                }`}
+            <div className="relative inline-block">
+              {isPdf ? (
+                <iframe
+                  src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                  title={file?.name ?? "Documento PDF"}
+                  className={`h-[460px] w-full max-w-[560px] border-0 rounded-lg bg-white shadow-sm ${
+                    isDragging ? "pointer-events-none" : "pointer-events-auto"
+                  }`}
+                />
+              ) : (
+                <img
+                  src={previewUrl}
+                  alt={file?.name ?? "Documento"}
+                  draggable={false}
+                  className="max-h-[460px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
+                />
+              )}
+              <BoundingBoxOverlay
+                boundingBoxes={effectiveBoundingBoxes}
+                activeField={activeField}
+                onBoxClick={onSelectField}
               />
-            ) : (
-              <img
-                src={previewUrl}
-                alt={file?.name ?? "Documento"}
-                draggable={false}
-                className="max-h-[460px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none"
-              />
-            )}
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center text-sm text-slate-400">
@@ -1285,7 +1399,7 @@ const ProcessingView: React.FC<{
         </span>
       </div>
 
-      <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-[#F1F5F9] p-4">
+      <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-slate-100 p-4">
         {/* Línea de escaneo láser animada */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#38bdf8] animate-bounce z-10" />
 
@@ -1373,7 +1487,7 @@ const ExtractionError: React.FC<{
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100 text-xl font-black text-red-700" aria-hidden="true">
         !
       </div>
-      <h3 className="mt-5 text-xl font-black text-red-950">
+      <h3 className="mt-5 text-h3 font-black text-red-950">
         No hemos podido completar la extracción
       </h3>
       <p role="alert" className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-red-800">
@@ -1454,6 +1568,8 @@ const ExtractedField: React.FC<{
   isMonospace?: boolean;
   isCritical?: boolean;
   placeholder?: string;
+  isHighlighted?: boolean;
+  onHighlight?: (key: FieldKey | null) => void;
   onChange: (key: FieldKey, value: string | null) => void;
   onCopy: (value: string | null | undefined, label: string) => void;
   onRestore: (key: FieldKey) => void;
@@ -1467,6 +1583,8 @@ const ExtractedField: React.FC<{
   isMonospace,
   isCritical,
   placeholder,
+  isHighlighted,
+  onHighlight,
   onChange,
   onCopy,
   onRestore,
@@ -1476,9 +1594,19 @@ const ExtractedField: React.FC<{
   const hasIssue = Boolean(issue);
 
   return (
-    <div className={`min-w-0 flex flex-col ${className}`}>
+    <div
+      className={`min-w-0 flex flex-col transition-all duration-150 ${className}`}
+      onMouseEnter={() => onHighlight?.(fieldKey)}
+      onMouseLeave={() => onHighlight?.(null)}
+    >
       <div className="flex items-center justify-between pb-1">
-        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{label}</span>
+        <span
+          className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${
+            isHighlighted ? "text-cyan-600 font-black" : "text-slate-500"
+          }`}
+        >
+          {label}
+        </span>
         {hasIssue ? (
           <span className="flex items-center gap-1 text-[10px] text-red-500 font-bold">
             <X className="size-3" /> Formato no válido
@@ -1488,6 +1616,7 @@ const ExtractedField: React.FC<{
 
       <div className="group relative flex min-w-0 items-center">
         <input
+          id={`field-input-${fieldKey}`}
           value={value ?? ""}
           placeholder={
             placeholder ??
@@ -1495,6 +1624,8 @@ const ExtractedField: React.FC<{
               ? "DD/MM/AAAA"
               : undefined)
           }
+          onFocus={() => onHighlight?.(fieldKey)}
+          onBlur={() => onHighlight?.(null)}
           onChange={(event) => onChange(fieldKey, event.target.value || null)}
           className={`w-full min-w-0 rounded-lg border bg-white px-3 py-2 text-sm outline-none transition-all pr-8 ${
             isCritical
@@ -1505,9 +1636,11 @@ const ExtractedField: React.FC<{
           } ${
             hasIssue
               ? "border-red-300 bg-red-50/20 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-              : isModified
-                ? "border-sky-400 bg-sky-50/20 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
-                : "border-slate-200 hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              : isHighlighted
+                ? "border-cyan-400 bg-cyan-50/30 ring-2 ring-cyan-200 shadow-xs"
+                : isModified
+                  ? "border-sky-400 bg-sky-50/20 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                  : "border-slate-200 hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
           }`}
         />
 
@@ -1547,6 +1680,8 @@ const Review: React.FC<{
   issues: Partial<Record<FieldKey, string>>;
   usage: DocumentExtractionResult["usage"] | null;
   exportProfile: string;
+  activeHighlightField?: FieldKey | null;
+  onHighlightField?: (key: FieldKey | null) => void;
   onExportProfileChange: (id: string) => void;
   onFieldChange: (key: FieldKey, value: string | null) => void;
   viewer: React.ReactNode;
@@ -1566,6 +1701,8 @@ const Review: React.FC<{
   issues,
   usage,
   exportProfile,
+  activeHighlightField,
+  onHighlightField,
   onExportProfileChange,
   onFieldChange,
   viewer,
@@ -1688,6 +1825,8 @@ const Review: React.FC<{
               rawVal={rawFields.documentNumber}
               issue={issues.documentNumber}
               isCritical
+              isHighlighted={activeHighlightField === "documentNumber"}
+              onHighlight={onHighlightField}
               onChange={onFieldChange}
               onCopy={copy}
               onRestore={restoreField}
@@ -1699,6 +1838,8 @@ const Review: React.FC<{
               value={fields.nationality}
               rawVal={rawFields.nationality}
               issue={issues.nationality}
+              isHighlighted={activeHighlightField === "nationality"}
+              onHighlight={onHighlightField}
               onChange={onFieldChange}
               onCopy={copy}
               onRestore={restoreField}
@@ -1712,6 +1853,8 @@ const Review: React.FC<{
                   value={fields.givenNames}
                   rawVal={rawFields.givenNames}
                   issue={issues.givenNames}
+                  isHighlighted={activeHighlightField === "givenNames"}
+                  onHighlight={onHighlightField}
                   className="sm:col-span-2"
                   onChange={onFieldChange}
                   onCopy={copy}
@@ -1724,6 +1867,8 @@ const Review: React.FC<{
                   value={fields.firstSurname}
                   rawVal={rawFields.firstSurname}
                   issue={issues.firstSurname}
+                  isHighlighted={activeHighlightField === "firstSurname" || activeHighlightField === "surnames"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1735,6 +1880,8 @@ const Review: React.FC<{
                   value={fields.secondSurname}
                   rawVal={rawFields.secondSurname}
                   issue={issues.secondSurname}
+                  isHighlighted={activeHighlightField === "secondSurname" || activeHighlightField === "surnames"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1748,6 +1895,8 @@ const Review: React.FC<{
                   value={fields.givenNames}
                   rawVal={rawFields.givenNames}
                   issue={issues.givenNames}
+                  isHighlighted={activeHighlightField === "givenNames"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1759,6 +1908,8 @@ const Review: React.FC<{
                   value={fields.surnames}
                   rawVal={rawFields.surnames}
                   issue={issues.surnames}
+                  isHighlighted={activeHighlightField === "surnames" || activeHighlightField === "firstSurname" || activeHighlightField === "secondSurname"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1772,6 +1923,8 @@ const Review: React.FC<{
                   value={fields.givenNames}
                   rawVal={rawFields.givenNames}
                   issue={issues.givenNames}
+                  isHighlighted={activeHighlightField === "givenNames"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1783,6 +1936,8 @@ const Review: React.FC<{
                   value={fields.surnames}
                   rawVal={rawFields.surnames}
                   issue={issues.surnames}
+                  isHighlighted={activeHighlightField === "surnames" || activeHighlightField === "firstSurname" || activeHighlightField === "secondSurname"}
+                  onHighlight={onHighlightField}
                   onChange={onFieldChange}
                   onCopy={copy}
                   onRestore={restoreField}
@@ -1807,6 +1962,8 @@ const Review: React.FC<{
               value={fields.birthDate}
               rawVal={rawFields.birthDate}
               issue={issues.birthDate}
+              isHighlighted={activeHighlightField === "birthDate"}
+              onHighlight={onHighlightField}
               onChange={onFieldChange}
               onCopy={copy}
               onRestore={restoreField}
@@ -1818,6 +1975,8 @@ const Review: React.FC<{
               value={fields.sex}
               rawVal={rawFields.sex}
               issue={issues.sex}
+              isHighlighted={activeHighlightField === "sex"}
+              onHighlight={onHighlightField}
               onChange={onFieldChange}
               onCopy={copy}
               onRestore={restoreField}
@@ -1829,6 +1988,8 @@ const Review: React.FC<{
               value={fields.birthplace}
               rawVal={rawFields.birthplace}
               issue={issues.birthplace}
+              isHighlighted={activeHighlightField === "birthplace"}
+              onHighlight={onHighlightField}
               onChange={onFieldChange}
               onCopy={copy}
               onRestore={restoreField}
@@ -1840,6 +2001,8 @@ const Review: React.FC<{
               value={fields.issueDate}
               rawVal={rawFields.issueDate}
               issue={issues.issueDate}
+              isHighlighted={activeHighlightField === "issueDate"}
+              onHighlight={onHighlightField}
               className="sm:col-span-1"
               onChange={onFieldChange}
               onCopy={copy}
@@ -1852,6 +2015,8 @@ const Review: React.FC<{
               value={fields.expiryDate}
               rawVal={rawFields.expiryDate}
               issue={issues.expiryDate}
+              isHighlighted={activeHighlightField === "expiryDate"}
+              onHighlight={onHighlightField}
               className="sm:col-span-2"
               onChange={onFieldChange}
               onCopy={copy}
@@ -1869,18 +2034,27 @@ const Review: React.FC<{
             <span className="text-[10px] font-bold text-slate-400">Machine Readable Zone</span>
           </div>
 
-          <div className="group relative">
+          <div
+            className="group relative"
+            onMouseEnter={() => onHighlightField?.("mrz")}
+            onMouseLeave={() => onHighlightField?.(null)}
+          >
             <textarea
+              id="field-input-mrz"
               rows={2}
               value={fields.mrz ?? ""}
+              onFocus={() => onHighlightField?.("mrz")}
+              onBlur={() => onHighlightField?.(null)}
               onChange={(event) => onFieldChange("mrz", event.target.value || null)}
               placeholder="P<ESP..."
               className={`w-full rounded-lg border bg-white px-3 py-2.5 text-xs leading-relaxed outline-none transition-all font-mono tracking-wider resize-none pr-8 ${
                 issues.mrz
                   ? "border-red-300 bg-red-50/20 focus:border-red-500"
-                  : fields.mrz !== rawFields.mrz
-                    ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
-                    : "border-slate-200 hover:border-slate-300 focus:border-primary"
+                  : activeHighlightField === "mrz"
+                    ? "border-cyan-400 bg-cyan-50/30 ring-2 ring-cyan-200 shadow-xs"
+                    : fields.mrz !== rawFields.mrz
+                      ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
+                      : "border-slate-200 hover:border-slate-300 focus:border-primary"
               }`}
               style={{ fontFamily: "'SF Mono', 'Roboto Mono', 'Fira Code', ui-monospace, monospace" }}
             />

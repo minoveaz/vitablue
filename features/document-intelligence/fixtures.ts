@@ -22,6 +22,17 @@ export const passportExtractionFixture: DocumentExtractionResult = {
     birthplace: null,
     mrz: 'P<ESPSAMPLE<<MARIA<<<<<<<<<<<<<<<<<<<<<<<<',
   },
+  boundingBoxes: {
+    documentNumber: [600, 320, 650, 480],
+    surnames: [270, 320, 310, 620],
+    firstSurname: [270, 320, 310, 620],
+    givenNames: [340, 320, 380, 520],
+    nationality: [410, 320, 450, 560],
+    birthDate: [480, 320, 520, 620],
+    sex: [550, 320, 590, 400],
+    expiryDate: [620, 320, 660, 620],
+    mrz: [780, 60, 910, 940],
+  },
   validations: [],
   provider: 'fixture',
 };

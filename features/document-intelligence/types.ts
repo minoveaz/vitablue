@@ -43,10 +43,15 @@ export interface DocumentExtractionUsage {
   estimatedCostUsd: number;
 }
 
+export type BoundingBox = [number, number, number, number]; // [ymin, xmin, ymax, xmax] normalizado 0..1000
+
+export type DocumentBoundingBoxes = Partial<Record<keyof IdentityDocumentFields, BoundingBox>>;
+
 export interface DocumentExtractionResult {
   classification: DocumentClassification;
   fields: IdentityDocumentFields;
   rawFields?: IdentityDocumentFields;
+  boundingBoxes?: DocumentBoundingBoxes | null;
   validations: DocumentFieldValidation[];
   provider: 'fixture' | 'gemini';
   usage?: DocumentExtractionUsage;
