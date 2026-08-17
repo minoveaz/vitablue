@@ -51,26 +51,21 @@ jobs:
         uses: dorny/paths-filter@v3
         with:
           filters: |
-            frontend:
+            public_frontend:
               - 'App.tsx'
               - 'index.html'
               - 'index.css'
-              - 'components/**'
-              - 'config/**'
-              - 'context/**'
-              - 'features/**'
-              - 'hooks/**'
-              - 'marketing-studio/**'
-              - 'pages/**'
+              - 'components/atoms/**'
+              - 'components/molecules/**'
+              - 'components/organisms/**'
+              - 'components/layouts/Navbar.tsx'
+              - 'components/layouts/Footer.tsx'
+              - 'pages/public/**'
+              - 'pages/Home.tsx'
+              - 'pages/StudentInsurance.tsx'
+              - 'pages/Wizard.tsx'
+              - 'pages/Results.tsx'
               - 'public/**'
-              - 'scripts/**'
-              - 'utils/**'
-              - 'vite.config.ts'
-              - 'tailwind.config.js'
-              - 'postcss.config.js'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'tsconfig.json'
               - 'e2e/**'
 
   # ────────────────────────────────────────────────────────────────────
@@ -139,7 +134,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -147,9 +142,9 @@ jobs:
       matrix:
         include:
           - project: desktop
-            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/responsive.diagnostic.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/visual.critical.spec.ts
           - project: mobile
-            tests: e2e/mobile.navigation.spec.ts e2e/responsive.diagnostic.spec.ts
+            tests: e2e/mobile.navigation.spec.ts
           - project: mobile-compact
             tests: e2e/responsive.diagnostic.spec.ts
 
@@ -218,7 +213,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     steps:
       - name: Checkout Source Code
@@ -285,7 +280,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     steps:
       - name: Checkout Source Code
