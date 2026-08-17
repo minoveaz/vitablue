@@ -8,8 +8,6 @@ const defaultAllowedOrigins = [
   'http://127.0.0.1:4173',
   'https://vitablue.com',
   'https://www.vitablue.com',
-  'https://vitablue.es',
-  'https://www.vitablue.es',
 ];
 
 const configuredAllowedOrigins = (Deno.env.get('DOCUMENT_INTELLIGENCE_ALLOWED_ORIGINS') ?? '')
@@ -40,7 +38,7 @@ const supportedMimeTypes = new Set(['image/jpeg', 'image/png', 'application/pdf'
 const maxDocumentBytes = 10 * 1024 * 1024;
 const bucketName = 'document-intelligence-temp';
 const allowedDocumentTypes = ['passport', 'spanish-dni', 'spanish-nie', 'latin-american-national-id', 'unknown'];
-const allowedFields = ['documentType', 'issuingCountry', 'fullName', 'givenNames', 'surnames', 'documentNumber', 'birthDate', 'nationality', 'sex', 'issueDate', 'expiryDate', 'birthplace', 'mrz'];
+const allowedFields = ['documentType', 'issuingCountry', 'fullName', 'givenNames', 'surnames', 'firstSurname', 'secondSurname', 'documentNumber', 'birthDate', 'nationality', 'sex', 'issueDate', 'expiryDate', 'birthplace', 'mrz'];
 
 const extractionSchema = {
   type: 'OBJECT',
@@ -50,6 +48,8 @@ const extractionSchema = {
     fullName: { type: 'STRING', nullable: true },
     givenNames: { type: 'STRING', nullable: true },
     surnames: { type: 'STRING', nullable: true },
+    firstSurname: { type: 'STRING', nullable: true },
+    secondSurname: { type: 'STRING', nullable: true },
     documentNumber: { type: 'STRING', nullable: true },
     birthDate: { type: 'STRING', nullable: true },
     nationality: { type: 'STRING', nullable: true },
@@ -58,6 +58,24 @@ const extractionSchema = {
     expiryDate: { type: 'STRING', nullable: true },
     birthplace: { type: 'STRING', nullable: true },
     mrz: { type: 'STRING', nullable: true },
+    boundingBoxes: {
+      type: 'OBJECT',
+      description: 'Normalized 2D bounding box coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 scale for each field located on the image.',
+      properties: {
+        documentNumber: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        givenNames: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        surnames: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        firstSurname: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        secondSurname: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        birthDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        nationality: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        sex: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        issueDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        expiryDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        birthplace: { type: 'ARRAY', items: { type: 'INTEGER' } },
+        mrz: { type: 'ARRAY', items: { type: 'INTEGER' } },
+      },
+    },
   },
   required: ['documentType'],
 };
@@ -67,6 +85,47 @@ const emptyFields = () => Object.fromEntries(allowedFields.map((field) => [field
 const isSafeDocumentPath = (path: string, userId: string) => (
   path.startsWith(`${userId}/`) && !path.includes('..') && !path.startsWith('/')
 );
+
+const normalizeDateString = (value: string | null): string | null => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(trimmed)) return trimmed;
+  const ymd = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (ymd) return `${ymd[3].padStart(2, '0')}/${ymd[2].padStart(2, '0')}/${ymd[1]}`;
+  const dmy = trimmed.match(/^(\d{1,2})[-.](\d{1,2})[-.](\d{4})$/);
+  if (dmy) return `${dmy[1].padStart(2, '0')}/${dmy[2].padStart(2, '0')}/${dmy[3]}`;
+  const dmySlash = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmySlash) return `${dmySlash[1].padStart(2, '0')}/${dmySlash[2].padStart(2, '0')}/${dmySlash[3]}`;
+  const numeric8 = trimmed.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (numeric8) return `${numeric8[3]}/${numeric8[2]}/${numeric8[1]}`;
+  const ddmmyyyy = trimmed.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (ddmmyyyy) return `${ddmmyyyy[1]}/${ddmmyyyy[2]}/${ddmmyyyy[3]}`;
+  return trimmed;
+};
+
+const dateFields = new Set(['birthDate', 'issueDate', 'expiryDate']);
+
+const sanitizeBoundingBoxes = (rawBoxes: unknown): Record<string, [number, number, number, number]> | null => {
+  if (!rawBoxes || typeof rawBoxes !== 'object') return null;
+  const validBoxes: Record<string, [number, number, number, number]> = {};
+  for (const [key, val] of Object.entries(rawBoxes as Record<string, unknown>)) {
+    if (Array.isArray(val) && val.length === 4) {
+      const nums = val.map((n) => typeof n === 'number' ? Math.round(n) : Number(n));
+      if (nums.every((num) => Number.isFinite(num))) {
+        const [ymin, xmin, ymax, xmax] = nums as [number, number, number, number];
+        const clampedYmin = Math.max(0, Math.min(1000, ymin));
+        const clampedXmin = Math.max(0, Math.min(1000, xmin));
+        const clampedYmax = Math.max(0, Math.min(1000, ymax));
+        const clampedXmax = Math.max(0, Math.min(1000, xmax));
+        if (clampedYmax >= clampedYmin && clampedXmax >= clampedXmin) {
+          validBoxes[key] = [clampedYmin, clampedXmin, clampedYmax, clampedXmax];
+        }
+      }
+    }
+  }
+  return Object.keys(validBoxes).length > 0 ? validBoxes : null;
+};
 
 const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number }) => {
   const documentType = typeof value.documentType === 'string' && allowedDocumentTypes.includes(value.documentType)
@@ -80,8 +139,9 @@ const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTok
       rawFields[field] = typeof value[field] === 'string' && value[field].trim() ? value[field].trim() : null;
     }
     else if (typeof value[field] === 'string' && value[field].trim()) {
-      rawFields[field] = value[field];
-      fields[field] = value[field].trim();
+      const rawVal = value[field] as string;
+      rawFields[field] = rawVal;
+      fields[field] = dateFields.has(field) ? normalizeDateString(rawVal.trim()) : rawVal.trim();
     }
   }
   const promptTokens = usage?.promptTokenCount ?? 0;
@@ -91,6 +151,7 @@ const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTok
     classification: { type: documentType, confidence: null },
     fields,
     rawFields,
+    boundingBoxes: sanitizeBoundingBoxes(value.boundingBoxes),
     validations: [],
     provider: 'gemini',
     usage: {
@@ -102,16 +163,16 @@ const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTok
   };
 };
 
-Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: getCorsHeaders(request) });
+Deno.serve(async (request: Request) => {
+  if (request.method === 'OPTIONS') return new Response(null, { headers: getCorsHeaders(request) });
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, request, 405);
 
   const authorization = request.headers.get('Authorization');
+  if (!authorization) return json({ error: 'Unauthorized' }, request, 401);
+
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-  if (!authorization?.startsWith('Bearer ') || !supabaseUrl || !supabaseAnonKey) {
-    return json({ error: 'Authentication required' }, request, 401);
-  }
+  if (!supabaseUrl || !supabaseAnonKey) return json({ error: 'Supabase is not configured' }, request, 500);
 
   const client = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authorization } },
@@ -148,8 +209,12 @@ Deno.serve(async (request) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: 'Extract only identity document fields. Never infer missing values. Return null for absent or unreadable fields. Dates must use YYYY-MM-DD when legible.' }] },
-        contents: [{ parts: [{ inlineData: { mimeType: payload.mimeType, data: base64 } }, { text: 'Return the identity document extraction as the requested JSON schema.' }] }],
+        systemInstruction: {
+          parts: [{
+            text: 'You are an expert identity document OCR and spatial analysis AI. Extract all visible identity fields (documentType, issuingCountry, documentNumber, fullName, givenNames, surnames, firstSurname, secondSurname, birthDate, nationality, sex, issueDate, expiryDate, birthplace, mrz). For each extracted field, YOU MUST ALSO extract its normalized 2D bounding box in boundingBoxes as an integer array [ymin, xmin, ymax, xmax] on a 0 to 1000 scale representing the exact visual bounding coordinates of the text on the document. Dates must use DD/MM/YYYY format. Never infer absent values, return null for unreadable fields.'
+          }]
+        },
+        contents: [{ parts: [{ inlineData: { mimeType: payload.mimeType, data: base64 } }, { text: 'Return the identity document extraction and exact boundingBoxes as the requested JSON schema.' }] }],
         generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: extractionSchema },
       }),
     });

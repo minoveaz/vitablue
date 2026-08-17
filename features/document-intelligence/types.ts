@@ -13,6 +13,8 @@ export interface IdentityDocumentFields {
   fullName: NullableIdentityField;
   givenNames: NullableIdentityField;
   surnames: NullableIdentityField;
+  firstSurname?: NullableIdentityField;
+  secondSurname?: NullableIdentityField;
   documentNumber: NullableIdentityField;
   birthDate: NullableIdentityField;
   nationality: NullableIdentityField;
@@ -41,10 +43,15 @@ export interface DocumentExtractionUsage {
   estimatedCostUsd: number;
 }
 
+export type BoundingBox = [number, number, number, number]; // [ymin, xmin, ymax, xmax] normalizado 0..1000
+
+export type DocumentBoundingBoxes = Partial<Record<keyof IdentityDocumentFields, BoundingBox>>;
+
 export interface DocumentExtractionResult {
   classification: DocumentClassification;
   fields: IdentityDocumentFields;
   rawFields?: IdentityDocumentFields;
+  boundingBoxes?: DocumentBoundingBoxes | null;
   validations: DocumentFieldValidation[];
   provider: 'fixture' | 'gemini';
   usage?: DocumentExtractionUsage;
@@ -66,6 +73,8 @@ export const emptyIdentityDocumentFields = (): IdentityDocumentFields => ({
   fullName: null,
   givenNames: null,
   surnames: null,
+  firstSurname: null,
+  secondSurname: null,
   documentNumber: null,
   birthDate: null,
   nationality: null,
