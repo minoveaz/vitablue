@@ -82,12 +82,13 @@ jobs:
             echo "- Cambios respecto a la última rama \`deploy\`: **$dist_changed**"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload dist Artifact (Hostinger)
+      - name: Upload dist Artifact (Backup)
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: vitablue-v2-dist
           path: dist
-          if-no-files-found: error
+          if-no-files-found: ignore
 
       - name: Deploy Compiled Files to deploy Branch
         uses: JamesIves/github-pages-deploy-action@v4
