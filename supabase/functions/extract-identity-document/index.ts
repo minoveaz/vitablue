@@ -66,6 +66,26 @@ const isSafeDocumentPath = (path: string, userId: string) => (
   path.startsWith(`${userId}/`) && !path.includes('..') && !path.startsWith('/')
 );
 
+const normalizeDateString = (value: string | null): string | null => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(trimmed)) return trimmed;
+  const ymd = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (ymd) return `${ymd[3].padStart(2, '0')}/${ymd[2].padStart(2, '0')}/${ymd[1]}`;
+  const dmy = trimmed.match(/^(\d{1,2})[-.](\d{1,2})[-.](\d{4})$/);
+  if (dmy) return `${dmy[1].padStart(2, '0')}/${dmy[2].padStart(2, '0')}/${dmy[3]}`;
+  const dmySlash = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmySlash) return `${dmySlash[1].padStart(2, '0')}/${dmySlash[2].padStart(2, '0')}/${dmySlash[3]}`;
+  const numeric8 = trimmed.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (numeric8) return `${numeric8[3]}/${numeric8[2]}/${numeric8[1]}`;
+  const ddmmyyyy = trimmed.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (ddmmyyyy) return `${ddmmyyyy[1]}/${ddmmyyyy[2]}/${ddmmyyyy[3]}`;
+  return trimmed;
+};
+
+const dateFields = new Set(['birthDate', 'issueDate', 'expiryDate']);
+
 const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number }) => {
   const documentType = typeof value.documentType === 'string' && allowedDocumentTypes.includes(value.documentType)
     ? value.documentType
@@ -78,8 +98,9 @@ const normalizeExtraction = (value: Record<string, unknown>, usage?: { promptTok
       rawFields[field] = typeof value[field] === 'string' && value[field].trim() ? value[field].trim() : null;
     }
     else if (typeof value[field] === 'string' && value[field].trim()) {
-      rawFields[field] = value[field];
-      fields[field] = value[field].trim();
+      const rawVal = value[field] as string;
+      rawFields[field] = rawVal;
+      fields[field] = dateFields.has(field) ? normalizeDateString(rawVal.trim()) : rawVal.trim();
     }
   }
   const promptTokens = usage?.promptTokenCount ?? 0;
@@ -146,7 +167,7 @@ Deno.serve(async (request) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: 'Extract only identity document fields. Never infer missing values. Return null for absent or unreadable fields. Dates must use YYYY-MM-DD when legible.' }] },
+        systemInstruction: { parts: [{ text: 'Extract only identity document fields. Never infer missing values. Return null for absent or unreadable fields. Dates must use DD/MM/YYYY format when legible.' }] },
         contents: [{ parts: [{ inlineData: { mimeType: payload.mimeType, data: base64 } }, { text: 'Return the identity document extraction as the requested JSON schema.' }] }],
         generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: extractionSchema },
       }),

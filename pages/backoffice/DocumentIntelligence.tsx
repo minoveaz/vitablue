@@ -1,15 +1,30 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Camera,
   Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Clipboard,
+  ClipboardCheck,
+  ExternalLink,
+  FileCheck,
   FileScan,
+  Globe,
+  Info,
   LoaderCircle,
+  Move,
+  Plus,
   RotateCcw,
   Scissors,
+  ShieldCheck,
   Sparkles,
   Trash2,
   Upload,
+  UploadCloud,
   X,
+  XCircle,
+  Zap,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
@@ -19,16 +34,25 @@ import { extractDocumentWithTimeout } from "@/features/document-intelligence/ext
 import { uploadAndExtractDocument } from "@/features/document-intelligence/supabase-service";
 import {
   emptyIdentityDocumentFields,
+  type DocumentExtractionResult,
   type IdentityDocumentFields,
 } from "@/features/document-intelligence/types";
-import { validateIdentityDocumentFields } from "@/features/document-intelligence/validation";
+import {
+  clearDocumentFromStorage,
+  loadDocumentFromStorage,
+  saveDocumentToStorage,
+} from "@/features/document-intelligence/storage";
+import {
+  normalizeIdentityDocumentDates,
+  validateIdentityDocumentFields,
+} from "@/features/document-intelligence/validation";
 import { getDocumentExtractionWarnings } from "@/features/document-intelligence/workflow";
 import { supabase } from "@/marketing-studio/utils/supabaseClient";
 
 type Stage = "preparation" | "processing" | "error" | "review" | "review-with-warnings";
 type FieldKey = keyof IdentityDocumentFields;
-const fieldLabels: Array<{ key: FieldKey; label: string }> = [
-  { key: "fullName", label: "Nombre completo" },
+const fieldLabels: Array<{ key: FieldKey; label: string; fullWidth?: boolean; isMonospace?: boolean }> = [
+  { key: "fullName", label: "Nombre completo", fullWidth: true },
   { key: "givenNames", label: "Nombre" },
   { key: "surnames", label: "Apellidos" },
   { key: "documentNumber", label: "Número de documento" },
@@ -38,7 +62,7 @@ const fieldLabels: Array<{ key: FieldKey; label: string }> = [
   { key: "issueDate", label: "Fecha de expedición" },
   { key: "expiryDate", label: "Fecha de caducidad" },
   { key: "birthplace", label: "Lugar de nacimiento" },
-  { key: "mrz", label: "MRZ" },
+  { key: "mrz", label: "Código MRZ (Machine Readable Zone)", fullWidth: true, isMonospace: true },
 ];
 const acceptedTypes = ["image/jpeg", "image/png", "application/pdf"];
 const maxDocumentBytes = 10 * 1024 * 1024;
@@ -49,6 +73,7 @@ type PersistedExtractionSession = {
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
   fileName: string | null;
+  usage?: DocumentExtractionResult["usage"] | null;
 };
 
 const CropEditor: React.FC<{
@@ -152,23 +177,27 @@ const Dropzone: React.FC<{
   file: File | null;
   onFile: (file: File) => void;
   onClear: () => void;
-}> = ({ file, onFile, onClear }) => {
+  onDemo: () => void;
+}> = ({ file, onFile, onClear, onDemo }) => {
   const input = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+
   const choose = (candidate?: File) => {
     if (candidate) onFile(candidate);
   };
+
   if (file)
     return (
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
         <div className="flex min-w-0 items-center gap-3">
-          <FileScan className="size-6 shrink-0 text-emerald-700" />
+          <FileCheck className="size-6 shrink-0 text-emerald-700" />
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-slate-800">
               {file.name}
             </p>
-            <p className="mt-1 text-xs text-emerald-700">
-              Documento seleccionado
+            <p className="mt-0.5 text-xs text-emerald-700">
+              Documento listo para procesar ({(file.size / (1024 * 1024)).toFixed(2)} MB)
             </p>
           </div>
         </div>
@@ -176,16 +205,16 @@ const Dropzone: React.FC<{
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
           >
-            <Upload className="size-4" /> Subir otro
+            <Upload className="size-3.5" /> Subir otro
           </button>
           <button
             type="button"
             onClick={onClear}
             aria-label="Borrar documento"
             title="Borrar documento"
-            className="flex size-9 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50"
+            className="flex size-9 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
           >
             <Trash2 className="size-4" />
           </button>
@@ -199,40 +228,85 @@ const Dropzone: React.FC<{
         />
       </div>
     );
+
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={() => input.current?.click()}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") input.current?.click();
-      }}
-      onDragOver={(event) => {
-        event.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(event) => {
-        event.preventDefault();
-        setDragging(false);
-        choose(event.dataTransfer.files[0]);
-      }}
-      className={`flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center ${dragging ? "border-primary bg-primary/5" : "border-slate-300 bg-white hover:border-primary"}`}
-    >
-      <input
-        ref={input}
-        className="sr-only"
-        type="file"
-        accept={acceptedTypes.join(",")}
-        onChange={(event) => choose(event.target.files?.[0])}
-      />
-      <Upload className="size-8 text-primary" />
-      <p className="mt-3 text-sm font-bold text-slate-800">
-        Arrastra el documento aquí
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
-        o haz clic para seleccionarlo · JPG, PNG o PDF
-      </p>
+    <div className="flex flex-col gap-3">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => input.current?.click()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") input.current?.click();
+        }}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault();
+          setDragging(false);
+          choose(event.dataTransfer.files[0]);
+        }}
+        className={`group flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
+          dragging
+            ? "border-primary bg-primary/10 scale-[1.01]"
+            : "border-slate-300 bg-white hover:border-primary hover:bg-slate-50/50 shadow-sm"
+        }`}
+      >
+        <input
+          ref={input}
+          className="sr-only"
+          type="file"
+          accept={acceptedTypes.join(",")}
+          onChange={(event) => choose(event.target.files?.[0])}
+        />
+        <input
+          ref={cameraInput}
+          className="sr-only"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={(event) => choose(event.target.files?.[0])}
+        />
+
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+          <UploadCloud className="size-7" />
+        </div>
+
+        <p className="mt-4 text-base font-black text-slate-900">
+          Arrastra y suelta tu documento aquí
+        </p>
+        <p className="mt-1 text-xs text-slate-500">
+          o <span className="font-bold text-primary underline">haz clic para explorar archivos</span> en tu equipo
+        </p>
+
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
+          <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">PDF, JPG, PNG</span>
+          <span>·</span>
+          <span>Máx. 10 MB</span>
+          <span>·</span>
+          <span>Soporta pegar con ⌘+V</span>
+        </div>
+      </div>
+
+      {/* Opciones de entrada secundarias */}
+      <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+        <button
+          type="button"
+          onClick={() => cameraInput.current?.click()}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-sm"
+        >
+          <Camera className="size-3.5 text-slate-500" /> Capturar con cámara
+        </button>
+        <button
+          type="button"
+          onClick={onDemo}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-sm"
+        >
+          <Sparkles className="size-3.5 text-primary" /> Probar documento demo
+        </button>
+      </div>
     </div>
   );
 };
@@ -247,26 +321,40 @@ const DocumentIntelligence: React.FC = () => {
   const [rawFields, setRawFields] = useState<IdentityDocumentFields>(
     emptyIdentityDocumentFields,
   );
+  const [usage, setUsage] = useState<DocumentExtractionResult["usage"] | null>(null);
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [cropOpen, setCropOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<FieldKey | null>(null);
   const [notice, setNotice] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(extractionSessionStorageKey);
-    if (!saved) return;
-    try {
-      const session = JSON.parse(saved) as PersistedExtractionSession;
-      if (session.stage !== "review" && session.stage !== "review-with-warnings") return;
-      setStage(session.stage);
-      setFields(session.fields);
-      setRawFields(session.rawFields ?? session.fields);
-      setNotice("Sesión de revisión restaurada después de recargar la página.");
-    } catch {
-      sessionStorage.removeItem(extractionSessionStorageKey);
-    }
+    let active = true;
+    const restore = async () => {
+      const savedDoc = await loadDocumentFromStorage();
+      if (!active) return;
+      if (savedDoc) {
+        setFile(savedDoc);
+        setPreviewUrl(URL.createObjectURL(savedDoc));
+      }
+
+      const saved = sessionStorage.getItem(extractionSessionStorageKey);
+      if (!saved) return;
+      try {
+        const session = JSON.parse(saved) as PersistedExtractionSession;
+        if (session.stage !== "review" && session.stage !== "review-with-warnings") return;
+        setStage(session.stage);
+        setFields(normalizeIdentityDocumentDates(session.fields));
+        setRawFields(normalizeIdentityDocumentDates(session.rawFields ?? session.fields));
+        if (session.usage) setUsage(session.usage);
+      } catch {
+        sessionStorage.removeItem(extractionSessionStorageKey);
+      }
+    };
+    restore();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -276,8 +364,9 @@ const DocumentIntelligence: React.FC = () => {
       fields,
       rawFields,
       fileName: file?.name ?? null,
+      usage,
     } satisfies PersistedExtractionSession));
-  }, [fields, file, rawFields, stage]);
+  }, [fields, file, rawFields, stage, usage]);
 
   useEffect(
     () => () => {
@@ -285,6 +374,7 @@ const DocumentIntelligence: React.FC = () => {
     },
     [previewUrl],
   );
+
   const selectFile = (next: File) => {
     if (!acceptedTypes.includes(next.type)) {
       setNotice("Formato no compatible. Usa un archivo JPG, PNG o PDF.");
@@ -300,18 +390,87 @@ const DocumentIntelligence: React.FC = () => {
     }
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(next);
-    setPreviewUrl(
-      next.type === "application/pdf" ? null : URL.createObjectURL(next),
-    );
+    setPreviewUrl(URL.createObjectURL(next));
+    saveDocumentToStorage(next);
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
+    setUsage(null);
     setRotation(0);
     setZoom(1);
-    setSelectedField(null);
     setErrorMessage(null);
     setStage("preparation");
-    setNotice("Documento cargado. Confirma que está listo para extraer.");
   };
+
+  // Clipboard Paste Support (Cmd/Ctrl + V)
+  useEffect(() => {
+    if (stage !== "preparation" || file) return;
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === "file") {
+          const pastedFile = item.getAsFile();
+          if (pastedFile && acceptedTypes.includes(pastedFile.type)) {
+            event.preventDefault();
+            selectFile(pastedFile);
+            setNotice("Documento pegado desde el portapapeles con éxito.");
+            break;
+          }
+        }
+      }
+    };
+    window.addEventListener("paste", handlePaste);
+    return () => window.removeEventListener("paste", handlePaste);
+  }, [stage, file]);
+
+  const loadDemoDocument = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1000;
+    canvas.height = 650;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Background & borders
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, 1000, 650);
+    ctx.fillStyle = "#005F73";
+    ctx.fillRect(30, 30, 940, 90);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 26px sans-serif";
+    ctx.fillText("REINO DE ESPAÑA · PASAPORTE / PASSPORT", 60, 85);
+
+    // Photo Box
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillRect(60, 160, 220, 290);
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("FOTO MUESTRA", 100, 310);
+
+    // Field texts
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("Apellidos / Surname: SAMPLE", 320, 190);
+    ctx.fillText("Nombre / Given names: MARIA", 320, 235);
+    ctx.fillText("Nacionalidad / Nationality: ESPAÑOLA", 320, 280);
+    ctx.fillText("Fecha de nacimiento / Date of birth: 12/04/1988", 320, 325);
+    ctx.fillText("Sexo / Sex: F", 320, 370);
+    ctx.fillText("Fecha de caducidad / Date of expiry: 11/04/2030", 320, 415);
+
+    // MRZ Zone
+    ctx.fillStyle = "#001219";
+    ctx.font = "bold 20px monospace";
+    ctx.fillText("P<ESPSAMPLE<<MARIA<<<<<<<<<<<<<<<<<<<<<<<<<<<", 60, 520);
+    ctx.fillText("P000000000ESP8804128F3004118<<<<<<<<<<<<<<<04", 60, 570);
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const demoFile = new File([blob], "pasaporte-ejemplo-demo.jpg", { type: "image/jpeg" });
+        selectFile(demoFile);
+      }
+    }, "image/jpeg", 0.95);
+  };
+
   const crop = () => {
     if (!previewUrl || !file) {
       setNotice("El recorte solo está disponible para imágenes.");
@@ -319,21 +478,24 @@ const DocumentIntelligence: React.FC = () => {
     }
     setCropOpen(true);
   };
+
   const applyCrop = (blob: Blob) => {
     if (!file) return;
     if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setFile(new File([blob], file.name, { type: "image/jpeg" }));
+    const croppedFile = new File([blob], file.name, { type: "image/jpeg" });
+    setFile(croppedFile);
     setPreviewUrl(URL.createObjectURL(blob));
+    saveDocumentToStorage(croppedFile);
     setZoom(1);
     setCropOpen(false);
     setNotice("Documento recortado.");
   };
+
   const extract = async () => {
     if (!file) return;
     setStage("processing");
     setErrorMessage(null);
-    setSelectedField(null);
-    setNotice("La IA está leyendo el documento…");
+    setNotice("");
     try {
       const {
         data: { user },
@@ -349,17 +511,19 @@ const DocumentIntelligence: React.FC = () => {
         },
         10000,
       );
-      setFields(result.fields);
-      setRawFields(result.rawFields ?? result.fields);
-      const warnings = getDocumentExtractionWarnings(result);
+      const normalizedFields = normalizeIdentityDocumentDates(result.fields);
+      const normalizedRaw = normalizeIdentityDocumentDates(result.rawFields ?? result.fields);
+      setFields(normalizedFields);
+      setRawFields(normalizedRaw);
+      if (result.usage) setUsage(result.usage);
+      const warnings = getDocumentExtractionWarnings({
+        ...result,
+        fields: normalizedFields,
+      });
       setStage(warnings.length ? "review-with-warnings" : "review");
-      setNotice(
-        result.usage
-          ? `Consumo de esta extracción\nEntrada: ${result.usage.promptTokens.toLocaleString("es-ES")} tokens\nSalida: ${result.usage.outputTokens.toLocaleString("es-ES")} tokens\nTotal: ${result.usage.totalTokens.toLocaleString("es-ES")} tokens\nCoste estimado: USD ${result.usage.estimatedCostUsd.toFixed(6)}\n\nCálculo estimado: ((${result.usage.promptTokens.toLocaleString("es-ES")} × USD 0.30) + (${result.usage.outputTokens.toLocaleString("es-ES")} × USD 2.50)) / 1.000.000`
-          : warnings.length
-            ? "Respuesta recibida con advertencias. Revisa los campos extraídos."
-            : "Respuesta recibida. Revisa los campos extraídos.",
-      );
+      if (warnings.length) {
+        setNotice("Respuesta recibida con advertencias. Revisa los campos extraídos.");
+      }
     } catch (error) {
       const errorCode = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const message = errorCode === "AUTHENTICATION_REQUIRED"
@@ -376,26 +540,78 @@ const DocumentIntelligence: React.FC = () => {
       setStage("error");
     }
   };
+
   const clear = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    clearDocumentFromStorage();
     setStage("preparation");
     setFile(null);
     setPreviewUrl(null);
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
+    setUsage(null);
     setRotation(0);
     setZoom(1);
-    setSelectedField(null);
     setErrorMessage(null);
     setNotice("");
     sessionStorage.removeItem(extractionSessionStorageKey);
   };
+
   const copy = async (value: string | null, label: string) => {
     if (value) {
       await navigator.clipboard.writeText(value);
       setNotice(`${label} copiado.`);
     }
   };
+
+  const copyAllAsText = async () => {
+    const lines = fieldLabels
+      .map(({ key, label }) => `${label}: ${fields[key] ?? "—"}`)
+      .join("\n");
+    await navigator.clipboard.writeText(lines);
+    setNotice("Todos los campos se han copiado al portapapeles en formato texto.");
+  };
+
+  const copyAllAsJson = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(fields, null, 2));
+    setNotice("Datos del documento copiados en formato JSON.");
+  };
+
+  const handleApprove = async () => {
+    await copyAllAsText();
+    setNotice("✓ Extracción aprobada. Datos copiados al portapapeles.");
+  };
+
+  const handleReject = () => {
+    clear();
+    setNotice("Documento descartado. Listo para procesar uno nuevo.");
+  };
+
+  const restoreField = (key: FieldKey) => {
+    setFields((current) => ({
+      ...current,
+      [key]: rawFields[key],
+    }));
+    const label = fieldLabels.find((f) => f.key === key)?.label ?? key;
+    setNotice(`Valor original de ${label} restaurado.`);
+  };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (stage === "preparation" && file && event.key === "Enter") {
+        event.preventDefault();
+        extract();
+      } else if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        if (stage === "review" || stage === "review-with-warnings") {
+          event.preventDefault();
+          handleApprove();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [stage, file, fields]);
+
   const issues = useMemo(
     () =>
       Object.fromEntries(
@@ -407,26 +623,58 @@ const DocumentIntelligence: React.FC = () => {
     [fields],
   );
   const issueCount = Object.keys(issues).length;
-  const preview = previewUrl ? (
-    <div className="flex min-h-[340px] items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <img
-        src={previewUrl}
-        alt="Documento procesado"
-        className="max-h-[430px] max-w-full object-contain transition-transform"
-        style={{ transform: `rotate(${rotation}deg) scale(${zoom})` }}
-      />
-    </div>
-  ) : (
-    <div className="flex min-h-[340px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-5 text-center text-sm text-slate-500">
-      {file?.name}
-      <br />
-      Vista previa PDF pendiente de soporte del visor.
-    </div>
+  const isPdf = file?.type === "application/pdf";
+
+  const openDocumentInNewTab = () => {
+    if (previewUrl) {
+      window.open(previewUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleZoomIn = () => setZoom((v) => Math.min(3, +(v + 0.25).toFixed(2)));
+  const handleZoomOut = () => setZoom((v) => Math.max(0.5, +(v - 0.25).toFixed(2)));
+  const handleResetZoom = () => {
+    setZoom(1);
+    setRotation(0);
+  };
+  const handleRotate = () => setRotation((v) => (v + 90) % 360);
+
+  const documentViewer = (
+    <DocumentViewer
+      file={file}
+      previewUrl={previewUrl}
+      isPdf={isPdf}
+      zoom={zoom}
+      rotation={rotation}
+      onZoomIn={handleZoomIn}
+      onZoomOut={handleZoomOut}
+      onResetZoom={handleResetZoom}
+      onRotate={handleRotate}
+      onCrop={crop}
+      onOpenInTab={openDocumentInNewTab}
+    />
   );
+
+  const isSessionActive = Boolean(file || stage !== "preparation");
+
   const header = (
-    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-5">
+    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-3.5">
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">{`{Document workspace}`}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">{`{Document workspace}`}</p>
+          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+            {stage === "preparation"
+              ? "Paso 1 de 2: Carga y Preparación"
+              : stage === "processing"
+                ? "Procesando con IA..."
+                : "Paso 2 de 2: Revisión y Validación"}
+          </span>
+          {usage && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+              <Zap className="size-3" /> {usage.totalTokens.toLocaleString("es-ES")} tokens · ${usage.estimatedCostUsd.toFixed(4)}
+            </span>
+          )}
+        </div>
         <h2 className="mt-1 font-display text-2xl font-black text-slate-900">
           {stage === "preparation"
             ? "Preparar documento"
@@ -434,48 +682,69 @@ const DocumentIntelligence: React.FC = () => {
               ? "Procesando documento"
               : stage === "error"
                 ? "No se pudo procesar el documento"
-              : "Revisión de identidad"}
+              : "Revisión y validación de identidad"}
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
-          {stage === "preparation"
-            ? "Sube el documento y confirma que está listo para extraer."
-            : stage === "processing"
-              ? "La inteligencia artificial está analizando el documento."
-              : stage === "error"
-                ? "El documento sigue seleccionado para que puedas reintentarlo sin empezar de nuevo."
-              : "Revisa los campos extraídos y consulta el detalle de cada valor."}
-        </p>
       </div>
-      <button
-        type="button"
-        onClick={clear}
-        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 hover:border-red-200 hover:text-red-600"
-      >
-        <Trash2 className="size-4" /> Limpiar sesión
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        {stage !== "preparation" && stage !== "processing" && (
+          <button
+            type="button"
+            onClick={clear}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-xs font-black text-white shadow-sm transition-colors hover:bg-primary-dark"
+          >
+            <Plus className="size-4" /> Extraer nuevo documento
+          </button>
+        )}
+        {isSessionActive && stage !== "processing" && (
+          <button
+            type="button"
+            onClick={clear}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:border-red-200 hover:text-red-600"
+          >
+            <Trash2 className="size-4" /> Limpiar sesión
+          </button>
+        )}
+      </div>
     </header>
   );
+
   return (
     <BackofficeShell
       title="Document Intelligence"
       eyebrow="Operaciones documentales"
     >
-      <div className="flex h-full min-h-0 flex-col gap-5 overflow-hidden">
+      <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
         {header}
+        {notice && (
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3.5 py-2 text-xs font-medium text-slate-800">
+            <span className="truncate">{notice}</span>
+            <button
+              type="button"
+              onClick={() => setNotice("")}
+              className="text-slate-400 hover:text-slate-600"
+              aria-label="Cerrar notificación"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        )}
         {stage === "preparation" && (
           <Preparation
             file={file}
-            preview={preview}
+            viewer={documentViewer}
             onFile={selectFile}
             onClear={clear}
-            onRotate={() => setRotation((value) => (value + 90) % 360)}
-            onZoomOut={() => setZoom((value) => Math.max(0.75, value - 0.25))}
-            onZoomIn={() => setZoom((value) => Math.min(1.75, value + 0.25))}
-            onCrop={crop}
+            onDemo={loadDemoDocument}
             onExtract={extract}
           />
         )}
-        {stage === "processing" && <Processing />}
+        {stage === "processing" && (
+          <ProcessingView
+            file={file}
+            previewUrl={previewUrl}
+            isPdf={isPdf}
+          />
+        )}
         {stage === "error" && (
           <ExtractionError
             message={errorMessage ?? "No se pudo procesar el documento."}
@@ -485,15 +754,20 @@ const DocumentIntelligence: React.FC = () => {
         )}
         {(stage === "review" || stage === "review-with-warnings") && (
           <Review
+            file={file}
             fields={fields}
             rawFields={rawFields}
             issues={issues}
-            selectedField={selectedField}
-            setSelectedField={setSelectedField}
+            usage={usage}
             setFields={setFields}
-            preview={preview}
-            notice={notice}
+            viewer={documentViewer}
             copy={copy}
+            copyAllAsText={copyAllAsText}
+            copyAllAsJson={copyAllAsJson}
+            restoreField={restoreField}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            onNewDocument={clear}
             warning={stage === "review-with-warnings"}
             issueCount={issueCount}
           />
@@ -510,107 +784,532 @@ const DocumentIntelligence: React.FC = () => {
   );
 };
 
-const Preparation: React.FC<{
+const DocumentViewer: React.FC<{
   file: File | null;
-  preview: React.ReactNode;
-  onFile: (file: File) => void;
-  onClear: () => void;
-  onRotate: () => void;
-  onZoomOut: () => void;
+  previewUrl: string | null;
+  isPdf: boolean;
+  zoom: number;
+  rotation: number;
   onZoomIn: () => void;
-  onCrop: () => void;
-  onExtract: () => void;
+  onZoomOut: () => void;
+  onResetZoom: () => void;
+  onRotate: () => void;
+  onCrop?: () => void;
+  onOpenInTab: () => void;
 }> = ({
   file,
-  preview,
-  onFile,
-  onClear,
-  onRotate,
-  onZoomOut,
+  previewUrl,
+  isPdf,
+  zoom,
+  rotation,
   onZoomIn,
+  onZoomOut,
+  onResetZoom,
+  onRotate,
   onCrop,
-  onExtract,
-}) => (
-  <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-5">
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-      <div className="mb-4 flex items-center gap-2">
-        <FileScan className="size-4 text-primary" />
-        <h3 className="text-sm font-black text-slate-800">Documento fuente</h3>
-      </div>
-      <Dropzone file={file} onFile={onFile} onClear={onClear} />
-      {file && (
-        <>
-          <div className="mt-3">{preview}</div>
-          <div className="mt-2 flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white p-1">
+  onOpenInTab,
+}) => {
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOrigin = useRef({ startX: 0, startY: 0, panX: 0, panY: 0 });
+
+  // Reset pan when resetting zoom or changing file
+  const handleFullReset = () => {
+    setPan({ x: 0, y: 0 });
+    onResetZoom();
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    setIsDragging(true);
+    dragOrigin.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      panX: pan.x,
+      panY: pan.y,
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragOrigin.current.startX;
+    const dy = e.clientY - dragOrigin.current.startY;
+    setPan({
+      x: dragOrigin.current.panX + dx,
+      y: dragOrigin.current.panY + dy,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      dragOrigin.current = {
+        startX: e.touches[0].clientX,
+        startY: e.touches[0].clientY,
+        panX: pan.x,
+        panY: pan.y,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - dragOrigin.current.startX;
+    const dy = e.touches[0].clientY - dragOrigin.current.startY;
+    setPan({
+      x: dragOrigin.current.panX + dx,
+      y: dragOrigin.current.panY + dy,
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-[#F1F5F9] select-none">
+      {/* Toolbar Superior Unificado */}
+      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            title="Alejar (Zoom -)"
+            aria-label="Alejar"
+            onClick={onZoomOut}
+            className="flex size-7 items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors"
+          >
+            <ZoomOut className="size-3.5" />
+          </button>
+
+          <button
+            type="button"
+            title="Restablecer zoom y posición al 100%"
+            onClick={handleFullReset}
+            className="rounded px-1.5 py-0.5 text-[10px] font-bold text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+
+          <button
+            type="button"
+            title="Acercar (Zoom +)"
+            aria-label="Acercar"
+            onClick={onZoomIn}
+            className="flex size-7 items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors"
+          >
+            <ZoomIn className="size-3.5" />
+          </button>
+
+          <div className="mx-1 h-3.5 w-px bg-slate-200" />
+
+          <button
+            type="button"
+            title="Girar 90°"
+            aria-label="Girar 90°"
+            onClick={onRotate}
+            className="flex size-7 items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors"
+          >
+            <RotateCcw className="size-3.5" />
+            {rotation !== 0 && (
+              <span className="ml-1 text-[10px] font-semibold text-primary">{rotation}°</span>
+            )}
+          </button>
+
+          {(pan.x !== 0 || pan.y !== 0 || zoom !== 1 || rotation !== 0) && (
             <button
               type="button"
-              title="Alejar"
-              aria-label="Alejar"
-              onClick={onZoomOut}
-              className="flex size-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-primary"
+              title="Centrar y restablecer posición"
+              onClick={handleFullReset}
+              className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-200 transition-colors ml-1"
             >
-              <ZoomOut className="size-4" />
+              <Move className="size-3 text-primary" /> Centrar
             </button>
-            <button
-              type="button"
-              title="Acercar"
-              aria-label="Acercar"
-              onClick={onZoomIn}
-              className="flex size-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-primary"
-            >
-              <ZoomIn className="size-4" />
-            </button>
-            <button
-              type="button"
-              title="Rotar documento"
-              aria-label="Rotar documento"
-              onClick={onRotate}
-              className="flex size-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-primary"
-            >
-              <RotateCcw className="size-4" />
-            </button>
+          )}
+
+          {onCrop && !isPdf && (
             <button
               type="button"
               title="Recortar documento"
               aria-label="Recortar documento"
               onClick={onCrop}
-              className="flex size-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-primary"
+              className="flex size-7 items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors ml-1"
             >
-              <Scissors className="size-4" />
+              <Scissors className="size-3.5" />
             </button>
-          </div>
-        </>
-      )}
-    </div>
-    {file && (
-      <button
-        type="button"
-        onClick={onExtract}
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-black text-white hover:bg-primary-dark"
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={onOpenInTab}
+          className="inline-flex items-center gap-1 rounded px-2.5 py-1 text-xs font-bold text-primary hover:bg-primary/10 transition-colors"
+          title="Abrir en pestaña nueva"
+        >
+          <ExternalLink className="size-3.5" /> Abrir pestaña
+        </button>
+      </div>
+
+      {/* Canvas del Documento con Soporte de Arrastre (Mouse Drag / Pan) */}
+      <div
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`relative flex flex-1 min-h-[380px] max-h-[520px] w-full items-center justify-center overflow-hidden bg-[#F1F5F9] p-4 ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
       >
-        <Sparkles className="size-4" /> Extraer y validar
-      </button>
-    )}
-    <p className="text-center text-[11px] text-slate-400">
-      La extracción no verifica autenticidad. Los datos permanecen en la sesión
-      local.
-    </p>
-  </section>
-);
-const Processing: React.FC = () => (
-  <section className="flex flex-1 items-center justify-center">
-    <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-      <LoaderCircle className="mx-auto size-12 animate-spin text-primary" />
-      <h3 className="mt-6 text-xl font-black text-slate-900">
-        Analizando tu documento
-      </h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
-        Estamos identificando el tipo de documento, extrayendo sus campos y
-        preparando la validación.
-      </p>
-      <p className="mt-8 text-xs font-bold text-primary">
-        No cierres esta ventana
-      </p>
+        {/* Badge indicador de arrastre */}
+        <div className="pointer-events-none absolute bottom-2 right-3 z-20 flex items-center gap-1 rounded-md bg-white/80 backdrop-blur-xs px-2 py-0.5 text-[9px] font-medium text-slate-500 shadow-xs border border-slate-200/60">
+          <Move className="size-2.5 text-primary" /> Arrastra para mover
+        </div>
+
+        {previewUrl ? (
+          <div
+            className={`flex items-center justify-center origin-center transition-transform ${
+              isDragging ? "transition-none" : "duration-150"
+            }`}
+            style={{
+              transform: `translate3d(${pan.x}px, ${pan.y}px, 0px) rotate(${rotation}deg) scale(${zoom})`,
+            }}
+          >
+            {/* Si estamos arrastrando, evitamos interferencias del iframe con pointer-events */}
+            {isDragging && <div className="absolute inset-0 z-30" />}
+
+            {isPdf ? (
+              <iframe
+                src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+                title={file?.name ?? "Documento PDF"}
+                className={`h-[460px] w-[340px] sm:w-[480px] md:w-[560px] border-0 rounded-lg bg-white shadow-sm ${
+                  isDragging ? "pointer-events-none" : "pointer-events-auto"
+                }`}
+              />
+            ) : (
+              <img
+                src={previewUrl}
+                alt={file?.name ?? "Documento"}
+                draggable={false}
+                className="max-h-[460px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none"
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center text-sm text-slate-400">
+            Ningún documento seleccionado
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Preparation: React.FC<{
+  file: File | null;
+  viewer: React.ReactNode;
+  onFile: (file: File) => void;
+  onClear: () => void;
+  onDemo: () => void;
+  onExtract: () => void;
+}> = ({
+  file,
+  viewer,
+  onFile,
+  onClear,
+  onDemo,
+  onExtract,
+}) => {
+  const input = useRef<HTMLInputElement>(null);
+
+  return (
+    <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 lg:grid-cols-12">
+      {/* Columna Principal: Carga / Visor Unificado */}
+      <div className="flex flex-col gap-4 lg:col-span-8">
+        {!file ? (
+          /* Estado 1: Dropzone para cargar archivo */
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileScan className="size-4 text-primary" />
+                <h3 className="text-sm font-black text-slate-900">Documento fuente</h3>
+              </div>
+              <span className="text-[11px] font-bold text-slate-400">Paso 1 de 2</span>
+            </div>
+
+            <Dropzone file={null} onFile={onFile} onClear={onClear} onDemo={onDemo} />
+          </div>
+        ) : (
+          /* Estado 2: Tarjeta de Previsualización Unificada con Header y CTA anclado */
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {/* Header Unificado del Archivo (Sin duplicaciones) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <FileCheck className="size-5 shrink-0 text-emerald-600" />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-black text-slate-900">{file.name}</p>
+                  <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <span className="font-semibold text-slate-700">{(file.size / 1024).toFixed(0)} KB</span>
+                    <span>·</span>
+                    <span className="font-bold text-emerald-700">✓ Listo para procesar</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => input.current?.click()}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+                >
+                  <Upload className="size-3.5" /> Cambiar
+                </button>
+                <button
+                  type="button"
+                  onClick={onClear}
+                  aria-label="Eliminar documento"
+                  title="Eliminar documento"
+                  className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+                <input
+                  ref={input}
+                  className="sr-only"
+                  type="file"
+                  accept={acceptedTypes.join(",")}
+                  onChange={(event) => {
+                    if (event.target.files?.[0]) onFile(event.target.files[0]);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Document Viewer con controles activos */}
+            <div className="p-3 bg-slate-50">
+              {viewer}
+            </div>
+
+            {/* CTA Primario anclado directamente a la tarjeta */}
+            <div className="border-t border-slate-200 bg-white p-4">
+              <button
+                type="button"
+                onClick={onExtract}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all"
+              >
+                <Sparkles className="size-4.5" /> Extraer y validar campos con IA <span className="opacity-70 text-xs font-normal">(↵ Enter)</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Columna Lateral (35%): Guía Inicial o Metadata Predictiva tras la subida */}
+      <div className="flex flex-col gap-4 lg:col-span-4">
+        {file ? (
+          /* Estado Activo: Metadata predictiva y Checklist de pre-vuelo */
+          <>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500">
+                <FileCheck className="size-4 text-emerald-600" /> Pre-validación de archivo
+              </h4>
+
+              <div className="mt-3.5 space-y-3 text-xs">
+                <div className="rounded-lg bg-slate-50 p-3">
+                  <p className="text-[10px] font-bold uppercase text-slate-400">Tipo detectado</p>
+                  <p className="mt-0.5 font-bold text-slate-800">
+                    {file.name.toLowerCase().includes("pasaporte") || file.name.toLowerCase().includes("passport")
+                      ? "Pasaporte ICAO (TD3)"
+                      : file.name.toLowerCase().includes("dni") || file.name.toLowerCase().includes("nie")
+                        ? "DNI / NIE España"
+                        : "Documento de identidad"}
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-slate-50 p-3">
+                  <p className="text-[10px] font-bold uppercase text-slate-400">Especificaciones técnicas</p>
+                  <p className="mt-0.5 font-bold text-slate-800">
+                    {file.type === "application/pdf" ? "PDF Multipágina" : "Imagen de alta resolución"} · {(file.size / 1024).toFixed(0)} KB
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-emerald-700 font-medium">✓ Tamaño óptimo para OCR multimodal</p>
+                </div>
+
+                <div className="rounded-lg bg-slate-50 p-3">
+                  <p className="text-[10px] font-bold uppercase text-slate-400">Motor de extracción</p>
+                  <p className="mt-0.5 font-bold text-slate-800">Gemini 2.5 Flash Vision</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500">Lectura de campos visuales + parseo MRZ</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Privacidad & RGPD */}
+            <div className="flex items-start gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-4">
+              <ShieldCheck className="size-5 shrink-0 text-emerald-700 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-bold text-emerald-900">Procesamiento seguro</p>
+                <p className="mt-0.5 text-[11px] text-emerald-700 leading-relaxed">
+                  Extracción efímera en memoria. Los datos no se almacenan para entrenamiento.
+                </p>
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Estado Inicial: Documentos compatibles y Consejos */
+          <>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-500">
+                <Globe className="size-4 text-primary" /> Documentos compatibles
+              </h4>
+              <ul className="mt-3.5 space-y-3 text-xs">
+                <li className="flex items-start gap-2.5">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-[11px] font-bold text-primary">✓</span>
+                  <div>
+                    <p className="font-bold text-slate-800">Pasaportes ICAO (TD3)</p>
+                    <p className="text-[11px] text-slate-500">Zona visual y lectura óptica de MRZ de 44 caracteres.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-[11px] font-bold text-primary">✓</span>
+                  <div>
+                    <p className="font-bold text-slate-800">DNI / NIE / Cédulas</p>
+                    <p className="text-[11px] text-slate-500">Documentos de España, Colombia y Latinoamérica.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-[11px] font-bold text-primary">✓</span>
+                  <div>
+                    <p className="font-bold text-slate-800">Licencias de conducir</p>
+                    <p className="text-[11px] text-slate-500">Permisos oficiales con fotografía.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4.5">
+              <h4 className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                <Info className="size-4 text-sky-600" /> Para una extracción 100% precisa
+              </h4>
+              <ul className="mt-2.5 space-y-1.5 text-[11px] text-slate-500">
+                <li>• Asegúrate de que los 4 bordes del documento sean visibles.</li>
+                <li>• Evita reflejos de flash sobre el plástico protector.</li>
+                <li>• Comprueba que las fechas y el código MRZ estén nítidos.</li>
+              </ul>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-4">
+              <ShieldCheck className="size-5 shrink-0 text-emerald-700 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-bold text-emerald-900">Privacidad garantizada</p>
+                <p className="mt-0.5 text-[11px] text-emerald-700 leading-relaxed">
+                  Procesamiento efímero en memoria local conforme a RGPD.
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+const ProcessingView: React.FC<{
+  file: File | null;
+  previewUrl: string | null;
+  isPdf: boolean;
+}> = ({ file, previewUrl, isPdf }) => (
+  <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 lg:grid-cols-12">
+    {/* Columna Izquierda: Visor del documento con escáner láser animado */}
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-6">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <FileScan className="size-4 text-primary" />
+          <span className="truncate text-xs font-bold text-slate-800">{file?.name ?? "Documento"}</span>
+        </div>
+        <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+          <span className="size-1.5 rounded-full bg-primary animate-ping" />
+          Escaneando con IA
+        </span>
+      </div>
+
+      <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-[#F1F5F9] p-4">
+        {/* Línea de escaneo láser animada */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#38bdf8] animate-bounce z-10" />
+
+        {isPdf && previewUrl ? (
+          <iframe
+            src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
+            title={file?.name ?? "PDF"}
+            className="h-full min-h-[400px] w-full border-0 pointer-events-none opacity-80"
+          />
+        ) : previewUrl ? (
+          <img
+            src={previewUrl}
+            alt="Escaneando documento"
+            className="max-h-[440px] max-w-full object-contain opacity-90"
+          />
+        ) : null}
+      </div>
+    </div>
+
+    {/* Columna Derecha: Indicador de Etapas y Skeleton Loaders */}
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-6">
+      <div className="border-b border-slate-200 pb-3.5">
+        <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+          <LoaderCircle className="size-4.5 animate-spin text-primary" /> Analizando documento
+        </h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Gemini 2.5 Flash está interpretando los campos visuales y la zona ICAO.
+        </p>
+
+        {/* Pasos en tiempo real */}
+        <div className="mt-3.5 space-y-2 rounded-xl bg-slate-50 p-3 text-xs">
+          <div className="flex items-center gap-2 font-bold text-emerald-700">
+            <Check className="size-3.5 text-emerald-600" />
+            <span>1. Preprocesamiento y orientación de imagen</span>
+          </div>
+          <div className="flex items-center gap-2 font-bold text-primary animate-pulse">
+            <LoaderCircle className="size-3.5 animate-spin text-primary" />
+            <span>2. Reconocimiento óptico y lectura de zona MRZ...</span>
+          </div>
+          <div className="flex items-center gap-2 font-medium text-slate-400">
+            <span className="size-3.5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">3</span>
+            <span>3. Estructurando campos de identidad y validación</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Skeletons de los campos */}
+      <div className="grid grid-cols-2 gap-3 pt-1">
+        <div className="col-span-2 space-y-1">
+          <div className="h-3 w-28 bg-slate-200 rounded animate-pulse" />
+          <div className="h-9 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="space-y-1">
+          <div className="h-3 w-16 bg-slate-200 rounded animate-pulse" />
+          <div className="h-9 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="space-y-1">
+          <div className="h-3 w-16 bg-slate-200 rounded animate-pulse" />
+          <div className="h-9 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="space-y-1">
+          <div className="h-3 w-24 bg-slate-200 rounded animate-pulse" />
+          <div className="h-9 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="space-y-1">
+          <div className="h-3 w-24 bg-slate-200 rounded animate-pulse" />
+          <div className="h-9 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+        <div className="col-span-2 space-y-1">
+          <div className="h-3 w-36 bg-slate-200 rounded animate-pulse" />
+          <div className="h-14 w-full bg-slate-100 rounded-lg animate-pulse" />
+        </div>
+      </div>
     </div>
   </section>
 );
@@ -651,175 +1350,280 @@ const ExtractionError: React.FC<{
   </section>
 );
 
-const ExtractionUsageTable: React.FC<{ notice: string }> = ({ notice }) => {
-  const lines = notice.split("\n");
-  const value = (label: string) =>
-    lines
-      .find((line) => line.startsWith(label))
-      ?.replace(label, "")
-      .trim() ?? "—";
-  if (!notice.startsWith("Consumo de esta extracción"))
-    return (
-      <p className="mt-auto text-xs text-slate-500">
-        Selecciona un campo para ver su valor, validación y detalle.
-      </p>
-    );
+const TelemetryAccordion: React.FC<{ usage: DocumentExtractionResult["usage"] | null }> = ({ usage }) => {
+  const [open, setOpen] = useState(false);
+  if (!usage) return null;
+
   return (
-    <div className="mt-auto">
-      <h3 className="text-sm font-black text-slate-800">
-        Consumo de esta extracción
-      </h3>
-      <table className="mt-4 w-full text-xs">
-        <tbody>
-          {[
-            ["Entrada", "Entrada:"],
-            ["Salida", "Salida:"],
-            ["Total", "Total:"],
-          ].map(([label, key]) => (
-            <tr key={key} className="border-b border-slate-200">
-              <th className="py-2 text-left font-bold text-slate-500">
-                {label}
-              </th>
-              <td className="py-2 text-right font-black text-slate-800">
-                {value(key)}
-              </td>
-            </tr>
-          ))}
-          <tr>
-            <th className="pt-3 text-left font-bold text-slate-500">
-              Coste estimado
-            </th>
-            <td className="pt-3 text-right font-black text-primary">
-              {value("Coste estimado:")}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-        Entrada: USD 0.30 por millón. Salida: USD 2.50 por millón.
-      </p>
+    <div className="border-t border-slate-200 bg-slate-50/70 p-3.5">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between text-xs font-bold text-slate-600 hover:text-primary transition-colors"
+      >
+        <span className="flex items-center gap-1.5">
+          <Sparkles className="size-3.5 text-primary" />
+          Telemetría IA: <span className="font-semibold text-slate-800">{usage.totalTokens.toLocaleString("es-ES")} tokens (${usage.estimatedCostUsd.toFixed(5)})</span>
+        </span>
+        {open ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+      </button>
+
+      {open && (
+        <div className="mt-2.5 pt-2.5 border-t border-slate-200">
+          <table className="w-full text-xs">
+            <tbody>
+              <tr className="border-b border-slate-200/60">
+                <th className="py-1 text-left font-medium text-slate-500">Tokens de Entrada</th>
+                <td className="py-1 text-right font-bold text-slate-800">{usage.promptTokens.toLocaleString("es-ES")}</td>
+              </tr>
+              <tr className="border-b border-slate-200/60">
+                <th className="py-1 text-left font-medium text-slate-500">Tokens de Salida</th>
+                <td className="py-1 text-right font-bold text-slate-800">{usage.outputTokens.toLocaleString("es-ES")}</td>
+              </tr>
+              <tr className="border-b border-slate-200/60">
+                <th className="py-1 text-left font-medium text-slate-500">Tokens Totales</th>
+                <td className="py-1 text-right font-bold text-slate-800">{usage.totalTokens.toLocaleString("es-ES")}</td>
+              </tr>
+              <tr>
+                <th className="pt-1.5 text-left font-bold text-slate-600">Coste estimado</th>
+                <td className="pt-1.5 text-right font-black text-primary">USD {usage.estimatedCostUsd.toFixed(6)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
+
 const Review: React.FC<{
+  file: File | null;
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
   issues: Partial<Record<FieldKey, string>>;
-  selectedField: FieldKey | null;
-  setSelectedField: (field: FieldKey) => void;
+  usage: DocumentExtractionResult["usage"] | null;
   setFields: React.Dispatch<React.SetStateAction<IdentityDocumentFields>>;
-  preview: React.ReactNode;
-  notice: string;
+  viewer: React.ReactNode;
   copy: (value: string | null, label: string) => void;
+  copyAllAsText: () => void;
+  copyAllAsJson: () => void;
+  restoreField: (key: FieldKey) => void;
+  onApprove: () => void;
+  onReject: () => void;
+  onNewDocument: () => void;
   warning: boolean;
   issueCount: number;
 }> = ({
+  file,
   fields,
   rawFields,
   issues,
-  selectedField,
-  setSelectedField,
+  usage,
   setFields,
-  preview,
-  notice,
+  viewer,
   copy,
+  copyAllAsText,
+  copyAllAsJson,
+  restoreField,
+  onApprove,
+  onReject,
+  onNewDocument,
   warning,
   issueCount,
 }) => (
-  <section className="grid min-h-0 flex-1 items-start gap-4 overflow-y-auto xl:min-h-[620px] xl:overflow-visible xl:grid-cols-[minmax(280px,0.9fr)_minmax(420px,1.5fr)_minmax(260px,0.75fr)]">
-    <aside className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-black text-slate-800">
-          Documento procesado
-        </h3>
-        <FileScan className="size-4 text-primary" />
+  <section className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2 gap-5 items-start overflow-y-auto pb-4">
+    {/* Columna Izquierda: Visor de documento */}
+    <div className="flex flex-col h-full rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <FileScan className="size-4 text-primary" />
+          <h3 className="text-sm font-black text-slate-800">Documento original</h3>
+        </div>
+        {file && (
+          <span className="max-w-[220px] truncate text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+            {file.name}
+          </span>
+        )}
       </div>
-      {preview}
-    </aside>
-    <section className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="flex-1 p-3 bg-slate-50 flex items-center justify-center">
+        {viewer}
+      </div>
+    </div>
+
+    {/* Columna Derecha: Formulario de verificación y acciones */}
+    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      {/* Header del formulario con Copia masiva */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3 bg-slate-50/50">
+        <div>
+          <h3 className="text-sm font-black text-slate-800">Datos extraídos</h3>
+          <p className="text-[11px] text-slate-500">
+            Revisa, ajusta si es necesario y valida los campos.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={copyAllAsText}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+            title="Copiar todos los campos en formato texto para CRM"
+          >
+            <ClipboardCheck className="size-3.5 text-primary" /> Copiar todo
+          </button>
+          <button
+            type="button"
+            onClick={copyAllAsJson}
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+            title="Copiar en formato JSON"
+          >
+            JSON
+          </button>
+        </div>
+      </div>
+
+      {/* Banners de estado / advertencia */}
       {warning && (
-        <div className="border-b border-amber-200 bg-amber-50 px-5 py-3 text-xs font-bold text-amber-800">
-          La extracción requiere revisión. Los datos son editables y no
-          constituyen una verificación de identidad.
+        <div className="border-b border-amber-200 bg-amber-50 px-5 py-2 text-xs font-bold text-amber-800">
+          La extracción requiere revisión. Los datos son editables.
         </div>
       )}
       {issueCount > 0 && (
-        <div className="border-b border-red-200 bg-red-50 px-5 py-3 text-xs font-bold text-red-800" role="alert">
-          {issueCount} {issueCount === 1 ? "campo requiere" : "campos requieren"} revisión antes de continuar.
+        <div className="border-b border-red-200 bg-red-50 px-5 py-2 text-xs font-bold text-red-800" role="alert">
+          {issueCount} {issueCount === 1 ? "campo requiere" : "campos requieren"} corrección de formato.
         </div>
       )}
-      <div className="border-b border-slate-200 px-5 py-4">
-        <h3 className="text-sm font-black text-slate-800">Campos extraídos</h3>
-        <p className="mt-1 text-xs text-slate-500">
-          Selecciona un campo para consultar su detalle.
-        </p>
-      </div>
-      <div className="grid content-start gap-4 p-5 sm:grid-cols-2">
-        {fieldLabels.map(({ key, label }) => (
-          <label key={key} className="min-w-0 text-xs font-bold text-slate-600">
-            <span
-              className="flex cursor-pointer justify-between"
-              onClick={() => setSelectedField(key)}
+
+      {/* Grid de campos (2 columnas, MRZ y Nombre completo a ancho completo) */}
+      <div className="grid content-start gap-3.5 p-5 sm:grid-cols-2">
+        {fieldLabels.map(({ key, label, fullWidth, isMonospace }) => {
+          const isModified = fields[key] !== rawFields[key];
+          const hasIssue = Boolean(issues[key]);
+
+          return (
+            <label
+              key={key}
+              className={`min-w-0 text-xs font-bold text-slate-600 ${fullWidth ? "sm:col-span-2" : "sm:col-span-1"}`}
             >
-              {label}
-              {issues[key] && <X className="size-3 text-red-500" />}
-            </span>
-            <div className="mt-1 flex min-w-0 gap-2">
-              <input
-                value={fields[key] ?? ""}
-                onFocus={() => setSelectedField(key)}
-                onChange={(event) =>
-                  setFields((current) => ({
-                    ...current,
-                    [key]: event.target.value || null,
-                  }))
-                }
-                className="w-full min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-primary"
-              />
-              <button
-                type="button"
-                aria-label={`Copiar ${label}`}
-                onClick={() => copy(fields[key], label)}
-                className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-primary"
-              >
-                <Clipboard className="size-4" />
-              </button>
-            </div>
-            <p className="mt-1 truncate text-[10px] font-normal text-slate-400" title={rawFields[key] ?? "Sin valor bruto"}>
-              Extraído: {rawFields[key] ?? "null"}
-            </p>
-          </label>
-        ))}
+              <div className="flex items-center justify-between pb-1">
+                <span>{label}</span>
+                {hasIssue ? (
+                  <span className="flex items-center gap-1 text-[10px] text-red-500 font-bold">
+                    <X className="size-3" /> Formato no válido
+                  </span>
+                ) : fields[key] ? (
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
+                    <Check className="size-3" />
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-0.5 flex min-w-0 gap-2">
+                {key === "mrz" ? (
+                  <textarea
+                    rows={2}
+                    value={fields[key] ?? ""}
+                    onChange={(event) =>
+                      setFields((current) => ({
+                        ...current,
+                        [key]: event.target.value || null,
+                      }))
+                    }
+                    className={`w-full min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs leading-relaxed outline-none transition-colors font-mono tracking-wider resize-none ${
+                      hasIssue
+                        ? "border-red-300 bg-red-50/20 focus:border-red-500"
+                        : isModified
+                          ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
+                          : "border-slate-200 bg-white focus:border-primary"
+                    }`}
+                    style={{ fontFamily: "'SF Mono', 'Roboto Mono', 'Fira Code', ui-monospace, monospace" }}
+                  />
+                ) : (
+                  <input
+                    value={fields[key] ?? ""}
+                    placeholder={
+                      ["birthDate", "issueDate", "expiryDate"].includes(key)
+                        ? "DD/MM/AAAA"
+                        : undefined
+                    }
+                    onChange={(event) =>
+                      setFields((current) => ({
+                        ...current,
+                        [key]: event.target.value || null,
+                      }))
+                    }
+                    className={`w-full min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm outline-none transition-colors ${
+                      isMonospace ? "font-mono text-[11px] sm:text-xs tracking-wider break-all" : ""
+                    } ${
+                      hasIssue
+                        ? "border-red-300 bg-red-50/20 focus:border-red-500"
+                        : isModified
+                          ? "border-sky-400 bg-sky-50/20 focus:border-sky-500"
+                          : "border-slate-200 bg-white focus:border-primary"
+                    }`}
+                  />
+                )}
+                <button
+                  type="button"
+                  aria-label={`Copiar ${label}`}
+                  title={`Copiar ${label}`}
+                  onClick={() => copy(fields[key], label)}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-primary hover:text-primary transition-colors"
+                >
+                  <Clipboard className="size-3.5" />
+                </button>
+              </div>
+
+              {/* Dirty-state: Indicador azul sutil de edición voluntaria */}
+              {isModified && (
+                <div className="mt-1 flex items-center justify-between rounded bg-sky-50/70 px-2 py-0.5 text-[10px] text-slate-600">
+                  <span className="truncate">
+                    ↺ Modificado (Original: <span className="font-semibold text-slate-800">{rawFields[key] ?? "vacío"}</span>)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => restoreField(key)}
+                    className="ml-2 flex shrink-0 items-center gap-1 font-bold underline text-primary hover:text-primary-dark"
+                  >
+                    Restaurar
+                  </button>
+                </div>
+              )}
+            </label>
+          );
+        })}
       </div>
-    </section>
-    <aside className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      {selectedField ? (
-        <>
-          <div className="flex justify-between border-b border-slate-200 pb-3">
-            <h3 className="text-sm font-black text-slate-800">
-              Detalle del campo
-            </h3>
-            {issues[selectedField] ? (
-              <X className="size-4 text-red-500" />
-            ) : (
-              <Check className="size-4 text-emerald-600" />
-            )}
-          </div>
-          <p className="mt-4 text-[10px] font-black uppercase tracking-wider text-slate-400">
-            {fieldLabels.find(({ key }) => key === selectedField)?.label}
-          </p>
-          <p className="mt-2 break-words text-sm font-bold text-slate-800">
-            {fields[selectedField] ?? "null"}
-          </p>
-          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-700">
-            {issues[selectedField] ??
-              "Formato correcto. Revisa el valor con el documento original."}
-          </div>
-        </>
-      ) : (
-        <ExtractionUsageTable notice={notice} />
-      )}
-    </aside>
+
+      {/* Telemetría IA colapsable */}
+      <TelemetryAccordion usage={usage} />
+
+      {/* Barra de Acciones de Decisión (Footer operativo) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-3.5">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onReject}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-50 transition-colors"
+            title="Rechazar y descartar este documento"
+          >
+            <XCircle className="size-4" /> Rechazar documento
+          </button>
+          <button
+            type="button"
+            onClick={onNewDocument}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors"
+          >
+            <Plus className="size-4" /> Extraer nuevo
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={onApprove}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-xs font-black text-white shadow hover:bg-primary-dark transition-colors"
+        >
+          <CheckCircle2 className="size-4" /> Aprobar extracción <span className="opacity-70 text-[10px] font-normal tracking-wide">(⌘+↵)</span>
+        </button>
+      </div>
+    </div>
   </section>
 );
 
