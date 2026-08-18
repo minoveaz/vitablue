@@ -353,7 +353,7 @@ const DocumentIntelligence: React.FC = () => {
     localStorage.setItem("vitablue.export-profile", profileId);
     setTimeout(() => {
       setIsSwitchingProfile(false);
-    }, 280);
+    }, 450);
   };
 
   useEffect(() => {
@@ -1827,14 +1827,21 @@ const Review: React.FC<{
         </div>
       )}
 
-      {/* Contenedor del Formulario con 3 Secciones Semánticas y Micro-transición Global de Perfil */}
-      <div className="relative overflow-hidden">
+      {/* Contenedor del Formulario con 3 Secciones Semánticas y Transición con Blur Blanco */}
+      <div className="relative overflow-hidden min-h-[420px]">
         {isSwitchingProfile && (
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary via-accent to-primary animate-pulse z-10" />
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/85 backdrop-blur-md transition-all duration-300">
+            <div className="flex items-center gap-2.5 rounded-full bg-white px-4 py-2 shadow-lg border border-slate-200/80 ring-1 ring-slate-100">
+              <RefreshCw className="size-4 animate-spin text-primary" />
+              <span className="text-xs font-bold text-slate-800">
+                Aplicando formato: {EXPORT_PROFILES.find((p) => p.id === exportProfile)?.shortLabel || "Aseguradora"}...
+              </span>
+            </div>
+          </div>
         )}
-        <div className={`flex flex-col gap-4 p-5 overflow-y-auto transition-all duration-250 ease-out ${
+        <div className={`flex flex-col gap-4 p-5 overflow-y-auto transition-all duration-300 ease-out ${
           isSwitchingProfile
-            ? "opacity-50 scale-[0.995] filter blur-[0.3px]"
+            ? "opacity-15 scale-[0.99] filter blur-sm select-none pointer-events-none"
             : "opacity-100 scale-100 filter blur-0"
         }`}>
           {/* Bloque 1: 👤 Identidad Principal (Dinámico según Perfil de Aseguradora/Destino) */}
