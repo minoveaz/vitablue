@@ -15,6 +15,7 @@ import {
   LoaderCircle,
   Move,
   Plus,
+  RefreshCw,
   RotateCcw,
   Scissors,
   ShieldCheck,
@@ -343,10 +344,16 @@ const DocumentIntelligence: React.FC = () => {
   const [exportProfile, setExportProfile] = useState<string>(() => {
     return localStorage.getItem("vitablue.export-profile") || DEFAULT_EXPORT_PROFILE_ID;
   });
+  const [isSwitchingProfile, setIsSwitchingProfile] = useState(false);
 
   const handleExportProfileChange = (profileId: string) => {
+    if (profileId === exportProfile) return;
+    setIsSwitchingProfile(true);
     setExportProfile(profileId);
     localStorage.setItem("vitablue.export-profile", profileId);
+    setTimeout(() => {
+      setIsSwitchingProfile(false);
+    }, 280);
   };
 
   useEffect(() => {
@@ -865,6 +872,7 @@ const DocumentIntelligence: React.FC = () => {
             issues={issues}
             usage={usage}
             exportProfile={exportProfile}
+            isSwitchingProfile={isSwitchingProfile}
             activeHighlightField={activeHighlightField}
             onHighlightField={setActiveHighlightField}
             onExportProfileChange={handleExportProfileChange}
@@ -1692,6 +1700,7 @@ const Review: React.FC<{
   issues: Partial<Record<FieldKey, string>>;
   usage: DocumentExtractionResult["usage"] | null;
   exportProfile: string;
+  isSwitchingProfile?: boolean;
   activeHighlightField?: FieldKey | null;
   onHighlightField?: (key: FieldKey | null) => void;
   onExportProfileChange: (id: string) => void;
@@ -1713,6 +1722,7 @@ const Review: React.FC<{
   issues,
   usage,
   exportProfile,
+  isSwitchingProfile = false,
   activeHighlightField,
   onHighlightField,
   onExportProfileChange,
@@ -1765,8 +1775,13 @@ const Review: React.FC<{
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Selector de Perfil de Destino */}
-          <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 shadow-2xs">
+          <div className={`flex items-center gap-1.5 rounded-lg border transition-all duration-200 bg-white px-2.5 py-1 shadow-2xs ${
+            isSwitchingProfile ? "border-primary ring-2 ring-primary/20 bg-primary/5" : "border-slate-200"
+          }`}>
             <span className="text-[10px] font-black uppercase text-slate-400">Perfil:</span>
+            {isSwitchingProfile && (
+              <RefreshCw className="size-3 text-primary animate-spin" />
+            )}
             <select
               value={exportProfile}
               onChange={(e) => onExportProfileChange(e.target.value)}
@@ -1812,22 +1827,37 @@ const Review: React.FC<{
         </div>
       )}
 
-      {/* Contenedor del Formulario con 3 Secciones Semánticas */}
-      <div className="flex flex-col gap-4 p-5 overflow-y-auto">
-        {/* Bloque 1: 👤 Identidad Principal (Dinámico según Perfil de Aseguradora/Destino) */}
-        <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
-          <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-700">
-              👤 Identidad Principal
-            </span>
-            <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-              {exportProfile === "aseguradora-1"
-                ? "Formato: Apellidos separados (1º y 2º)"
-                : exportProfile === "aseguradora-2"
-                  ? "Formato: Apellidos agrupados"
-                  : "Formato: ICAO Internacional"}
-            </span>
-          </div>
+      {/* Contenedor del Formulario con 3 Secciones Semánticas y Micro-transición Global de Perfil */}
+      <div className="relative overflow-hidden">
+        {isSwitchingProfile && (
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary via-accent to-primary animate-pulse z-10" />
+        )}
+        <div className={`flex flex-col gap-4 p-5 overflow-y-auto transition-all duration-250 ease-out ${
+          isSwitchingProfile
+            ? "opacity-50 scale-[0.995] filter blur-[0.3px]"
+            : "opacity-100 scale-100 filter blur-0"
+        }`}>
+          {/* Bloque 1: 👤 Identidad Principal (Dinámico según Perfil de Aseguradora/Destino) */}
+          <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
+            <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-700">
+                👤 Identidad Principal
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full transition-all duration-200">
+                {isSwitchingProfile ? (
+                  <>
+                    <RefreshCw className="size-2.5 animate-spin text-primary" />
+                    <span>Adaptando esquema...</span>
+                  </>
+                ) : (
+                  exportProfile === "aseguradora-1"
+                    ? "Formato: Apellidos separados (1º y 2º)"
+                    : exportProfile === "aseguradora-2"
+                      ? "Formato: Apellidos agrupados"
+                      : "Formato: ICAO Internacional"
+                )}
+              </span>
+            </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ExtractedField
@@ -2097,6 +2127,7 @@ const Review: React.FC<{
           )}
         </div>
       </div>
+    </div>
 
       {/* Telemetría IA colapsable */}
       <TelemetryAccordion usage={usage} />
