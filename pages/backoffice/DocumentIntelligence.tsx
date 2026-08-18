@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowLeftRight,
   Camera,
   Check,
   CheckCircle2,
@@ -188,74 +189,29 @@ const CropEditor: React.FC<{
 };
 
 const Dropzone: React.FC<{
-  file: File | null;
-  label?: string;
-  sublabel?: string;
-  compact?: boolean;
-  hideDemo?: boolean;
-  onFile: (file: File) => void;
-  onClear: () => void;
+  onFiles: (files: File[]) => void;
   onDemo?: () => void;
 }> = ({
-  file,
-  label,
-  sublabel,
-  compact = false,
-  hideDemo = false,
-  onFile,
-  onClear,
+  onFiles,
   onDemo,
 }) => {
   const input = useRef<HTMLInputElement>(null);
   const cameraInput = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
-  const choose = (candidate?: File) => {
-    if (candidate) onFile(candidate);
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      onFiles(Array.from(e.dataTransfer.files));
+    }
   };
 
-  if (file)
-    return (
-      <div className={`flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 ${compact ? "p-3" : "p-4"}`}>
-        <div className="flex min-w-0 items-center gap-3">
-          <FileCheck className="size-6 shrink-0 text-emerald-700" />
-          <div className="min-w-0">
-            {label && <p className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">{label}</p>}
-            <p className="truncate text-sm font-bold text-slate-800">
-              {file.name}
-            </p>
-            <p className="mt-0.5 text-xs text-emerald-700">
-              Listo ({(file.size / (1024 * 1024)).toFixed(2)} MB)
-            </p>
-          </div>
-        </div>
-        <div className="flex shrink-0 gap-1.5">
-          <button
-            type="button"
-            onClick={() => input.current?.click()}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
-          >
-            <Upload className="size-3.5" /> Cambiar
-          </button>
-          <button
-            type="button"
-            onClick={onClear}
-            aria-label="Borrar documento"
-            title="Borrar documento"
-            className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
-          >
-            <Trash2 className="size-3.5" />
-          </button>
-        </div>
-        <input
-          ref={input}
-          className="sr-only"
-          type="file"
-          accept={acceptedTypes.join(",")}
-          onChange={(event) => choose(event.target.files?.[0])}
-        />
-      </div>
-    );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      onFiles(Array.from(e.target.files));
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -271,12 +227,8 @@ const Dropzone: React.FC<{
           setDragging(true);
         }}
         onDragLeave={() => setDragging(false)}
-        onDrop={(event) => {
-          event.preventDefault();
-          setDragging(false);
-          choose(event.dataTransfer.files[0]);
-        }}
-        className={`group flex ${compact ? "min-h-40 p-4" : "min-h-52 p-6"} cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-all ${
+        onDrop={handleDrop}
+        className={`group flex min-h-56 p-6 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-all ${
           dragging
             ? "border-primary bg-primary/10 scale-[1.01]"
             : "border-slate-300 bg-white hover:border-primary hover:bg-slate-50/50 shadow-sm"
@@ -286,8 +238,9 @@ const Dropzone: React.FC<{
           ref={input}
           className="sr-only"
           type="file"
+          multiple
           accept={acceptedTypes.join(",")}
-          onChange={(event) => choose(event.target.files?.[0])}
+          onChange={handleChange}
         />
         <input
           ref={cameraInput}
@@ -295,33 +248,29 @@ const Dropzone: React.FC<{
           type="file"
           accept="image/*"
           capture="environment"
-          onChange={(event) => choose(event.target.files?.[0])}
+          onChange={handleChange}
         />
 
-        <div className={`flex ${compact ? "size-10" : "size-14"} items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110`}>
-          <UploadCloud className={compact ? "size-5" : "size-7"} />
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+          <UploadCloud className="size-8" />
         </div>
 
-        <p className={`${compact ? "mt-2.5 text-sm" : "mt-4 text-base"} font-black text-slate-900`}>
-          {label ?? "Arrastra y suelta tu documento aquí"}
+        <p className="mt-4 text-base font-black text-slate-900">
+          Arrastra tu documento aquí (1 o 2 caras)
         </p>
-        <p className="mt-1 text-xs text-slate-500">
-          {sublabel ? (
-            <span>{sublabel}</span>
-          ) : (
-            <>o <span className="font-bold text-primary underline">haz clic para explorar archivos</span></>
-          )}
+        <p className="mt-1.5 max-w-md text-xs text-slate-500 leading-relaxed">
+          Suelta 1 archivo (Pasaporte) o 2 archivos a la vez (Anverso y Reverso), o <span className="font-bold text-primary underline">haz clic para explorar</span>.
         </p>
 
-        {!compact && (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
-            <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">PDF, JPG, PNG</span>
-            <span>·</span>
-            <span>Máx. 10 MB</span>
-            <span>·</span>
-            <span>Soporta pegar con ⌘+V</span>
-          </div>
-        )}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
+          <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">Soporta 1 o 2 archivos</span>
+          <span>·</span>
+          <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">PDF, JPG, PNG</span>
+          <span>·</span>
+          <span>Máx. 10 MB</span>
+          <span>·</span>
+          <span>⌘+V para pegar</span>
+        </div>
       </div>
 
       {/* Opciones de entrada secundarias */}
@@ -329,15 +278,15 @@ const Dropzone: React.FC<{
         <button
           type="button"
           onClick={() => cameraInput.current?.click()}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
         >
           <Camera className="size-3.5 text-slate-500" /> Cámara
         </button>
-        {!hideDemo && onDemo && (
+        {onDemo && (
           <button
             type="button"
             onClick={onDemo}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
           >
             <Sparkles className="size-3.5 text-primary" /> Documento demo
           </button>
@@ -349,9 +298,9 @@ const Dropzone: React.FC<{
 
 const DocumentIntelligence: React.FC = () => {
   const [stage, setStage] = useState<Stage>("preparation");
-  const [documentMode, setDocumentMode] = useState<"single" | "dual">("single");
   const [file, setFile] = useState<File | null>(null);
   const [backFile, setBackFile] = useState<File | null>(null);
+  const documentMode: "single" | "dual" = backFile ? "dual" : "single";
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [backPreviewUrl, setBackPreviewUrl] = useState<string | null>(null);
   const [activeViewerSide, setActiveViewerSide] = useState<"front" | "back">("front");
@@ -486,11 +435,47 @@ const DocumentIntelligence: React.FC = () => {
     if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
     setBackFile(null);
     setBackPreviewUrl(null);
+    setActiveViewerSide("front");
+  };
+
+  const handleFilesSelected = (incoming: File[]) => {
+    if (!incoming.length) return;
+    const valid = incoming.filter(
+      (f) => acceptedTypes.includes(f.type) && f.size > 0 && f.size <= maxDocumentBytes,
+    );
+    if (!valid.length) {
+      setNotice("Formato no compatible o archivo demasiado grande (máx. 10 MB).");
+      return;
+    }
+
+    if (valid.length === 1) {
+      if (!file) {
+        selectFile(valid[0]);
+      } else {
+        selectBackFile(valid[0]);
+      }
+    } else {
+      selectFile(valid[0]);
+      selectBackFile(valid[1]);
+      setNotice("✓ 2 caras detectadas y vinculadas.");
+    }
+  };
+
+  const handleSwapSides = () => {
+    if (!file || !backFile) return;
+    const tempFile = file;
+    const tempUrl = previewUrl;
+    setFile(backFile);
+    setPreviewUrl(backPreviewUrl);
+    setBackFile(tempFile);
+    setBackPreviewUrl(tempUrl);
+    saveDocumentToStorage(backFile);
+    setNotice("Caras invertidas: Anverso ⇄ Reverso.");
   };
 
   // Clipboard Paste Support (Cmd/Ctrl + V)
   useEffect(() => {
-    if (stage !== "preparation" || file) return;
+    if (stage !== "preparation") return;
     const handlePaste = (event: ClipboardEvent) => {
       const items = event.clipboardData?.items;
       if (!items) return;
@@ -500,8 +485,13 @@ const DocumentIntelligence: React.FC = () => {
           const pastedFile = item.getAsFile();
           if (pastedFile && acceptedTypes.includes(pastedFile.type)) {
             event.preventDefault();
-            selectFile(pastedFile);
-            setNotice("Documento pegado desde el portapapeles con éxito.");
+            if (!file) {
+              selectFile(pastedFile);
+              setNotice("Documento (Anverso) pegado desde el portapapeles.");
+            } else if (!backFile) {
+              selectBackFile(pastedFile);
+              setNotice("Reverso pegado desde el portapapeles.");
+            }
             break;
           }
         }
@@ -509,7 +499,7 @@ const DocumentIntelligence: React.FC = () => {
     };
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
-  }, [stage, file]);
+  }, [stage, file, backFile]);
 
   const clear = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -577,7 +567,6 @@ const DocumentIntelligence: React.FC = () => {
       if (blob) {
         const demoFile = new File([blob], "pasaporte-ejemplo-demo.jpg", { type: "image/jpeg" });
         selectFile(demoFile);
-        setDocumentMode("single");
         setNotice("Documento de prueba cargado. Listo para extraer.");
       }
     }, "image/jpeg", 0.95);
@@ -910,15 +899,17 @@ const DocumentIntelligence: React.FC = () => {
         )}
         {stage === "preparation" && (
           <Preparation
-            documentMode={documentMode}
-            onDocumentModeChange={setDocumentMode}
             file={file}
             backFile={backFile}
+            activeViewerSide={activeViewerSide}
+            onToggleViewerSide={setActiveViewerSide}
             viewer={documentViewer}
-            onFile={selectFile}
-            onBackFile={selectBackFile}
+            onFiles={handleFilesSelected}
+            onSelectFront={selectFile}
+            onSelectBack={selectBackFile}
             onClear={clear}
             onClearBack={clearBackFile}
+            onSwap={handleSwapSides}
             onDemo={loadDemoDocument}
             onExtract={extract}
           />
@@ -1271,205 +1262,222 @@ const DocumentViewer: React.FC<{
 };
 
 const Preparation: React.FC<{
-  documentMode: "single" | "dual";
-  onDocumentModeChange: (mode: "single" | "dual") => void;
   file: File | null;
   backFile: File | null;
+  activeViewerSide: "front" | "back";
+  onToggleViewerSide: (side: "front" | "back") => void;
   viewer: React.ReactNode;
-  onFile: (file: File) => void;
-  onBackFile: (file: File) => void;
+  onFiles: (files: File[]) => void;
+  onSelectFront: (file: File) => void;
+  onSelectBack: (file: File) => void;
   onClear: () => void;
   onClearBack: () => void;
+  onSwap: () => void;
   onDemo: () => void;
   onExtract: () => void;
 }> = ({
-  documentMode,
-  onDocumentModeChange,
   file,
   backFile,
+  activeViewerSide,
+  onToggleViewerSide,
   viewer,
-  onFile,
-  onBackFile,
+  onFiles,
+  onSelectFront,
+  onSelectBack,
   onClear,
   onClearBack,
+  onSwap,
   onDemo,
   onExtract,
 }) => {
-  const input = useRef<HTMLInputElement>(null);
+  const frontInputRef = useRef<HTMLInputElement>(null);
+  const backInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 lg:grid-cols-12">
       {/* Columna Principal: Carga / Visor Unificado */}
       <div className="flex flex-col gap-4 lg:col-span-8">
-        {/* Selector de Modalidad (1 Cara vs 2 Caras) */}
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-500 pl-2">
-              Tipo de Carga:
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
-            <button
-              type="button"
-              onClick={() => onDocumentModeChange("single")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                documentMode === "single"
-                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span>📘 Pasaporte (1 Cara)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onDocumentModeChange("dual")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                documentMode === "dual"
-                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span>🪪 DNI / NIE / 2 Caras</span>
-            </button>
-          </div>
-        </div>
-
-        {documentMode === "single" ? (
-          /* MODO 1: 1 Sola Cara (Pasaporte / Documento Individual) */
-          !file ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileScan className="size-4 text-primary" />
-                  <h3 className="text-sm font-black text-slate-900">Documento fuente (1 Cara)</h3>
-                </div>
-                <span className="text-[11px] font-bold text-slate-400">Paso 1 de 2</span>
+        {!file && !backFile ? (
+          /* Estado 1: Dropzone Inteligente Universal (1 o 2 archivos) */
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileScan className="size-4 text-primary" />
+                <h3 className="text-sm font-black text-slate-900">Documento fuente</h3>
               </div>
-
-              <Dropzone file={null} onFile={onFile} onClear={onClear} onDemo={onDemo} />
+              <span className="text-[11px] font-bold text-slate-400">Paso 1 de 2</span>
             </div>
-          ) : (
-            <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <FileCheck className="size-5 shrink-0 text-emerald-600" />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-slate-900">{file.name}</p>
-                    <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                      <span className="font-semibold text-slate-700">{(file.size / 1024).toFixed(0)} KB</span>
-                      <span>·</span>
-                      <span className="font-bold text-emerald-700">✓ Listo para procesar</span>
-                    </p>
+
+            <Dropzone onFiles={onFiles} onDemo={onDemo} />
+          </div>
+        ) : (
+          /* Estado 2: Tarjeta de Archivos Cargados y Visor Interactivo */
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {/* Header con resumen de archivos y acciones rápidas */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                {file && (
+                  <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 shadow-2xs">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-[11px] font-black text-primary">
+                      1
+                    </span>
+                    <div className="min-w-0">
+                      <p className="max-w-[140px] truncate text-xs font-bold text-slate-800" title={file.name}>
+                        {file.name}
+                      </p>
+                      <p className="text-[10px] text-slate-500">{(file.size / 1024).toFixed(0)} KB · Anverso</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => frontInputRef.current?.click()}
+                      className="ml-1 text-[11px] font-bold text-slate-400 hover:text-primary"
+                      title="Cambiar archivo anverso"
+                    >
+                      Cambiar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onClear}
+                      className="text-slate-400 hover:text-red-600"
+                      title="Quitar anverso"
+                    >
+                      <X className="size-3.5" />
+                    </button>
                   </div>
-                </div>
+                )}
 
-                <div className="flex items-center gap-2">
+                {backFile ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 shadow-2xs">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded bg-accent/20 text-[11px] font-black text-accent">
+                      2
+                    </span>
+                    <div className="min-w-0">
+                      <p className="max-w-[140px] truncate text-xs font-bold text-slate-800" title={backFile.name}>
+                        {backFile.name}
+                      </p>
+                      <p className="text-[10px] text-slate-500">{(backFile.size / 1024).toFixed(0)} KB · Reverso</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => backInputRef.current?.click()}
+                      className="ml-1 text-[11px] font-bold text-slate-400 hover:text-primary"
+                      title="Cambiar archivo reverso"
+                    >
+                      Cambiar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onClearBack}
+                      className="text-slate-400 hover:text-red-600"
+                      title="Quitar reverso"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
-                    onClick={() => input.current?.click()}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+                    onClick={() => backInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all"
                   >
-                    <Upload className="size-3.5" /> Cambiar
+                    <Plus className="size-3.5" /> Añadir reverso (opcional)
                   </button>
+                )}
+
+                {/* Inputs ocultos para reemplazar o añadir individualmente */}
+                <input
+                  ref={frontInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept={acceptedTypes.join(",")}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) onSelectFront(e.target.files[0]);
+                  }}
+                />
+                <input
+                  ref={backInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept={acceptedTypes.join(",")}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) onSelectBack(e.target.files[0]);
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                {file && backFile && (
                   <button
                     type="button"
-                    onClick={onClear}
-                    aria-label="Eliminar documento"
-                    title="Eliminar documento"
-                    className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
+                    onClick={onSwap}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+                    title="Invertir cuál es el anverso y el reverso"
                   >
-                    <Trash2 className="size-3.5" />
+                    <ArrowLeftRight className="size-3.5" /> Invertir caras
                   </button>
-                  <input
-                    ref={input}
-                    className="sr-only"
-                    type="file"
-                    accept={acceptedTypes.join(",")}
-                    onChange={(event) => {
-                      if (event.target.files?.[0]) onFile(event.target.files[0]);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50">
-                {viewer}
-              </div>
-
-              <div className="border-t border-slate-200 bg-white p-4">
+                )}
                 <button
                   type="button"
-                  onClick={onExtract}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all"
+                  onClick={onClear}
+                  aria-label="Eliminar todo"
+                  title="Eliminar todo y empezar de nuevo"
+                  className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
                 >
-                  <Sparkles className="size-4.5" /> Extraer y validar campos con IA <span className="opacity-70 text-xs font-normal">(↵ Enter)</span>
+                  <Trash2 className="size-3.5" />
                 </button>
               </div>
             </div>
-          )
-        ) : (
-          /* MODO 2: 2 Caras (Anverso y Reverso / DNI / NIE) */
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Dropzone Anverso */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between">
-                <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-5 items-center justify-center rounded bg-primary/10 text-xs font-black text-primary">A</span>
-                    <h4 className="text-xs font-black text-slate-800">Cara Frontal (Anverso)</h4>
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400">Requerido</span>
-                </div>
-                <Dropzone
-                  file={file}
-                  label="Anverso (Cara A)"
-                  sublabel="Foto, Nombres y Nº de Documento"
-                  compact
-                  hideDemo
-                  onFile={onFile}
-                  onClear={onClear}
-                />
-              </div>
 
-              {/* Dropzone Reverso */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between">
-                <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-5 items-center justify-center rounded bg-accent/20 text-xs font-black text-accent">B</span>
-                    <h4 className="text-xs font-black text-slate-800">Cara Posterior (Reverso)</h4>
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400">Recomendado</span>
-                </div>
-                <Dropzone
-                  file={backFile}
-                  label="Reverso (Cara B)"
-                  sublabel="Domicilio, Nacimiento y Zona MRZ"
-                  compact
-                  hideDemo
-                  onFile={onBackFile}
-                  onClear={onClearBack}
-                />
-              </div>
-            </div>
-
-            {/* Previsualización del visor si hay al menos 1 archivo cargado */}
-            {file && (
-              <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="p-3 bg-slate-50">
-                  {viewer}
-                </div>
-                <div className="border-t border-slate-200 bg-white p-4">
+            {/* Pestañas de previsualización de cara activa si hay 2 archivos */}
+            {backFile && (
+              <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2">
+                <span className="text-[11px] font-bold text-slate-500">Vista previa activa:</span>
+                <div className="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-lg">
                   <button
                     type="button"
-                    onClick={onExtract}
-                    disabled={!file}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all disabled:opacity-50"
+                    onClick={() => onToggleViewerSide("front")}
+                    className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                      activeViewerSide === "front"
+                        ? "bg-white text-primary shadow-2xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
                   >
-                    <Sparkles className="size-4.5" /> Extraer y correlacionar ambas caras con IA {backFile ? "(2 Caras Listas)" : "(Solo Anverso)"}
+                    🪪 Cara 1 (Anverso)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onToggleViewerSide("back")}
+                    className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                      activeViewerSide === "back"
+                        ? "bg-white text-primary shadow-2xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    🔄 Cara 2 (Reverso)
                   </button>
                 </div>
               </div>
             )}
+
+            {/* Visor interactivo */}
+            <div className="p-3 bg-slate-50">
+              {viewer}
+            </div>
+
+            {/* CTA Primario */}
+            <div className="border-t border-slate-200 bg-white p-4">
+              <button
+                type="button"
+                onClick={onExtract}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all"
+              >
+                <Sparkles className="size-4.5" />
+                {backFile
+                  ? "Extraer y correlacionar ambas caras con IA (2 Caras listas)"
+                  : "Extraer y validar campos con IA"}
+                <span className="opacity-70 text-xs font-normal">(↵ Enter)</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -1486,13 +1494,9 @@ const Preparation: React.FC<{
 
               <div className="mt-3.5 space-y-3 text-xs">
                 <div className="rounded-lg bg-slate-50 p-3">
-                  <p className="text-[10px] font-bold uppercase text-slate-400">Tipo detectado</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-400">Modalidad</p>
                   <p className="mt-0.5 font-bold text-slate-800">
-                    {file.name.toLowerCase().includes("pasaporte") || file.name.toLowerCase().includes("passport")
-                      ? "Pasaporte ICAO (TD3)"
-                      : file.name.toLowerCase().includes("dni") || file.name.toLowerCase().includes("nie")
-                        ? "DNI / NIE España"
-                        : "Documento de identidad"}
+                    {backFile ? "Documento de 2 Caras (Anverso + Reverso)" : "Documento de 1 Cara / Pasaporte"}
                   </p>
                 </div>
 
@@ -1541,8 +1545,8 @@ const Preparation: React.FC<{
                 <li className="flex items-start gap-2.5">
                   <span className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-[11px] font-bold text-primary">✓</span>
                   <div>
-                    <p className="font-bold text-slate-800">DNI / NIE / Cédulas</p>
-                    <p className="text-[11px] text-slate-500">Documentos de España, Colombia y Latinoamérica.</p>
+                    <p className="font-bold text-slate-800">DNI / NIE / 2 Caras</p>
+                    <p className="text-[11px] text-slate-500">Arrastra ambas fotos a la vez o añádelas sucesivamente.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
@@ -1560,9 +1564,9 @@ const Preparation: React.FC<{
                 <Info className="size-4 text-sky-600" /> Para una extracción 100% precisa
               </h4>
               <ul className="mt-2.5 space-y-1.5 text-[11px] text-slate-500">
-                <li>• Asegúrate de que los 4 bordes del documento sean visibles.</li>
-                <li>• Evita reflejos de flash sobre el plástico protector.</li>
-                <li>• Comprueba que las fechas y el código MRZ estén nítidos.</li>
+                <li>• Puedes soltar los 2 archivos de golpe (Anverso y Reverso).</li>
+                <li>• Asegúrate de que los bordes del documento sean visibles.</li>
+                <li>• Evita reflejos de luz o flash sobre el documento.</li>
               </ul>
             </div>
 
