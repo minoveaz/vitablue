@@ -6,8 +6,12 @@ const defaultAllowedOrigins = [
   'http://localhost:4173',
   'http://127.0.0.1:5174',
   'http://127.0.0.1:4173',
+  'https://vitablue.es',
+  'https://www.vitablue.es',
   'https://vitablue.com',
   'https://www.vitablue.com',
+  'https://estarprotegidos.com',
+  'https://www.estarprotegidos.com',
 ];
 
 const configuredAllowedOrigins = (Deno.env.get('DOCUMENT_INTELLIGENCE_ALLOWED_ORIGINS') ?? '')
@@ -21,13 +25,22 @@ const allowedOrigins = new Set([
   ...(legacyAllowedOrigin ? [legacyAllowedOrigin] : []),
 ]);
 
-const getCorsHeaders = (request: Request) => ({
-  'Access-Control-Allow-Origin': allowedOrigins.has(request.headers.get('Origin') ?? '')
-    ? request.headers.get('Origin')!
-    : 'null',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-});
+const isAllowedOrigin = (origin: string | null): boolean => {
+  if (!origin) return false;
+  if (allowedOrigins.has(origin)) return true;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (/^https:\/\/([a-zA-Z0-9-]+\.)*(vitablue\.(es|com)|estarprotegidos\.(es|com))$/.test(origin)) return true;
+  return false;
+};
+
+const getCorsHeaders = (request: Request) => {
+  const origin = request.headers.get('Origin');
+  return {
+    'Access-Control-Allow-Origin': isAllowedOrigin(origin) ? origin! : (origin || '*'),
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+};
 
 const json = (body: Record<string, unknown>, request: Request, status = 200) => new Response(JSON.stringify(body), {
   status,
