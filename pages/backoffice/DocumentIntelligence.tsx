@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeftRight,
+  Building2,
   Camera,
   Check,
   CheckCircle2,
@@ -20,6 +21,7 @@ import {
   RotateCcw,
   Scissors,
   ShieldCheck,
+  Sliders,
   Sparkles,
   Trash2,
   Upload,
@@ -58,6 +60,12 @@ import {
 } from "@/features/document-intelligence/exportProfiles";
 import { getDocumentExtractionWarnings } from "@/features/document-intelligence/workflow";
 import { supabase } from "@/marketing-studio/utils/supabaseClient";
+import { evaluateRules } from "@/features/document-intelligence/rules/engine";
+import { useRulesConfig } from "@/features/document-intelligence/rules/rulesStore";
+import type { ValidationAlert } from "@/features/document-intelligence/rules/types";
+import { RulesConfigPanel } from "@/features/document-intelligence/components/RulesConfigPanel";
+import { ValidationAlertsCard } from "@/features/document-intelligence/components/ValidationAlertsCard";
+import { ProfilesConfigPanel } from "@/features/document-intelligence/components/ProfilesConfigPanel";
 
 type Stage = "preparation" | "processing" | "error" | "review" | "review-with-warnings";
 type FieldKey = keyof IdentityDocumentFields;
@@ -297,6 +305,8 @@ const Dropzone: React.FC<{
 };
 
 const DocumentIntelligence: React.FC = () => {
+  const [mainTab, setMainTab] = useState<"workbench" | "rules" | "profiles">("workbench");
+  const { config: rulesConfig } = useRulesConfig();
   const [stage, setStage] = useState<Stage>("preparation");
   const [file, setFile] = useState<File | null>(null);
   const [backFile, setBackFile] = useState<File | null>(null);
@@ -322,6 +332,11 @@ const DocumentIntelligence: React.FC = () => {
     return localStorage.getItem("vitablue.export-profile") || DEFAULT_EXPORT_PROFILE_ID;
   });
   const [isSwitchingProfile, setIsSwitchingProfile] = useState(false);
+
+  const validationAlerts = useMemo(
+    () => evaluateRules(fields, rulesConfig),
+    [fields, rulesConfig],
+  );
 
   const handleExportProfileChange = (profileId: string) => {
     if (profileId === exportProfile) return;
@@ -883,79 +898,140 @@ const DocumentIntelligence: React.FC = () => {
       eyebrow="Operaciones documentales"
     >
       <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
-        {header}
-        {notice && (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3.5 py-2 text-xs font-medium text-slate-800">
-            <span className="truncate">{notice}</span>
+        {/* Sub-navegación de Módulo: Workbench vs Reglas vs Perfiles */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
             <button
               type="button"
-              onClick={() => setNotice("")}
-              className="text-slate-400 hover:text-slate-600"
-              aria-label="Cerrar notificación"
+              onClick={() => setMainTab("workbench")}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                mainTab === "workbench"
+                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
             >
-              <X className="size-3.5" />
+              <Zap className="size-3.5" /> <span>Workbench de Extracción</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMainTab("rules")}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                mainTab === "rules"
+                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Sliders className="size-3.5" /> <span>Reglas & Validación de Negocio</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMainTab("profiles")}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                mainTab === "profiles"
+                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Building2 className="size-3.5" /> <span>Perfiles de Aseguradora</span>
             </button>
           </div>
-        )}
-        {stage === "preparation" && (
-          <Preparation
-            file={file}
-            backFile={backFile}
-            activeViewerSide={activeViewerSide}
-            onToggleViewerSide={setActiveViewerSide}
-            viewer={documentViewer}
-            onFiles={handleFilesSelected}
-            onSelectFront={selectFile}
-            onSelectBack={selectBackFile}
-            onClear={clear}
-            onClearBack={clearBackFile}
-            onSwap={handleSwapSides}
-            onDemo={loadDemoDocument}
-            onExtract={extract}
-          />
-        )}
-        {stage === "processing" && (
-          <ProcessingView
-            file={file}
-            previewUrl={previewUrl}
-            isPdf={isPdf}
-          />
-        )}
-        {stage === "error" && (
-          <ExtractionError
-            message={errorMessage ?? "No se pudo procesar el documento."}
-            onRetry={extract}
-            onClear={clear}
-          />
-        )}
-        {(stage === "review" || stage === "review-with-warnings") && (
-          <Review
-            file={file}
-            backFile={backFile}
-            documentMode={documentMode}
-            activeViewerSide={activeViewerSide}
-            onToggleViewerSide={setActiveViewerSide}
-            fields={fields}
-            rawFields={rawFields}
-            issues={issues}
-            usage={usage}
-            exportProfile={exportProfile}
-            isSwitchingProfile={isSwitchingProfile}
-            activeHighlightField={activeHighlightField}
-            onHighlightField={handleHighlightField}
-            onExportProfileChange={handleExportProfileChange}
-            onFieldChange={handleFieldChange}
-            viewer={documentViewer}
-            copy={copy}
-            copyAllAsText={copyAllAsText}
-            copyAllAsJson={copyAllAsJson}
-            restoreField={restoreField}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onNewDocument={clear}
-            warning={stage === "review-with-warnings"}
-            issueCount={issueCount}
-          />
+
+          {mainTab === "workbench" && isSessionActive && (
+            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+              Sesión activa: {file?.name ?? "Documento"}
+            </span>
+          )}
+        </div>
+
+        {mainTab === "rules" ? (
+          <div className="flex-1 overflow-y-auto pt-2">
+            <RulesConfigPanel />
+          </div>
+        ) : mainTab === "profiles" ? (
+          <div className="flex-1 overflow-y-auto pt-2">
+            <ProfilesConfigPanel
+              activeProfileId={exportProfile}
+              onSelectProfile={handleExportProfileChange}
+            />
+          </div>
+        ) : (
+          <>
+            {header}
+            {notice && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3.5 py-2 text-xs font-medium text-slate-800">
+                <span className="truncate">{notice}</span>
+                <button
+                  type="button"
+                  onClick={() => setNotice("")}
+                  className="text-slate-400 hover:text-slate-600"
+                  aria-label="Cerrar notificación"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            )}
+            {stage === "preparation" && (
+              <Preparation
+                file={file}
+                backFile={backFile}
+                activeViewerSide={activeViewerSide}
+                onToggleViewerSide={setActiveViewerSide}
+                viewer={documentViewer}
+                onFiles={handleFilesSelected}
+                onSelectFront={selectFile}
+                onSelectBack={selectBackFile}
+                onClear={clear}
+                onClearBack={clearBackFile}
+                onSwap={handleSwapSides}
+                onDemo={loadDemoDocument}
+                onExtract={extract}
+              />
+            )}
+            {stage === "processing" && (
+              <ProcessingView
+                file={file}
+                previewUrl={previewUrl}
+                isPdf={isPdf}
+              />
+            )}
+            {stage === "error" && (
+              <ExtractionError
+                message={errorMessage ?? "No se pudo procesar el documento."}
+                onRetry={extract}
+                onClear={clear}
+              />
+            )}
+            {(stage === "review" || stage === "review-with-warnings") && (
+              <Review
+                file={file}
+                backFile={backFile}
+                documentMode={documentMode}
+                activeViewerSide={activeViewerSide}
+                onToggleViewerSide={setActiveViewerSide}
+                fields={fields}
+                rawFields={rawFields}
+                issues={issues}
+                validationAlerts={validationAlerts}
+                usage={usage}
+                exportProfile={exportProfile}
+                isSwitchingProfile={isSwitchingProfile}
+                activeHighlightField={activeHighlightField}
+                onHighlightField={handleHighlightField}
+                onExportProfileChange={handleExportProfileChange}
+                onFieldChange={handleFieldChange}
+                viewer={documentViewer}
+                copy={copy}
+                copyAllAsText={copyAllAsText}
+                copyAllAsJson={copyAllAsJson}
+                restoreField={restoreField}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                onNewDocument={clear}
+                warning={stage === "review-with-warnings"}
+                issueCount={issueCount}
+              />
+            )}
+          </>
         )}
       </div>
       {cropOpen && previewUrl && (
@@ -1888,6 +1964,7 @@ const Review: React.FC<{
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
   issues: Partial<Record<FieldKey, string>>;
+  validationAlerts?: ValidationAlert[];
   usage: DocumentExtractionResult["usage"] | null;
   exportProfile: string;
   isSwitchingProfile?: boolean;
@@ -1914,6 +1991,7 @@ const Review: React.FC<{
   fields,
   rawFields,
   issues,
+  validationAlerts,
   usage,
   exportProfile,
   isSwitchingProfile = false,
@@ -2036,6 +2114,16 @@ const Review: React.FC<{
           </button>
         </div>
       </div>
+
+      {/* Diagnóstico de Negocio & Validaciones */}
+      {validationAlerts && (
+        <div className="px-5 pt-3">
+          <ValidationAlertsCard
+            alerts={validationAlerts}
+            onFieldFocus={(key) => onHighlightField?.(key as FieldKey)}
+          />
+        </div>
+      )}
 
       {/* Banners de estado / advertencia */}
       {warning && (
