@@ -32,7 +32,7 @@ import {
 import Cropper, { type Area, type Point } from "react-easy-crop";
 import BackofficeShell from "@/components/layouts/BackofficeShell";
 import { extractDocumentWithTimeout } from "@/features/document-intelligence/extraction";
-import { uploadAndExtractDocument } from "@/features/document-intelligence/supabase-service";
+import { uploadAndExtractDualDocument } from "@/features/document-intelligence/supabase-service";
 import {
   emptyIdentityDocumentFields,
   type DocumentExtractionResult,
@@ -67,12 +67,14 @@ const fieldLabels: Array<{ key: FieldKey; label: string; fullWidth?: boolean; is
   { key: "secondSurname", label: "Segundo apellido" },
   { key: "surnames", label: "Apellidos (Completo)" },
   { key: "documentNumber", label: "Número de documento" },
+  { key: "supportNumber", label: "Número de soporte (IDESP)" },
   { key: "birthDate", label: "Fecha de nacimiento" },
   { key: "nationality", label: "Nacionalidad" },
   { key: "sex", label: "Sexo" },
   { key: "issueDate", label: "Fecha de expedición" },
   { key: "expiryDate", label: "Fecha de caducidad" },
   { key: "birthplace", label: "Lugar de nacimiento" },
+  { key: "address", label: "Domicilio / Dirección", fullWidth: true },
   { key: "mrz", label: "Código MRZ (Machine Readable Zone)", fullWidth: true, isMonospace: true },
 ];
 const acceptedTypes = ["image/jpeg", "image/png", "application/pdf"];
@@ -187,10 +189,23 @@ const CropEditor: React.FC<{
 
 const Dropzone: React.FC<{
   file: File | null;
+  label?: string;
+  sublabel?: string;
+  compact?: boolean;
+  hideDemo?: boolean;
   onFile: (file: File) => void;
   onClear: () => void;
-  onDemo: () => void;
-}> = ({ file, onFile, onClear, onDemo }) => {
+  onDemo?: () => void;
+}> = ({
+  file,
+  label,
+  sublabel,
+  compact = false,
+  hideDemo = false,
+  onFile,
+  onClear,
+  onDemo,
+}) => {
   const input = useRef<HTMLInputElement>(null);
   const cameraInput = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -201,34 +216,35 @@ const Dropzone: React.FC<{
 
   if (file)
     return (
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+      <div className={`flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 ${compact ? "p-3" : "p-4"}`}>
         <div className="flex min-w-0 items-center gap-3">
           <FileCheck className="size-6 shrink-0 text-emerald-700" />
           <div className="min-w-0">
+            {label && <p className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">{label}</p>}
             <p className="truncate text-sm font-bold text-slate-800">
               {file.name}
             </p>
             <p className="mt-0.5 text-xs text-emerald-700">
-              Documento listo para procesar ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+              Listo ({(file.size / (1024 * 1024)).toFixed(2)} MB)
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-1.5">
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
           >
-            <Upload className="size-3.5" /> Subir otro
+            <Upload className="size-3.5" /> Cambiar
           </button>
           <button
             type="button"
             onClick={onClear}
             aria-label="Borrar documento"
             title="Borrar documento"
-            className="flex size-9 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
+            className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
           >
-            <Trash2 className="size-4" />
+            <Trash2 className="size-3.5" />
           </button>
         </div>
         <input
@@ -242,7 +258,7 @@ const Dropzone: React.FC<{
     );
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <div
         role="button"
         tabIndex={0}
@@ -260,7 +276,7 @@ const Dropzone: React.FC<{
           setDragging(false);
           choose(event.dataTransfer.files[0]);
         }}
-        className={`group flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
+        className={`group flex ${compact ? "min-h-40 p-4" : "min-h-52 p-6"} cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-all ${
           dragging
             ? "border-primary bg-primary/10 scale-[1.01]"
             : "border-slate-300 bg-white hover:border-primary hover:bg-slate-50/50 shadow-sm"
@@ -282,42 +298,50 @@ const Dropzone: React.FC<{
           onChange={(event) => choose(event.target.files?.[0])}
         />
 
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-          <UploadCloud className="size-7" />
+        <div className={`flex ${compact ? "size-10" : "size-14"} items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110`}>
+          <UploadCloud className={compact ? "size-5" : "size-7"} />
         </div>
 
-        <p className="mt-4 text-base font-black text-slate-900">
-          Arrastra y suelta tu documento aquí
+        <p className={`${compact ? "mt-2.5 text-sm" : "mt-4 text-base"} font-black text-slate-900`}>
+          {label ?? "Arrastra y suelta tu documento aquí"}
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          o <span className="font-bold text-primary underline">haz clic para explorar archivos</span> en tu equipo
+          {sublabel ? (
+            <span>{sublabel}</span>
+          ) : (
+            <>o <span className="font-bold text-primary underline">haz clic para explorar archivos</span></>
+          )}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
-          <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">PDF, JPG, PNG</span>
-          <span>·</span>
-          <span>Máx. 10 MB</span>
-          <span>·</span>
-          <span>Soporta pegar con ⌘+V</span>
-        </div>
+        {!compact && (
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-600">PDF, JPG, PNG</span>
+            <span>·</span>
+            <span>Máx. 10 MB</span>
+            <span>·</span>
+            <span>Soporta pegar con ⌘+V</span>
+          </div>
+        )}
       </div>
 
       {/* Opciones de entrada secundarias */}
-      <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+      <div className="flex flex-wrap items-center justify-center gap-2">
         <button
           type="button"
           onClick={() => cameraInput.current?.click()}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-sm"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
         >
-          <Camera className="size-3.5 text-slate-500" /> Capturar con cámara
+          <Camera className="size-3.5 text-slate-500" /> Cámara
         </button>
-        <button
-          type="button"
-          onClick={onDemo}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-sm"
-        >
-          <Sparkles className="size-3.5 text-primary" /> Probar documento demo
-        </button>
+        {!hideDemo && onDemo && (
+          <button
+            type="button"
+            onClick={onDemo}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors shadow-2xs"
+          >
+            <Sparkles className="size-3.5 text-primary" /> Documento demo
+          </button>
+        )}
       </div>
     </div>
   );
@@ -325,8 +349,12 @@ const Dropzone: React.FC<{
 
 const DocumentIntelligence: React.FC = () => {
   const [stage, setStage] = useState<Stage>("preparation");
+  const [documentMode, setDocumentMode] = useState<"single" | "dual">("single");
   const [file, setFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [backPreviewUrl, setBackPreviewUrl] = useState<string | null>(null);
+  const [activeViewerSide, setActiveViewerSide] = useState<"front" | "back">("front");
   const [fields, setFields] = useState<IdentityDocumentFields>(
     emptyIdentityDocumentFields,
   );
@@ -401,8 +429,9 @@ const DocumentIntelligence: React.FC = () => {
   useEffect(
     () => () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
     },
-    [previewUrl],
+    [previewUrl, backPreviewUrl],
   );
 
   const selectFile = (next: File) => {
@@ -426,11 +455,37 @@ const DocumentIntelligence: React.FC = () => {
     setRawFields(emptyIdentityDocumentFields());
     setBoundingBoxes(null);
     setActiveHighlightField(null);
+    setActiveViewerSide("front");
     setUsage(null);
     setRotation(0);
     setZoom(1);
     setErrorMessage(null);
     setStage("preparation");
+  };
+
+  const selectBackFile = (next: File) => {
+    if (!acceptedTypes.includes(next.type)) {
+      setNotice("Formato no compatible. Usa un archivo JPG, PNG o PDF.");
+      return;
+    }
+    if (next.size === 0) {
+      setNotice("El archivo está vacío. Selecciona un documento válido.");
+      return;
+    }
+    if (next.size > maxDocumentBytes) {
+      setNotice("El documento supera el límite de 10 MB. Reduce su tamaño e inténtalo de nuevo.");
+      return;
+    }
+    if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
+    setBackFile(next);
+    setBackPreviewUrl(URL.createObjectURL(next));
+    setNotice("Reverso del documento añadido.");
+  };
+
+  const clearBackFile = () => {
+    if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
+    setBackFile(null);
+    setBackPreviewUrl(null);
   };
 
   // Clipboard Paste Support (Cmd/Ctrl + V)
@@ -455,6 +510,28 @@ const DocumentIntelligence: React.FC = () => {
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
   }, [stage, file]);
+
+  const clear = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
+    clearDocumentFromStorage();
+    setStage("preparation");
+    setFile(null);
+    setBackFile(null);
+    setPreviewUrl(null);
+    setBackPreviewUrl(null);
+    setActiveViewerSide("front");
+    setFields(emptyIdentityDocumentFields());
+    setRawFields(emptyIdentityDocumentFields());
+    setBoundingBoxes(null);
+    setActiveHighlightField(null);
+    setUsage(null);
+    setRotation(0);
+    setZoom(1);
+    setErrorMessage(null);
+    setNotice("");
+    sessionStorage.removeItem(extractionSessionStorageKey);
+  };
 
   const loadDemoDocument = () => {
     const canvas = document.createElement("canvas");
@@ -496,30 +573,20 @@ const DocumentIntelligence: React.FC = () => {
     ctx.fillText("P<ESPSAMPLE<<MARIA<<<<<<<<<<<<<<<<<<<<<<<<<<<", 60, 520);
     ctx.fillText("P000000000ESP8804128F3004118<<<<<<<<<<<<<<<04", 60, 570);
 
-    const sampleBoundingBoxes: DocumentBoundingBoxes = {
-      documentNumber: [190, 320, 240, 680],
-      surnames: [260, 320, 310, 620],
-      firstSurname: [260, 320, 310, 620],
-      givenNames: [330, 320, 380, 520],
-      nationality: [400, 320, 450, 580],
-      birthDate: [470, 320, 520, 640],
-      sex: [540, 320, 590, 420],
-      expiryDate: [610, 320, 660, 640],
-      mrz: [770, 60, 910, 940],
-    };
-    setBoundingBoxes(sampleBoundingBoxes);
-
     canvas.toBlob((blob) => {
       if (blob) {
         const demoFile = new File([blob], "pasaporte-ejemplo-demo.jpg", { type: "image/jpeg" });
         selectFile(demoFile);
-        setBoundingBoxes(sampleBoundingBoxes);
+        setDocumentMode("single");
+        setNotice("Documento de prueba cargado. Listo para extraer.");
       }
     }, "image/jpeg", 0.95);
   };
 
   const crop = () => {
-    if (!previewUrl || !file) {
+    const targetUrl = activeViewerSide === "back" && backPreviewUrl ? backPreviewUrl : previewUrl;
+    const targetFile = activeViewerSide === "back" && backFile ? backFile : file;
+    if (!targetUrl || !targetFile) {
       setNotice("El recorte solo está disponible para imágenes.");
       return;
     }
@@ -527,12 +594,18 @@ const DocumentIntelligence: React.FC = () => {
   };
 
   const applyCrop = (blob: Blob) => {
-    if (!file) return;
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    const croppedFile = new File([blob], file.name, { type: "image/jpeg" });
-    setFile(croppedFile);
-    setPreviewUrl(URL.createObjectURL(blob));
-    saveDocumentToStorage(croppedFile);
+    if (activeViewerSide === "back" && backFile) {
+      if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
+      const croppedBack = new File([blob], backFile.name, { type: "image/jpeg" });
+      setBackFile(croppedBack);
+      setBackPreviewUrl(URL.createObjectURL(blob));
+    } else if (file) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const croppedFile = new File([blob], file.name, { type: "image/jpeg" });
+      setFile(croppedFile);
+      setPreviewUrl(URL.createObjectURL(blob));
+      saveDocumentToStorage(croppedFile);
+    }
     setZoom(1);
     setCropOpen(false);
     setNotice("Documento recortado.");
@@ -550,38 +623,27 @@ const DocumentIntelligence: React.FC = () => {
       } = await supabase.auth.getUser();
       if (userError || !user) throw new Error("AUTHENTICATION_REQUIRED");
       const result = await extractDocumentWithTimeout(
-        { extract: (_request) => uploadAndExtractDocument(file, user.id) },
+        { extract: (_request) => uploadAndExtractDualDocument(file, backFile, user.id) },
         {
           fileName: file.name,
           mimeType: file.type as "image/jpeg" | "image/png" | "application/pdf",
           documentReference: file.name,
+          ...(backFile
+            ? {
+                backFileName: backFile.name,
+                backMimeType: backFile.type as "image/jpeg" | "image/png" | "application/pdf",
+                backDocumentReference: backFile.name,
+              }
+            : {}),
         },
-        35000,
+        45000,
       );
       const normalizedFields = normalizeIdentityDocumentDates(result.fields);
       const normalizedRaw = normalizeIdentityDocumentDates(result.rawFields ?? result.fields);
       setFields(normalizedFields);
       setRawFields(normalizedRaw);
-      console.log("[DocumentIntelligence] Extraction result:", result);
       if (result.boundingBoxes && Object.keys(result.boundingBoxes).length > 0) {
-        console.log("[DocumentIntelligence] Bounding boxes received from Gemini:", result.boundingBoxes);
         setBoundingBoxes(result.boundingBoxes);
-      } else {
-        console.warn("[DocumentIntelligence] Setting fallback bounding boxes");
-        setBoundingBoxes({
-          documentNumber: [140, 600, 200, 850],
-          surnames: [260, 340, 310, 620],
-          firstSurname: [260, 340, 310, 480],
-          secondSurname: [260, 480, 310, 620],
-          givenNames: [315, 340, 365, 620],
-          nationality: [410, 340, 450, 560],
-          birthDate: [455, 340, 495, 620],
-          sex: [500, 340, 540, 420],
-          birthplace: [500, 420, 540, 640],
-          issueDate: [590, 340, 630, 580],
-          expiryDate: [635, 340, 675, 580],
-          mrz: [700, 60, 880, 940],
-        });
       }
       if (result.usage) setUsage(result.usage);
       const warnings = getDocumentExtractionWarnings({
@@ -621,24 +683,6 @@ const DocumentIntelligence: React.FC = () => {
     }
   };
 
-  const clear = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    clearDocumentFromStorage();
-    setStage("preparation");
-    setFile(null);
-    setPreviewUrl(null);
-    setFields(emptyIdentityDocumentFields());
-    setRawFields(emptyIdentityDocumentFields());
-    setBoundingBoxes(null);
-    setActiveHighlightField(null);
-    setUsage(null);
-    setRotation(0);
-    setZoom(1);
-    setErrorMessage(null);
-    setNotice("");
-    sessionStorage.removeItem(extractionSessionStorageKey);
-  };
-
   const copy = async (value: string | null | undefined, label: string) => {
     if (value) {
       await navigator.clipboard.writeText(value);
@@ -675,6 +719,25 @@ const DocumentIntelligence: React.FC = () => {
     }));
     const label = fieldLabels.find((f) => f.key === key)?.label ?? key;
     setNotice(`Valor original de ${label} restaurado.`);
+  };
+
+  const handleHighlightField = (fieldKey: FieldKey | null) => {
+    setActiveHighlightField(fieldKey);
+    if (!fieldKey) return;
+    if (backFile && (fieldKey === "address" || fieldKey === "mrz" || fieldKey === "birthplace")) {
+      setActiveViewerSide("back");
+    } else if (backFile && (fieldKey === "documentNumber" || fieldKey === "givenNames" || fieldKey === "firstSurname" || fieldKey === "secondSurname" || fieldKey === "supportNumber")) {
+      setActiveViewerSide("front");
+    }
+  };
+
+  const handleSelectBoxField = (fieldKey: FieldKey) => {
+    setActiveHighlightField(fieldKey);
+    const inputElement = document.getElementById(`field-input-${fieldKey}`);
+    if (inputElement) {
+      inputElement.focus();
+      inputElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   };
 
   const handleFieldChange = (key: FieldKey, value: string | null) => {
@@ -735,11 +798,13 @@ const DocumentIntelligence: React.FC = () => {
     [fields],
   );
   const issueCount = Object.keys(issues).length;
-  const isPdf = file?.type === "application/pdf";
+  const currentViewerFile = activeViewerSide === "back" && backFile ? backFile : file;
+  const currentViewerUrl = activeViewerSide === "back" && backPreviewUrl ? backPreviewUrl : previewUrl;
+  const isPdf = currentViewerFile?.type === "application/pdf";
 
   const openDocumentInNewTab = () => {
-    if (previewUrl) {
-      window.open(previewUrl, "_blank", "noopener,noreferrer");
+    if (currentViewerUrl) {
+      window.open(currentViewerUrl, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -753,11 +818,14 @@ const DocumentIntelligence: React.FC = () => {
 
   const documentViewer = (
     <DocumentViewer
-      file={file}
-      previewUrl={previewUrl}
+      file={currentViewerFile}
+      previewUrl={currentViewerUrl}
       isPdf={isPdf}
       zoom={zoom}
       rotation={rotation}
+      boundingBoxes={boundingBoxes}
+      activeField={activeHighlightField}
+      onSelectField={handleSelectBoxField}
       onZoomIn={handleZoomIn}
       onZoomOut={handleZoomOut}
       onResetZoom={handleResetZoom}
@@ -842,10 +910,15 @@ const DocumentIntelligence: React.FC = () => {
         )}
         {stage === "preparation" && (
           <Preparation
+            documentMode={documentMode}
+            onDocumentModeChange={setDocumentMode}
             file={file}
+            backFile={backFile}
             viewer={documentViewer}
             onFile={selectFile}
+            onBackFile={selectBackFile}
             onClear={clear}
+            onClearBack={clearBackFile}
             onDemo={loadDemoDocument}
             onExtract={extract}
           />
@@ -867,6 +940,10 @@ const DocumentIntelligence: React.FC = () => {
         {(stage === "review" || stage === "review-with-warnings") && (
           <Review
             file={file}
+            backFile={backFile}
+            documentMode={documentMode}
+            activeViewerSide={activeViewerSide}
+            onToggleViewerSide={setActiveViewerSide}
             fields={fields}
             rawFields={rawFields}
             issues={issues}
@@ -874,7 +951,7 @@ const DocumentIntelligence: React.FC = () => {
             exportProfile={exportProfile}
             isSwitchingProfile={isSwitchingProfile}
             activeHighlightField={activeHighlightField}
-            onHighlightField={setActiveHighlightField}
+            onHighlightField={handleHighlightField}
             onExportProfileChange={handleExportProfileChange}
             onFieldChange={handleFieldChange}
             viewer={documentViewer}
@@ -1194,17 +1271,27 @@ const DocumentViewer: React.FC<{
 };
 
 const Preparation: React.FC<{
+  documentMode: "single" | "dual";
+  onDocumentModeChange: (mode: "single" | "dual") => void;
   file: File | null;
+  backFile: File | null;
   viewer: React.ReactNode;
   onFile: (file: File) => void;
+  onBackFile: (file: File) => void;
   onClear: () => void;
+  onClearBack: () => void;
   onDemo: () => void;
   onExtract: () => void;
 }> = ({
+  documentMode,
+  onDocumentModeChange,
   file,
+  backFile,
   viewer,
   onFile,
+  onBackFile,
   onClear,
+  onClearBack,
   onDemo,
   onExtract,
 }) => {
@@ -1214,80 +1301,175 @@ const Preparation: React.FC<{
     <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 lg:grid-cols-12">
       {/* Columna Principal: Carga / Visor Unificado */}
       <div className="flex flex-col gap-4 lg:col-span-8">
-        {!file ? (
-          /* Estado 1: Dropzone para cargar archivo */
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileScan className="size-4 text-primary" />
-                <h3 className="text-sm font-black text-slate-900">Documento fuente</h3>
-              </div>
-              <span className="text-[11px] font-bold text-slate-400">Paso 1 de 2</span>
-            </div>
-
-            <Dropzone file={null} onFile={onFile} onClear={onClear} onDemo={onDemo} />
+        {/* Selector de Modalidad (1 Cara vs 2 Caras) */}
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-500 pl-2">
+              Tipo de Carga:
+            </span>
           </div>
-        ) : (
-          /* Estado 2: Tarjeta de Previsualización Unificada con Header y CTA anclado */
-          <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {/* Header Unificado del Archivo (Sin duplicaciones) */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <FileCheck className="size-5 shrink-0 text-emerald-600" />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-black text-slate-900">{file.name}</p>
-                  <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <span className="font-semibold text-slate-700">{(file.size / 1024).toFixed(0)} KB</span>
-                    <span>·</span>
-                    <span className="font-bold text-emerald-700">✓ Listo para procesar</span>
-                  </p>
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => onDocumentModeChange("single")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                documentMode === "single"
+                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>📘 Pasaporte (1 Cara)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onDocumentModeChange("dual")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                documentMode === "dual"
+                  ? "bg-white text-primary shadow-xs border border-slate-200/60"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>🪪 DNI / NIE / 2 Caras</span>
+            </button>
+          </div>
+        </div>
+
+        {documentMode === "single" ? (
+          /* MODO 1: 1 Sola Cara (Pasaporte / Documento Individual) */
+          !file ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileScan className="size-4 text-primary" />
+                  <h3 className="text-sm font-black text-slate-900">Documento fuente (1 Cara)</h3>
+                </div>
+                <span className="text-[11px] font-bold text-slate-400">Paso 1 de 2</span>
+              </div>
+
+              <Dropzone file={null} onFile={onFile} onClear={onClear} onDemo={onDemo} />
+            </div>
+          ) : (
+            <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <FileCheck className="size-5 shrink-0 text-emerald-600" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black text-slate-900">{file.name}</p>
+                    <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <span className="font-semibold text-slate-700">{(file.size / 1024).toFixed(0)} KB</span>
+                      <span>·</span>
+                      <span className="font-bold text-emerald-700">✓ Listo para procesar</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => input.current?.click()}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+                  >
+                    <Upload className="size-3.5" /> Cambiar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClear}
+                    aria-label="Eliminar documento"
+                    title="Eliminar documento"
+                    className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                  <input
+                    ref={input}
+                    className="sr-only"
+                    type="file"
+                    accept={acceptedTypes.join(",")}
+                    onChange={(event) => {
+                      if (event.target.files?.[0]) onFile(event.target.files[0]);
+                    }}
+                  />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="p-3 bg-slate-50">
+                {viewer}
+              </div>
+
+              <div className="border-t border-slate-200 bg-white p-4">
                 <button
                   type="button"
-                  onClick={() => input.current?.click()}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-primary hover:text-primary transition-colors"
+                  onClick={onExtract}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all"
                 >
-                  <Upload className="size-3.5" /> Cambiar
+                  <Sparkles className="size-4.5" /> Extraer y validar campos con IA <span className="opacity-70 text-xs font-normal">(↵ Enter)</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={onClear}
-                  aria-label="Eliminar documento"
-                  title="Eliminar documento"
-                  className="flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
-                <input
-                  ref={input}
-                  className="sr-only"
-                  type="file"
-                  accept={acceptedTypes.join(",")}
-                  onChange={(event) => {
-                    if (event.target.files?.[0]) onFile(event.target.files[0]);
-                  }}
+              </div>
+            </div>
+          )
+        ) : (
+          /* MODO 2: 2 Caras (Anverso y Reverso / DNI / NIE) */
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dropzone Anverso */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between">
+                <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-5 items-center justify-center rounded bg-primary/10 text-xs font-black text-primary">A</span>
+                    <h4 className="text-xs font-black text-slate-800">Cara Frontal (Anverso)</h4>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400">Requerido</span>
+                </div>
+                <Dropzone
+                  file={file}
+                  label="Anverso (Cara A)"
+                  sublabel="Foto, Nombres y Nº de Documento"
+                  compact
+                  hideDemo
+                  onFile={onFile}
+                  onClear={onClear}
+                />
+              </div>
+
+              {/* Dropzone Reverso */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col justify-between">
+                <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-5 items-center justify-center rounded bg-accent/20 text-xs font-black text-accent">B</span>
+                    <h4 className="text-xs font-black text-slate-800">Cara Posterior (Reverso)</h4>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400">Recomendado</span>
+                </div>
+                <Dropzone
+                  file={backFile}
+                  label="Reverso (Cara B)"
+                  sublabel="Domicilio, Nacimiento y Zona MRZ"
+                  compact
+                  hideDemo
+                  onFile={onBackFile}
+                  onClear={onClearBack}
                 />
               </div>
             </div>
 
-            {/* Document Viewer con controles activos */}
-            <div className="p-3 bg-slate-50">
-              {viewer}
-            </div>
-
-            {/* CTA Primario anclado directamente a la tarjeta */}
-            <div className="border-t border-slate-200 bg-white p-4">
-              <button
-                type="button"
-                onClick={onExtract}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all"
-              >
-                <Sparkles className="size-4.5" /> Extraer y validar campos con IA <span className="opacity-70 text-xs font-normal">(↵ Enter)</span>
-              </button>
-            </div>
+            {/* Previsualización del visor si hay al menos 1 archivo cargado */}
+            {file && (
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="p-3 bg-slate-50">
+                  {viewer}
+                </div>
+                <div className="border-t border-slate-200 bg-white p-4">
+                  <button
+                    type="button"
+                    onClick={onExtract}
+                    disabled={!file}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-6 text-sm font-black text-white shadow-md hover:bg-primary-dark transition-all disabled:opacity-50"
+                  >
+                    <Sparkles className="size-4.5" /> Extraer y correlacionar ambas caras con IA {backFile ? "(2 Caras Listas)" : "(Solo Anverso)"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1695,6 +1877,10 @@ const ExtractedField: React.FC<{
 
 const Review: React.FC<{
   file: File | null;
+  backFile?: File | null;
+  documentMode?: "single" | "dual";
+  activeViewerSide?: "front" | "back";
+  onToggleViewerSide?: (side: "front" | "back") => void;
   fields: IdentityDocumentFields;
   rawFields: IdentityDocumentFields;
   issues: Partial<Record<FieldKey, string>>;
@@ -1717,6 +1903,10 @@ const Review: React.FC<{
   issueCount: number;
 }> = ({
   file,
+  backFile,
+  documentMode,
+  activeViewerSide = "front",
+  onToggleViewerSide,
   fields,
   rawFields,
   issues,
@@ -1746,11 +1936,39 @@ const Review: React.FC<{
           <FileScan className="size-4 text-primary" />
           <h3 className="text-sm font-black text-slate-800">Documento original</h3>
         </div>
-        {file && (
-          <span className="max-w-[220px] truncate text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-            {file.name}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {backFile && (
+            <div className="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-lg">
+              <button
+                type="button"
+                onClick={() => onToggleViewerSide?.("front")}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all ${
+                  activeViewerSide === "front"
+                    ? "bg-white text-primary shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                🪪 Anverso
+              </button>
+              <button
+                type="button"
+                onClick={() => onToggleViewerSide?.("back")}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all ${
+                  activeViewerSide === "back"
+                    ? "bg-white text-primary shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                🔄 Reverso
+              </button>
+            </div>
+          )}
+          {file && (
+            <span className="max-w-[160px] truncate text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+              {activeViewerSide === "back" && backFile ? backFile.name : file.name}
+            </span>
+          )}
+        </div>
       </div>
       <div className="p-3 bg-slate-50">
         {viewer}
@@ -1881,18 +2099,49 @@ const Review: React.FC<{
               onRestore={restoreField}
             />
 
-            <ExtractedField
-              label={exportProfile === "icao-internacional" ? "Nationality / Country" : "Nacionalidad"}
-              fieldKey="nationality"
-              value={fields.nationality}
-              rawVal={rawFields.nationality}
-              issue={issues.nationality}
-              isHighlighted={activeHighlightField === "nationality"}
-              onHighlight={onHighlightField}
-              onChange={onFieldChange}
-              onCopy={copy}
-              onRestore={restoreField}
-            />
+            {(fields.documentType === "spanish-dni" || fields.documentType === "spanish-nie" || fields.supportNumber || documentMode === "dual") ? (
+              <ExtractedField
+                label="Número de soporte (IDESP)"
+                fieldKey="supportNumber"
+                value={fields.supportNumber}
+                rawVal={rawFields.supportNumber}
+                issue={issues.supportNumber}
+                isHighlighted={activeHighlightField === "supportNumber"}
+                onHighlight={onHighlightField}
+                onChange={onFieldChange}
+                onCopy={copy}
+                onRestore={restoreField}
+              />
+            ) : (
+              <ExtractedField
+                label={exportProfile === "icao-internacional" ? "Nationality / Country" : "Nacionalidad"}
+                fieldKey="nationality"
+                value={fields.nationality}
+                rawVal={rawFields.nationality}
+                issue={issues.nationality}
+                isHighlighted={activeHighlightField === "nationality"}
+                onHighlight={onHighlightField}
+                onChange={onFieldChange}
+                onCopy={copy}
+                onRestore={restoreField}
+              />
+            )}
+
+            {(fields.documentType === "spanish-dni" || fields.documentType === "spanish-nie" || fields.supportNumber || documentMode === "dual") && (
+              <ExtractedField
+                label={exportProfile === "icao-internacional" ? "Nationality / Country" : "Nacionalidad"}
+                fieldKey="nationality"
+                value={fields.nationality}
+                rawVal={rawFields.nationality}
+                issue={issues.nationality}
+                isHighlighted={activeHighlightField === "nationality"}
+                onHighlight={onHighlightField}
+                className="sm:col-span-2"
+                onChange={onFieldChange}
+                onCopy={copy}
+                onRestore={restoreField}
+              />
+            )}
 
             {exportProfile === "aseguradora-1" ? (
               <>
@@ -1996,11 +2245,11 @@ const Review: React.FC<{
           </div>
         </div>
 
-        {/* Bloque 2: 📅 Fechas y Demografía */}
+        {/* Bloque 2: 📅 Fechas, Domicilio y Demografía */}
         <div className="rounded-xl border border-slate-200/80 bg-slate-50/40 p-4">
           <div className="mb-3.5 flex items-center gap-2 border-b border-slate-200/60 pb-2">
             <span className="text-xs font-black uppercase tracking-wider text-slate-700">
-              📅 Fechas y Vigencia
+              📅 Fechas, Domicilio y Vigencia
             </span>
           </div>
 
@@ -2071,6 +2320,22 @@ const Review: React.FC<{
               onCopy={copy}
               onRestore={restoreField}
             />
+
+            {(fields.address || documentMode === "dual" || fields.documentType === "spanish-dni" || fields.documentType === "spanish-nie") && (
+              <ExtractedField
+                label="Domicilio / Dirección"
+                fieldKey="address"
+                value={fields.address}
+                rawVal={rawFields.address}
+                issue={issues.address}
+                isHighlighted={activeHighlightField === "address"}
+                onHighlight={onHighlightField}
+                className="sm:col-span-3"
+                onChange={onFieldChange}
+                onCopy={copy}
+                onRestore={restoreField}
+              />
+            )}
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { passportExtractionFixture } from './fixtures';
-import { uploadAndExtractDocument } from './supabase-service';
+import { uploadAndExtractDocument, uploadAndExtractDualDocument } from './supabase-service';
 
 const createClientMock = () => {
   const upload = vi.fn().mockResolvedValue({ error: null });
@@ -31,6 +31,29 @@ describe('supabase document extraction transport', () => {
       documentReference: expect.stringMatching(/^user-123\/.+\.jpg$/),
     }));
     expect(client.remove).toHaveBeenCalledWith([expect.stringMatching(/^user-123\/.+\.jpg$/)]);
+  });
+
+  it('uploads both front and back files, extracts, and removes both temporary objects', async () => {
+    const client = createClientMock();
+    const service = { extract: vi.fn().mockResolvedValue(passportExtractionFixture) };
+    const frontFile = new File(['front'], 'dni-front.jpg', { type: 'image/jpeg' });
+    const backFile = new File(['back'], 'dni-back.jpg', { type: 'image/jpeg' });
+
+    await expect(uploadAndExtractDualDocument(frontFile, backFile, 'user-123', service, client)).resolves.toEqual(passportExtractionFixture);
+
+    expect(client.upload).toHaveBeenCalledTimes(2);
+    expect(service.extract).toHaveBeenCalledWith(expect.objectContaining({
+      fileName: 'dni-front.jpg',
+      mimeType: 'image/jpeg',
+      documentReference: expect.stringMatching(/^user-123\/.+\.jpg$/),
+      backFileName: 'dni-back.jpg',
+      backMimeType: 'image/jpeg',
+      backDocumentReference: expect.stringMatching(/^user-123\/.+\.jpg$/),
+    }));
+    expect(client.remove).toHaveBeenCalledWith([
+      expect.stringMatching(/^user-123\/.+\.jpg$/),
+      expect.stringMatching(/^user-123\/.+\.jpg$/),
+    ]);
   });
 
   it('removes the temporary object when extraction fails', async () => {

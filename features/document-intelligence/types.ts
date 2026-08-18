@@ -22,6 +22,8 @@ export interface IdentityDocumentFields {
   issueDate: NullableIdentityField;
   expiryDate: NullableIdentityField;
   birthplace: NullableIdentityField;
+  supportNumber?: NullableIdentityField;
+  address?: NullableIdentityField;
   mrz: NullableIdentityField;
 }
 
@@ -61,6 +63,9 @@ export interface DocumentExtractionRequest {
   fileName: string;
   mimeType: 'image/jpeg' | 'image/png' | 'application/pdf';
   documentReference: string;
+  backFileName?: string;
+  backMimeType?: 'image/jpeg' | 'image/png' | 'application/pdf';
+  backDocumentReference?: string;
 }
 
 export interface DocumentExtractionService {
@@ -82,5 +87,7 @@ export const emptyIdentityDocumentFields = (): IdentityDocumentFields => ({
   issueDate: null,
   expiryDate: null,
   birthplace: null,
+  supportNumber: null,
+  address: null,
   mrz: null,
 });
