@@ -32,6 +32,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import Cropper, { type Area, type Point } from "react-easy-crop";
 import BackofficeShell from "@/components/layouts/BackofficeShell";
 import { extractDocumentWithTimeout } from "@/features/document-intelligence/extraction";
@@ -305,7 +306,25 @@ const Dropzone: React.FC<{
 };
 
 const DocumentIntelligence: React.FC = () => {
-  const [mainTab, setMainTab] = useState<"workbench" | "rules" | "profiles">("workbench");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const mainTab: "workbench" | "rules" | "profiles" =
+    tabParam === "rules"
+      ? "rules"
+      : tabParam === "profiles"
+        ? "profiles"
+        : "workbench";
+
+  const handleTabChange = (nextTab: "workbench" | "rules" | "profiles") => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextTab === "workbench") {
+      nextParams.delete("tab");
+    } else {
+      nextParams.set("tab", nextTab);
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
   const { config: rulesConfig } = useRulesConfig();
   const [stage, setStage] = useState<Stage>("preparation");
   const [file, setFile] = useState<File | null>(null);
@@ -903,7 +922,7 @@ const DocumentIntelligence: React.FC = () => {
           <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
             <button
               type="button"
-              onClick={() => setMainTab("workbench")}
+              onClick={() => handleTabChange("workbench")}
               className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 mainTab === "workbench"
                   ? "bg-white text-primary shadow-xs border border-slate-200/60"
@@ -914,7 +933,7 @@ const DocumentIntelligence: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setMainTab("rules")}
+              onClick={() => handleTabChange("rules")}
               className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 mainTab === "rules"
                   ? "bg-white text-primary shadow-xs border border-slate-200/60"
@@ -925,7 +944,7 @@ const DocumentIntelligence: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => setMainTab("profiles")}
+              onClick={() => handleTabChange("profiles")}
               className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 mainTab === "profiles"
                   ? "bg-white text-primary shadow-xs border border-slate-200/60"
