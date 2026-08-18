@@ -29,7 +29,22 @@ export const createSupabaseDocumentExtractionService = (
 ): DocumentExtractionService => ({
   async extract(request: DocumentExtractionRequest): Promise<DocumentExtractionResult> {
     const { data, error } = await client.functions.invoke('extract-identity-document', { body: request });
-    if (error) throw new Error('Document extraction request failed');
+    if (error) {
+      let serverMessage = '';
+      if ('context' in error && error.context && typeof error.context === 'object') {
+        const ctx = error.context as { json?: () => Promise<{ error?: string }>; response?: Response };
+        if (typeof ctx.json === 'function') {
+          try {
+            const body = await ctx.json();
+            serverMessage = body?.error || '';
+          } catch {
+            // ignore
+          }
+        }
+      }
+      const message = serverMessage || (data && isExtractionError(data) ? data.error : null) || error.message || 'Document extraction request failed';
+      throw new Error(message);
+    }
     if (!data || isExtractionError(data)) throw new Error(data?.error || 'Document extraction failed');
     return data as DocumentExtractionResult;
   },

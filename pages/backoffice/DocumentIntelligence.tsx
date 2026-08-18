@@ -586,16 +586,28 @@ const DocumentIntelligence: React.FC = () => {
         setNotice("Respuesta recibida con advertencias. Revisa los campos extraídos.");
       }
     } catch (error) {
+      console.error("[DocumentIntelligence] Full extraction error:", error);
       const errorCode = error instanceof Error ? error.message : "UNKNOWN_ERROR";
-      const message = errorCode === "AUTHENTICATION_REQUIRED"
-        ? "Tu sesión ha caducado. Vuelve a iniciar sesión para continuar."
-        : errorCode === "DOCUMENT_EXTRACTION_TIMEOUT"
-          ? "La extracción está tardando más de lo esperado. Puedes reintentarlo sin volver a subir el documento."
-          : errorCode === "Document upload failed"
-            ? "No se pudo subir el documento temporalmente. Comprueba tu conexión e inténtalo de nuevo."
-            : errorCode === "Document extraction request failed"
-              ? "El servicio de lectura no está disponible en este momento. Inténtalo de nuevo en unos segundos."
-              : "No se pudo procesar el documento. Comprueba que sea legible y vuelve a intentarlo.";
+      let message = "No se pudo procesar el documento. Comprueba que sea legible y vuelve a intentarlo.";
+
+      if (errorCode === "AUTHENTICATION_REQUIRED" || errorCode === "Invalid session" || errorCode.toLowerCase().includes("session") || errorCode.toLowerCase().includes("unauthorized")) {
+        message = "Tu sesión ha caducado o no está autenticada. Vuelve a iniciar sesión para continuar.";
+      } else if (errorCode === "DOCUMENT_EXTRACTION_TIMEOUT") {
+        message = "La extracción está tardando más de lo esperado. Puedes reintentarlo sin volver a subir el documento.";
+      } else if (errorCode === "Document upload failed") {
+        message = "No se pudo subir el documento al almacenamiento temporal. Comprueba los permisos de Storage (bucket: document-intelligence-temp).";
+      } else if (errorCode === "Document extraction provider is not configured") {
+        message = "El proveedor de IA no está configurado (falta GEMINI_API_KEY en Supabase Secrets).";
+      } else if (errorCode === "Document could not be loaded") {
+        message = "No se pudo recuperar el documento temporal desde Supabase Storage.";
+      } else if (errorCode === "Document extraction provider failed") {
+        message = "La API de Gemini rechazó la petición o la clave de API no es válida.";
+      } else if (errorCode !== "UNKNOWN_ERROR" && errorCode !== "Document extraction request failed") {
+        message = `Error en el servicio: ${errorCode}`;
+      } else {
+        message = "El servicio de lectura no está disponible en este momento. Revisa la consola para más detalles.";
+      }
+
       setErrorMessage(message);
       setNotice("");
       setStage("error");
