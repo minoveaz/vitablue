@@ -108,6 +108,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     layers: [],
   });
 
+  const canvasMouseDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -242,9 +244,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       return;
     }
 
-    if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
-      onDeselectAll();
-    }
+    canvasMouseDownPosRef.current = { x: e.clientX, y: e.clientY };
 
     if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -666,6 +666,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           ref={canvasRef}
           onMouseDown={handleCanvasMouseDown}
           onClick={(e) => {
+            const dist = Math.hypot(
+              e.clientX - canvasMouseDownPosRef.current.x,
+              e.clientY - canvasMouseDownPosRef.current.y
+            );
+            if (dist > 5) {
+              return;
+            }
             e.stopPropagation();
             onSelectCanvas();
           }}
@@ -769,7 +776,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 onContextMenu={(e) => handleContextMenu(e, layer)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectLayer(layer.id, e.shiftKey || e.metaKey || e.ctrlKey);
                 }}
                 className={`canvas-layer-item absolute transition-shadow select-none shrink-0 ${getClipClass(
                   layer.clipShape
