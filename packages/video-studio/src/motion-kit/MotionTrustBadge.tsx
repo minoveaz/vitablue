@@ -1,102 +1,48 @@
 import React from 'react';
 import type { MotionTrustBadgeProps } from './types';
-import { defaultMotionBrandTokens } from './types';
+import { Shield, CheckCircle2 } from 'lucide-react';
 
 export const MotionTrustBadge: React.FC<MotionTrustBadgeProps> = ({
   title = 'PÓLIZA 100% VÁLIDA PARA VISADO',
   subtitle = 'Sin Copagos · Cobertura Completa · Repatriación Incluida',
   highlight = 'GARANTÍA CONSULAR',
-  verifiedLabel = 'VERIFICADO',
+  verifiedLabel = 'VERIFICADO PARA EXTRANJERÍA',
   tokens = {},
+  className = '',
   style,
 }) => {
-  const mergedTokens = { ...defaultMotionBrandTokens, ...tokens };
-
   return (
     <div
+      className={`relative flex w-full max-w-[420px] flex-col items-center rounded-3xl border border-amber-500/40 bg-[#001219]/90 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: '860px',
-        margin: '0 auto',
-        backgroundColor: 'rgba(0, 18, 25, 0.85)',
-        backdropFilter: 'blur(30px)',
-        border: '3px solid rgba(238, 155, 0, 0.5)',
-        borderRadius: '36px',
-        padding: '44px 36px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(238, 155, 0, 0.25)',
-        color: mergedTokens.textColor,
-        boxSizing: 'border-box',
+        boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(238, 155, 0, 0.15)',
+        backgroundColor: tokens?.surfaceBg,
         ...style,
       }}
     >
-      {/* SHIELD BADGE ICON */}
-      <div
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '12px',
-          backgroundColor: 'rgba(238, 155, 0, 0.2)',
-          border: '2px solid rgba(238, 155, 0, 0.6)',
-          padding: '8px 24px',
-          borderRadius: '9999px',
-          fontSize: '22px',
-          fontWeight: 800,
-          color: '#EE9B00',
-          letterSpacing: '0.12em',
-          marginBottom: '24px',
-        }}
-      >
-        <span>🛡️</span>
-        <span>{highlight}</span>
+      {/* SHIELD ICON */}
+      <div className="mb-4 flex size-14 items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400 shadow-inner">
+        <Shield className="size-7" />
       </div>
 
+      {/* HIGHLIGHT PILL */}
+      <span className="mb-3 inline-block rounded-full bg-amber-500/20 px-3 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
+        {highlight}
+      </span>
+
       {/* TITLE */}
-      <h3
-        style={{
-          margin: '0 0 16px 0',
-          fontSize: '48px',
-          fontWeight: 900,
-          color: '#ffffff',
-          letterSpacing: '-0.02em',
-          lineHeight: 1.2,
-        }}
-      >
+      <h3 className="font-display text-lg font-black text-white tracking-tight leading-snug">
         {title}
       </h3>
 
       {/* SUBTITLE */}
-      <p
-        style={{
-          margin: '0 0 24px 0',
-          fontSize: '28px',
-          fontWeight: 600,
-          color: mergedTokens.mintColor,
-          lineHeight: 1.4,
-        }}
-      >
+      <p className="mt-2 text-xs font-semibold text-[#94D2BD] leading-relaxed">
         {subtitle}
       </p>
 
       {/* VERIFIED PILL */}
-      <div
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '10px',
-          backgroundColor: 'rgba(16, 185, 129, 0.2)',
-          border: '2px solid #10B981',
-          padding: '10px 24px',
-          borderRadius: '20px',
-          fontSize: '22px',
-          fontWeight: 800,
-          color: '#34D399',
-        }}
-      >
-        <span style={{ fontSize: '26px' }}>✓</span>
+      <div className="mt-5 flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3.5 py-1.5 text-xs font-bold text-emerald-400">
+        <CheckCircle2 className="size-4" />
         <span>{verifiedLabel}</span>
       </div>
     </div>

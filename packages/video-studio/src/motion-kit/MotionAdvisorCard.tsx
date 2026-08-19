@@ -1,164 +1,70 @@
 import React from 'react';
 import type { MotionAdvisorCardProps } from './types';
-import { defaultMotionBrandTokens } from './types';
+import { MessageCircle, ShieldCheck } from 'lucide-react';
 
 export const MotionAdvisorCard: React.FC<MotionAdvisorCardProps> = ({
   name = 'Sofía',
   role = 'Asesora Especialista en Visados',
   badge = 'ASESORA ASIGNADA · EN DIRECTO',
-  message = '"Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos."',
+  message = 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.',
   avatarUrl,
   whatsAppText = 'Pregúntanos por WhatsApp',
   tokens = {},
+  className = '',
   style,
 }) => {
-  const mergedTokens = { ...defaultMotionBrandTokens, ...tokens };
-
   return (
     <div
+      className={`relative flex w-full max-w-[420px] flex-col items-center rounded-3xl border border-teal-500/30 bg-[#001219]/90 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: '860px',
-        margin: '0 auto',
-        backgroundColor: 'rgba(0, 18, 25, 0.85)',
-        backdropFilter: 'blur(30px)',
-        border: '3px solid rgba(148, 210, 189, 0.35)',
-        borderRadius: '40px',
-        padding: '50px 40px',
-        boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 95, 115, 0.25)',
-        color: mergedTokens.textColor,
-        boxSizing: 'border-box',
+        boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
+        backgroundColor: tokens?.surfaceBg,
         ...style,
       }}
     >
       {/* STATUS BADGE */}
-      <div
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '12px',
-          backgroundColor: 'rgba(148, 210, 189, 0.15)',
-          border: '2px solid rgba(148, 210, 189, 0.5)',
-          padding: '10px 24px',
-          borderRadius: '9999px',
-          fontSize: '22px',
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          color: mergedTokens.mintColor,
-          marginBottom: '32px',
-        }}
-      >
-        <span
-          style={{
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            backgroundColor: '#10B981',
-            boxShadow: '0 0 12px #10B981',
-          }}
-        />
+      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-400/40 bg-teal-950/60 px-3.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#94D2BD]">
+        <span className="relative flex size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+        </span>
         <span>{badge}</span>
       </div>
 
-      {/* AVATAR CIRCLE */}
-      <div
-        style={{
-          width: '150px',
-          height: '150px',
-          borderRadius: '50%',
-          border: '4px solid #EE9B00',
-          boxShadow: '0 0 30px rgba(238, 155, 0, 0.4)',
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#005F73',
-          marginBottom: '28px',
-        }}
-      >
-        {avatarUrl ? (
-          <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <span style={{ fontSize: '64px', fontWeight: 900, color: '#ffffff' }}>
-            {name.charAt(0)}
-          </span>
-        )}
+      {/* AVATAR */}
+      <div className="relative mb-4">
+        <div className="flex size-20 items-center justify-center rounded-full border-2 border-amber-500 bg-[#005F73] text-2xl font-black text-white shadow-lg ring-4 ring-amber-500/20 overflow-hidden">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={name} className="size-full object-cover" />
+          ) : (
+            <span>{name.charAt(0)}</span>
+          )}
+        </div>
+        <div className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219]">
+          <ShieldCheck className="size-3.5" />
+        </div>
       </div>
 
       {/* NAME & ROLE */}
-      <h2
-        style={{
-          margin: '0 0 8px 0',
-          fontSize: '56px',
-          fontWeight: 900,
-          color: '#ffffff',
-          letterSpacing: '-0.02em',
-          lineHeight: 1.15,
-        }}
-      >
+      <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
         {name}
-      </h2>
-      <p
-        style={{
-          margin: '0 0 28px 0',
-          fontSize: '32px',
-          fontWeight: 700,
-          color: mergedTokens.mintColor,
-          letterSpacing: '-0.01em',
-        }}
-      >
+      </h3>
+      <p className="mt-0.5 text-xs font-bold text-[#94D2BD]">
         {role}
       </p>
 
       {/* MESSAGE QUOTE */}
       {message && (
-        <div
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '24px',
-            padding: '24px 32px',
-            marginBottom: '36px',
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              fontSize: '30px',
-              fontWeight: 500,
-              lineHeight: 1.4,
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontStyle: 'italic',
-            }}
-          >
-            {message}
+        <div className="my-4 w-full rounded-2xl border border-white/10 bg-white/5 p-3.5 text-left text-xs leading-relaxed text-slate-200 shadow-inner">
+          <p className="italic text-center text-slate-200">
+            "{message}"
           </p>
         </div>
       )}
 
-      {/* CTA BUTTON */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '16px',
-          width: '100%',
-          backgroundColor: '#25D366',
-          color: '#ffffff',
-          padding: '24px 36px',
-          borderRadius: '28px',
-          fontSize: '34px',
-          fontWeight: 800,
-          boxShadow: '0 12px 30px rgba(37, 211, 102, 0.45)',
-          letterSpacing: '-0.01em',
-        }}
-      >
-        <span>💬</span>
+      {/* WHATSAPP CTA BUTTON */}
+      <div className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-black text-white shadow-lg shadow-emerald-950/40 hover:bg-[#20bd5a] transition-transform active:scale-95 cursor-pointer">
+        <MessageCircle className="size-4 fill-white" />
         <span>{whatsAppText}</span>
       </div>
     </div>

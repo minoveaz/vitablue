@@ -1,93 +1,53 @@
 import React from 'react';
 import type { MotionComparisonCardProps } from './types';
-import { defaultMotionBrandTokens } from './types';
+import { X, Check } from 'lucide-react';
 
 export const MotionComparisonCard: React.FC<MotionComparisonCardProps> = ({
   title = '¿SEGURO DE VIAJE O SEGURO DE VISADO?',
   wrongOptionTitle = 'Seguro de Viaje Común',
-  wrongOptionDesc = '❌ Denegación inmediata: no cumple requisitos de Extranjería ni tiene red médica completa en España.',
+  wrongOptionDesc = 'Denegación de visado: no cumple requisitos consulares ni incluye red médica completa.',
   correctOptionTitle = 'Seguro VitaBlue Extranjería',
-  correctOptionDesc = '✅ Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.',
+  correctOptionDesc = 'Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.',
   tokens = {},
+  className = '',
   style,
 }) => {
-  const mergedTokens = { ...defaultMotionBrandTokens, ...tokens };
-
   return (
     <div
+      className={`relative flex w-full max-w-[420px] flex-col items-center rounded-3xl border border-teal-500/30 bg-[#001219]/90 p-5 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: '860px',
-        margin: '0 auto',
-        backgroundColor: 'rgba(0, 18, 25, 0.85)',
-        backdropFilter: 'blur(30px)',
-        border: '3px solid rgba(148, 210, 189, 0.35)',
-        borderRadius: '36px',
-        padding: '40px 32px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 95, 115, 0.3)',
-        color: mergedTokens.textColor,
-        boxSizing: 'border-box',
+        boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
+        backgroundColor: tokens?.surfaceBg,
         ...style,
       }}
     >
-      {/* TITLE */}
-      <h3
-        style={{
-          margin: '0 0 28px 0',
-          fontSize: '38px',
-          fontWeight: 900,
-          color: '#ffffff',
-          letterSpacing: '-0.02em',
-          lineHeight: 1.2,
-        }}
-      >
+      <h3 className="font-display text-sm font-black text-white tracking-tight mb-4 uppercase">
         {title}
       </h3>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
-        {/* WRONG OPTION (RED ACCENT) */}
-        <div
-          style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '2px solid rgba(239, 68, 68, 0.4)',
-            borderRadius: '24px',
-            padding: '24px 28px',
-            textAlign: 'left',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '28px' }}>❌</span>
-            <strong style={{ fontSize: '32px', fontWeight: 800, color: '#F87171' }}>
-              {wrongOptionTitle}
-            </strong>
+      <div className="flex flex-col gap-3 w-full text-left">
+        {/* WRONG OPTION */}
+        <div className="rounded-2xl border border-rose-500/40 bg-rose-950/30 p-3.5">
+          <div className="flex items-center gap-2 text-rose-400 font-bold text-xs mb-1">
+            <span className="flex size-4 items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-black">
+              <X className="size-3" />
+            </span>
+            <span>{wrongOptionTitle}</span>
           </div>
-          <p style={{ margin: 0, fontSize: '24px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.4 }}>
+          <p className="text-[11px] text-rose-200/80 leading-relaxed pl-6">
             {wrongOptionDesc}
           </p>
         </div>
 
-        {/* CORRECT OPTION (GREEN/GOLD ACCENT) */}
-        <div
-          style={{
-            backgroundColor: 'rgba(16, 185, 129, 0.15)',
-            border: '2px solid rgba(16, 185, 129, 0.6)',
-            borderRadius: '24px',
-            padding: '24px 28px',
-            textAlign: 'left',
-            boxShadow: '0 10px 30px rgba(16, 185, 129, 0.2)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '28px' }}>✅</span>
-            <strong style={{ fontSize: '32px', fontWeight: 800, color: '#34D399' }}>
-              {correctOptionTitle}
-            </strong>
+        {/* CORRECT OPTION */}
+        <div className="rounded-2xl border border-emerald-500/50 bg-emerald-950/40 p-3.5 shadow-md">
+          <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-1">
+            <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[9px] font-black">
+              <Check className="size-3" />
+            </span>
+            <span>{correctOptionTitle}</span>
           </div>
-          <p style={{ margin: 0, fontSize: '24px', fontWeight: 600, color: '#ffffff', lineHeight: 1.4 }}>
+          <p className="text-[11px] text-emerald-100 font-medium leading-relaxed pl-6">
             {correctOptionDesc}
           </p>
         </div>

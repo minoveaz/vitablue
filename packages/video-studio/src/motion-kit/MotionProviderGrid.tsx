@@ -1,6 +1,6 @@
 import React from 'react';
 import type { MotionProviderGridProps } from './types';
-import { defaultMotionBrandTokens } from './types';
+import { Building2, Check } from 'lucide-react';
 
 export const MotionProviderGrid: React.FC<MotionProviderGridProps> = ({
   title = 'COMPAÑÍAS LÍDERES AUTORIZADAS',
@@ -12,100 +12,45 @@ export const MotionProviderGrid: React.FC<MotionProviderGridProps> = ({
     { name: 'DKV', tag: 'Repatriación' },
   ],
   tokens = {},
+  className = '',
   style,
 }) => {
-  const mergedTokens = { ...defaultMotionBrandTokens, ...tokens };
-
   return (
     <div
+      className={`relative flex w-full max-w-[420px] flex-col items-center rounded-3xl border border-teal-500/30 bg-[#001219]/90 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: '860px',
-        margin: '0 auto',
-        backgroundColor: 'rgba(0, 18, 25, 0.85)',
-        backdropFilter: 'blur(30px)',
-        border: '3px solid rgba(0, 95, 115, 0.5)',
-        borderRadius: '36px',
-        padding: '40px 32px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 95, 115, 0.3)',
-        color: mergedTokens.textColor,
-        boxSizing: 'border-box',
+        boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
+        backgroundColor: tokens?.surfaceBg,
         ...style,
       }}
     >
-      {/* HEADER TITLE */}
-      <h3
-        style={{
-          margin: '0 0 10px 0',
-          fontSize: '40px',
-          fontWeight: 900,
-          color: '#ffffff',
-          letterSpacing: '-0.02em',
-        }}
-      >
+      <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-teal-900/40 text-teal-400">
+        <Building2 className="size-5" />
+      </div>
+
+      <h3 className="font-display text-base font-black text-white tracking-tight">
         {title}
       </h3>
-      <p
-        style={{
-          margin: '0 0 32px 0',
-          fontSize: '26px',
-          fontWeight: 600,
-          color: mergedTokens.mintColor,
-        }}
-      >
+      <p className="mt-1 text-xs text-[#94D2BD] mb-4">
         {subtitle}
       </p>
 
-      {/* 2X2 PROVIDERS GRID */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
-          width: '100%',
-        }}
-      >
+      {/* 2X2 GRID */}
+      <div className="grid grid-cols-2 gap-2.5 w-full">
         {providers.map((p, idx) => (
           <div
             key={idx}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: p.highlight ? 'rgba(238, 155, 0, 0.15)' : 'rgba(255, 255, 255, 0.06)',
-              border: p.highlight ? '2px solid rgba(238, 155, 0, 0.5)' : '2px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '24px',
-              padding: '24px 20px',
-            }}
+            className={`flex flex-col items-center justify-center rounded-2xl border p-3.5 transition-all ${
+              p.highlight
+                ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                : 'border-white/10 bg-white/5 text-white'
+            }`}
           >
-            <span
-              style={{
-                fontSize: '36px',
-                fontWeight: 900,
-                color: p.highlight ? '#EE9B00' : '#ffffff',
-                letterSpacing: '0.05em',
-                marginBottom: '8px',
-              }}
-            >
-              {p.name}
-            </span>
+            <strong className="font-display text-sm font-black tracking-wider">{p.name}</strong>
             {p.tag && (
-              <span
-                style={{
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  color: mergedTokens.mintColor,
-                  backgroundColor: 'rgba(148, 210, 189, 0.15)',
-                  padding: '4px 12px',
-                  borderRadius: '12px',
-                }}
-              >
-                {p.tag}
+              <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-white/10 px-2 py-0.5 text-[9px] font-bold text-teal-300">
+                <Check className="size-2.5" />
+                <span>{p.tag}</span>
               </span>
             )}
           </div>

@@ -66,12 +66,13 @@ const RequirementsListRenderer: TemplateRenderer = ({ scene, brandAdapter }) => 
 );
 
 const AdvisorCtaRenderer: TemplateRenderer = ({ scene, brandAdapter }) => (
-  <div style={{ width: '100%' }}>
+  <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
     <brandAdapter.AdvisorCard
       name={getText(scene.content, 'advisorName') || 'Sofía'}
       role={getText(scene.content, 'role') || 'Asesora Especialista'}
       whatsAppText={getText(scene.content, 'cta') || 'Pregúntanos por WhatsApp'}
       tokens={brandAdapter.brandTokens}
+      className="max-w-[760px] p-10 text-xl"
     />
   </div>
 );
