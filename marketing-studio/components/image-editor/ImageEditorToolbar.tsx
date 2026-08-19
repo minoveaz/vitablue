@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Copy,
   Check,
+  Pencil,
 } from 'lucide-react';
 import { ImageFormatPreset, IMAGE_FORMAT_PRESETS, ImageProject } from '../../types/imageStudio';
 
@@ -114,15 +115,20 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         )}
 
         <div className="flex items-center gap-2 pr-3 border-r border-slate-800 shrink-0">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-brand-cyan">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-brand-cyan shrink-0">
             <ImageIcon className="size-3.5" />
           </div>
-          <input
-            type="text"
-            value={project.title}
-            onChange={(e) => onUpdateTitle(e.target.value)}
-            className="truncate text-xs font-bold text-slate-100 bg-transparent hover:bg-slate-900/60 focus:bg-slate-900 border border-transparent hover:border-slate-800 focus:border-primary rounded-md px-1.5 py-0.5 max-w-[150px] sm:max-w-[200px] transition-all outline-none"
-          />
+          <div className="relative group flex items-center">
+            <input
+              type="text"
+              value={project.title}
+              onChange={(e) => onUpdateTitle(e.target.value)}
+              placeholder="Nombre del diseño..."
+              className="text-xs font-bold text-slate-100 bg-slate-900/60 hover:bg-slate-900 focus:bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-brand-cyan rounded-lg pl-2.5 pr-7 py-1 w-52 sm:w-64 md:w-80 transition-all outline-none shadow-inner"
+              title="Haz clic para cambiar el nombre de la imagen"
+            />
+            <Pencil className="absolute right-2 size-3 text-slate-500 group-hover:text-slate-300 pointer-events-none transition-colors" />
+          </div>
         </div>
 
         {/* BADGE DE AUTOGUARDADO LOCAL */}
