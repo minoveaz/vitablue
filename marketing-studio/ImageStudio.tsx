@@ -270,7 +270,6 @@ export const ImageStudio: React.FC = () => {
           onUpdateWidth={editor.updateLayerWidth}
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
-          onUpdateLayerProps={editor.updateLayerProps}
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}
