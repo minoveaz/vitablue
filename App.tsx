@@ -140,6 +140,7 @@ const AppLayout: React.FC = () => {
             <Route path="/marketing-studio/perfiles-sociales" element={<Navigate to="/backoffice/marketing-studio/perfiles-sociales" replace />} />
             <Route path="/marketing-studio/campanas/*" element={<Navigate to="/backoffice/marketing-studio/campanas" replace />} />
             <Route path="/marketing-studio/conexiones" element={<Navigate to="/backoffice/marketing-studio/conexiones" replace />} />
+            <Route path="/marketing-studio/assets" element={<Navigate to="/backoffice/marketing-studio/assets" replace />} />
             <Route path="/marketing-studio/generador-contenido" element={<Navigate to="/backoffice/marketing-studio/generador-contenido" replace />} />
             <Route path="/marketing-studio/*" element={<Navigate to="/backoffice/marketing-studio" replace />} />
             <Route path="/r/:slug" element={<MarketingRedirect />} />
