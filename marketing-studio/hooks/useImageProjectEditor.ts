@@ -144,6 +144,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const updateLayerRotation = useCallback((layerId: string, rotation: number) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, rotation: Math.round(rotation) } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const duplicateLayer = useCallback((layerId: string) => {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
@@ -328,6 +339,32 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       link.click();
     } catch (err) {
       console.error('Error al exportar imagen:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [project.title, project.preset.aspectRatio]);
+
+  const exportCanvasStage = useCallback(async (
+    stage: unknown,
+    format: 'png' | 'jpeg' | 'webp' = 'png',
+    pixelRatio: number = 2
+  ): Promise<void> => {
+    if (!stage || typeof (stage as { toDataURL?: Function }).toDataURL !== 'function') return;
+    setIsExporting(true);
+    try {
+      const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+      const dataUrl = (stage as { toDataURL: (options: Record<string, unknown>) => string }).toDataURL({
+        pixelRatio,
+        mimeType,
+        quality: 0.95,
+      });
+
+      const link = document.createElement('a');
+      link.download = `${project.title.toLowerCase().replace(/\s+/g, '-')}-${project.preset.aspectRatio.replace(':', 'x')}.${format}`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Error al exportar stage de Konva:', err);
     } finally {
       setIsExporting(false);
     }
@@ -634,6 +671,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerScale,
     updateLayerWidth,
     updateLayerHeight,
+    updateLayerRotation,
     commitPositionChange,
     fitLayerToCanvas,
     ungroupLayer,
@@ -646,5 +684,6 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     addBlockLayer,
     updateBackground,
     exportImage,
+    exportCanvasStage,
   };
 }

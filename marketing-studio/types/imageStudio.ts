@@ -237,17 +237,34 @@ export type ImageBlockType =
 
 export interface ImageLayer {
   id: string;
-  type: 'block' | 'text' | 'image' | 'badge';
+  type: 'block' | 'text' | 'image' | 'badge' | 'shape';
   blockType?: ImageBlockType;
   title: string;
   props: Record<string, unknown>;
-  position: { x: number; y: number }; // Percentage (0-100)
+  position: { x: number; y: number }; // Percentage (0-100) or canvas pixels
   zIndex: number;
   scale: number;
-  width?: number; // Width in px or relative
-  height?: number; // Height in px or relative
-  rotation?: number;
-  opacity?: number;
+  width?: number; // Width in px
+  height?: number; // Height in px
+  rotation?: number; // Degrees (0-360)
+  opacity?: number; // (0-1)
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  cornerRadius?: number | number[];
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: string;
+  fontStyle?: string;
+  align?: 'left' | 'center' | 'right';
+  letterSpacing?: number;
+  lineHeight?: number;
+  shadowColor?: string;
+  shadowBlur?: number;
+  shadowOffsetX?: number;
+  shadowOffsetY?: number;
+  shadowOpacity?: number;
+  src?: string; // Image source URL
   locked?: boolean;
   visible?: boolean;
 }

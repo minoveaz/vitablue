@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import Konva from 'konva';
 import BackofficeShell from '../components/layouts/BackofficeShell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
-import { ImageStage } from './components/image-editor/ImageStage';
+import { KonvaStage } from './components/image-editor/KonvaStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
 import { FolderOpen } from 'lucide-react';
@@ -14,7 +15,7 @@ export const ImageStudio: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const assetId = searchParams.get('assetId');
 
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<Konva.Stage | null>(null);
   const [isContextSidebarOpen, setIsContextSidebarOpen] = useState(true);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -84,31 +85,27 @@ export const ImageStudio: React.FC = () => {
   };
 
   const handleExport = async (format: 'png' | 'jpeg' | 'svg') => {
-    if (canvasRef.current) {
-      await editor.exportImage(canvasRef.current, format);
-      setToastMessage(`🎉 Imagen ${format.toUpperCase()} descargada en alta resolución`);
+    if (stageRef.current) {
+      await editor.exportCanvasStage(stageRef.current, format === 'svg' ? 'png' : format, 2);
+      setToastMessage(`🎉 Imagen ${format.toUpperCase()} exportada en 2K/4K nativa`);
       setTimeout(() => setToastMessage(null), 3000);
     }
   };
 
   const [isCanvasSelected, setIsCanvasSelected] = useState<boolean>(true);
 
-  const handleSelectLayer = (id: string) => {
+  const handleSelectLayer = (id: string | null) => {
     editor.selectLayer(id);
     setIsCanvasSelected(false);
-    setIsInspectorOpen(true);
+    if (id) {
+      setIsInspectorOpen(true);
+    }
   };
 
   const handleSelectCanvas = () => {
     editor.selectLayer(null);
     setIsCanvasSelected(true);
     setIsInspectorOpen(true);
-  };
-
-  const handleDeselectAll = () => {
-    editor.selectLayer(null);
-    setIsCanvasSelected(false);
-    setIsInspectorOpen(false);
   };
 
   const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0], defaultProps?: Record<string, unknown>) => {
@@ -123,7 +120,7 @@ export const ImageStudio: React.FC = () => {
     setIsInspectorOpen(true);
   };
 
-  // IF NO ASSET ID IS PRESENT, RENDER THE PROJECTS OVERVIEW HUB
+  // VISTA 1: OVERVIEW / HUB DE PROYECTOS
   if (!assetId) {
     return (
       <BackofficeShell
@@ -133,12 +130,16 @@ export const ImageStudio: React.FC = () => {
         mode="full-bleed"
         hideModuleHeader={true}
       >
-        <ImageStudioHub onOpenProject={(id) => setSearchParams({ assetId: id })} />
+        <ImageStudioHub
+          onOpenProject={(id) => {
+            setSearchParams({ assetId: id });
+          }}
+        />
       </BackofficeShell>
     );
   }
 
-  // IF ASSET ID IS PRESENT, RENDER THE FULL CANVAS EDITOR
+  // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL
   return (
     <BackofficeShell
       title="Image & Graphic Studio"
@@ -218,25 +219,22 @@ export const ImageStudio: React.FC = () => {
       }
     >
       <div className="flex h-full w-full flex-col overflow-hidden relative">
-        {/* CENTER CANVAS STAGE */}
-        <ImageStage
+        {/* CENTER CANVAS STAGE (KONVA 2D/WEBGL ENGINE) */}
+        <KonvaStage
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
           isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
-          canvasRef={canvasRef}
+          stageRef={stageRef}
           onSelectLayer={handleSelectLayer}
           onSelectCanvas={handleSelectCanvas}
-          onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
           onUpdateWidth={editor.updateLayerWidth}
-          onCommitPositionChange={editor.commitPositionChange}
-          onFitToCanvas={editor.fitLayerToCanvas}
-          onUngroupLayer={editor.ungroupLayer}
-          onDuplicateLayer={editor.duplicateLayer}
-          onRemoveLayer={editor.removeLayer}
+          onUpdateHeight={editor.updateLayerHeight}
+          onUpdateRotation={editor.updateLayerRotation}
+          onCommitChange={editor.commitPositionChange}
           onSetZoom={editor.setZoom}
         />
 
