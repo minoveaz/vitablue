@@ -139,6 +139,7 @@ export interface BackofficeShellProps {
   toolbar?: React.ReactNode;
   contextAside?: React.ReactNode;
   aside?: React.ReactNode;
+  asidePresentation?: 'inline' | 'drawer' | 'overlay';
   footer?: React.ReactNode;
   schema?: NavigationSchema;
   accessMap?: AccessMap;
@@ -160,6 +161,7 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
   toolbar,
   contextAside,
   aside,
+  asidePresentation = 'inline',
   footer,
   schema = vitablueBackofficeSchema,
   accessMap = defaultAccessMap,
@@ -220,6 +222,7 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
         toolbar={toolbar}
         contextAside={contextAside}
         aside={aside}
+        asidePresentation={asidePresentation}
         footer={footer}
       >
         {children}

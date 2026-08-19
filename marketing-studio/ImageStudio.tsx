@@ -67,6 +67,7 @@ export const ImageStudio: React.FC = () => {
       breadcrumbs={['Marketing Studio', 'Image Studio', editor.project.title]}
       mode="full-bleed"
       hideModuleHeader={true}
+      asidePresentation="overlay"
       toolbar={
         <ImageEditorToolbar
           project={editor.project}
