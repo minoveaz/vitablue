@@ -146,7 +146,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   }
 
   const props = selectedLayer.props as Record<string, unknown>;
-  const isCompound = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
+  const isGroup = selectedLayer.blockType === 'CustomGroup';
   const isTextType = selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText';
 
   return (
@@ -243,7 +243,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             >
               {Math.round((selectedLayer.scale ?? 1) * 100)}%
             </button>
-            {isCompound && onUngroupLayer && (
+            {isGroup && onUngroupLayer && (
               <button
                 type="button"
                 onClick={() => onUngroupLayer(selectedLayer.id)}
