@@ -13,6 +13,8 @@ import {
   Ungroup,
   Copy,
   Trash2,
+  MousePointer,
+  Hand,
 } from 'lucide-react';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
@@ -70,6 +72,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onSetZoom,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [toolMode, setToolMode] = useState<'select' | 'hand'>('select');
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
@@ -85,12 +90,54 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [hoveredLayerId, setHoveredLayerId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
+  const effectiveHandMode = toolMode === 'hand' || isSpacePressed;
+
+  const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number }>({
+    x: 0,
+    y: 0,
+    panX: 0,
+    panY: 0,
+  });
+
   const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
     x: 0,
     y: 0,
     layerX: 50,
     layerY: 50,
   });
+
+  // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable) {
+        return;
+      }
+
+      if (e.code === 'Space' && !isSpacePressed) {
+        setIsSpacePressed(true);
+      }
+      if (e.key.toLowerCase() === 'v') {
+        setToolMode('select');
+      }
+      if (e.key.toLowerCase() === 'h') {
+        setToolMode('hand');
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        setIsSpacePressed(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isSpacePressed]);
 
   const resizeStartRef = useRef<{
     startX: number;
@@ -167,7 +214,38 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   }, [zoom, hoveredLayerId, selectedLayerId, project.layers, onSetZoom, onUpdateScale]);
 
+  const handleContainerMouseDown = (e: React.MouseEvent) => {
+    if (effectiveHandMode || e.button === 1) {
+      e.preventDefault();
+      setIsPanning(true);
+      panStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        panX: panOffset.x,
+        panY: panOffset.y,
+      };
+      return;
+    }
+
+    const target = e.target as HTMLElement;
+    if (!target.closest('.canvas-layer-item') && !target.closest('.artboard-bg') && !target.closest('.interactive-handle')) {
+      onDeselectAll();
+    }
+  };
+
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    if (effectiveHandMode || e.button === 1) {
+      e.preventDefault();
+      setIsPanning(true);
+      panStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        panX: panOffset.x,
+        panY: panOffset.y,
+      };
+      return;
+    }
+
     const target = e.target as HTMLElement;
     if (target.closest('.canvas-layer-item') || target.closest('.interactive-handle')) {
       return;
@@ -192,6 +270,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
+    if (effectiveHandMode || e.button === 1) {
+      e.preventDefault();
+      setIsPanning(true);
+      panStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        panX: panOffset.x,
+        panY: panOffset.y,
+      };
+      return;
+    }
+
     e.stopPropagation();
     const isShift = e.shiftKey || e.metaKey || e.ctrlKey;
     onSelectLayer(layer.id, isShift);
@@ -253,6 +343,17 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // 0. Pan panorámico con ratón
+      if (isPanning) {
+        const deltaX = e.clientX - panStartRef.current.x;
+        const deltaY = e.clientY - panStartRef.current.y;
+        setPanOffset({
+          x: panStartRef.current.panX + deltaX,
+          y: panStartRef.current.panY + deltaY,
+        });
+        return;
+      }
+
       // 1. Marquee Drag Selection
       if (isMarqueeSelecting && canvasRef.current && marqueeBox) {
         const rect = canvasRef.current.getBoundingClientRect();
@@ -371,6 +472,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       if (draggingLayerId || resizingLayerId || rotatingLayerId) {
         onCommitPositionChange?.();
       }
+      setIsPanning(false);
       setDraggingLayerId(null);
       setResizingLayerId(null);
       setRotatingLayerId(null);
@@ -379,7 +481,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       setGuides([]);
     };
 
-    if (draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
+    if (isPanning || draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -388,7 +490,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
+  }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     onSetZoom(0.55);
@@ -400,8 +502,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   return (
     <div
       ref={containerRef}
-      onClick={onDeselectAll}
-      className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none cursor-grab active:cursor-grabbing"
+      onMouseDown={handleContainerMouseDown}
+      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
+        effectiveHandMode
+          ? isPanning
+            ? 'cursor-grabbing'
+            : 'cursor-grab'
+          : 'cursor-default'
+      }`}
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
@@ -628,7 +736,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 className={`canvas-layer-item absolute transition-shadow select-none shrink-0 ${getClipClass(
                   layer.clipShape
                 )} ${
-                  isLocked ? 'cursor-default' : 'cursor-move'
+                  effectiveHandMode
+                    ? isPanning
+                      ? 'cursor-grabbing'
+                      : 'cursor-grab'
+                    : isLocked
+                    ? 'cursor-default'
+                    : 'cursor-move'
                 } ${
                   isSelected
                     ? isLocked
@@ -703,25 +817,25 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     {/* LATERALES: AJUSTE DE ANCHURA (WIDTH) */}
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'w')}
-                      className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
-                      title="Arrastrar para cambiar el ancho (Width)"
+                      className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
+                      title="Ajustar ancho izquierdo"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'e')}
-                      className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
-                      title="Arrastrar para cambiar el ancho (Width)"
+                      className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
+                      title="Ajustar ancho derecho"
                     />
 
-                    {/* SUPERIOR E INFERIOR: AJUSTE DE ALTURA (HEIGHT) */}
+                    {/* SUPERIOR/INFERIOR: AJUSTE DE ALTURA (HEIGHT) */}
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'n')}
-                      className="absolute -top-2 left-1/2 -translate-x-1/2 h-2 w-5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
-                      title="Arrastrar para cambiar el alto (Height)"
+                      className="absolute -top-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
+                      title="Ajustar altura superior"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 's')}
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-2 w-5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
-                      title="Arrastrar para cambiar el alto (Height)"
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
+                      title="Ajustar altura inferior"
                     />
                   </>
                 )}
@@ -731,39 +845,77 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </div>
       </div>
 
-      {/* BOTTOM CONTROLS BAR: ZOOM & SAFE ZONES (CENTERED) */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-2xl border border-slate-800/90 bg-[#001219]/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl z-40 text-white text-xs animate-fadeIn">
-        <button
-          type="button"
-          onClick={() => onSetZoom(Math.max(0.25, zoom - 0.1))}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
-          title="Reducir zoom"
-        >
-          <Minus className="size-3.5" />
-        </button>
+      {/* BOTTOM CONTROLS BAR: TOOL SWITCH & ZOOM & SAFE ZONES (CENTERED) */}
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 rounded-2xl border border-slate-800/90 bg-[#001219]/90 p-1.5 shadow-2xl backdrop-blur-xl z-40 text-white text-xs animate-fadeIn">
+        {/* SELECTOR DE MODO DE HERRAMIENTA (SELECCIÓN / MANO) */}
+        <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
+          <button
+            type="button"
+            onClick={() => setToolMode('select')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+              !effectiveHandMode
+                ? 'bg-primary/25 text-brand-cyan shadow-xs border border-brand-cyan/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
+            }`}
+            title="Herramienta Selección (V)"
+          >
+            <MousePointer className="size-3.5" />
+            <span className="hidden sm:inline">Selección</span>
+            <kbd className="text-[9px] font-mono opacity-60">V</kbd>
+          </button>
 
-        <input
-          type="range"
-          min={0.25}
-          max={1.5}
-          step={0.05}
-          value={zoom}
-          onChange={(e) => onSetZoom(parseFloat(e.target.value))}
-          className="w-20 accent-primary cursor-pointer"
-        />
+          <button
+            type="button"
+            onClick={() => setToolMode('hand')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+              effectiveHandMode
+                ? 'bg-primary/25 text-brand-cyan shadow-xs border border-brand-cyan/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
+            }`}
+            title="Herramienta Mano / Pan (H o mantener barra Espaciadora)"
+          >
+            <Hand className="size-3.5" />
+            <span className="hidden sm:inline">Mano</span>
+            <kbd className="text-[9px] font-mono opacity-60">H</kbd>
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={() => onSetZoom(Math.min(1.5, zoom + 0.1))}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
-          title="Aumentar zoom"
-        >
-          <Plus className="size-3.5" />
-        </button>
+        <div className="h-4 w-px bg-slate-800" />
 
-        <span className="font-mono text-[11px] text-brand-cyan min-w-[36px] text-center font-bold">
-          {Math.round(zoom * 100)}%
-        </span>
+        {/* CONTROLES DE ZOOM */}
+        <div className="flex items-center gap-1 px-0.5 sm:px-1">
+          <button
+            type="button"
+            onClick={() => onSetZoom(Math.max(0.25, zoom - 0.1))}
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            title="Reducir zoom"
+          >
+            <Minus className="size-3.5" />
+          </button>
+
+          <input
+            type="range"
+            min={0.25}
+            max={1.5}
+            step={0.05}
+            value={zoom}
+            onChange={(e) => onSetZoom(parseFloat(e.target.value))}
+            className="w-16 sm:w-20 accent-primary cursor-pointer"
+          />
+
+          <button
+            type="button"
+            onClick={() => onSetZoom(Math.min(1.5, zoom + 0.1))}
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            title="Aumentar zoom"
+          >
+            <Plus className="size-3.5" />
+          </button>
+
+          <span className="font-mono text-[11px] text-brand-cyan min-w-[36px] text-center font-bold">
+            {Math.round(zoom * 100)}%
+          </span>
+        </div>
 
         <div className="h-4 w-px bg-slate-800" />
 
