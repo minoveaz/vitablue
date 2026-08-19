@@ -87,29 +87,36 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
   switch (layer.blockType) {
     // 0. GRUPOS PERSONALIZADOS MULTI-CAPA
     case 'CustomGroup': {
-      const children = (blockProps.childrenLayers ?? []) as ImageLayer[];
+      const children = (blockProps.childrenLayers ?? []) as (ImageLayer & { relX?: number; relY?: number })[];
+      const initialCentroid = (blockProps.initialCentroid as { x: number; y: number } | undefined);
+
       return (
         <div className="relative w-full h-full pointer-events-none">
-          {children.map((child) => (
-            <div
-              key={child.id}
-              className="absolute pointer-events-auto"
-              style={{
-                left: `${child.position.x - layer.position.x + 50}%`,
-                top: `${child.position.y - layer.position.y + 50}%`,
-                transform: `translate(-50%, -50%) rotate(${child.rotation ?? 0}deg) scale(${child.scale ?? 1})`,
-                zIndex: child.zIndex,
-                width: getBlockDefaultWidth(child.blockType, child.width, child.props as Record<string, unknown>),
-                height: child.height ? `${child.height}px` : 'auto',
-              }}
-            >
-              <ImageLayerBlockRenderer
-                layer={child}
-                brandTokens={brandTokens}
-                onUpdateLayerProps={onUpdateLayerProps}
-              />
-            </div>
-          ))}
+          {children.map((child) => {
+            const relX = child.relX !== undefined ? child.relX : (initialCentroid ? child.position.x - initialCentroid.x : 0);
+            const relY = child.relY !== undefined ? child.relY : (initialCentroid ? child.position.y - initialCentroid.y : 0);
+
+            return (
+              <div
+                key={child.id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: `calc(50% + ${relX}%)`,
+                  top: `calc(50% + ${relY}%)`,
+                  transform: `translate(-50%, -50%) rotate(${child.rotation ?? 0}deg) scale(${child.scale ?? 1})`,
+                  zIndex: child.zIndex,
+                  width: getBlockDefaultWidth(child.blockType, child.width, child.props as Record<string, unknown>),
+                  height: child.height ? `${child.height}px` : 'auto',
+                }}
+              >
+                <ImageLayerBlockRenderer
+                  layer={child}
+                  brandTokens={brandTokens}
+                  onUpdateLayerProps={onUpdateLayerProps}
+                />
+              </div>
+            );
+          })}
         </div>
       );
     }

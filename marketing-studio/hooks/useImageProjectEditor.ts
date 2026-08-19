@@ -189,6 +189,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     // Calcular baricentro medio
     const avgX = layersToGroup.reduce((acc, l) => acc + l.position.x, 0) / layersToGroup.length;
     const avgY = layersToGroup.reduce((acc, l) => acc + l.position.y, 0) / layersToGroup.length;
+    const groupCenter = { x: Math.round(avgX * 10) / 10, y: Math.round(avgY * 10) / 10 };
+
+    // Guardar los hijos con sus posiciones relativas fijas respecto al centro inicial del grupo
+    const storedChildren = layersToGroup.map((l) => ({
+      ...l,
+      relX: Math.round((l.position.x - groupCenter.x) * 100) / 100,
+      relY: Math.round((l.position.y - groupCenter.y) * 100) / 100,
+    }));
 
     const groupLayerId = `layer-group-${Date.now()}`;
     const newGroupLayer: ImageLayer = {
@@ -197,9 +205,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       blockType: 'CustomGroup',
       title: `Grupo (${layersToGroup.length} elementos)`,
       props: {
-        childrenLayers: layersToGroup,
+        childrenLayers: storedChildren,
+        initialCentroid: groupCenter,
       },
-      position: { x: Math.round(avgX * 10) / 10, y: Math.round(avgY * 10) / 10 },
+      position: groupCenter,
       zIndex: Math.max(...layersToGroup.map((l) => l.zIndex)),
       scale: 1,
     };
@@ -1173,7 +1182,39 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       }
 
       if (layer.blockType === 'CustomGroup' && Array.isArray(props.childrenLayers)) {
-        subLayers = props.childrenLayers as ImageLayer[];
+        const children = props.childrenLayers as (ImageLayer & { relX?: number; relY?: number })[];
+        const initialCentroid = (props.initialCentroid as { x: number; y: number } | undefined) ?? { x: layer.position.x, y: layer.position.y };
+        const groupScale = layer.scale ?? 1;
+        const groupRotation = layer.rotation ?? 0;
+
+        subLayers = children.map((child) => {
+          const offsetX = child.relX !== undefined ? child.relX : (child.position.x - initialCentroid.x);
+          const offsetY = child.relY !== undefined ? child.relY : (child.position.y - initialCentroid.y);
+
+          // Si el grupo rotó, rotar el vector relativo
+          let finalOffsetX = offsetX * groupScale;
+          let finalOffsetY = offsetY * groupScale;
+          if (groupRotation !== 0) {
+            const rad = (groupRotation * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const rotX = offsetX * cos - offsetY * sin;
+            const rotY = offsetX * sin + offsetY * cos;
+            finalOffsetX = rotX * groupScale;
+            finalOffsetY = rotY * groupScale;
+          }
+
+          return {
+            ...child,
+            position: {
+              x: Math.round((layer.position.x + finalOffsetX) * 10) / 10,
+              y: Math.round((layer.position.y + finalOffsetY) * 10) / 10,
+            },
+            scale: Math.round(((child.scale ?? 1) * groupScale) * 100) / 100,
+            rotation: Math.round(((child.rotation ?? 0) + groupRotation) % 360),
+            zIndex: layer.zIndex + (child.zIndex ? child.zIndex / 100 : 0),
+          };
+        });
       }
 
       if (subLayers.length > 0) {

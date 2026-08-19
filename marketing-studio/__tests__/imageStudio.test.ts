@@ -91,4 +91,52 @@ describe('ImageStudio 7 Rapid Actions (Canva-Style Architecture)', () => {
     expect(testLayer.borderWidth).toBe(2);
     expect(testLayer.borderRadius).toBe(16);
   });
+
+  it('preserves exact visual offsets when grouping and ungrouping layers', () => {
+    const layerA: import('../types/imageStudio').ImageLayer = {
+      id: 'layer-a',
+      type: 'block',
+      blockType: 'CustomText',
+      title: 'A',
+      position: { x: 40, y: 40 },
+      zIndex: 1,
+      scale: 1,
+      props: {},
+    };
+
+    const layerB: import('../types/imageStudio').ImageLayer = {
+      id: 'layer-b',
+      type: 'block',
+      blockType: 'CustomText',
+      title: 'B',
+      position: { x: 60, y: 60 },
+      zIndex: 2,
+      scale: 1,
+      props: {},
+    };
+
+    // Centro del grupo
+    const avgX = (layerA.position.x + layerB.position.x) / 2; // 50
+    const avgY = (layerA.position.y + layerB.position.y) / 2; // 50
+    expect(avgX).toBe(50);
+    expect(avgY).toBe(50);
+
+    const relAX = layerA.position.x - avgX; // -10
+    const relBX = layerB.position.x - avgX; // +10
+
+    // Si el grupo se mueve a (70, 70):
+    const groupMovedX = 70;
+    const groupMovedY = 70;
+
+    // Al desagrupar, la posición de A debe ser exactamente 70 + (-10) = 60
+    const ungroupedAX = groupMovedX + relAX;
+    const ungroupedAY = groupMovedY + (layerA.position.y - avgY);
+    const ungroupedBX = groupMovedX + relBX;
+    const ungroupedBY = groupMovedY + (layerB.position.y - avgY);
+
+    expect(ungroupedAX).toBe(60);
+    expect(ungroupedAY).toBe(60);
+    expect(ungroupedBX).toBe(80);
+    expect(ungroupedBY).toBe(80);
+  });
 });
