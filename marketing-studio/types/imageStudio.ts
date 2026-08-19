@@ -245,6 +245,7 @@ export interface ImageLayer {
   zIndex: number;
   scale: number;
   width?: number; // Width in px or relative
+  height?: number; // Height in px or relative
   rotation?: number;
   opacity?: number;
   locked?: boolean;

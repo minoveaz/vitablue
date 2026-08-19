@@ -125,7 +125,18 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, width: width ? Math.max(160, Math.min(520, width)) : undefined } : l
+        l.id === layerId ? { ...l, width: width ? Math.max(80, Math.min(1200, width)) : undefined } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const updateLayerHeight = useCallback((layerId: string, height?: number) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, height: height ? Math.max(40, Math.min(1400, height)) : undefined } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -622,6 +633,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerPosition,
     updateLayerScale,
     updateLayerWidth,
+    updateLayerHeight,
     commitPositionChange,
     fitLayerToCanvas,
     ungroupLayer,

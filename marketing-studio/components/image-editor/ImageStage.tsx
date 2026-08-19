@@ -450,6 +450,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   width: getBlockWidth(layer.blockType, layer.width),
                   minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
                   maxWidth: 'none',
+                  height: layer.height ? `${layer.height}px` : 'auto',
+                  minHeight: layer.height ? `${layer.height}px` : 'auto',
                   flexShrink: 0,
                 }}
               >
@@ -459,7 +461,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     className="w-full rounded-3xl border border-teal-500/30 bg-[#001219]/90 shadow-2xl backdrop-blur-xl pointer-events-none"
                     style={{
                       width: '100%',
-                      height: `${blockProps.height ?? 380}px`,
+                      height: layer.height ? `${layer.height}px` : `${blockProps.height ?? 380}px`,
                       boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
                     }}
                   />
