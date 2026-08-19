@@ -98,11 +98,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     panY: 0,
   });
 
-  const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
+  const dragStartRef = useRef<{
+    x: number;
+    y: number;
+    layers: Array<{ id: string; startX: number; startY: number }>;
+  }>({
     x: 0,
     y: 0,
-    layerX: 50,
-    layerY: 50,
+    layers: [],
   });
 
   // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
@@ -272,14 +275,33 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
     e.stopPropagation();
     const isShift = e.shiftKey || e.metaKey || e.ctrlKey;
-    onSelectLayer(layer.id, isShift);
+    const isAlreadySelected = selectedLayerIds.includes(layer.id);
+    let currentSelectedIds = selectedLayerIds;
+
+    if (isShift) {
+      onSelectLayer(layer.id, true);
+      currentSelectedIds = selectedLayerIds.includes(layer.id)
+        ? selectedLayerIds.filter((id) => id !== layer.id)
+        : [...selectedLayerIds, layer.id];
+    } else if (!isAlreadySelected) {
+      onSelectLayer(layer.id, false);
+      currentSelectedIds = [layer.id];
+    }
+
     if (layer.locked) return;
     setDraggingLayerId(layer.id);
+
+    const layersToDrag = project.layers.filter(
+      (l) => currentSelectedIds.includes(l.id) && !l.locked
+    );
+
     dragStartRef.current = {
       x: e.clientX,
       y: e.clientY,
-      layerX: layer.position.x,
-      layerY: layer.position.y,
+      layers:
+        layersToDrag.length > 0
+          ? layersToDrag.map((l) => ({ id: l.id, startX: l.position.x, startY: l.position.y }))
+          : [{ id: layer.id, startX: layer.position.x, startY: layer.position.y }],
     };
   };
 
@@ -342,7 +364,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         return;
       }
 
-      // 1. Marquee Drag Selection
+      // 1. Marquee Drag Selection (Caja elástica de multiselección en tiempo real)
       if (isMarqueeSelecting && canvasRef.current && marqueeBox) {
         const rect = canvasRef.current.getBoundingClientRect();
         const currentX = (e.clientX - rect.left) / zoom;
@@ -374,9 +396,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           })
           .map((l) => l.id);
 
-        if (intersectedIds.length > 0) {
-          onSelectMultipleLayers?.(intersectedIds);
-        }
+        onSelectMultipleLayers?.(intersectedIds);
         return;
       }
 
@@ -430,30 +450,41 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       const deltaX = ((e.clientX - dragStartRef.current.x) / rect.width) * 100;
       const deltaY = ((e.clientY - dragStartRef.current.y) / rect.height) * 100;
 
-      let nextX = Math.max(5, Math.min(95, dragStartRef.current.layerX + deltaX));
-      let nextY = Math.max(5, Math.min(95, dragStartRef.current.layerY + deltaY));
+      // Si arrastramos una sola capa, calculamos snapping
+      if (dragStartRef.current.layers.length <= 1) {
+        const primary = dragStartRef.current.layers[0] ?? { id: draggingLayerId, startX: 50, startY: 50 };
+        let nextX = Math.max(5, Math.min(95, primary.startX + deltaX));
+        let nextY = Math.max(5, Math.min(95, primary.startY + deltaY));
 
-      // Snapping magnético
-      const activeLayer = project.layers.find((l) => l.id === draggingLayerId);
-      if (activeLayer) {
-        const pixelX = (nextX / 100) * project.preset.width;
-        const pixelY = (nextY / 100) * project.preset.height;
-        const snap = calculateSnapping(
-          draggingLayerId,
-          pixelX,
-          pixelY,
-          activeLayer.width ?? 380,
-          activeLayer.height ?? 200,
-          project.preset.width,
-          project.preset.height,
-          project.layers
-        );
-        nextX = (snap.x / project.preset.width) * 100;
-        nextY = (snap.y / project.preset.height) * 100;
-        setGuides(snap.guides);
+        const activeLayer = project.layers.find((l) => l.id === primary.id);
+        if (activeLayer) {
+          const pixelX = (nextX / 100) * project.preset.width;
+          const pixelY = (nextY / 100) * project.preset.height;
+          const snap = calculateSnapping(
+            primary.id,
+            pixelX,
+            pixelY,
+            activeLayer.width ?? 380,
+            activeLayer.height ?? 200,
+            project.preset.width,
+            project.preset.height,
+            project.layers
+          );
+          nextX = (snap.x / project.preset.width) * 100;
+          nextY = (snap.y / project.preset.height) * 100;
+          setGuides(snap.guides);
+        }
+
+        onUpdatePosition(primary.id, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
+      } else {
+        // Arrastrar múltiples capas en bloque
+        setGuides([]);
+        dragStartRef.current.layers.forEach((item) => {
+          const nextX = Math.max(2, Math.min(98, item.startX + deltaX));
+          const nextY = Math.max(2, Math.min(98, item.startY + deltaY));
+          onUpdatePosition(item.id, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
+        });
       }
-
-      onUpdatePosition(draggingLayerId, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
     };
 
     const handleMouseUp = () => {
