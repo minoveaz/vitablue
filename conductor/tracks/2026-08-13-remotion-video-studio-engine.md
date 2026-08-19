@@ -1,12 +1,12 @@
 # Track: VitaBlue Social Video & Creative Studio
 
 **Fecha:** 2026-08-13 (Actualizado: 2026-08-19)
-**Estado:** Image Studio Core + Phase 4 (Layers Tree & StudioWorkspaceShell Canva-Style) Completados al 100% · Próximo: Carrusel Multi-Página (Fase 5) · En cola: 1-Click Video Asset Sync & Gemini Copilot
+**Estado:** Image Studio Core + Phase 4 (Layers Tree, StudioWorkspaceShell Canva-Style, Modular Blocks, Punteros V/H, Deep-Cloned Undo/Redo) Completados al 100% · En curso: Rail de 9 Herramientas Estilo Canva + Carrusel Multi-Página · En cola: 1-Click Video Bridge con Remotion
 **Rama:** `feat/remotion-video-studio-engine`
 
 ## 1. Objetivo
 
-Crear un estudio de generación de vídeo para redes sociales que permita producir piezas de forma rápida, repetible y editable utilizando los componentes, contenidos y tokens visuales de VitaBlue.
+Crear un estudio de generación creativa y de vídeo para redes sociales que permita producir piezas estáticas (anuncios 4:5, 9:16, 1:1, carruseles de Instagram/LinkedIn) y piezas animadas (Reels, TikToks, Shorts en Remotion) de forma rápida, repetible y editable utilizando los componentes, contenidos y tokens visuales de VitaBlue.
 
 El sistema debe permitir editar dos dimensiones de una pieza:
 
@@ -334,7 +334,55 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 - [x] Actualizar registro central de rutas en `config/routes.ts` y navegación en `BackofficeShell.tsx`.
 - [x] Pruebas unitarias de MotionKit y registro (`motionKit.test.ts`) con 50 tests en verde.
 
-**Salida:** Hub centralizado de activos de marketing y suite de componentes de vídeo 100% agnósticos y reutilizables en cualquier proyecto y en LoopDev.
+### Fase 6.6 - Image Studio (Editor Estático & Carruseles con Arquitectura Canva-Style)
+
+- [x] **Lienzo Interactivo WYSIWYG:**
+  - Redimensionamiento proporcional de 8 tiradores + ajuste libre de anchura/altura (`updateLayerWidth` / `updateLayerHeight`).
+  - Rotación angular libre 360° con manejador superior.
+  - Snapping magnético con guías de alineación en tiempo real (`calculateSnapping`).
+  - Marquee Selection (caja elástica de multiselección turquesa) y agrupación `Cmd+G` / Desagrupar.
+  - Selección de Puntero (`V` - Selección estándar) vs Mano (`H` - Desplazar/Pan) con soporte para tecla `Espacio`.
+  - Botón de ajuste perfecto a pantalla (`fitZoom` matemático dinámico).
+- [x] **Arquitectura de Navegación `StudioWorkspaceShell`:**
+  - Estructura inspirada en Canva.com y 100% alineada con los shells de LoopDev.
+  - Header oficial `PlatformHeader` + Rail de herramientas (`w-16`) + Flyout Drawer (`360px`) colapsable con botón `❮`/`❯`.
+  - Inspector derecho reactivo de propiedades (`isInspectorOpen`) que se abre automáticamente al seleccionar capas.
+- [x] **Modularización Atómica de Bloques (`blocks/`):**
+  - Desacoplamiento de `ImageStage.tsx` hacia `marketing-studio/components/image-editor/blocks/` (`AdvisorBlocks`, `ProviderBlocks`, `TrustBlocks`, `ComparisonBlocks`, `SurfaceBlocks`, `BlockRenderer`).
+- [x] **Motor de Historial Inmutable (Undo / Redo Atómico):**
+  - Snapshots mediante clonación profunda (`JSON.parse(JSON.stringify)`).
+  - Gestos continuos acumulativos (un solo paso al soltar el ratón en `commitPositionChange`).
+  - Atajos `Cmd+Z` (Undo), `Cmd+Shift+Z` / `Ctrl+Y` (Redo) y botones en toolbar.
+  - Scrollbar oscuro ultra-fino (`.custom-scrollbar`).
+
+#### 🎨 Rail de 9 Herramientas de Edición Rápida (Canva-Style Drawer):
+
+```text
+┌─── TOOL RAIL (16) ───┐ ┌──────── FLYOUT DRAWER (360px) ────────┐
+│ 📑  1. Plantillas     │ │ Filtros por objetivo de campaña       │
+│ 🧩  2. Bloques        │ │ Bloques de conversión de seguros     │
+│ 🔷  3. Elementos      │ │ Formas, badges de urgencia, mockups  │
+│ 🔤  4. Texto          │ │ H1, H2, H3 y combinaciones con CTR   │
+│ 🎨  5. Kit de Marca   │ │ Paleta oficial VitaBlue, logos SVG   │
+│ 📁  6. Medios/Fotos   │ │ Stock visados/médicos + Drag & drop  │
+│ 📑  7. Capas          │ │ Árbol Drag & drop, bloqueo, ocultar  │
+│ ✨  8. Copys con IA   │ │ Hooks de extranjería y llamadas CTA  │
+│ 🎵  9. Audio & Video  │ │ Pistas, SFX y puente a Remotion      │
+└──────────────────────┘ └───────────────────────────────────────┘
+```
+
+- [x] **1. Plantillas (`Templates`):** Filtros por Visado Estudiante, Nómadas Digitales, Comparativas, etc.
+- [x] **2. Bloques (`Conversion Blocks`):** Asesora, Garantía Consular, Grid Aseguradoras, Comparativa ❌ vs ✅.
+- [ ] **3. Elementos (`Elements & Shapes`):** Rectángulos, círculos, pastillas, marcos iPhone, badges de urgencia e iconografía médica/legal.
+- [ ] **4. Texto (`Text & Typography`):** H1/H2/H3 con clases Poppins/Inter y combinaciones tipográficas pre-diseñadas de alto CTR.
+- [x] **5. Kit de Marca (`Brand Kit`):** Paleta semántica Opción 3, logos SVG y degradados Midnight/Ocean.
+- [ ] **6. Medios y Fotos (`Uploads & Stock`):** Stock de extranjería/salud y dropzone de archivos locales.
+- [x] **7. Capas (`Layers Manager`):** Árbol de capas con Drag & Drop, bloqueo, ocultar y selección múltiple.
+- [ ] **8. Asistente IA de Copywriting (`AI Copy & Magic Hooks`):** Generador de ganchos de visados y CTAs.
+- [ ] **9. Audio & Video Bridge (`Remotion Bridge`):** Música de fondo y botón 1-clic para convertir estático a vídeo animado.
+- [ ] **Carrusel Multi-Página (Instagram / LinkedIn):** Paginador inferior `[ Slide 1 ] [ Slide 2 ] [ + ]` y exportador multi-slide ZIP/PDF.
+
+**Salida:** Estudio creativo unificado para crear anuncios estáticos y carruseles en segundos con la máxima tasa de conversión en redes.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 
