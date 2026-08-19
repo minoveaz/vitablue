@@ -1,7 +1,7 @@
 # Track: VitaBlue Social Video Studio
 
-**Fecha:** 2026-08-13
-**Estado:** En definición
+**Fecha:** 2026-08-13 (Actualizado: 2026-08-19)
+**Estado:** Fases 0 a 6.5 Completadas · Listo para Fase 7 (Gemini Creative Copilot)
 **Rama:** `feat/remotion-video-studio-engine`
 
 ## 1. Objetivo
@@ -188,14 +188,14 @@ La timeline multicapa es importante, pero no debe bloquear la primera versión �
 
 ### Fase 0 - Contrato del producto y prueba de viabilidad
 
-- [ ] Definir los primeros canales: Reels/Stories/TikTok y formato 9:16.
-- [ ] Elegir dos o tres casos de uso concretos: requisitos de visado, producto de salud y CTA de asesoría.
-- [ ] Inventariar componentes VitaBlue aptos para vídeo.
-- [ ] Confirmar licencia de Remotion y dependencias.
-- [ ] Definir criterios de éxito: tiempo para crear una pieza, tiempo de preview y tiempo de render.
-- [ ] Definir qué assets pueden utilizarse y con qué derechos.
-- [ ] Registrar qué capacidades serán específicas de VitaBlue y cuáles pertenecen al core reutilizable.
-- [ ] Confirmar que el módulo se integrará en Marketing Studio de Loopdev y no como una aplicación independiente.
+- [x] Definir los primeros canales: Reels/Stories/TikTok y formato 9:16.
+- [x] Elegir dos o tres casos de uso concretos: requisitos de visado, producto de salud y CTA de asesoría.
+- [x] Inventariar componentes VitaBlue aptos para vídeo.
+- [x] Confirmar licencia de Remotion y dependencias.
+- [x] Definir criterios de éxito: tiempo para crear una pieza, tiempo de preview y tiempo de render.
+- [x] Definir qué assets pueden utilizarse y con qué derechos.
+- [x] Registrar qué capacidades serán específicas de VitaBlue y cuáles pertenecen al core reutilizable.
+- [x] Confirmar que el módulo se integrará en Marketing Studio de Loopdev y no como una aplicación independiente.
 
 **Salida:** tres plantillas objetivo, contrato inicial de datos y una métrica de eficiencia.
 
@@ -317,6 +317,24 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 **Salida VitaBlue:** editor local funcional para editar, previsualizar y exportar sin depender de persistencia remota.
 
 **Trabajo futuro en Loopdev:** exportación remota multiusuario con persistencia, autorización, Storage, limpieza automática y worker desplegado.
+
+### Fase 6.5 - Módulo de Asset Management Studio & Suite de Componentes de Vídeo Agnósticos (MotionKit)
+
+- [x] Crear módulo independiente `/backoffice/marketing-studio/assets` con vista de 3 pestañas:
+  1. **Kits de Vídeo (MotionKit):** Catálogo con selector de aspect ratio (`9:16`, `1:1`, `16:9`), *Live Preview* en dispositivo móvil y editor de propiedades (Playground) con exportación a JSON.
+  2. **Tokens de Marca (White-Label):** Paleta semántica (`primaryColor`, `accentColor`, `mintColor`, `surfaceBg`) inyectable a cualquier marca cliente.
+  3. **Biblioteca de Audio & Media:** Catálogo de pistas de fondo y efectos SFX con metadatos de BPM y duración.
+- [x] Crear suite de 4 componentes nativos de vídeo 1080p en `packages/video-studio/src/motion-kit/`:
+  - `MotionAdvisorCard`: Tarjeta vertical en Glassmorphism con foto de asesora, badge de estado en directo y botón WhatsApp vibrante con resplandor.
+  - `MotionTrustBadge`: Sello de garantía consular y 100% válido para visados.
+  - `MotionProviderGrid`: Grid de tarjetas de cristal brillante con logos de aseguradoras autorizadas (Sanitas, Adeslas, Asisa, DKV).
+  - `MotionComparisonCard`: Comparativa visual clara (❌ *Seguro de viaje tradicional* vs ✅ *Seguro VitaBlue Extranjería*).
+- [x] Lienzo de previsualización con mockup fotorrealista de smartphone (iPhone con Dynamic Island, bisel de titanio, barras de progreso de Story y branding de cuenta verificada).
+- [x] Integrar consumo directo de MotionKit en el Video Generator (`CreativeEditorAssetSidebar.tsx`, `CreativeEditorInspector.tsx`, `ReelVisaRejection.tsx`, `SceneRenderer.tsx`).
+- [x] Actualizar registro central de rutas en `config/routes.ts` y navegación en `BackofficeShell.tsx`.
+- [x] Pruebas unitarias de MotionKit y registro (`motionKit.test.ts`) con 50 tests en verde.
+
+**Salida:** Hub centralizado de activos de marketing y suite de componentes de vídeo 100% agnósticos y reutilizables en cualquier proyecto y en LoopDev.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 
