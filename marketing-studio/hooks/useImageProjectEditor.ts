@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { toPng, toJpeg, toSvg, toBlob } from 'html-to-image';
 import {
   ImageProject,
@@ -32,43 +32,75 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (initialProject && initialProject.id !== project.id) {
       setProject(initialProject);
       setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
-      setHistory([initialProject]);
+      const cloned = JSON.parse(JSON.stringify(initialProject));
+      historyRef.current = [cloned];
+      historyIndexRef.current = 0;
+      setHistoryLength(1);
       setHistoryIndex(0);
     }
   }, [initialProject?.id]);
 
-  // History stack for Undo / Redo
-  const [history, setHistory] = useState<ImageProject[]>([project]);
+  // History stack for Undo / Redo con deep-clone y ref síncrono
+  const historyRef = useRef<ImageProject[]>([JSON.parse(JSON.stringify(project))]);
+  const historyIndexRef = useRef<number>(0);
+  const [historyLength, setHistoryLength] = useState<number>(1);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
   const pushHistory = useCallback((nextProject: ImageProject) => {
-    setHistory((prev) => {
-      const newHistory = prev.slice(0, historyIndex + 1);
-      return [...newHistory, nextProject];
-    });
-    setHistoryIndex((prev) => prev + 1);
-    saveStoredImageProject(nextProject);
+    const clone: ImageProject = JSON.parse(JSON.stringify(nextProject));
+    const currentIdx = historyIndexRef.current;
+    const currentList = historyRef.current.slice(0, currentIdx + 1);
+
+    // Evitar estados idénticos consecutivos en la pila
+    const lastItem = currentList[currentList.length - 1];
+    if (
+      lastItem &&
+      JSON.stringify(lastItem.layers) === JSON.stringify(clone.layers) &&
+      lastItem.preset.id === clone.preset.id &&
+      JSON.stringify(lastItem.background) === JSON.stringify(clone.background) &&
+      lastItem.title === clone.title
+    ) {
+      return;
+    }
+
+    const updatedList = [...currentList, clone];
+    const cappedList = updatedList.length > 50 ? updatedList.slice(updatedList.length - 50) : updatedList;
+    const newIndex = cappedList.length - 1;
+
+    historyRef.current = cappedList;
+    historyIndexRef.current = newIndex;
+    setHistoryLength(cappedList.length);
+    setHistoryIndex(newIndex);
+
+    saveStoredImageProject(clone);
     setLastSavedAt(new Date().toISOString());
-  }, [historyIndex]);
+  }, []);
 
   const undo = useCallback(() => {
-    if (historyIndex > 0) {
-      const prevProject = history[historyIndex - 1];
-      setHistoryIndex(historyIndex - 1);
-      setProject(prevProject);
-      if (prevProject.layers.length > 0 && !prevProject.layers.some((l) => l.id === selectedLayerId)) {
-        setSelectedLayerId(prevProject.layers[0].id);
-      }
+    const currentIdx = historyIndexRef.current;
+    if (currentIdx > 0) {
+      const nextIdx = currentIdx - 1;
+      const targetProject: ImageProject = JSON.parse(JSON.stringify(historyRef.current[nextIdx]));
+      historyIndexRef.current = nextIdx;
+      setHistoryIndex(nextIdx);
+      setProject(targetProject);
+      saveStoredImageProject(targetProject);
+      setLastSavedAt(new Date().toISOString());
     }
-  }, [history, historyIndex, selectedLayerId]);
+  }, []);
 
   const redo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const nextProject = history[historyIndex + 1];
-      setHistoryIndex(historyIndex + 1);
-      setProject(nextProject);
+    const currentIdx = historyIndexRef.current;
+    if (currentIdx < historyRef.current.length - 1) {
+      const nextIdx = currentIdx + 1;
+      const targetProject: ImageProject = JSON.parse(JSON.stringify(historyRef.current[nextIdx]));
+      historyIndexRef.current = nextIdx;
+      setHistoryIndex(nextIdx);
+      setProject(targetProject);
+      saveStoredImageProject(targetProject);
+      setLastSavedAt(new Date().toISOString());
     }
-  }, [history, historyIndex]);
+  }, []);
 
   const updateTitle = useCallback((title: string) => {
     setProject((prev) => {
@@ -379,44 +411,36 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
       );
-      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
-      return next;
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
-  }, [pushHistory]);
+  }, []);
 
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, width: width ? Math.max(80, Math.min(1200, width)) : undefined } : l
       );
-      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
-      return next;
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
-  }, [pushHistory]);
+  }, []);
 
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, height: height ? Math.max(40, Math.min(1400, height)) : undefined } : l
       );
-      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
-      return next;
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
-  }, [pushHistory]);
+  }, []);
 
   const updateLayerRotation = useCallback((layerId: string, rotation: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, rotation: Math.round(rotation) } : l
       );
-      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
-      return next;
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
-  }, [pushHistory]);
+  }, []);
 
   const duplicateLayer = useCallback((layerId: string) => {
     setProject((prev) => {
@@ -958,7 +982,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     isExporting,
     lastSavedAt,
     canUndo: historyIndex > 0,
-    canRedo: historyIndex < history.length - 1,
+    canRedo: historyIndex < historyLength - 1,
     undo,
     redo,
     updateTitle,

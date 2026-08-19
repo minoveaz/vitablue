@@ -57,6 +57,11 @@ export const ImageStudio: React.FC = () => {
         e.preventDefault();
       }
 
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') {
+        editor.redo();
+        e.preventDefault();
+      }
+
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'g') {
         e.preventDefault();
         if (e.shiftKey) {
