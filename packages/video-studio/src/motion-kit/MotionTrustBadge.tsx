@@ -13,7 +13,7 @@ export const MotionTrustBadge: React.FC<MotionTrustBadgeProps> = ({
 }) => {
   return (
     <div
-      className={`relative flex w-full max-w-[420px] flex-col items-center rounded-3xl border border-amber-500/40 bg-[#001219]/90 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
+      className={`relative flex w-full max-w-[420px] h-full flex-col items-center justify-between rounded-3xl border border-amber-500/40 bg-[#001219]/90 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
         boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(238, 155, 0, 0.15)',
         backgroundColor: tokens?.surfaceBg,

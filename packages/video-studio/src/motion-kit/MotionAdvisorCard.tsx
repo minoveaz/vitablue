@@ -15,7 +15,7 @@ export const MotionAdvisorCard: React.FC<MotionAdvisorCardProps> = ({
 }) => {
   return (
     <div
-      className={`relative flex w-full max-w-[380px] flex-col items-center rounded-3xl border border-teal-500/40 bg-[#001219]/95 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
+      className={`relative flex w-full max-w-[380px] h-full flex-col items-center justify-between rounded-3xl border border-teal-500/40 bg-[#001219]/95 p-6 text-center shadow-2xl backdrop-blur-xl transition-all ${className}`}
       style={{
         boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 95, 115, 0.3)',
         backgroundColor: tokens?.surfaceBg ?? 'rgba(0, 18, 25, 0.95)',

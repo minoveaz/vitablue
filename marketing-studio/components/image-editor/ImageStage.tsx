@@ -570,8 +570,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
                     whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
                     tokens={project.brandTokens}
-                    className="!max-w-none !w-full"
-                    style={{ maxWidth: 'none', width: '100%' }}
+                    className="!max-w-none !w-full !h-full"
+                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
                   />
                 )}
 
@@ -727,8 +727,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
                     verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
                     tokens={project.brandTokens}
-                    className="!max-w-none !w-full"
-                    style={{ maxWidth: 'none', width: '100%' }}
+                    className="!max-w-none !w-full !h-full"
+                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
                   />
                 )}
 
@@ -737,8 +737,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     title={String(blockProps.title ?? 'Aseguradoras Líderes')}
                     subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
                     tokens={project.brandTokens}
-                    className="!max-w-none !w-full"
-                    style={{ maxWidth: 'none', width: '100%' }}
+                    className="!max-w-none !w-full !h-full"
+                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
                   />
                 )}
 
@@ -750,8 +750,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
                     correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
                     tokens={project.brandTokens}
-                    className="!max-w-none !w-full"
-                    style={{ maxWidth: 'none', width: '100%' }}
+                    className="!max-w-none !w-full !h-full"
+                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
                   />
                 )}
 
