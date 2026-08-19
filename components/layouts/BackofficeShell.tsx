@@ -33,6 +33,7 @@ export const backofficeNavigation = [
   { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: LayoutDashboard },
   { to: '/backoffice/marketing-studio/enlaces', label: 'Enlaces de campaña', icon: Link2 },
   { to: '/backoffice/marketing-studio/conexiones', label: 'Conexiones API', icon: Globe },
+  { to: '/backoffice/marketing-studio/assets', label: 'Gestión de Assets & Kits', icon: Boxes },
   { to: '/backoffice/marketing-studio/generador-contenido', label: 'Generador de contenido', icon: Sparkles },
 ];
 
@@ -71,7 +72,8 @@ export const vitablueBackofficeSchema: NavigationSchema = {
         { id: 'campaigns', kind: 'module', moduleId: 'campaigns', label: 'Gestión de campañas', icon: 'BarChart3', priority: 3, route: { routeId: '/backoffice/marketing-studio/campanas' } },
         { id: 'links', kind: 'module', moduleId: 'links', label: 'Enlaces de campaña', icon: 'Link2', priority: 4, route: { routeId: '/backoffice/marketing-studio/enlaces' } },
         { id: 'connections', kind: 'module', moduleId: 'connections', label: 'Conexiones API', icon: 'Globe', priority: 5, route: { routeId: '/backoffice/marketing-studio/conexiones' } },
-        { id: 'content', kind: 'module', moduleId: 'content', label: 'Generador y Vídeo', icon: 'Sparkles', priority: 6, route: { routeId: '/backoffice/marketing-studio/generador-contenido' } },
+        { id: 'assets', kind: 'module', moduleId: 'assets', label: 'Assets & MotionKit', icon: 'Layers', priority: 6, route: { routeId: '/backoffice/marketing-studio/assets' } },
+        { id: 'content', kind: 'module', moduleId: 'content', label: 'Generador y Vídeo', icon: 'Sparkles', priority: 7, route: { routeId: '/backoffice/marketing-studio/generador-contenido' } },
       ],
     },
     {
@@ -94,6 +96,7 @@ export const defaultAccessMap: AccessMap = {
   campaigns: 'enabled',
   links: 'enabled',
   connections: 'enabled',
+  assets: 'enabled',
   content: 'enabled',
   'doc-intel': 'enabled',
 };

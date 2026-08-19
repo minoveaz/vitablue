@@ -1,10 +1,11 @@
 import React from 'react';
 import { Audio, Img, interpolate, OffthreadVideo, Sequence, useCurrentFrame, useVideoConfig, spring } from 'remotion';
 import type { VideoBrandAdapter } from '../engine/brandAdapter';
-import type { VideoProject, TextLayer, SubtitleLayer, ShapeLayer, AudioLayer } from '../domain/videoProject';
+import type { VideoProject, TextLayer, SubtitleLayer, ShapeLayer, AudioLayer, ComponentLayer } from '../domain/videoProject';
 import { defaultVisaRejectionProject } from '../domain/defaultProject';
 import { resolveVideoTemplate } from '../engine/templateRegistry';
 import { SceneRenderer } from './SceneRenderer';
+import { MotionAdvisorCard, MotionTrustBadge, MotionProviderGrid, MotionComparisonCard } from '../motion-kit';
 
 export type SlideData = VideoProject['scenes'][number];
 
@@ -272,6 +273,46 @@ const TimedMediaLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers })
   </>
 );
 
+const TimedComponentLayers: React.FC<{ layers: SlideData['layers']; brandAdapter?: VideoBrandAdapter }> = ({ layers, brandAdapter }) => (
+  <>
+    {layers
+      .filter((layer): layer is ComponentLayer => layer.type === 'component' && layer.visible !== false)
+      .map((layer) => {
+        const startFrame = layer.timing?.startFrame ?? 0;
+        const durationInFrames = layer.timing?.durationInFrames ?? 90;
+        const compId = layer.componentId;
+
+        return (
+          <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
+            <div
+              style={{
+                position: 'absolute',
+                left: typeof layer.position === 'object' ? `${layer.position.x}%` : '50%',
+                top: typeof layer.position === 'object' ? `${layer.position.y}%` : '50%',
+                width: '100%',
+                maxWidth: 860,
+                zIndex: layer.zIndex ?? 25,
+              }}
+            >
+              {(compId === 'MotionAdvisorCard' || compId === 'AdvisorCard') && (
+                <MotionAdvisorCard {...(layer.props as Record<string, unknown>)} tokens={brandAdapter?.brandTokens} />
+              )}
+              {compId === 'MotionTrustBadge' && (
+                <MotionTrustBadge {...(layer.props as Record<string, unknown>)} tokens={brandAdapter?.brandTokens} />
+              )}
+              {compId === 'MotionProviderGrid' && (
+                <MotionProviderGrid {...(layer.props as Record<string, unknown>)} tokens={brandAdapter?.brandTokens} />
+              )}
+              {compId === 'MotionComparisonCard' && (
+                <MotionComparisonCard {...(layer.props as Record<string, unknown>)} tokens={brandAdapter?.brandTokens} />
+              )}
+            </div>
+          </Sequence>
+        );
+      })}
+  </>
+);
+
 export const defaultVisaRejectionProps: VisaRejectionStoryboardProps = {
   slides: defaultVisaRejectionProject.scenes,
 };
@@ -390,6 +431,7 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({
       {activeSlide && <TimedSubtitleLayers layers={activeSlide.layers} />}
       {activeSlide && <TimedShapeLayers layers={activeSlide.layers} />}
       {activeSlide && <TimedMediaLayers layers={activeSlide.layers} />}
+      {activeSlide && <TimedComponentLayers layers={activeSlide.layers} brandAdapter={brandAdapter} />}
 
       {!activeTemplate && (
         <div style={{ zIndex: 10, color: '#EE9B00', fontSize: '28px' }}>

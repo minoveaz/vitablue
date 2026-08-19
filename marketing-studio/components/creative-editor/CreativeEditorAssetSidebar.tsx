@@ -185,34 +185,68 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
         </div>
       )}
 
-      {/* PESTAÑA 2: BRAND KIT VITABLUE */}
+      {/* PESTAÑA 2: BRAND KIT & MOTIONKIT */}
       {activeTab === 'brand' && (
         <div className="space-y-4">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Componentes de Marca</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MotionKit Agnóstico (4)</span>
+              <a
+                href="/backoffice/marketing-studio/assets"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] font-bold text-brand-cyan hover:underline"
+              >
+                Asset Studio ↗
+              </a>
+            </div>
             <div className="space-y-2">
               <button
                 type="button"
-                onClick={() => onAddComponentLayer('AdvisorCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
+                onClick={() => onAddComponentLayer('MotionAdvisorCard')}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all group"
               >
                 <div>
-                  <strong className="block text-xs font-bold text-slate-100">Tarjeta Asesor VitaBlue</strong>
-                  <span className="text-[10px] text-slate-400">AdvisorCard con WhatsApp directo</span>
+                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-brand-cyan">Tarjeta Asesor (Vertical)</strong>
+                  <span className="text-[10px] text-slate-400">Glassmorphism con WhatsApp directo</span>
                 </div>
-                <ShieldCheck className="size-4 text-emerald-400" />
+                <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
               </button>
 
               <button
                 type="button"
-                onClick={() => onAddComponentLayer('ProductCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
+                onClick={() => onAddComponentLayer('MotionTrustBadge')}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-accent hover:bg-accent/10 transition-all group"
               >
                 <div>
-                  <strong className="block text-xs font-bold text-slate-100">Tarjeta Producto Sanitas</strong>
-                  <span className="text-[10px] text-slate-400">ProductCard con coberturas</span>
+                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-accent">Sello de Garantía Consular</strong>
+                  <span className="text-[10px] text-slate-400">Certificación 100% válido para visado</span>
                 </div>
-                <Palette className="size-4 text-brand-cyan" />
+                <Shield className="size-4 text-accent shrink-0" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddComponentLayer('MotionProviderGrid')}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-brand-cyan hover:bg-brand-cyan/10 transition-all group"
+              >
+                <div>
+                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-brand-cyan">Grid de Aseguradoras</strong>
+                  <span className="text-[10px] text-slate-400">Sanitas, Adeslas, Asisa y DKV</span>
+                </div>
+                <Palette className="size-4 text-brand-cyan shrink-0" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddComponentLayer('MotionComparisonCard')}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all group"
+              >
+                <div>
+                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-primary">Comparativa Visual</strong>
+                  <span className="text-[10px] text-slate-400">Seguro de viaje ❌ vs Visado ✅</span>
+                </div>
+                <Sparkles className="size-4 text-brand-cyan shrink-0" />
               </button>
             </div>
           </div>

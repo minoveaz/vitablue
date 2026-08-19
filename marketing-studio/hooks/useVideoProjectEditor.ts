@@ -95,7 +95,21 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       if (scene.id !== sceneId) return scene;
       const id = `${scene.id}-comp-${scene.layers.length + 1}`;
       const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
-      const layer: ComponentLayer = { id, type: 'component', componentId, props, timing, position: 'center' };
+      
+      let initialProps = props;
+      if (Object.keys(props).length === 0) {
+        if (componentId === 'MotionAdvisorCard' || componentId === 'AdvisorCard') {
+          initialProps = { name: 'Sofía', role: 'Asesora Especialista en Visados', badge: 'ASESORA ASIGNADA · EN DIRECTO', whatsAppText: 'Pregúntanos por WhatsApp' };
+        } else if (componentId === 'MotionTrustBadge') {
+          initialProps = { title: 'PÓLIZA 100% VÁLIDA PARA VISADO', subtitle: 'Sin Copagos · Cobertura Completa · Repatriación Incluida', highlight: 'GARANTÍA CONSULAR', verifiedLabel: 'VERIFICADO' };
+        } else if (componentId === 'MotionProviderGrid') {
+          initialProps = { title: 'COMPAÑÍAS LÍDERES AUTORIZADAS', subtitle: 'Aceptadas oficialmente por Extranjería y Consulados' };
+        } else if (componentId === 'MotionComparisonCard') {
+          initialProps = { title: '¿SEGURO DE VIAJE O SEGURO DE VISADO?', wrongOptionTitle: 'Seguro de Viaje Común', wrongOptionDesc: '❌ Denegación inmediata: no cumple requisitos de Extranjería ni tiene red médica completa en España.', correctOptionTitle: 'Seguro VitaBlue Extranjería', correctOptionDesc: '✅ Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.' };
+        }
+      }
+
+      const layer: ComponentLayer = { id, type: 'component', componentId, props: initialProps, timing, position: 'center' };
       return { ...scene, layers: [...scene.layers, layer] };
     }));
   };

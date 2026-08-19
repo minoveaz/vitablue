@@ -48,8 +48,9 @@ import {
 } from '@/marketing-studio/utils/connections';
 import BrandIdentityPanel from '@/marketing-studio/components/BrandIdentityPanel';
 import MarketingLinks from '@/marketing-studio/MarketingLinks';
+import AssetManagement from '@/marketing-studio/AssetManagement';
 
-type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content';
+type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content' | 'assets';
 type PlatformId = SocialPlatformId;
 type SocialAssetType = 'profile' | 'cover';
 
@@ -109,6 +110,8 @@ const MarketingStudio: React.FC = () => {
     section = 'links';
   } else if (pathname.includes('/conexiones')) {
     section = 'connections';
+  } else if (pathname.includes('/assets')) {
+    section = 'assets';
   } else if (pathname.includes('/generador-contenido') || pathname.includes('/dam/video/new')) {
     section = 'content';
   }
@@ -137,7 +140,9 @@ const MarketingStudio: React.FC = () => {
         ? 'Planificador de Campañas Multicanal'
         : section === 'connections'
           ? 'Configuración de Conexiones de API'
-          : 'Generador Automático de Contenido';
+          : section === 'assets'
+            ? 'Gestión de Assets & Kits de Vídeo'
+            : 'Generador Automático de Contenido';
   
   const coverDimensions = selectedPlatform.coverSize ?? { width: 1640, height: 624 };
   const coverLogoSize = coverDimensions.width >= 2000 ? 220 : 150;
@@ -248,6 +253,10 @@ const MarketingStudio: React.FC = () => {
       setIsExporting(false);
     }
   };
+
+  if (section === 'assets') {
+    return <AssetManagement />;
+  }
 
   if (section === 'content') {
     return <SocialGenerator />;

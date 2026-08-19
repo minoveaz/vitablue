@@ -184,39 +184,153 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
             </div>
           )}
 
-          {/* EDITOR ESPECÍFICO DE COMPONENTE VITABLUE */}
-          {selectedLayer.type === 'component' && (
-            <div className="space-y-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">Props del Componente</span>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Asesor</label>
-                <input
-                  type="text"
-                  value={((selectedLayer as ComponentLayer).props.name as string) ?? ''}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...(selectedLayer as ComponentLayer).props, name: e.target.value } })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
-                />
+          {/* EDITOR ESPECÍFICO DE COMPONENTES MOTIONKIT */}
+          {selectedLayer.type === 'component' && (() => {
+            const compLayer = selectedLayer as ComponentLayer;
+            const compId = compLayer.componentId;
+            const props = compLayer.props as Record<string, unknown>;
+
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">
+                    Props: {compId}
+                  </span>
+                  <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-300">
+                    MotionKit
+                  </span>
+                </div>
+
+                {(compId === 'MotionAdvisorCard' || compId === 'AdvisorCard') && (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Asesor</label>
+                      <input
+                        type="text"
+                        value={(props.name as string) ?? 'Sofía'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, name: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo / Especialidad</label>
+                      <input
+                        type="text"
+                        value={(props.role as string) ?? 'Asesora Especialista'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, role: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Mensaje / Cita</label>
+                      <textarea
+                        value={(props.message as string) ?? ''}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, message: e.target.value } })}
+                        rows={2}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto Botón WhatsApp</label>
+                      <input
+                        type="text"
+                        value={(props.whatsAppText as string) ?? (props.cta as string) ?? 'Pregúntanos por WhatsApp'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, whatsAppText: e.target.value, cta: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {compId === 'MotionTrustBadge' && (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título</label>
+                      <input
+                        type="text"
+                        value={(props.title as string) ?? 'PÓLIZA 100% VÁLIDA PARA VISADO'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Subtítulo</label>
+                      <input
+                        type="text"
+                        value={(props.subtitle as string) ?? ''}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Insignia / Highlight</label>
+                      <input
+                        type="text"
+                        value={(props.highlight as string) ?? 'GARANTÍA CONSULAR'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, highlight: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {compId === 'MotionProviderGrid' && (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título Principal</label>
+                      <input
+                        type="text"
+                        value={(props.title as string) ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Subtítulo</label>
+                      <input
+                        type="text"
+                        value={(props.subtitle as string) ?? ''}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {compId === 'MotionComparisonCard' && (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título</label>
+                      <input
+                        type="text"
+                        value={(props.title as string) ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-red-400 mb-1">Opción Incorrecta</label>
+                      <input
+                        type="text"
+                        value={(props.wrongOptionTitle as string) ?? 'Seguro de Viaje Común'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, wrongOptionTitle: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">Opción Correcta</label>
+                      <input
+                        type="text"
+                        value={(props.correctOptionTitle as string) ?? 'Seguro VitaBlue Extranjería'}
+                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, correctOptionTitle: e.target.value } })}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo / Especialidad</label>
-                <input
-                  type="text"
-                  value={((selectedLayer as ComponentLayer).props.role as string) ?? ''}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...(selectedLayer as ComponentLayer).props, role: e.target.value } })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto Botón WhatsApp</label>
-                <input
-                  type="text"
-                  value={((selectedLayer as ComponentLayer).props.cta as string) ?? ''}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...(selectedLayer as ComponentLayer).props, cta: e.target.value } })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* EDITOR ESPECÍFICO DE AUDIO */}
           {selectedLayer.type === 'audio' && (
