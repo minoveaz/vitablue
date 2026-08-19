@@ -11,10 +11,9 @@ import {
 } from '../../../packages/video-studio/src/motion-kit';
 import { ImageQuickToolbar } from './ImageQuickToolbar';
 import {
-  ZoomIn,
-  ZoomOut,
-  Eye,
-  EyeOff,
+  Minus,
+  Plus,
+  Maximize2,
 } from 'lucide-react';
 
 interface ImageStageProps {
@@ -29,7 +28,6 @@ interface ImageStageProps {
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
   onSetZoom: (zoom: number) => void;
-  onToggleSafeZones: () => void;
 }
 
 export const ImageStage: React.FC<ImageStageProps> = ({
@@ -44,7 +42,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onDuplicateLayer,
   onRemoveLayer,
   onSetZoom,
-  onToggleSafeZones,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
@@ -107,7 +104,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     <div
       ref={containerRef}
       onClick={() => onSelectLayer(null)}
-      className="relative flex flex-1 flex-col items-center justify-center overflow-auto bg-slate-100/90 p-8 select-none"
+      className="relative flex flex-1 flex-col items-center justify-center overflow-auto bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none"
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
@@ -132,7 +129,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       >
         <div
           ref={canvasRef}
-          className="relative overflow-hidden rounded-3xl shadow-2xl transition-all"
+          className="relative overflow-hidden rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-slate-800 transition-all"
           style={{
             width: `${baseWidth}px`,
             height: `${computedHeight}px`,
@@ -163,7 +160,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 onMouseDown={(e) => handleMouseDown(e, layer)}
                 className={`absolute cursor-move transition-shadow ${
                   isSelected
-                    ? 'ring-2 ring-[#005F73] ring-offset-2 ring-offset-transparent'
+                    ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-transparent shadow-2xl'
                     : 'hover:ring-1 hover:ring-white/40'
                 }`}
                 style={{
@@ -219,10 +216,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {/* BOUNDING BOX CORNER HANDLES */}
                 {isSelected && (
                   <>
-                    <div className="absolute -top-1.5 -left-1.5 size-3 rounded-full bg-white border-2 border-primary shadow-xs" />
-                    <div className="absolute -top-1.5 -right-1.5 size-3 rounded-full bg-white border-2 border-primary shadow-xs" />
-                    <div className="absolute -bottom-1.5 -left-1.5 size-3 rounded-full bg-white border-2 border-primary shadow-xs" />
-                    <div className="absolute -bottom-1.5 -right-1.5 size-3 rounded-full bg-white border-2 border-primary shadow-xs" />
+                    <div className="absolute -top-1.5 -left-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
+                    <div className="absolute -top-1.5 -right-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
+                    <div className="absolute -bottom-1.5 -left-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
+                    <div className="absolute -bottom-1.5 -right-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
                   </>
                 )}
               </div>
@@ -232,49 +229,42 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       </div>
 
       {/* BOTTOM CONTROLS BAR: ZOOM & SAFE ZONES */}
-      <div className="absolute bottom-4 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-2 shadow-lg backdrop-blur-md z-40">
-        <button
-          type="button"
-          onClick={onToggleSafeZones}
-          className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
-            showSafeZones ? 'bg-amber-500/10 text-amber-600' : 'text-slate-500 hover:text-slate-900'
-          }`}
-          title="Alternar zonas seguras de redes sociales"
-        >
-          {showSafeZones ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
-          <span>Safe Zones</span>
-        </button>
-
-        <div className="h-4 w-px bg-slate-200" />
-
+      <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 backdrop-blur-md z-40 text-white text-xs">
         <button
           type="button"
           onClick={() => onSetZoom(Math.max(0.25, zoom - 0.1))}
-          className="flex size-7 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+          className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
           title="Reducir zoom"
         >
-          <ZoomOut className="size-3.5" />
+          <Minus className="size-3.5" />
         </button>
 
-        <span className="text-xs font-mono font-bold text-slate-700 w-12 text-center">
-          {Math.round(zoom * 100)}%
-        </span>
+        <input
+          type="range"
+          min={0.25}
+          max={1.5}
+          step={0.05}
+          value={zoom}
+          onChange={(e) => onSetZoom(parseFloat(e.target.value))}
+          className="w-16 accent-primary"
+        />
 
         <button
           type="button"
           onClick={() => onSetZoom(Math.min(1.5, zoom + 0.1))}
-          className="flex size-7 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+          className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
           title="Aumentar zoom"
         >
-          <ZoomIn className="size-3.5" />
+          <Plus className="size-3.5" />
         </button>
 
         <button
           type="button"
           onClick={() => onSetZoom(0.55)}
-          className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+          className="flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition-colors"
         >
-          Fit
+          <Maximize2 className="size-3 text-brand-cyan" />
+          <span>Ajustar</span>
         </button>
       </div>
     </div>

@@ -1,17 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Video, Image as ImageIcon } from 'lucide-react';
+import BackofficeShell from '../components/layouts/BackofficeShell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
-import { ImageEditorTopBar } from './components/image-editor/ImageEditorTopBar';
-import { ImageEditorRail, ImageRailTab } from './components/image-editor/ImageEditorRail';
-import { ImageEditorDrawer } from './components/image-editor/ImageEditorDrawer';
+import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
+import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
+import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
 import { ImageStage } from './components/image-editor/ImageStage';
-import { ImageContextInspector } from './components/image-editor/ImageContextInspector';
+import { FolderOpen } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
-  const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [activeRailTab, setActiveRailTab] = useState<ImageRailTab>('templates');
+  const [isContextSidebarOpen, setIsContextSidebarOpen] = useState(true);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const editor = useImageProjectEditor();
@@ -30,64 +29,67 @@ export const ImageStudio: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-100 font-sans text-slate-900 select-none">
-      {/* 1. TOP BAR WITH PRESETS & EXPORT */}
-      <ImageEditorTopBar
-        project={editor.project}
-        canUndo={editor.canUndo}
-        canRedo={editor.canRedo}
-        isExporting={editor.isExporting}
-        onUndo={editor.undo}
-        onRedo={editor.redo}
-        onUpdateTitle={editor.updateTitle}
-        onSetPreset={editor.setPreset}
-        onExport={handleExport}
-        onSaveToDam={handleSaveToDam}
-      />
-
-      {/* 2. SUB-BAR SWITCHER (VIDEO STUDIO VS IMAGE STUDIO) */}
-      <div className="flex h-10 w-full items-center justify-between border-b border-slate-200 bg-slate-50 px-4">
-        <div className="flex items-center gap-1">
+    <BackofficeShell
+      title="Image & Graphic Studio"
+      eyebrow="Creative Studio"
+      breadcrumbs={['Marketing Studio', 'Image Studio', editor.project.title]}
+      mode="full-bleed"
+      hideModuleHeader={true}
+      toolbar={
+        <ImageEditorToolbar
+          project={editor.project}
+          canUndo={editor.canUndo}
+          canRedo={editor.canRedo}
+          isExporting={editor.isExporting}
+          showSafeZones={editor.showSafeZones}
+          isInspectorOpen={isInspectorOpen}
+          onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
+          onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
+          onUndo={editor.undo}
+          onRedo={editor.redo}
+          onUpdateTitle={editor.updateTitle}
+          onSetPreset={editor.setPreset}
+          onExport={handleExport}
+          onSaveToDam={handleSaveToDam}
+        />
+      }
+      contextAside={
+        isContextSidebarOpen ? (
+          <ImageStudioAssetSidebar
+            onLoadTemplate={editor.loadTemplate}
+            onAddBlock={editor.addBlockLayer}
+            onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
+            onCollapse={() => setIsContextSidebarOpen(false)}
+          />
+        ) : undefined
+      }
+      aside={
+        isInspectorOpen ? (
+          <ImageStudioInspector
+            project={editor.project}
+            selectedLayer={editor.selectedLayer}
+            onUpdateLayerProps={editor.updateLayerProps}
+            onUpdateBackground={editor.updateBackground}
+            onClose={() => setIsInspectorOpen(false)}
+          />
+        ) : undefined
+      }
+      contextualSidebarAction={(isRail?: boolean) =>
+        !isContextSidebarOpen ? (
           <button
             type="button"
-            onClick={() => navigate('/backoffice/marketing-studio/generador-contenido')}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+            onClick={() => setIsContextSidebarOpen(true)}
+            className="flex w-full items-center gap-2.5 rounded-lg border border-primary/40 bg-primary/10 p-2 text-left text-xs font-bold text-primary hover:bg-primary hover:text-white transition-all shadow-xs"
+            title="Abrir biblioteca de assets"
           >
-            <Video className="size-3.5" />
-            <span>Video Studio (Reels & MP4)</span>
+            <FolderOpen className="size-4 shrink-0" />
+            {!isRail && <span>Biblioteca</span>}
           </button>
-
-          <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-1 text-xs font-bold text-primary shadow-xs ring-1 ring-slate-200"
-          >
-            <ImageIcon className="size-3.5 text-primary" />
-            <span>Image & Graphic Studio (Canva)</span>
-          </button>
-        </div>
-
-        <span className="text-[11px] font-mono text-slate-400">
-          Resolución: {editor.project.preset.width} × {editor.project.preset.height} px ({editor.project.preset.aspectRatio})
-        </span>
-      </div>
-
-      {/* 3. MAIN WORKSPACE WITH 3 COLUMNS */}
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* LEFT ICON RAIL */}
-        <ImageEditorRail
-          activeTab={activeRailTab}
-          onSelectTab={setActiveRailTab}
-        />
-
-        {/* LEFT EXPANDABLE DRAWER */}
-        <ImageEditorDrawer
-          activeTab={activeRailTab}
-          onLoadTemplate={editor.loadTemplate}
-          onAddBlock={editor.addBlockLayer}
-          onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
-        />
-
-        {/* CENTER STAGE / CANVAS */}
+        ) : null
+      }
+    >
+      <div className="flex h-full w-full flex-col overflow-hidden relative">
+        {/* CENTER CANVAS STAGE */}
         <ImageStage
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
@@ -100,27 +102,16 @@ export const ImageStudio: React.FC = () => {
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
-          onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
         />
 
-        {/* RIGHT PROPS INSPECTOR */}
-        <ImageContextInspector
-          project={editor.project}
-          selectedLayer={editor.selectedLayer}
-          onUpdateLayerProps={editor.updateLayerProps}
-          onUpdateLayerPosition={editor.updateLayerPosition}
-          onUpdateLayerScale={editor.updateLayerScale}
-          onUpdateBackground={editor.updateBackground}
-        />
+        {/* TOAST NOTIFICATION */}
+        {toastMessage && (
+          <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-slate-900 px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700 animate-slideUp">
+            {toastMessage}
+          </div>
+        )}
       </div>
-
-      {/* TOAST NOTIFICATION */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-slate-900 px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700 animate-slideUp">
-          {toastMessage}
-        </div>
-      )}
-    </div>
+    </BackofficeShell>
   );
 };
 
