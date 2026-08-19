@@ -28,6 +28,23 @@ export const ImageStudio: React.FC = () => {
     }
   };
 
+  const handleSelectLayer = (id: string | null) => {
+    editor.selectLayer(id);
+    if (id) {
+      setIsInspectorOpen(true);
+    }
+  };
+
+  const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0], defaultProps?: Record<string, unknown>) => {
+    editor.addBlockLayer(blockType, defaultProps);
+    setIsInspectorOpen(true);
+  };
+
+  const handleLoadTemplate = (template: Parameters<typeof editor.loadTemplate>[0]) => {
+    editor.loadTemplate(template);
+    setIsInspectorOpen(true);
+  };
+
   return (
     <BackofficeShell
       title="Image & Graphic Studio"
@@ -56,8 +73,8 @@ export const ImageStudio: React.FC = () => {
       contextAside={
         isContextSidebarOpen ? (
           <ImageStudioAssetSidebar
-            onLoadTemplate={editor.loadTemplate}
-            onAddBlock={editor.addBlockLayer}
+            onLoadTemplate={handleLoadTemplate}
+            onAddBlock={handleAddBlock}
             onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
             onCollapse={() => setIsContextSidebarOpen(false)}
           />
@@ -96,7 +113,7 @@ export const ImageStudio: React.FC = () => {
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
           canvasRef={canvasRef}
-          onSelectLayer={editor.selectLayer}
+          onSelectLayer={handleSelectLayer}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
           onDuplicateLayer={editor.duplicateLayer}
