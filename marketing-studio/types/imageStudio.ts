@@ -266,6 +266,11 @@ export interface ImageLayer {
   shadowOffsetY?: number;
   shadowOpacity?: number;
   src?: string; // Image source URL
+  filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'blur' | 'teal_tint' | 'gold_tint';
+  brightness?: number; // 50 to 150
+  contrast?: number; // 50 to 150
+  blur?: number; // 0 to 20 px
+  clipShape?: 'none' | 'circle' | 'squircle' | 'pill' | 'phone_mockup' | 'shield';
   locked?: boolean;
   visible?: boolean;
 }
@@ -285,6 +290,8 @@ export interface ImageProject {
   background: CanvasBackground;
   layers: ImageLayer[];
   brandTokens: MotionBrandTokens;
+  carouselPages?: number;
+  currentSlide?: number;
   createdAt: string;
   updatedAt: string;
 }

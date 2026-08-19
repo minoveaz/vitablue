@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { toPng, toJpeg, toSvg } from 'html-to-image';
+import { toPng, toJpeg, toSvg, toBlob } from 'html-to-image';
 import {
   ImageProject,
   ImageLayer,
@@ -179,6 +179,180 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       return next;
     });
   }, [selectedLayerIds, project.layers, pushHistory]);
+
+  const alignSelectedLayers = useCallback((alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => {
+    if (selectedLayerIds.length === 0) return;
+
+    setProject((prev) => {
+      const layersToAlign = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
+      if (layersToAlign.length === 0) return prev;
+
+      let nextLayers: ImageLayer[];
+
+      if (layersToAlign.length === 1) {
+        // Alinear capa única respecto al lienzo (Artboard)
+        const target = layersToAlign[0];
+        let newX = target.position.x;
+        let newY = target.position.y;
+
+        if (alignment === 'left') newX = 20;
+        else if (alignment === 'center') newX = 50;
+        else if (alignment === 'right') newX = 80;
+        else if (alignment === 'top') newY = 20;
+        else if (alignment === 'middle') newY = 50;
+        else if (alignment === 'bottom') newY = 80;
+
+        nextLayers = prev.layers.map((l) => (l.id === target.id ? { ...l, position: { x: newX, y: newY } } : l));
+      } else {
+        // Alinear múltiples capas entre sí
+        if (alignment === 'left') {
+          const minX = Math.min(...layersToAlign.map((l) => l.position.x));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: minX } } : l));
+        } else if (alignment === 'center') {
+          const avgX = Math.round((layersToAlign.reduce((sum, l) => sum + l.position.x, 0) / layersToAlign.length) * 10) / 10;
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: avgX } } : l));
+        } else if (alignment === 'right') {
+          const maxX = Math.max(...layersToAlign.map((l) => l.position.x));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: maxX } } : l));
+        } else if (alignment === 'top') {
+          const minY = Math.min(...layersToAlign.map((l) => l.position.y));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: minY } } : l));
+        } else if (alignment === 'middle') {
+          const avgY = Math.round((layersToAlign.reduce((sum, l) => sum + l.position.y, 0) / layersToAlign.length) * 10) / 10;
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: avgY } } : l));
+        } else {
+          const maxY = Math.max(...layersToAlign.map((l) => l.position.y));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: maxY } } : l));
+        }
+      }
+
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const distributeSelectedLayers = useCallback((direction: 'horizontal' | 'vertical') => {
+    if (selectedLayerIds.length < 3) return;
+
+    setProject((prev) => {
+      const layersToDistribute = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
+      if (layersToDistribute.length < 3) return prev;
+
+      let nextLayers: ImageLayer[];
+
+      if (direction === 'horizontal') {
+        const sorted = [...layersToDistribute].sort((a, b) => a.position.x - b.position.x);
+        const minX = sorted[0].position.x;
+        const maxX = sorted[sorted.length - 1].position.x;
+        const step = (maxX - minX) / (sorted.length - 1);
+
+        const newPosMap = new Map<string, number>();
+        sorted.forEach((l, idx) => {
+          newPosMap.set(l.id, Math.round((minX + idx * step) * 10) / 10);
+        });
+
+        nextLayers = prev.layers.map((l) => {
+          if (newPosMap.has(l.id)) {
+            return { ...l, position: { ...l.position, x: newPosMap.get(l.id)! } };
+          }
+          return l;
+        });
+      } else {
+        const sorted = [...layersToDistribute].sort((a, b) => a.position.y - b.position.y);
+        const minY = sorted[0].position.y;
+        const maxY = sorted[sorted.length - 1].position.y;
+        const step = (maxY - minY) / (sorted.length - 1);
+
+        const newPosMap = new Map<string, number>();
+        sorted.forEach((l, idx) => {
+          newPosMap.set(l.id, Math.round((minY + idx * step) * 10) / 10);
+        });
+
+        nextLayers = prev.layers.map((l) => {
+          if (newPosMap.has(l.id)) {
+            return { ...l, position: { ...l.position, y: newPosMap.get(l.id)! } };
+          }
+          return l;
+        });
+      }
+
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const copyToClipboard = useCallback(async (node: HTMLElement | null): Promise<boolean> => {
+    if (!node) return false;
+    try {
+      const blob = await toBlob(node, { pixelRatio: 2 });
+      if (!blob) return false;
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      return true;
+    } catch (err) {
+      console.warn('Clipboard write failed, fallback to dataURL:', err);
+      try {
+        const dataUrl = await toPng(node, { pixelRatio: 2 });
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob }),
+        ]);
+        return true;
+      } catch (fallbackErr) {
+        console.error('Failed to copy to clipboard:', fallbackErr);
+        return false;
+      }
+    }
+  }, []);
+
+  const updateLayerFilter = useCallback((layerId: string, filter: ImageLayer['filter']) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, filter } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const updateLayerAdjustments = useCallback((layerId: string, adjustments: { brightness?: number; contrast?: number; blur?: number }) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, ...adjustments } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const updateLayerClipShape = useCallback((layerId: string, clipShape: ImageLayer['clipShape']) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, clipShape } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const setCarouselPages = useCallback((carouselPages: number) => {
+    setProject((prev) => {
+      const next = { ...prev, carouselPages, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const setCurrentSlide = useCallback((currentSlide: number) => {
+    setProject((prev) => ({ ...prev, currentSlide }));
+  }, []);
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     setProject((prev) => {
@@ -778,6 +952,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     moveLayerZIndex,
     addBlockLayer,
     updateBackground,
+    alignSelectedLayers,
+    distributeSelectedLayers,
+    updateLayerFilter,
+    updateLayerAdjustments,
+    updateLayerClipShape,
+    setCarouselPages,
+    setCurrentSlide,
+    copyToClipboard,
     exportImage,
     exportCanvasStage,
   };

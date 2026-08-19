@@ -15,6 +15,13 @@ import {
   RotateCw,
   AlignHorizontalJustifyCenter,
   AlignVerticalJustifyCenter,
+  Sparkles,
+  Sun,
+  Crop,
+  Shield,
+  Smartphone,
+  Circle,
+  Square as SquareIcon,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -28,6 +35,9 @@ export interface ImageStudioInspectorProps {
   onUpdateLayerHeight?: (id: string, height?: number) => void;
   onUpdateLayerRotation?: (id: string, rotation: number) => void;
   onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
+  onUpdateLayerFilter?: (id: string, filter: ImageLayer['filter']) => void;
+  onUpdateLayerAdjustments?: (id: string, adjustments: { brightness?: number; contrast?: number; blur?: number }) => void;
+  onUpdateLayerClipShape?: (id: string, clipShape: ImageLayer['clipShape']) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
@@ -43,6 +53,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateLayerHeight,
   onUpdateLayerRotation,
   onUpdateLayerPosition,
+  onUpdateLayerFilter,
+  onUpdateLayerAdjustments,
+  onUpdateLayerClipShape,
   onFitToCanvas,
   onUngroupLayer,
   onUpdateBackground,
@@ -196,7 +209,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </button>
             </div>
 
-            {/* BOTONES DE CENTRADO RÁPIDO */}
+            {/* BOTONES DE CENTRADO Y ALINEACIÓN RÁPIDA */}
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -217,6 +230,51 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <span>Centrar Y</span>
               </button>
             </div>
+          </div>
+
+          {/* ACCIONES DE ALINEACIÓN DE 1-CLIC */}
+          <div className="pt-2 border-t border-slate-900 flex items-center justify-between gap-1 text-[10px] font-bold">
+            <button
+              type="button"
+              onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: 20, y: selectedLayer.position.y })}
+              className="flex-1 rounded-md bg-slate-900 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-center"
+              title="Alinear a la izquierda"
+            >
+              Izq
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: 50, y: selectedLayer.position.y })}
+              className="flex-1 rounded-md bg-slate-900 py-1 text-brand-cyan hover:text-white hover:bg-slate-800 transition-colors text-center"
+              title="Alinear al centro"
+            >
+              Centro
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: 80, y: selectedLayer.position.y })}
+              className="flex-1 rounded-md bg-slate-900 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-center"
+              title="Alinear a la derecha"
+            >
+              Der
+            </button>
+            <div className="w-px h-3 bg-slate-800" />
+            <button
+              type="button"
+              onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: selectedLayer.position.x, y: 20 })}
+              className="flex-1 rounded-md bg-slate-900 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-center"
+              title="Alinear arriba"
+            >
+              Arriba
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: selectedLayer.position.x, y: 80 })}
+              className="flex-1 rounded-md bg-slate-900 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-center"
+              title="Alinear abajo"
+            >
+              Abajo
+            </button>
           </div>
         </div>
 
@@ -441,6 +499,102 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 {angle}°
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* 5. FILTROS VISUALES Y EFECTOS DE COLOR */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-3">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Sparkles className="size-3.5 text-accent" />
+              <span>Filtros y Estilo de Color</span>
+            </span>
+            <span className="font-mono text-brand-cyan capitalize text-[11px]">
+              {selectedLayer.filter ?? 'Normal'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { id: 'none', label: 'Normal' },
+              { id: 'grayscale', label: 'B&W Minimal' },
+              { id: 'sepia', label: 'Sepia Cálido' },
+              { id: 'teal_tint', label: 'Teal Brand' },
+              { id: 'gold_tint', label: 'Gold Trust' },
+              { id: 'contrast', label: 'Alto Contraste' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => onUpdateLayerFilter?.(selectedLayer.id, f.id as ImageLayer['filter'])}
+                className={`rounded-lg py-1.5 text-[10px] font-bold border transition-all ${
+                  (selectedLayer.filter ?? 'none') === f.id
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan shadow-xs'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* AJUSTES DE BRILLO Y CONTRASTE */}
+          <div className="pt-2 border-t border-slate-900 space-y-2 text-[11px]">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="flex items-center gap-1"><Sun className="size-3 text-amber-400" /> Brillo</span>
+              <span className="font-mono text-slate-200">{selectedLayer.brightness ?? 100}%</span>
+            </div>
+            <input
+              type="range"
+              min={60}
+              max={140}
+              step={5}
+              value={selectedLayer.brightness ?? 100}
+              onChange={(e) => onUpdateLayerAdjustments?.(selectedLayer.id, { brightness: parseInt(e.target.value, 10) })}
+              className="w-full accent-amber-400"
+            />
+          </div>
+        </div>
+
+        {/* 6. MÁSCARA Y FORMA DE RECORTE (CLIPPING SHAPES) */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Crop className="size-3.5 text-brand-cyan" />
+              <span>Máscara y Silueta</span>
+            </span>
+            <span className="font-mono text-brand-cyan capitalize text-[11px]">
+              {selectedLayer.clipShape ?? 'Original'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { id: 'none', label: 'Sin recorte', icon: SquareIcon },
+              { id: 'circle', label: 'Círculo', icon: Circle },
+              { id: 'squircle', label: 'Squircle Apple', icon: SquareIcon },
+              { id: 'pill', label: 'Píldora', icon: SquareIcon },
+              { id: 'phone_mockup', label: 'Marco Móvil', icon: Smartphone },
+              { id: 'shield', label: 'Escudo', icon: Shield },
+            ].map((shape) => {
+              const Icon = shape.icon;
+              const isSelected = (selectedLayer.clipShape ?? 'none') === shape.id;
+              return (
+                <button
+                  key={shape.id}
+                  type="button"
+                  onClick={() => onUpdateLayerClipShape?.(selectedLayer.id, shape.id as ImageLayer['clipShape'])}
+                  className={`flex flex-col items-center gap-1 rounded-xl p-2 text-[10px] font-bold border transition-all ${
+                    isSelected
+                      ? 'border-brand-cyan bg-primary/20 text-brand-cyan shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Icon className="size-3.5" />
+                  <span>{shape.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

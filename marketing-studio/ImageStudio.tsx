@@ -94,6 +94,18 @@ export const ImageStudio: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const handleCopyToClipboard = async () => {
+    if (canvasRef.current) {
+      const success = await editor.copyToClipboard(canvasRef.current);
+      if (success) {
+        setToastMessage('📋 Imagen copiada al portapapeles (lista para pegar con Ctrl+V)');
+      } else {
+        setToastMessage('⚠️ No se pudo copiar al portapapeles');
+      }
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
+
   const handleExport = async (format: 'png' | 'jpeg' | 'svg') => {
     if (canvasRef.current) {
       await editor.exportImage(canvasRef.current, format);
@@ -179,6 +191,7 @@ export const ImageStudio: React.FC = () => {
           onRedo={editor.redo}
           onUpdateTitle={editor.updateTitle}
           onSetPreset={editor.setPreset}
+          onCopyToClipboard={handleCopyToClipboard}
           onExport={handleExport}
           onSaveToDam={handleSaveToDam}
         />
@@ -213,6 +226,9 @@ export const ImageStudio: React.FC = () => {
             onUpdateLayerHeight={editor.updateLayerHeight}
             onUpdateLayerRotation={editor.updateLayerRotation}
             onUpdateLayerPosition={editor.updateLayerPosition}
+            onUpdateLayerFilter={editor.updateLayerFilter}
+            onUpdateLayerAdjustments={editor.updateLayerAdjustments}
+            onUpdateLayerClipShape={editor.updateLayerClipShape}
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}
             onUpdateBackground={editor.updateBackground}
@@ -254,6 +270,7 @@ export const ImageStudio: React.FC = () => {
           onUpdateWidth={editor.updateLayerWidth}
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
+          onUpdateLayerProps={editor.updateLayerProps}
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}

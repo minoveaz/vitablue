@@ -50,6 +50,7 @@ interface ImageStageProps {
   onUngroupLayer?: (id: string) => void;
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
+  onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
   onSetZoom: (zoom: number) => void;
 }
 
@@ -76,6 +77,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onUngroupLayer,
   onDuplicateLayer,
   onRemoveLayer,
+  onUpdateLayerProps,
   onSetZoom,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -212,6 +214,51 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       layerX: layer.position.x,
       layerY: layer.position.y,
     };
+  };
+
+  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
+  const [editingPropKey, setEditingPropKey] = useState<string>('title');
+  const [editingValue, setEditingValue] = useState<string>('');
+
+  const handleLayerDoubleClick = (e: React.MouseEvent, layer: ImageLayer) => {
+    e.stopPropagation();
+    let propKey = 'title';
+    let currentVal = '';
+    const p = layer.props as Record<string, unknown>;
+
+    if (layer.type === 'text' || layer.blockType === 'CustomText') {
+      propKey = 'text';
+      currentVal = String(p.text ?? layer.title);
+    } else if (layer.blockType === 'TrustBadgeSubtitle') {
+      propKey = 'subtitle';
+      currentVal = String(p.subtitle ?? '');
+    } else if (layer.blockType === 'HookAlertBadge') {
+      propKey = 'badge';
+      currentVal = String(p.badge ?? '');
+    } else if (layer.blockType === 'AdvisorQuoteBox') {
+      propKey = 'message';
+      currentVal = String(p.message ?? '');
+    } else if (layer.blockType === 'WhatsAppCtaButton') {
+      propKey = 'whatsAppText';
+      currentVal = String(p.whatsAppText ?? '');
+    } else if (layer.blockType === 'MotionAdvisorCard') {
+      propKey = 'message';
+      currentVal = String(p.message ?? '');
+    } else {
+      propKey = 'title';
+      currentVal = String(p.title ?? layer.title);
+    }
+
+    setEditingLayerId(layer.id);
+    setEditingPropKey(propKey);
+    setEditingValue(currentVal);
+  };
+
+  const commitInlineEdit = () => {
+    if (editingLayerId && onUpdateLayerProps) {
+      onUpdateLayerProps(editingLayerId, { [editingPropKey]: editingValue });
+    }
+    setEditingLayerId(null);
   };
 
   const handleContextMenu = (e: React.MouseEvent, layer: ImageLayer) => {
@@ -628,10 +675,43 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               }
             };
 
+            const getFilterStyle = (filter?: ImageLayer['filter'], brightness = 100, contrast = 100, blur = 0) => {
+              const parts: string[] = [];
+              if (brightness !== 100) parts.push(`brightness(${brightness}%)`);
+              if (contrast !== 100) parts.push(`contrast(${contrast}%)`);
+              if (blur > 0) parts.push(`blur(${blur}px)`);
+
+              if (filter === 'grayscale') parts.push('grayscale(100%)');
+              else if (filter === 'sepia') parts.push('sepia(80%)');
+              else if (filter === 'contrast') parts.push('contrast(160%) saturate(120%)');
+              else if (filter === 'teal_tint') parts.push('hue-rotate(150deg) saturate(130%)');
+              else if (filter === 'gold_tint') parts.push('sepia(50%) hue-rotate(330deg) saturate(160%)');
+
+              return parts.length > 0 ? parts.join(' ') : undefined;
+            };
+
+            const getClipClass = (shape?: ImageLayer['clipShape']) => {
+              switch (shape) {
+                case 'circle':
+                  return 'rounded-full overflow-hidden';
+                case 'squircle':
+                  return 'rounded-[2.5rem] overflow-hidden';
+                case 'pill':
+                  return 'rounded-full px-6 overflow-hidden';
+                case 'phone_mockup':
+                  return 'rounded-[3rem] border-4 border-slate-700 shadow-2xl overflow-hidden';
+                case 'shield':
+                  return 'rounded-b-[3rem] rounded-t-2xl overflow-hidden';
+                default:
+                  return '';
+              }
+            };
+
             return (
               <div
                 key={layer.id}
                 onMouseDown={(e) => handleMouseDown(e, layer)}
+                onDoubleClick={(e) => handleLayerDoubleClick(e, layer)}
                 onContextMenu={(e) => handleContextMenu(e, layer)}
                 onMouseEnter={() => setHoveredLayerId(layer.id)}
                 onMouseLeave={() => setHoveredLayerId(null)}
@@ -639,7 +719,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   e.stopPropagation();
                   onSelectLayer(layer.id, e.shiftKey || e.metaKey || e.ctrlKey);
                 }}
-                className={`canvas-layer-item absolute transition-shadow select-none shrink-0 ${
+                className={`canvas-layer-item absolute transition-shadow select-none shrink-0 ${getClipClass(
+                  layer.clipShape
+                )} ${
                   isLocked ? 'cursor-default' : 'cursor-move'
                 } ${
                   isSelected
@@ -659,8 +741,38 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   height: layer.height ? `${layer.height}px` : 'auto',
                   minHeight: layer.height ? `${layer.height}px` : 'auto',
                   flexShrink: 0,
+                  filter: getFilterStyle(layer.filter, layer.brightness, layer.contrast, layer.blur),
                 }}
               >
+                {/* INLINE DIRECT TEXT EDITOR OVERLAY */}
+                {editingLayerId === layer.id && (
+                  <div
+                    className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#001219]/95 p-3 rounded-2xl border-2 border-brand-cyan shadow-2xl backdrop-blur-md animate-fadeIn"
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    <div className="w-full text-left text-[10px] font-bold text-brand-cyan mb-1 flex items-center justify-between">
+                      <span>Editando {editingPropKey}...</span>
+                      <span className="text-slate-400 font-mono text-[9px]">[Enter] guardar · [Esc] salir</span>
+                    </div>
+                    <textarea
+                      autoFocus
+                      value={editingValue}
+                      onChange={(e) => setEditingValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          commitInlineEdit();
+                        } else if (e.key === 'Escape') {
+                          setEditingLayerId(null);
+                        }
+                      }}
+                      onBlur={commitInlineEdit}
+                      className="w-full h-full resize-none rounded-xl bg-slate-900/90 p-2.5 font-display text-sm font-bold text-white outline-none ring-1 ring-teal-500/50 shadow-inner"
+                      rows={3}
+                    />
+                  </div>
+                )}
                 {/* RENDER BLOCK TYPES */}
                 {layer.blockType === 'GlassCardSurface' && (
                   <div

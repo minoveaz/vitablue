@@ -19,6 +19,8 @@ import {
   Linkedin,
   Layers,
   ArrowLeft,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { ImageFormatPreset, IMAGE_FORMAT_PRESETS, ImageProject } from '../../types/imageStudio';
 
@@ -37,6 +39,7 @@ export interface ImageEditorToolbarProps {
   onRedo: () => void;
   onUpdateTitle: (title: string) => void;
   onSetPreset: (preset: ImageFormatPreset) => void;
+  onCopyToClipboard?: () => void;
   onExport: (format: 'png' | 'jpeg' | 'svg') => void;
   onSaveToDam: () => void;
 }
@@ -56,9 +59,11 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   onRedo,
   onUpdateTitle,
   onSetPreset,
+  onCopyToClipboard,
   onExport,
   onSaveToDam,
 }) => {
+  const [copied, setCopied] = useState(false);
   const [isResizeOpen, setIsResizeOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [damSaved, setDamSaved] = useState(false);
@@ -274,6 +279,27 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           <Video className="size-3.5 text-brand-cyan" />
           <span className="hidden sm:inline">Video Studio</span>
         </Link>
+
+        {/* COPIAR AL PORTAPAPELES (1-CLIC) */}
+        {onCopyToClipboard && (
+          <button
+            type="button"
+            onClick={async () => {
+              await onCopyToClipboard();
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
+              copied
+                ? 'border-teal-500 bg-teal-950/60 text-brand-cyan shadow-xs'
+                : 'border-slate-800 bg-slate-950 text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+            title="Copiar imagen al portapapeles (lista para pegar con Ctrl+V en WhatsApp, Slack o Figma)"
+          >
+            {copied ? <Check className="size-3.5 text-brand-cyan" /> : <Copy className="size-3.5 text-slate-400" />}
+            <span className="hidden sm:inline">{copied ? '¡Copiada!' : 'Copiar'}</span>
+          </button>
+        )}
 
         {/* BOTÓN PRINCIPAL DESCARGAR CON DROPDOWN */}
         <div className="relative" ref={exportRef}>
