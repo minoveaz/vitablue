@@ -19,10 +19,13 @@ import {
 interface ImageStageProps {
   project: ImageProject;
   selectedLayerId: string | null;
+  isCanvasSelected: boolean;
   zoom: number;
   showSafeZones: boolean;
   canvasRef: React.RefObject<HTMLDivElement | null>;
-  onSelectLayer: (id: string | null) => void;
+  onSelectLayer: (id: string) => void;
+  onSelectCanvas: () => void;
+  onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
   onUpdateScale: (id: string, scale: number) => void;
   onDuplicateLayer: (id: string) => void;
@@ -33,10 +36,13 @@ interface ImageStageProps {
 export const ImageStage: React.FC<ImageStageProps> = ({
   project,
   selectedLayerId,
+  isCanvasSelected,
   zoom,
   showSafeZones,
   canvasRef,
   onSelectLayer,
+  onSelectCanvas,
+  onDeselectAll,
   onUpdatePosition,
   onUpdateScale,
   onDuplicateLayer,
@@ -134,12 +140,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const baseWidth = 540;
   const computedHeight = (baseWidth * aspectHeight) / aspectWidth;
 
-  const isCanvasSelected = selectedLayerId === null;
-
   return (
     <div
       ref={containerRef}
-      onClick={() => onSelectLayer(null)}
+      onClick={onDeselectAll}
       className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none cursor-grab active:cursor-grabbing"
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
@@ -173,7 +177,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
         <div
           ref={canvasRef}
-          onClick={() => onSelectLayer(null)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectCanvas();
+          }}
           className={`relative overflow-hidden rounded-none transition-all cursor-default ${
             isCanvasSelected
               ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-slate-950 shadow-[0_0_50px_rgba(148,210,189,0.25),0_0_0_1px_rgba(148,210,189,0.8)]'

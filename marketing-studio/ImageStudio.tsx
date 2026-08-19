@@ -28,20 +28,35 @@ export const ImageStudio: React.FC = () => {
     }
   };
 
-  const handleSelectLayer = (id: string | null) => {
+  const [isCanvasSelected, setIsCanvasSelected] = useState<boolean>(true);
+
+  const handleSelectLayer = (id: string) => {
     editor.selectLayer(id);
-    if (id) {
-      setIsInspectorOpen(true);
-    }
+    setIsCanvasSelected(false);
+    setIsInspectorOpen(true);
+  };
+
+  const handleSelectCanvas = () => {
+    editor.selectLayer(null);
+    setIsCanvasSelected(true);
+    setIsInspectorOpen(true);
+  };
+
+  const handleDeselectAll = () => {
+    editor.selectLayer(null);
+    setIsCanvasSelected(false);
+    setIsInspectorOpen(false);
   };
 
   const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0], defaultProps?: Record<string, unknown>) => {
     editor.addBlockLayer(blockType, defaultProps);
+    setIsCanvasSelected(false);
     setIsInspectorOpen(true);
   };
 
   const handleLoadTemplate = (template: Parameters<typeof editor.loadTemplate>[0]) => {
     editor.loadTemplate(template);
+    setIsCanvasSelected(false);
     setIsInspectorOpen(true);
   };
 
@@ -110,10 +125,13 @@ export const ImageStudio: React.FC = () => {
         <ImageStage
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
+          isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
           canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
+          onSelectCanvas={handleSelectCanvas}
+          onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
           onDuplicateLayer={editor.duplicateLayer}
