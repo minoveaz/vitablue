@@ -52,11 +52,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
+  const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
+
   const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
     x: 0,
     y: 0,
     layerX: 50,
     layerY: 50,
+  });
+
+  const resizeStartRef = useRef<{ startX: number; startY: number; startScale: number }>({
+    startX: 0,
+    startY: 0,
+    startScale: 1,
   });
 
   // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & TWO-FINGER PAN)
@@ -99,24 +107,45 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   };
 
+  const handleResizeStart = (e: React.MouseEvent, layer: ImageLayer) => {
+    e.stopPropagation();
+    onSelectLayer(layer.id);
+    setResizingLayerId(layer.id);
+    resizeStartRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startScale: layer.scale ?? 1,
+    };
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      if (resizingLayerId) {
+        const deltaX = e.clientX - resizeStartRef.current.startX;
+        const deltaY = e.clientY - resizeStartRef.current.startY;
+        const delta = (deltaX + deltaY) / 2;
+        const nextScale = Math.max(0.35, Math.min(2.2, resizeStartRef.current.startScale + delta * 0.006));
+        onUpdateScale(resizingLayerId, parseFloat(nextScale.toFixed(2)));
+        return;
+      }
+
       if (!draggingLayerId || !canvasRef.current) return;
       const rect = canvasRef.current.getBoundingClientRect();
       const deltaX = ((e.clientX - dragStartRef.current.x) / rect.width) * 100;
       const deltaY = ((e.clientY - dragStartRef.current.y) / rect.height) * 100;
 
-      const nextX = Math.max(10, Math.min(90, dragStartRef.current.layerX + deltaX));
-      const nextY = Math.max(10, Math.min(90, dragStartRef.current.layerY + deltaY));
+      const nextX = Math.max(5, Math.min(95, dragStartRef.current.layerX + deltaX));
+      const nextY = Math.max(5, Math.min(95, dragStartRef.current.layerY + deltaY));
 
       onUpdatePosition(draggingLayerId, { x: Math.round(nextX), y: Math.round(nextY) });
     };
 
     const handleMouseUp = () => {
       setDraggingLayerId(null);
+      setResizingLayerId(null);
     };
 
-    if (draggingLayerId) {
+    if (draggingLayerId || resizingLayerId) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -125,7 +154,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingLayerId, onUpdatePosition, canvasRef]);
+  }, [draggingLayerId, resizingLayerId, onUpdatePosition, onUpdateScale, canvasRef]);
 
   const handleResetFit = () => {
     onSetZoom(0.55);
@@ -290,13 +319,29 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   />
                 )}
 
-                {/* BOUNDING BOX CORNER HANDLES */}
+                {/* BOUNDING BOX CORNER HANDLES CON ARRASTRE DE REDIMENSIÓN */}
                 {isSelected && (
                   <>
-                    <div className="absolute -top-1.5 -left-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
-                    <div className="absolute -top-1.5 -right-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
-                    <div className="absolute -bottom-1.5 -left-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
-                    <div className="absolute -bottom-1.5 -right-1.5 size-3 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-xs" />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para redimensionar"
+                    />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para redimensionar"
+                    />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para redimensionar"
+                    />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para redimensionar"
+                    />
                   </>
                 )}
               </div>

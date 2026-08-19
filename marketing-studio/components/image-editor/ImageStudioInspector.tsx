@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Palette,
   Sliders,
+  Scaling,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -10,6 +11,7 @@ export interface ImageStudioInspectorProps {
   project: ImageProject;
   selectedLayer: ImageLayer | null;
   onUpdateLayerProps: (id: string, props: Record<string, unknown>) => void;
+  onUpdateLayerScale?: (id: string, scale: number) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
   onClose?: () => void;
 }
@@ -18,6 +20,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   project,
   selectedLayer,
   onUpdateLayerProps,
+  onUpdateLayerScale,
   onUpdateBackground,
   onClose,
 }) => {
@@ -109,6 +112,56 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
             Z-Index: {selectedLayer.zIndex}
           </span>
+        </div>
+
+        {/* CONTROL DE TAMAÑO Y ESCALA */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Scaling className="size-3.5 text-brand-cyan" />
+              <span>Tamaño / Escala</span>
+            </span>
+            <span className="font-mono text-brand-cyan">
+              {Math.round((selectedLayer.scale ?? 1) * 100)}%
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={0.4}
+              max={2.0}
+              step={0.05}
+              value={selectedLayer.scale ?? 1}
+              onChange={(e) => onUpdateLayerScale?.(selectedLayer.id, parseFloat(e.target.value))}
+              className="flex-1 accent-primary"
+            />
+            <button
+              type="button"
+              onClick={() => onUpdateLayerScale?.(selectedLayer.id, 1)}
+              className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:bg-slate-700 transition-colors"
+              title="Restablecer al 100%"
+            >
+              100%
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 pt-1">
+            {[0.75, 0.9, 1.0, 1.25].map((presetScale) => (
+              <button
+                key={presetScale}
+                type="button"
+                onClick={() => onUpdateLayerScale?.(selectedLayer.id, presetScale)}
+                className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                  Math.abs((selectedLayer.scale ?? 1) - presetScale) < 0.03
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {Math.round(presetScale * 100)}%
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 1. MOTIONSADVISORCARD */}
