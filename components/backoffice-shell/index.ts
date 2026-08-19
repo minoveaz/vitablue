@@ -6,6 +6,7 @@ export * from './ModuleHeader';
 export * from './ModuleContextSidebar';
 export * from './ModuleContextPanel';
 export * from './SuiteShell';
+export * from './StudioWorkspaceShell';
 export * from './SuiteRuntime';
 export * from './types';
 export { default as BackofficeShell } from './BackofficeShell';
