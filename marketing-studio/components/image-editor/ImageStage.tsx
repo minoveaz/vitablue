@@ -33,6 +33,7 @@ interface ImageStageProps {
   onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
   onUpdateScale: (id: string, scale: number) => void;
+  onCommitPositionChange?: () => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
   onDuplicateLayer: (id: string) => void;
@@ -52,6 +53,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onDeselectAll,
   onUpdatePosition,
   onUpdateScale,
+  onCommitPositionChange,
   onFitToCanvas,
   onUngroupLayer,
   onDuplicateLayer,
@@ -169,6 +171,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
 
     const handleMouseUp = () => {
+      if (draggingLayerId || resizingLayerId) {
+        onCommitPositionChange?.();
+      }
       setDraggingLayerId(null);
       setResizingLayerId(null);
     };
@@ -182,7 +187,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingLayerId, resizingLayerId, onUpdatePosition, onUpdateScale, canvasRef]);
+  }, [draggingLayerId, resizingLayerId, onUpdatePosition, onUpdateScale, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     onSetZoom(0.55);
@@ -339,6 +344,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             const getBlockWidth = (blockType?: string) => {
               switch (blockType) {
                 case 'MotionAdvisorCard':
+                case 'GlassCardSurface':
                   return '380px';
                 case 'MotionTrustBadge':
                   return '420px';
@@ -384,6 +390,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 }}
               >
                 {/* RENDER BLOCK TYPES */}
+                {layer.blockType === 'GlassCardSurface' && (
+                  <div
+                    className="w-full h-[520px] rounded-3xl border border-teal-500/40 bg-[#001219]/95 shadow-2xl backdrop-blur-xl pointer-events-none"
+                    style={{
+                      boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 95, 115, 0.3)',
+                    }}
+                  />
+                )}
+
                 {layer.blockType === 'MotionAdvisorCard' && (
                   <MotionAdvisorCard
                     name={String(blockProps.name ?? 'Sofía')}

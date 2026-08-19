@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import BackofficeShell from '../components/layouts/BackofficeShell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
@@ -14,6 +14,54 @@ export const ImageStudio: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const editor = useImageProjectEditor();
+
+  // ATAJOS DE TECLADO GLOBALES (Cmd+Z, Ctrl+Z, Redo, Delete, Duplicar)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable) {
+        return;
+      }
+
+      // Cmd+Z / Ctrl+Z (Deshacer / Undo)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        editor.undo();
+        return;
+      }
+
+      // Cmd+Shift+Z / Ctrl+Y (Rehacer / Redo)
+      if (
+        ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && e.shiftKey) ||
+        ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y')
+      ) {
+        e.preventDefault();
+        editor.redo();
+        return;
+      }
+
+      // Cmd+D (Duplicar capa)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd') {
+        if (editor.selectedLayerId) {
+          e.preventDefault();
+          editor.duplicateLayer(editor.selectedLayerId);
+        }
+        return;
+      }
+
+      // Delete o Backspace (Eliminar capa)
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (editor.selectedLayerId) {
+          e.preventDefault();
+          editor.removeLayer(editor.selectedLayerId);
+        }
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [editor]);
 
   const handleSaveToDam = () => {
     setToastMessage('✅ Activo guardado con éxito en la Biblioteca DAM');
@@ -139,6 +187,7 @@ export const ImageStudio: React.FC = () => {
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
+          onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}
           onDuplicateLayer={editor.duplicateLayer}

@@ -97,6 +97,7 @@ export type ImageBlockType =
   | 'MotionTrustBadge'
   | 'MotionProviderGrid'
   | 'MotionComparisonCard'
+  | 'GlassCardSurface'
   | 'HookAlertBadge'
   | 'AdvisorAvatarBadge'
   | 'AdvisorQuoteBox'

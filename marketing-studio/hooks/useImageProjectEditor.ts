@@ -271,14 +271,29 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         const props = layer.props as Record<string, unknown>;
         const subLayers: ImageLayer[] = [
           {
+            id: `layer-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Tarjeta',
+            props: {
+              width: 380,
+              height: 520,
+              bg: 'rgba(0, 18, 25, 0.95)',
+              borderColor: 'rgba(20, 184, 166, 0.4)',
+            },
+            position: { x: 50, y: 50 },
+            zIndex: 1,
+            scale: layer.scale ?? 1,
+          },
+          {
             id: `layer-badge-${Date.now()}`,
             type: 'badge',
             blockType: 'HookAlertBadge',
             title: 'Badge de Estado',
             props: { badge: props.badge ?? 'ASESORA ASIGNADA · EN DIRECTO' },
-            position: { x: 50, y: 18 },
-            zIndex: 10,
-            scale: 1,
+            position: { x: 50, y: 22 },
+            zIndex: 2,
+            scale: layer.scale ?? 1,
           },
           {
             id: `layer-avatar-${Date.now()}`,
@@ -290,9 +305,9 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
               name: props.name ?? 'Sofía',
               role: props.role ?? 'Asesora Especialista en Visados',
             },
-            position: { x: 50, y: 40 },
-            zIndex: 11,
-            scale: 1,
+            position: { x: 50, y: 44 },
+            zIndex: 3,
+            scale: layer.scale ?? 1,
           },
           {
             id: `layer-quote-${Date.now()}`,
@@ -300,9 +315,9 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
             blockType: 'AdvisorQuoteBox',
             title: 'Caja de Mensaje',
             props: { message: props.message ?? 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.' },
-            position: { x: 50, y: 64 },
-            zIndex: 12,
-            scale: 1,
+            position: { x: 50, y: 68 },
+            zIndex: 4,
+            scale: layer.scale ?? 1,
           },
           {
             id: `layer-cta-${Date.now()}`,
@@ -310,19 +325,26 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
             blockType: 'WhatsAppCtaButton',
             title: 'Botón WhatsApp',
             props: { whatsAppText: props.whatsAppText ?? 'Pregúntanos por WhatsApp' },
-            position: { x: 50, y: 82 },
-            zIndex: 13,
-            scale: 1,
+            position: { x: 50, y: 84 },
+            zIndex: 5,
+            scale: layer.scale ?? 1,
           },
         ];
 
         const otherLayers = prev.layers.filter((l) => l.id !== layerId);
         const next = { ...prev, layers: [...otherLayers, ...subLayers], updatedAt: new Date().toISOString() };
-        setSelectedLayerId(subLayers[1].id);
+        setSelectedLayerId(subLayers[4].id);
         pushHistory(next);
         return next;
       }
 
+      return prev;
+    });
+  }, [pushHistory]);
+
+  const commitPositionChange = useCallback(() => {
+    setProject((prev) => {
+      pushHistory(prev);
       return prev;
     });
   }, [pushHistory]);
@@ -349,6 +371,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerProps,
     updateLayerPosition,
     updateLayerScale,
+    commitPositionChange,
     fitLayerToCanvas,
     ungroupLayer,
     duplicateLayer,
