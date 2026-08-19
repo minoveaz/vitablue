@@ -240,6 +240,93 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     }
   }, [project.title, project.preset.aspectRatio]);
 
+  const fitLayerToCanvas = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const layer = prev.layers.find((l) => l.id === layerId);
+      if (!layer) return prev;
+      const isPortrait = prev.preset.height > prev.preset.width;
+      const idealScale = isPortrait ? 1.15 : 0.95;
+
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId
+          ? {
+              ...l,
+              position: { x: 50, y: 50 },
+              scale: idealScale,
+            }
+          : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const ungroupLayer = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const layer = prev.layers.find((l) => l.id === layerId);
+      if (!layer) return prev;
+
+      if (layer.blockType === 'MotionAdvisorCard') {
+        const props = layer.props as Record<string, unknown>;
+        const subLayers: ImageLayer[] = [
+          {
+            id: `layer-badge-${Date.now()}`,
+            type: 'badge',
+            blockType: 'HookAlertBadge',
+            title: 'Badge de Estado',
+            props: { badge: props.badge ?? 'ASESORA ASIGNADA · EN DIRECTO' },
+            position: { x: 50, y: 18 },
+            zIndex: 10,
+            scale: 1,
+          },
+          {
+            id: `layer-avatar-${Date.now()}`,
+            type: 'block',
+            blockType: 'AdvisorAvatarBadge',
+            title: 'Avatar con Verificación',
+            props: {
+              avatarUrl: props.avatarUrl ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+              name: props.name ?? 'Sofía',
+              role: props.role ?? 'Asesora Especialista en Visados',
+            },
+            position: { x: 50, y: 40 },
+            zIndex: 11,
+            scale: 1,
+          },
+          {
+            id: `layer-quote-${Date.now()}`,
+            type: 'block',
+            blockType: 'AdvisorQuoteBox',
+            title: 'Caja de Mensaje',
+            props: { message: props.message ?? 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.' },
+            position: { x: 50, y: 64 },
+            zIndex: 12,
+            scale: 1,
+          },
+          {
+            id: `layer-cta-${Date.now()}`,
+            type: 'block',
+            blockType: 'WhatsAppCtaButton',
+            title: 'Botón WhatsApp',
+            props: { whatsAppText: props.whatsAppText ?? 'Pregúntanos por WhatsApp' },
+            position: { x: 50, y: 82 },
+            zIndex: 13,
+            scale: 1,
+          },
+        ];
+
+        const otherLayers = prev.layers.filter((l) => l.id !== layerId);
+        const next = { ...prev, layers: [...otherLayers, ...subLayers], updatedAt: new Date().toISOString() };
+        setSelectedLayerId(subLayers[1].id);
+        pushHistory(next);
+        return next;
+      }
+
+      return prev;
+    });
+  }, [pushHistory]);
+
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId) ?? null;
 
   return {
@@ -262,6 +349,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerProps,
     updateLayerPosition,
     updateLayerScale,
+    fitLayerToCanvas,
+    ungroupLayer,
     duplicateLayer,
     removeLayer,
     addBlockLayer,

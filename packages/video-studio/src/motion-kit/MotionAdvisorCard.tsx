@@ -34,7 +34,7 @@ export const MotionAdvisorCard: React.FC<MotionAdvisorCardProps> = ({
       </div>
 
       {/* AVATAR WITH PHOTO */}
-      <div className="relative mb-3.5">
+      <div className="relative mb-2">
         <div className="flex size-20 items-center justify-center rounded-full border-2 border-amber-500 bg-[#005F73] text-2xl font-black text-white shadow-xl ring-4 ring-amber-500/25 overflow-hidden">
           {avatarUrl ? (
             <img src={avatarUrl} alt={name} className="size-full object-cover" />
@@ -42,18 +42,20 @@ export const MotionAdvisorCard: React.FC<MotionAdvisorCardProps> = ({
             <span>{name.charAt(0)}</span>
           )}
         </div>
-        <div className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219]">
+        <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219] translate-x-1 translate-y-0.5">
           <ShieldCheck className="size-3.5" />
         </div>
       </div>
 
       {/* NAME & ROLE */}
-      <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
-        {name}
-      </h3>
-      <p className="mt-0.5 text-xs font-bold text-[#94D2BD]">
-        {role}
-      </p>
+      <div className="mt-1.5 space-y-0.5">
+        <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
+          {name}
+        </h3>
+        <p className="text-xs font-bold text-[#94D2BD]">
+          {role}
+        </p>
+      </div>
 
       {/* MESSAGE QUOTE */}
       {message && (

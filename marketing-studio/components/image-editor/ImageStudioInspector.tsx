@@ -3,6 +3,8 @@ import {
   Palette,
   Sliders,
   Scaling,
+  Maximize2,
+  Ungroup,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -12,6 +14,8 @@ export interface ImageStudioInspectorProps {
   selectedLayer: ImageLayer | null;
   onUpdateLayerProps: (id: string, props: Record<string, unknown>) => void;
   onUpdateLayerScale?: (id: string, scale: number) => void;
+  onFitToCanvas?: (id: string) => void;
+  onUngroupLayer?: (id: string) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
   onClose?: () => void;
 }
@@ -21,6 +25,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   selectedLayer,
   onUpdateLayerProps,
   onUpdateLayerScale,
+  onFitToCanvas,
+  onUngroupLayer,
   onUpdateBackground,
   onClose,
 }) => {
@@ -161,6 +167,30 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 {Math.round(presetScale * 100)}%
               </button>
             ))}
+          </div>
+
+          {/* ACCIÓN AUTO-AJUSTAR AL LIENZO */}
+          <div className="pt-2 border-t border-slate-900 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => onFitToCanvas?.(selectedLayer.id)}
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold text-primary hover:bg-primary hover:text-white transition-all shadow-xs"
+            >
+              <Maximize2 className="size-3.5" />
+              <span>Auto-Ajustar al Lienzo</span>
+            </button>
+
+            {selectedLayer.blockType === 'MotionAdvisorCard' && (
+              <button
+                type="button"
+                onClick={() => onUngroupLayer?.(selectedLayer.id)}
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold text-slate-200 hover:border-amber-400 hover:text-amber-300 transition-all shadow-xs"
+                title="Separar avatar, textos y botón en capas independientes para moverlos libremente"
+              >
+                <Ungroup className="size-3.5 text-amber-400" />
+                <span>Desagrupar en Elementos Libres</span>
+              </button>
+            )}
           </div>
         </div>
 

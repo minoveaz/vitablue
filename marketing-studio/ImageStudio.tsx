@@ -103,6 +103,8 @@ export const ImageStudio: React.FC = () => {
             selectedLayer={editor.selectedLayer}
             onUpdateLayerProps={editor.updateLayerProps}
             onUpdateLayerScale={editor.updateLayerScale}
+            onFitToCanvas={editor.fitLayerToCanvas}
+            onUngroupLayer={editor.ungroupLayer}
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />

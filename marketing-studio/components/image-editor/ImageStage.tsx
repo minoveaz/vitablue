@@ -14,6 +14,8 @@ import {
   Minus,
   Plus,
   Maximize2,
+  CheckCircle2,
+  MessageSquare,
 } from 'lucide-react';
 
 interface ImageStageProps {
@@ -248,6 +250,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 case 'MotionComparisonCard':
                 case 'MotionProviderGrid':
                   return '460px';
+                case 'HookAlertBadge':
+                  return 'auto';
+                case 'AdvisorAvatarBadge':
+                  return '320px';
+                case 'AdvisorQuoteBox':
+                  return '400px';
+                case 'WhatsAppCtaButton':
+                  return '360px';
                 default:
                   return '420px';
               }
@@ -272,7 +282,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   transform: `translate(-50%, -50%) scale(${layer.scale ?? 1})`,
                   zIndex: layer.zIndex,
                   width: getBlockWidth(layer.blockType),
-                  minWidth: getBlockWidth(layer.blockType),
+                  minWidth: getBlockWidth(layer.blockType) === 'auto' ? 'auto' : getBlockWidth(layer.blockType),
                   maxWidth: 'none',
                   flexShrink: 0,
                 }}
@@ -288,6 +298,57 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
                     tokens={project.brandTokens}
                   />
+                )}
+
+                {layer.blockType === 'HookAlertBadge' && (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-[#94D2BD] shadow-lg backdrop-blur-md">
+                    <span className="relative flex size-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                    </span>
+                    <span>{String(blockProps.badge ?? 'ASESORA ASIGNADA · EN DIRECTO')}</span>
+                  </div>
+                )}
+
+                {layer.blockType === 'AdvisorAvatarBadge' && (
+                  <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-2">
+                      <div className="flex size-20 items-center justify-center rounded-full border-2 border-amber-500 bg-[#005F73] text-2xl font-black text-white shadow-xl ring-4 ring-amber-500/25 overflow-hidden">
+                        {blockProps.avatarUrl ? (
+                          <img src={String(blockProps.avatarUrl)} alt={String(blockProps.name ?? 'Asesor')} className="size-full object-cover" />
+                        ) : (
+                          <span>{String(blockProps.name ?? 'A').charAt(0)}</span>
+                        )}
+                      </div>
+                      <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219] translate-x-1 translate-y-0.5">
+                        <CheckCircle2 className="size-3.5" />
+                      </div>
+                    </div>
+                    <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
+                      {String(blockProps.name ?? 'Sofía')}
+                    </h3>
+                    <p className="mt-0.5 text-xs font-bold text-[#94D2BD]">
+                      {String(blockProps.role ?? 'Asesora')}
+                    </p>
+                  </div>
+                )}
+
+                {layer.blockType === 'AdvisorQuoteBox' && (
+                  <div className="w-full rounded-2xl border border-teal-500/30 bg-[#001219]/90 p-4 text-center text-xs leading-relaxed text-slate-100 shadow-xl backdrop-blur-xl">
+                    <p className="italic text-center text-slate-100 font-medium">
+                      "{String(blockProps.message ?? '')}"
+                    </p>
+                  </div>
+                )}
+
+                {layer.blockType === 'WhatsAppCtaButton' && (
+                  <div
+                    style={{ backgroundColor: '#25D366' }}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-black text-white shadow-xl shadow-emerald-950/60 hover:opacity-95 transition-transform active:scale-95 cursor-pointer"
+                  >
+                    <MessageSquare className="size-4 fill-white" />
+                    <span>{String(blockProps.whatsAppText ?? 'Pregúntanos por WhatsApp')}</span>
+                  </div>
                 )}
 
                 {layer.blockType === 'MotionTrustBadge' && (

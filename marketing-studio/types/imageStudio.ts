@@ -98,6 +98,9 @@ export type ImageBlockType =
   | 'MotionProviderGrid'
   | 'MotionComparisonCard'
   | 'HookAlertBadge'
+  | 'AdvisorAvatarBadge'
+  | 'AdvisorQuoteBox'
+  | 'WhatsAppCtaButton'
   | 'CustomText';
 
 export interface ImageLayer {
