@@ -229,8 +229,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           <div className="flex items-center gap-2">
             <input
               type="range"
-              min={200}
-              max={500}
+              min={120}
+              max={950}
               step={10}
               value={selectedLayer.width ?? 380}
               onChange={(e) => onUpdateLayerWidth?.(selectedLayer.id, parseInt(e.target.value, 10))}
@@ -246,8 +246,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-1 pt-1">
-            {[280, 340, 380, 460].map((w) => (
+          <div className="grid grid-cols-5 gap-1 pt-1">
+            {[260, 360, 440, 560, 750].map((w) => (
               <button
                 key={w}
                 type="button"

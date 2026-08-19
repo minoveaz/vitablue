@@ -458,7 +458,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   <div
                     className="w-full rounded-3xl border border-teal-500/30 bg-[#001219]/90 shadow-2xl backdrop-blur-xl pointer-events-none"
                     style={{
-                      width: `${blockProps.width ?? 440}px`,
+                      width: '100%',
                       height: `${blockProps.height ?? 380}px`,
                       boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
                     }}
@@ -474,6 +474,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
                     whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
                     tokens={project.brandTokens}
+                    className="!max-w-none !w-full"
+                    style={{ maxWidth: 'none', width: '100%' }}
                   />
                 )}
 
@@ -488,7 +490,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 )}
 
                 {layer.blockType === 'AdvisorAvatarBadge' && (
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center w-full">
                     <div className="relative mb-2">
                       <div className="flex size-20 items-center justify-center rounded-full border-2 border-amber-500 bg-[#005F73] text-2xl font-black text-white shadow-xl ring-4 ring-amber-500/25 overflow-hidden">
                         {blockProps.avatarUrl ? (
@@ -513,7 +515,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 )}
 
                 {layer.blockType === 'AdvisorQuoteBox' && (
-                  <div className="rounded-2xl border border-teal-500/20 bg-slate-950/70 p-4 text-center shadow-inner backdrop-blur-md">
+                  <div className="w-full rounded-2xl border border-teal-500/20 bg-slate-950/70 p-4 text-center shadow-inner backdrop-blur-md">
                     <p className="text-xs font-medium italic text-slate-200 leading-relaxed">
                       "{String(blockProps.message ?? '')}"
                     </p>
@@ -532,7 +534,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
                 {/* SUBCAPAS DE GRID DE ASEGURADORAS */}
                 {layer.blockType === 'ProviderGridHeader' && (
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center w-full">
                     <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-teal-900/40 text-teal-400">
                       <Building2 className="size-5" />
                     </div>
@@ -575,20 +577,20 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 )}
 
                 {layer.blockType === 'TrustBadgeTitle' && (
-                  <h3 className="font-display text-lg font-black text-white tracking-tight leading-snug text-center">
+                  <h3 className="font-display text-lg font-black text-white tracking-tight leading-snug text-center w-full">
                     {String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
                   </h3>
                 )}
 
                 {layer.blockType === 'TrustBadgeSubtitle' && (
-                  <p className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center">
+                  <p className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center w-full">
                     {String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
                   </p>
                 )}
 
                 {/* SUBCAPAS DE COMPARISON CARD */}
                 {layer.blockType === 'ComparisonHeader' && (
-                  <h3 className="font-display text-sm font-black text-white tracking-tight uppercase text-center">
+                  <h3 className="font-display text-sm font-black text-white tracking-tight uppercase text-center w-full">
                     {String(blockProps.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
                   </h3>
                 )}
@@ -629,6 +631,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
                     verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
                     tokens={project.brandTokens}
+                    className="!max-w-none !w-full"
+                    style={{ maxWidth: 'none', width: '100%' }}
                   />
                 )}
 
@@ -637,6 +641,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     title={String(blockProps.title ?? 'Aseguradoras Líderes')}
                     subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
                     tokens={project.brandTokens}
+                    className="!max-w-none !w-full"
+                    style={{ maxWidth: 'none', width: '100%' }}
                   />
                 )}
 
@@ -648,6 +654,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
                     correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
                     tokens={project.brandTokens}
+                    className="!max-w-none !w-full"
+                    style={{ maxWidth: 'none', width: '100%' }}
                   />
                 )}
 
