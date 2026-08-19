@@ -44,6 +44,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onSetZoom,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
     x: 0,
@@ -51,6 +52,34 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     layerX: 50,
     layerY: 50,
   });
+
+  // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & TWO-FINGER PAN)
+  useEffect(() => {
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Gesto de pellizco (Pinch-to-zoom en Trackpad de macOS/Windows genera e.ctrlKey o e.metaKey)
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const factor = Math.exp(-e.deltaY * 0.008);
+        const nextZoom = Math.max(0.15, Math.min(3.0, zoom * factor));
+        onSetZoom(parseFloat(nextZoom.toFixed(2)));
+      } else {
+        // Desplazamiento panorámico (Pan) con dos dedos
+        e.preventDefault();
+        setPanOffset((prev) => ({
+          x: prev.x - e.deltaX,
+          y: prev.y - e.deltaY,
+        }));
+      }
+    };
+
+    containerEl.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      containerEl.removeEventListener('wheel', handleWheel);
+    };
+  }, [zoom, onSetZoom]);
 
   const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
     e.stopPropagation();
@@ -92,6 +121,11 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   }, [draggingLayerId, onUpdatePosition, canvasRef]);
 
+  const handleResetFit = () => {
+    onSetZoom(0.55);
+    setPanOffset({ x: 0, y: 0 });
+  };
+
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
 
   // Compute aspect ratio dimensions
@@ -104,7 +138,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     <div
       ref={containerRef}
       onClick={() => onSelectLayer(null)}
-      className="relative flex flex-1 flex-col items-center justify-center overflow-auto bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none"
+      className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none cursor-grab active:cursor-grabbing"
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
@@ -121,9 +155,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
       {/* THE CANVAS CONTAINER */}
       <div
-        className="relative transition-transform duration-100 ease-out"
+        className="relative transition-transform duration-75 ease-out cursor-default"
         style={{
-          transform: `scale(${zoom})`,
+          transform: `translate3d(${panOffset.x}px, ${panOffset.y}px, 0) scale(${zoom})`,
           transformOrigin: 'center center',
         }}
       >
@@ -265,8 +299,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
         <button
           type="button"
-          onClick={() => onSetZoom(0.55)}
+          onClick={handleResetFit}
           className="flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition-colors"
+          title="Centrar y ajustar al lienzo"
         >
           <Maximize2 className="size-3 text-brand-cyan" />
           <span>Ajustar</span>
