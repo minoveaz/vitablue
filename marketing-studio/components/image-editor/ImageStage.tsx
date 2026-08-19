@@ -64,6 +64,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
+  const [hoveredLayerId, setHoveredLayerId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
   const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
@@ -73,10 +74,16 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     layerY: 50,
   });
 
-  const resizeStartRef = useRef<{ startX: number; startY: number; startScale: number }>({
+  const resizeStartRef = useRef<{
+    startX: number;
+    startY: number;
+    startScale: number;
+    corner: 'nw' | 'ne' | 'se' | 'sw';
+  }>({
     startX: 0,
     startY: 0,
     startScale: 1,
+    corner: 'se',
   });
 
   // Cerrar menú contextual al hacer clic fuera
@@ -86,7 +93,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     return () => window.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & TWO-FINGER PAN)
+  // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & COMPONENT SCALE & TWO-FINGER PAN)
   useEffect(() => {
     const containerEl = containerRef.current;
     if (!containerEl) return;
@@ -95,9 +102,21 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       // Gesto de pellizco (Pinch-to-zoom en Trackpad de macOS/Windows genera e.ctrlKey o e.metaKey)
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
-        const factor = Math.exp(-e.deltaY * 0.008);
-        const nextZoom = Math.max(0.15, Math.min(3.0, zoom * factor));
-        onSetZoom(parseFloat(nextZoom.toFixed(2)));
+        const activeTargetId = hoveredLayerId ?? selectedLayerId;
+        const targetLayer = project.layers.find((l) => l.id === activeTargetId);
+
+        // Si el cursor está sobre un componente o hay un componente activo: reescala el componente
+        if (targetLayer && hoveredLayerId) {
+          const factor = Math.exp(-e.deltaY * 0.006);
+          const currentScale = targetLayer.scale ?? 1;
+          const nextScale = Math.max(0.35, Math.min(2.5, currentScale * factor));
+          onUpdateScale(targetLayer.id, parseFloat(nextScale.toFixed(2)));
+        } else {
+          // Si el cursor está en el fondo del lienzo o fuera: zoom general del lienzo
+          const factor = Math.exp(-e.deltaY * 0.008);
+          const nextZoom = Math.max(0.15, Math.min(3.0, zoom * factor));
+          onSetZoom(parseFloat(nextZoom.toFixed(2)));
+        }
       } else {
         // Desplazamiento panorámico (Pan) con dos dedos
         e.preventDefault();
@@ -112,7 +131,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     return () => {
       containerEl.removeEventListener('wheel', handleWheel);
     };
-  }, [zoom, onSetZoom]);
+  }, [zoom, hoveredLayerId, selectedLayerId, project.layers, onSetZoom, onUpdateScale]);
 
   const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
     e.stopPropagation();
@@ -137,7 +156,11 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     });
   };
 
-  const handleResizeStart = (e: React.MouseEvent, layer: ImageLayer) => {
+  const handleResizeStart = (
+    e: React.MouseEvent,
+    layer: ImageLayer,
+    corner: 'nw' | 'ne' | 'se' | 'sw' = 'se'
+  ) => {
     e.stopPropagation();
     onSelectLayer(layer.id);
     setResizingLayerId(layer.id);
@@ -145,16 +168,28 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       startX: e.clientX,
       startY: e.clientY,
       startScale: layer.scale ?? 1,
+      corner,
     };
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (resizingLayerId) {
-        const deltaX = e.clientX - resizeStartRef.current.startX;
-        const deltaY = e.clientY - resizeStartRef.current.startY;
+        const { startX, startY, startScale, corner } = resizeStartRef.current;
+        let deltaX = e.clientX - startX;
+        let deltaY = e.clientY - startY;
+
+        if (corner === 'nw') {
+          deltaX = -deltaX;
+          deltaY = -deltaY;
+        } else if (corner === 'ne') {
+          deltaY = -deltaY;
+        } else if (corner === 'sw') {
+          deltaX = -deltaX;
+        }
+
         const delta = (deltaX + deltaY) / 2;
-        const nextScale = Math.max(0.35, Math.min(2.2, resizeStartRef.current.startScale + delta * 0.006));
+        const nextScale = Math.max(0.35, Math.min(2.5, startScale + delta * 0.006));
         onUpdateScale(resizingLayerId, parseFloat(nextScale.toFixed(2)));
         return;
       }
@@ -369,6 +404,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 key={layer.id}
                 onMouseDown={(e) => handleMouseDown(e, layer)}
                 onContextMenu={(e) => handleContextMenu(e, layer)}
+                onMouseEnter={() => setHoveredLayerId(layer.id)}
+                onMouseLeave={() => setHoveredLayerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectLayer(layer.id);
@@ -431,51 +468,51 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                           <span>{String(blockProps.name ?? 'A').charAt(0)}</span>
                         )}
                       </div>
-                      <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219] translate-x-1 translate-y-0.5">
-                        <CheckCircle2 className="size-3.5" />
+                      <div className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-md ring-2 ring-[#001219]">
+                        <CheckCircle2 className="size-4" />
                       </div>
                     </div>
-                    <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
+                    <strong className="font-display text-lg font-bold text-white tracking-tight">
                       {String(blockProps.name ?? 'Sofía')}
-                    </h3>
-                    <p className="mt-0.5 text-xs font-bold text-[#94D2BD]">
-                      {String(blockProps.role ?? 'Asesora')}
-                    </p>
+                    </strong>
+                    <span className="text-xs font-medium text-teal-300/80">
+                      {String(blockProps.role ?? 'Asesora Especialista')}
+                    </span>
                   </div>
                 )}
 
                 {layer.blockType === 'AdvisorQuoteBox' && (
-                  <div className="w-full rounded-2xl border border-teal-500/30 bg-[#001219]/90 p-4 text-center text-xs leading-relaxed text-slate-100 shadow-xl backdrop-blur-xl">
-                    <p className="italic text-center text-slate-100 font-medium">
+                  <div className="rounded-2xl border border-teal-500/20 bg-slate-950/70 p-4 text-center shadow-inner backdrop-blur-md">
+                    <p className="text-xs font-medium italic text-slate-200 leading-relaxed">
                       "{String(blockProps.message ?? '')}"
                     </p>
                   </div>
                 )}
 
                 {layer.blockType === 'WhatsAppCtaButton' && (
-                  <div
-                    style={{ backgroundColor: '#25D366' }}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-black text-white shadow-xl shadow-emerald-950/60 hover:opacity-95 transition-transform active:scale-95 cursor-pointer"
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <MessageSquare className="size-4 fill-white" />
                     <span>{String(blockProps.whatsAppText ?? 'Pregúntanos por WhatsApp')}</span>
-                  </div>
+                  </button>
                 )}
 
                 {layer.blockType === 'MotionTrustBadge' && (
                   <MotionTrustBadge
-                    title={String(blockProps.title ?? '')}
-                    subtitle={String(blockProps.subtitle ?? '')}
-                    highlight={String(blockProps.highlight ?? '')}
-                    verifiedLabel={String(blockProps.verifiedLabel ?? '')}
+                    title={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
+                    subtitle={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa')}
+                    highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
+                    verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
                     tokens={project.brandTokens}
                   />
                 )}
 
                 {layer.blockType === 'MotionProviderGrid' && (
                   <MotionProviderGrid
-                    title={String(blockProps.title ?? '')}
-                    subtitle={String(blockProps.subtitle ?? '')}
+                    title={String(blockProps.title ?? 'Aseguradoras Líderes')}
+                    subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
                     tokens={project.brandTokens}
                   />
                 )}
@@ -495,22 +532,22 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {isSelected && (
                   <>
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'nw')}
                       className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
                       title="Arrastrar para redimensionar"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'ne')}
                       className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
                       title="Arrastrar para redimensionar"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'sw')}
                       className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
                       title="Arrastrar para redimensionar"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer)}
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'se')}
                       className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
                       title="Arrastrar para redimensionar"
                     />
