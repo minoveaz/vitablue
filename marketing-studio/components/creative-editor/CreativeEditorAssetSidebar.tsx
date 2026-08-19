@@ -41,15 +41,16 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
     <ModuleContextSidebar
       label="Biblioteca Creativa"
       width="standard"
+      variant="dark"
       onCollapse={onCollapse}
     >
       {/* PESTAÑAS PRINCIPALES (BRAND KIT | STORYBOARD | ELEMENTOS) */}
-      <div className="flex rounded-xl bg-slate-200/80 p-1 mb-4">
+      <div className="flex rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800">
         <button
           type="button"
           onClick={() => setActiveTab('storyboard')}
           className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
-            activeTab === 'storyboard' ? 'bg-white text-primary shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'storyboard' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Layers className="size-3.5" />
@@ -60,7 +61,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
           type="button"
           onClick={() => setActiveTab('brand')}
           className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
-            activeTab === 'brand' ? 'bg-white text-primary shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'brand' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Shield className="size-3.5 text-accent" />
@@ -71,7 +72,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
           type="button"
           onClick={() => setActiveTab('elements')}
           className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
-            activeTab === 'elements' ? 'bg-white text-primary shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'elements' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Plus className="size-3.5" />
@@ -83,11 +84,11 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
       {activeTab === 'storyboard' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Storyboard ({scenes.length})</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Storyboard ({scenes.length})</span>
             <button
               type="button"
               onClick={() => onAddScene('text_hook')}
-              className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark transition-colors"
+              className="flex items-center gap-1 text-xs font-bold text-brand-cyan hover:text-white transition-colors"
             >
               <Plus className="size-3.5" />
               <span>Nueva escena</span>
@@ -105,16 +106,16 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                   onClick={() => onSelectSlide(scene.id)}
                   className={`group relative flex cursor-pointer items-center justify-between rounded-xl border p-3 transition-all ${
                     isActive
-                      ? 'border-primary bg-primary/5 shadow-xs ring-1 ring-primary/30'
-                      : 'border-slate-200 bg-white hover:border-slate-300'
+                      ? 'border-primary bg-primary/20 shadow-xs ring-1 ring-primary/50 text-white'
+                      : 'border-slate-800 bg-slate-950/80 hover:border-slate-700 text-slate-300'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-mono text-[11px] font-bold text-slate-700">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-slate-800 font-mono text-[11px] font-bold text-slate-300">
                       {index + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-xs font-bold text-slate-800">
+                      <p className="truncate text-xs font-bold text-slate-100">
                         {scene.templateId === 'text_hook'
                           ? 'Hook inicial'
                           : scene.templateId === 'requirements_list'
@@ -132,7 +133,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onMoveScene(scene.id, 'up'); }}
                       disabled={index === 0}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-30"
+                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20"
                       title="Subir escena"
                     >
                       <ChevronUp className="size-3.5" />
@@ -141,7 +142,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onMoveScene(scene.id, 'down'); }}
                       disabled={index === scenes.length - 1}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-30"
+                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20"
                       title="Bajar escena"
                     >
                       <ChevronDown className="size-3.5" />
@@ -149,7 +150,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onDuplicateScene(scene.id); }}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
                       title="Duplicar"
                     >
                       <Copy className="size-3.5" />
@@ -158,7 +159,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onRemoveScene(scene.id); }}
-                        className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                        className="rounded p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400"
                         title="Eliminar"
                       >
                         <Trash2 className="size-3.5" />
@@ -170,12 +171,12 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
             })}
           </div>
 
-          <div className="pt-2 border-t border-slate-200">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">Plantillas y Presets</span>
+          <div className="pt-3 border-t border-slate-800">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Plantillas y Presets</span>
             <button
               type="button"
               onClick={() => onLoadPreset(defaultVisaRejectionProject.scenes)}
-              className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-white hover:border-primary transition-colors"
+              className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-2.5 text-left text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:border-primary hover:text-white transition-colors"
             >
               <span>Reel Rechazo de Visado</span>
               <Sparkles className="size-3.5 text-accent" />
@@ -188,36 +189,36 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
       {activeTab === 'brand' && (
         <div className="space-y-4">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">Componentes de Marca</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Componentes de Marca</span>
             <div className="space-y-2">
               <button
                 type="button"
                 onClick={() => onAddComponentLayer('AdvisorCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-primary hover:bg-primary/5 transition-all"
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
               >
                 <div>
-                  <strong className="block text-xs font-bold text-slate-800">Tarjeta Asesor VitaBlue</strong>
-                  <span className="text-[10px] text-slate-500">AdvisorCard con WhatsApp directo</span>
+                  <strong className="block text-xs font-bold text-slate-100">Tarjeta Asesor VitaBlue</strong>
+                  <span className="text-[10px] text-slate-400">AdvisorCard con WhatsApp directo</span>
                 </div>
-                <ShieldCheck className="size-4 text-emerald-500" />
+                <ShieldCheck className="size-4 text-emerald-400" />
               </button>
 
               <button
                 type="button"
                 onClick={() => onAddComponentLayer('ProductCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-primary hover:bg-primary/5 transition-all"
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
               >
                 <div>
-                  <strong className="block text-xs font-bold text-slate-800">Tarjeta Producto Sanitas</strong>
-                  <span className="text-[10px] text-slate-500">ProductCard con coberturas</span>
+                  <strong className="block text-xs font-bold text-slate-100">Tarjeta Producto Sanitas</strong>
+                  <span className="text-[10px] text-slate-400">ProductCard con coberturas</span>
                 </div>
-                <Palette className="size-4 text-primary" />
+                <Palette className="size-4 text-brand-cyan" />
               </button>
             </div>
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">Ilustraciones Vectoriales</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Ilustraciones Vectoriales</span>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: 'health', label: 'Salud' },
@@ -228,10 +229,10 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                   key={item.id}
                   type="button"
                   onClick={() => onAddLayer('image')}
-                  className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-2.5 text-center hover:border-primary transition-colors"
+                  className="flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/80 p-2.5 text-center hover:border-primary hover:text-white transition-colors"
                 >
                   <Image className="size-4 text-brand-cyan mb-1" />
-                  <span className="text-[10px] font-bold text-slate-700">{item.label}</span>
+                  <span className="text-[10px] font-bold text-slate-300">{item.label}</span>
                 </button>
               ))}
             </div>
@@ -242,61 +243,61 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
       {/* PESTAÑA 3: CAPAS & ELEMENTOS TRADICIONALES */}
       {activeTab === 'elements' && (
         <div className="space-y-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">Añadir Capa a la Escena</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Añadir Capa a la Escena</span>
 
           <button
             type="button"
             onClick={() => onAddTextLayer('Nuevo titular')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-primary hover:bg-primary/5 transition-all"
+            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
           >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 text-brand-cyan">
               <Type className="size-4" />
             </div>
             <div>
-              <strong className="block text-xs font-bold text-slate-800">Texto / Titular</strong>
-              <span className="text-[10px] text-slate-500">Texto libre con tipografía y color</span>
+              <strong className="block text-xs font-bold text-slate-100">Texto / Titular</strong>
+              <span className="text-[10px] text-slate-400">Texto libre con tipografía y color</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => onAddSubtitleLayer('Subtítulo estilo TikTok')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-accent hover:bg-accent/5 transition-all"
+            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-accent hover:bg-accent/10 transition-all"
           >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-accent/10 text-accent">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-accent/20 text-accent">
               <MessageSquare className="size-4" />
             </div>
             <div>
-              <strong className="block text-xs font-bold text-slate-800">Subtítulo Viral</strong>
-              <span className="text-[10px] text-slate-500">Subtítulo amarillo con caja negra</span>
+              <strong className="block text-xs font-bold text-slate-100">Subtítulo Viral</strong>
+              <span className="text-[10px] text-slate-400">Subtítulo amarillo con caja negra</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => onAddLayer('shape')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-brand-cyan hover:bg-brand-cyan/10 transition-all"
+            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-brand-cyan hover:bg-brand-cyan/10 transition-all"
           >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-brand-cyan/20 text-primary">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-brand-cyan/20 text-brand-cyan">
               <Palette className="size-4" />
             </div>
             <div>
-              <strong className="block text-xs font-bold text-slate-800">Forma / Pill Badge</strong>
-              <span className="text-[10px] text-slate-500">Caja de resalte o insignia</span>
+              <strong className="block text-xs font-bold text-slate-100">Forma / Pill Badge</strong>
+              <span className="text-[10px] text-slate-400">Caja de resalte o insignia</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => onAddLayer('audio')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-primary hover:bg-primary/5 transition-all"
+            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
           >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-slate-800 text-purple-400">
               <Music className="size-4" />
             </div>
             <div>
-              <strong className="block text-xs font-bold text-slate-800">Pista de Audio</strong>
-              <span className="text-[10px] text-slate-500">Música de fondo o voz en off</span>
+              <strong className="block text-xs font-bold text-slate-100">Pista de Audio</strong>
+              <span className="text-[10px] text-slate-400">Música de fondo o voz en off</span>
             </div>
           </button>
         </div>

@@ -63,7 +63,12 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
 
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         {contextAside && (
-          <aside className="shrink-0 border-r border-slate-200 bg-slate-50 overflow-y-auto" aria-label="Contexto izquierdo">
+          <aside
+            className={`shrink-0 border-r overflow-y-auto ${
+              isFullBleed ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
+            }`}
+            aria-label="Contexto izquierdo"
+          >
             {contextAside}
           </aside>
         )}
@@ -76,7 +81,9 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
 
         {aside && (
           <aside
-            className={`shrink-0 border-l border-slate-200 bg-white overflow-y-auto ${
+            className={`shrink-0 border-l overflow-y-auto ${
+              isFullBleed ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+            } ${
               asidePresentation === 'overlay'
                 ? 'absolute inset-y-0 right-0 z-30 shadow-2xl w-80 lg:w-96'
                 : 'w-72 lg:w-80'

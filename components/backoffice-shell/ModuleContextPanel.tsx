@@ -8,6 +8,7 @@ export interface ModuleContextPanelProps {
   headerSlot?: React.ReactNode;
   footerSlot?: React.ReactNode;
   onClose?: () => void;
+  variant?: 'light' | 'dark';
   children: React.ReactNode;
   className?: string;
 }
@@ -25,20 +26,41 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
   headerSlot,
   footerSlot,
   onClose,
+  variant = 'light',
   children,
   className = '',
 }) => {
+  const isDark = variant === 'dark';
+
   return (
-    <div className={`flex h-full min-h-0 flex-col border-l border-slate-200 bg-white ${widthClasses[width]} ${className}`}>
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3 bg-slate-50">
-        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700">{label}</span>
+    <div
+      className={`flex h-full min-h-0 flex-col border-l ${
+        isDark ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-800'
+      } ${widthClasses[width]} ${className}`}
+    >
+      <div
+        className={`flex shrink-0 items-center justify-between border-b px-4 py-3 ${
+          isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'
+        }`}
+      >
+        <span
+          className={`text-[11px] font-black uppercase tracking-wider ${
+            isDark ? 'text-slate-200' : 'text-slate-700'
+          }`}
+        >
+          {label}
+        </span>
         <div className="flex items-center gap-2">
           {headerSlot}
           {onClose && (
             <button
               type="button"
               onClick={onClose}
-              className="flex size-6 items-center justify-center rounded-md text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+              className={`flex size-6 items-center justify-center rounded-md transition-colors ${
+                isDark
+                  ? 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                  : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'
+              }`}
               aria-label="Cerrar panel de contexto"
             >
               <X className="size-3.5" />
@@ -48,7 +70,13 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
       {footerSlot && (
-        <div className="shrink-0 border-t border-slate-200 bg-slate-50 p-3">{footerSlot}</div>
+        <div
+          className={`shrink-0 border-t p-3 ${
+            isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'
+          }`}
+        >
+          {footerSlot}
+        </div>
       )}
     </div>
   );
