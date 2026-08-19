@@ -81,7 +81,7 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
 
         {aside && (
           <aside
-            className={`shrink-0 border-l overflow-y-auto ${
+            className={`shrink-0 border-l overflow-hidden flex flex-col ${
               isFullBleed ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
             } ${
               asidePresentation === 'overlay'

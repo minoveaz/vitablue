@@ -13,16 +13,8 @@ export interface ModuleContextPanelProps {
   className?: string;
 }
 
-const widthClasses: Record<ModuleShellZoneWidth, string> = {
-  narrow: 'w-64 lg:w-72',
-  standard: 'w-72 lg:w-80',
-  wide: 'w-80 lg:w-96',
-  'extra-wide': 'w-96 lg:w-full lg:max-w-md',
-};
-
 export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
   label = 'Propiedades',
-  width = 'standard',
   headerSlot,
   footerSlot,
   onClose,
@@ -34,9 +26,9 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
 
   return (
     <div
-      className={`flex h-full min-h-0 flex-col border-l ${
-        isDark ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-800'
-      } ${widthClasses[width]} ${className}`}
+      className={`flex h-full w-full min-h-0 flex-col ${
+        isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-800'
+      } ${className}`}
     >
       <div
         className={`flex shrink-0 items-center justify-between border-b px-4 py-3 ${
@@ -56,14 +48,14 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`flex size-6 items-center justify-center rounded-md transition-colors ${
+              className={`flex size-7 items-center justify-center rounded-lg transition-colors ${
                 isDark
                   ? 'text-slate-400 hover:bg-slate-800 hover:text-white'
                   : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'
               }`}
               aria-label="Cerrar panel de contexto"
             >
-              <X className="size-3.5" />
+              <X className="size-4" />
             </button>
           )}
         </div>
