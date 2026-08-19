@@ -55,10 +55,19 @@ export const ImageStudio: React.FC = () => {
         return;
       }
 
-      // Delete / Backspace (Eliminar capa activa)
-      if ((e.key === 'Delete' || e.key === 'Backspace') && editor.selectedLayerId) {
+      // Cmd+G (Agrupar selección múltiple)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'g' && !e.shiftKey && editor.selectedLayerIds.length > 1) {
         e.preventDefault();
-        editor.removeLayer(editor.selectedLayerId);
+        editor.groupSelectedLayers();
+        setToastMessage('📦 Elementos agrupados en bloque');
+        setTimeout(() => setToastMessage(null), 2500);
+        return;
+      }
+
+      // Delete / Backspace (Eliminar capas activas)
+      if ((e.key === 'Delete' || e.key === 'Backspace') && (editor.selectedLayerIds.length > 0 || editor.selectedLayerId)) {
+        e.preventDefault();
+        editor.deleteSelectedLayers();
         return;
       }
 
@@ -95,8 +104,8 @@ export const ImageStudio: React.FC = () => {
 
   const [isCanvasSelected, setIsCanvasSelected] = useState<boolean>(true);
 
-  const handleSelectLayer = (id: string | null) => {
-    editor.selectLayer(id);
+  const handleSelectLayer = (id: string | null, isShift = false) => {
+    editor.selectLayer(id, isShift);
     setIsCanvasSelected(false);
     if (id) {
       setIsInspectorOpen(true);
@@ -230,11 +239,14 @@ export const ImageStudio: React.FC = () => {
         <ImageStage
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
+          selectedLayerIds={editor.selectedLayerIds}
           isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
           canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
+          onSelectMultipleLayers={editor.selectMultipleLayers}
+          onGroupSelectedLayers={editor.groupSelectedLayers}
           onSelectCanvas={handleSelectCanvas}
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}

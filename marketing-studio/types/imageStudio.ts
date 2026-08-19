@@ -233,7 +233,8 @@ export type ImageBlockType =
   | 'ComparisonHeader'
   | 'ComparisonWrongBox'
   | 'ComparisonCorrectBox'
-  | 'CustomText';
+  | 'CustomText'
+  | 'CustomGroup';
 
 export interface ImageLayer {
   id: string;

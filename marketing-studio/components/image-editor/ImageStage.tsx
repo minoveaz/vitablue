@@ -24,16 +24,20 @@ import {
   Check,
   X,
   ShieldCheck,
+  Layers,
 } from 'lucide-react';
 
 interface ImageStageProps {
   project: ImageProject;
   selectedLayerId: string | null;
+  selectedLayerIds?: string[];
   isCanvasSelected: boolean;
   zoom: number;
   showSafeZones: boolean;
   canvasRef: React.RefObject<HTMLDivElement | null>;
-  onSelectLayer: (id: string) => void;
+  onSelectLayer: (id: string, isShift?: boolean) => void;
+  onSelectMultipleLayers?: (ids: string[]) => void;
+  onGroupSelectedLayers?: () => void;
   onSelectCanvas: () => void;
   onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
@@ -52,11 +56,14 @@ interface ImageStageProps {
 export const ImageStage: React.FC<ImageStageProps> = ({
   project,
   selectedLayerId,
+  selectedLayerIds = [],
   isCanvasSelected,
   zoom,
   showSafeZones,
   canvasRef,
   onSelectLayer,
+  onSelectMultipleLayers,
+  onGroupSelectedLayers,
   onSelectCanvas,
   onDeselectAll,
   onUpdatePosition,
@@ -76,6 +83,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
   const [rotatingLayerId, setRotatingLayerId] = useState<string | null>(null);
+  const [isMarqueeSelecting, setIsMarqueeSelecting] = useState(false);
+  const [marqueeBox, setMarqueeBox] = useState<{
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+  } | null>(null);
   const [guides, setGuides] = useState<Array<{ points: [number, number, number, number]; color: string; orientation: 'vertical' | 'horizontal' }>>([]);
   const [hoveredLayerId, setHoveredLayerId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
@@ -162,9 +176,34 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   }, [zoom, hoveredLayerId, selectedLayerId, project.layers, onSetZoom, onUpdateScale]);
 
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('.canvas-layer-item') || target.closest('.interactive-handle')) {
+      return;
+    }
+
+    if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      onDeselectAll();
+    }
+
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const startX = (e.clientX - rect.left) / zoom;
+    const startY = (e.clientY - rect.top) / zoom;
+
+    setIsMarqueeSelecting(true);
+    setMarqueeBox({
+      startX,
+      startY,
+      currentX: startX,
+      currentY: startY,
+    });
+  };
+
   const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
     e.stopPropagation();
-    onSelectLayer(layer.id);
+    const isShift = e.shiftKey || e.metaKey || e.ctrlKey;
+    onSelectLayer(layer.id, isShift);
     if (layer.locked) return;
     setDraggingLayerId(layer.id);
     dragStartRef.current = {
@@ -223,6 +262,44 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // 1. Marquee Drag Selection
+      if (isMarqueeSelecting && canvasRef.current && marqueeBox) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const currentX = (e.clientX - rect.left) / zoom;
+        const currentY = (e.clientY - rect.top) / zoom;
+
+        setMarqueeBox((prev) => (prev ? { ...prev, currentX, currentY } : null));
+
+        const minX = Math.min(marqueeBox.startX, currentX);
+        const maxX = Math.max(marqueeBox.startX, currentX);
+        const minY = Math.min(marqueeBox.startY, currentY);
+        const maxY = Math.max(marqueeBox.startY, currentY);
+
+        const canvasW = project.preset.width;
+        const canvasH = project.preset.height;
+
+        const intersectedIds = project.layers
+          .filter((l) => l.visible !== false)
+          .filter((l) => {
+            const centerX = (l.position.x / 100) * canvasW;
+            const centerY = (l.position.y / 100) * canvasH;
+            const w = l.width ?? 380;
+            const h = l.height ?? 200;
+            const left = centerX - w / 2;
+            const right = centerX + w / 2;
+            const top = centerY - h / 2;
+            const bottom = centerY + h / 2;
+
+            return !(left > maxX || right < minX || top > maxY || bottom < minY);
+          })
+          .map((l) => l.id);
+
+        if (intersectedIds.length > 0) {
+          onSelectMultipleLayers?.(intersectedIds);
+        }
+        return;
+      }
+
       if (rotatingLayerId) {
         const { centerX, centerY, startAngle, initialRotation } = rotateStartRef.current;
         const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
@@ -306,10 +383,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       setDraggingLayerId(null);
       setResizingLayerId(null);
       setRotatingLayerId(null);
+      setIsMarqueeSelecting(false);
+      setMarqueeBox(null);
       setGuides([]);
     };
 
-    if (draggingLayerId || resizingLayerId || rotatingLayerId) {
+    if (draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -318,7 +397,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingLayerId, resizingLayerId, rotatingLayerId, zoom, project.layers, project.preset.width, project.preset.height, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
+  }, [draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     onSetZoom(0.55);
@@ -423,15 +502,35 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           transformOrigin: 'center center',
         }}
       >
-        {/* BADGE DE LIENZO ACTIVO */}
+        {/* MULTI-SELECTION FLOATING ACTION BAR */}
+        {selectedLayerIds.length > 1 && (
+          <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-2xl border border-teal-500/40 bg-[#001219]/95 px-4 py-2 text-xs font-bold text-white shadow-2xl backdrop-blur-xl animate-fadeIn">
+            <div className="flex items-center gap-1.5 text-brand-cyan">
+              <Layers className="size-4" />
+              <span>{selectedLayerIds.length} elementos seleccionados</span>
+            </div>
+            <div className="h-4 w-px bg-slate-800" />
+            <button
+              type="button"
+              onClick={() => onGroupSelectedLayers?.()}
+              className="flex items-center gap-1.5 rounded-lg bg-teal-900/60 px-2.5 py-1 text-[11px] font-bold text-brand-cyan hover:bg-teal-800 hover:text-white transition-colors"
+              title="Agrupar elementos seleccionados (Cmd+G)"
+            >
+              <span>Agrupar</span>
+              <kbd className="rounded bg-teal-950 px-1 py-0.5 font-mono text-[9px]">⌘G</kbd>
+            </button>
+          </div>
+        )}
+
         {/* ARTBOARD (STAGE) */}
         <div
           ref={canvasRef}
+          onMouseDown={handleCanvasMouseDown}
           onClick={(e) => {
             e.stopPropagation();
             onSelectCanvas();
           }}
-          className={`relative overflow-hidden transition-all ${
+          className={`artboard-bg relative overflow-hidden transition-all ${
             isCanvasSelected
               ? 'ring-2 ring-primary ring-offset-4 ring-offset-[#001219]'
               : 'shadow-[0_20px_50px_rgba(0,0,0,0.6)]'
@@ -442,6 +541,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             background: project.background.gradient ?? project.background.color ?? '#001219',
           }}
         >
+          {/* MARQUEE SELECTION RECTANGLE */}
+          {marqueeBox && (
+            <div
+              className="pointer-events-none absolute z-50 rounded-xs border-2 border-dashed border-brand-cyan bg-brand-cyan/20 shadow-[0_0_20px_rgba(148,210,189,0.35)] backdrop-blur-xs transition-none"
+              style={{
+                left: `${Math.min(marqueeBox.startX, marqueeBox.currentX)}px`,
+                top: `${Math.min(marqueeBox.startY, marqueeBox.currentY)}px`,
+                width: `${Math.abs(marqueeBox.currentX - marqueeBox.startX)}px`,
+                height: `${Math.abs(marqueeBox.currentY - marqueeBox.startY)}px`,
+              }}
+            />
+          )}
+
           {/* SAFE ZONES OVERLAY (STORIES / REELS / 4:5 ADS) */}
           {showSafeZones && (
             <div className="pointer-events-none absolute inset-0 z-50 border-2 border-dashed border-amber-400/60 p-8">
@@ -472,7 +584,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           {project.layers.map((layer) => {
             if (layer.visible === false) return null;
 
-            const isSelected = layer.id === selectedLayerId;
+            const isSelected = selectedLayerIds.includes(layer.id) || layer.id === selectedLayerId;
             const isLocked = Boolean(layer.locked);
             const blockProps = layer.props as Record<string, unknown>;
 
@@ -525,9 +637,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 onMouseLeave={() => setHoveredLayerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectLayer(layer.id);
+                  onSelectLayer(layer.id, e.shiftKey || e.metaKey || e.ctrlKey);
                 }}
-                className={`absolute transition-shadow select-none shrink-0 ${
+                className={`canvas-layer-item absolute transition-shadow select-none shrink-0 ${
                   isLocked ? 'cursor-default' : 'cursor-move'
                 } ${
                   isSelected

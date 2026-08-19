@@ -14,9 +14,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
     initialProject ?? INITIAL_IMAGE_TEMPLATES[0]
   );
-  const [selectedLayerId, setSelectedLayerId] = useState<string | null>(
-    project.layers[0]?.id ?? null
+  const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>(
+    project.layers[0]?.id ? [project.layers[0].id] : []
   );
+  const selectedLayerId = selectedLayerIds[0] ?? null;
+  const setSelectedLayerId = useCallback((id: string | null) => {
+    setSelectedLayerIds(id ? [id] : []);
+  }, []);
+
   const [zoom, setZoom] = useState<number>(0.55);
   const [showSafeZones, setShowSafeZones] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -26,7 +31,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   useEffect(() => {
     if (initialProject && initialProject.id !== project.id) {
       setProject(initialProject);
-      setSelectedLayerId(initialProject.layers[0]?.id ?? null);
+      setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
       setHistory([initialProject]);
       setHistoryIndex(0);
     }
@@ -83,13 +88,97 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const loadTemplate = useCallback((template: ImageProject) => {
     setProject(template);
-    setSelectedLayerId(template.layers[0]?.id ?? null);
+    setSelectedLayerIds(template.layers[0]?.id ? [template.layers[0].id] : []);
     pushHistory(template);
   }, [pushHistory]);
 
-  const selectLayer = useCallback((id: string | null) => {
-    setSelectedLayerId(id);
+  const selectLayer = useCallback((id: string | null, isShift = false) => {
+    if (!id) {
+      setSelectedLayerIds([]);
+      return;
+    }
+    if (isShift) {
+      setSelectedLayerIds((prev) =>
+        prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      );
+    } else {
+      setSelectedLayerIds([id]);
+    }
   }, []);
+
+  const selectMultipleLayers = useCallback((ids: string[]) => {
+    setSelectedLayerIds(ids);
+  }, []);
+
+  const toggleLayerSelection = useCallback((id: string) => {
+    setSelectedLayerIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  }, []);
+
+  const deleteSelectedLayers = useCallback(() => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = prev.layers.filter((l) => !selectedLayerIds.includes(l.id));
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      setSelectedLayerIds([]);
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const updateMultipleLayersPosition = useCallback((deltaPercent: { x: number; y: number }) => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) => {
+        if (!selectedLayerIds.includes(l.id)) return l;
+        return {
+          ...l,
+          position: {
+            x: Math.max(5, Math.min(95, Math.round((l.position.x + deltaPercent.x) * 10) / 10)),
+            y: Math.max(5, Math.min(95, Math.round((l.position.y + deltaPercent.y) * 10) / 10)),
+          },
+        };
+      });
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+    });
+  }, [selectedLayerIds]);
+
+  const groupSelectedLayers = useCallback(() => {
+    if (selectedLayerIds.length < 2) return;
+    const layersToGroup = project.layers.filter((l) => selectedLayerIds.includes(l.id));
+    if (layersToGroup.length < 2) return;
+
+    // Calcular baricentro medio
+    const avgX = layersToGroup.reduce((acc, l) => acc + l.position.x, 0) / layersToGroup.length;
+    const avgY = layersToGroup.reduce((acc, l) => acc + l.position.y, 0) / layersToGroup.length;
+
+    const groupLayerId = `layer-group-${Date.now()}`;
+    const newGroupLayer: ImageLayer = {
+      id: groupLayerId,
+      type: 'block',
+      blockType: 'CustomGroup',
+      title: `Grupo (${layersToGroup.length} elementos)`,
+      props: {
+        childrenLayers: layersToGroup,
+      },
+      position: { x: Math.round(avgX * 10) / 10, y: Math.round(avgY * 10) / 10 },
+      zIndex: Math.max(...layersToGroup.map((l) => l.zIndex)),
+      scale: 1,
+    };
+
+    setProject((prev) => {
+      const remainingLayers = prev.layers.filter((l) => !selectedLayerIds.includes(l.id));
+      const next = {
+        ...prev,
+        layers: [...remainingLayers, newGroupLayer],
+        updatedAt: new Date().toISOString(),
+      };
+      setSelectedLayerIds([groupLayerId]);
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, project.layers, pushHistory]);
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     setProject((prev) => {
@@ -652,6 +741,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     project,
     selectedLayer,
     selectedLayerId,
+    selectedLayerIds,
     zoom,
     setZoom,
     showSafeZones,
@@ -666,6 +756,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setPreset,
     loadTemplate,
     selectLayer,
+    selectMultipleLayers,
+    toggleLayerSelection,
+    deleteSelectedLayers,
+    groupSelectedLayers,
+    updateMultipleLayersPosition,
     updateLayerProps,
     updateLayerPosition,
     updateLayerScale,
