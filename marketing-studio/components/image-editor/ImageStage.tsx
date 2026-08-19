@@ -164,7 +164,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         <div
           ref={canvasRef}
           onClick={() => onSelectLayer(null)}
-          className="relative overflow-hidden rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-slate-800 transition-all cursor-default"
+          className="relative overflow-hidden rounded-none shadow-[0_0_50px_rgba(0,0,0,0.85)] border border-slate-800 transition-all cursor-default"
           style={{
             width: `${baseWidth}px`,
             height: `${computedHeight}px`,
