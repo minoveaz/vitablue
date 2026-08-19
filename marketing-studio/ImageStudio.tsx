@@ -1,12 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Konva from 'konva';
 import BackofficeShell from '../components/layouts/BackofficeShell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
-import { KonvaStage } from './components/image-editor/KonvaStage';
+import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
 import { FolderOpen } from 'lucide-react';
@@ -15,7 +14,7 @@ export const ImageStudio: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const assetId = searchParams.get('assetId');
 
-  const stageRef = useRef<Konva.Stage | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
   const [isContextSidebarOpen, setIsContextSidebarOpen] = useState(true);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -56,22 +55,24 @@ export const ImageStudio: React.FC = () => {
         return;
       }
 
-      // Cmd+D (Duplicar capa)
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd') {
-        if (editor.selectedLayerId) {
-          e.preventDefault();
-          editor.duplicateLayer(editor.selectedLayerId);
-        }
+      // Delete / Backspace (Eliminar capa activa)
+      if ((e.key === 'Delete' || e.key === 'Backspace') && editor.selectedLayerId) {
+        e.preventDefault();
+        editor.removeLayer(editor.selectedLayerId);
         return;
       }
 
-      // Delete o Backspace (Eliminar capa)
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (editor.selectedLayerId) {
-          e.preventDefault();
-          editor.removeLayer(editor.selectedLayerId);
-        }
+      // Cmd+D (Duplicar capa)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd' && editor.selectedLayerId) {
+        e.preventDefault();
+        editor.duplicateLayer(editor.selectedLayerId);
         return;
+      }
+
+      // Escape (Deseleccionar todo)
+      if (e.key === 'Escape') {
+        editor.selectLayer(null);
+        setIsCanvasSelected(false);
       }
     };
 
@@ -85,8 +86,8 @@ export const ImageStudio: React.FC = () => {
   };
 
   const handleExport = async (format: 'png' | 'jpeg' | 'svg') => {
-    if (stageRef.current) {
-      await editor.exportCanvasStage(stageRef.current, format === 'svg' ? 'png' : format, 2);
+    if (canvasRef.current) {
+      await editor.exportImage(canvasRef.current, format);
       setToastMessage(`🎉 Imagen ${format.toUpperCase()} exportada en 2K/4K nativa`);
       setTimeout(() => setToastMessage(null), 3000);
     }
@@ -106,6 +107,11 @@ export const ImageStudio: React.FC = () => {
     editor.selectLayer(null);
     setIsCanvasSelected(true);
     setIsInspectorOpen(true);
+  };
+
+  const handleDeselectAll = () => {
+    editor.selectLayer(null);
+    setIsCanvasSelected(false);
   };
 
   const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0], defaultProps?: Record<string, unknown>) => {
@@ -220,22 +226,27 @@ export const ImageStudio: React.FC = () => {
       }
     >
       <div className="flex h-full w-full flex-col overflow-hidden relative">
-        {/* CENTER CANVAS STAGE (KONVA 2D/WEBGL ENGINE) */}
-        <KonvaStage
+        {/* CENTER CANVAS STAGE (MOTIONKIT + 8-POINT BOUNDING BOX + ROTATION + SNAPPING) */}
+        <ImageStage
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
           isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
-          stageRef={stageRef}
+          canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
           onSelectCanvas={handleSelectCanvas}
+          onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
           onUpdateWidth={editor.updateLayerWidth}
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
-          onCommitChange={editor.commitPositionChange}
+          onCommitPositionChange={editor.commitPositionChange}
+          onFitToCanvas={editor.fitLayerToCanvas}
+          onUngroupLayer={editor.ungroupLayer}
+          onDuplicateLayer={editor.duplicateLayer}
+          onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
         />
 

@@ -3,6 +3,7 @@ import {
   ImageProject,
   ImageLayer,
 } from '../../types/imageStudio';
+import { calculateSnapping } from '../../hooks/useKonvaSnapping';
 import {
   MotionAdvisorCard,
   MotionTrustBadge,
@@ -38,6 +39,8 @@ interface ImageStageProps {
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
   onUpdateScale: (id: string, scale: number) => void;
   onUpdateWidth?: (id: string, width?: number) => void;
+  onUpdateHeight?: (id: string, height?: number) => void;
+  onUpdateRotation?: (id: string, rotation: number) => void;
   onCommitPositionChange?: () => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
@@ -59,6 +62,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onUpdatePosition,
   onUpdateScale,
   onUpdateWidth,
+  onUpdateHeight,
+  onUpdateRotation,
   onCommitPositionChange,
   onFitToCanvas,
   onUngroupLayer,
@@ -70,6 +75,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
+  const [rotatingLayerId, setRotatingLayerId] = useState<string | null>(null);
+  const [guides, setGuides] = useState<Array<{ points: [number, number, number, number]; color: string; orientation: 'vertical' | 'horizontal' }>>([]);
   const [hoveredLayerId, setHoveredLayerId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
@@ -85,13 +92,27 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     startY: number;
     startScale: number;
     startWidth: number;
-    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w';
+    startHeight: number;
+    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w' | 'n' | 's';
   }>({
     startX: 0,
     startY: 0,
     startScale: 1,
     startWidth: 380,
+    startHeight: 200,
     corner: 'se',
+  });
+
+  const rotateStartRef = useRef<{
+    centerX: number;
+    centerY: number;
+    startAngle: number;
+    initialRotation: number;
+  }>({
+    centerX: 0,
+    centerY: 0,
+    startAngle: 0,
+    initialRotation: 0,
   });
 
   // Cerrar menú contextual al hacer clic fuera
@@ -168,7 +189,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const handleResizeStart = (
     e: React.MouseEvent,
     layer: ImageLayer,
-    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w' = 'se'
+    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w' | 'n' | 's' = 'se'
   ) => {
     e.stopPropagation();
     onSelectLayer(layer.id);
@@ -178,19 +199,54 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       startY: e.clientY,
       startScale: layer.scale ?? 1,
       startWidth: layer.width ?? 380,
+      startHeight: layer.height ?? 200,
       corner,
+    };
+  };
+
+  const handleRotateStart = (e: React.MouseEvent, layer: ImageLayer) => {
+    e.stopPropagation();
+    onSelectLayer(layer.id);
+    setRotatingLayerId(layer.id);
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.left + (layer.position.x / 100) * rect.width;
+    const centerY = rect.top + (layer.position.y / 100) * rect.height;
+    const startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    rotateStartRef.current = {
+      centerX,
+      centerY,
+      startAngle,
+      initialRotation: layer.rotation ?? 0,
     };
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      if (rotatingLayerId) {
+        const { centerX, centerY, startAngle, initialRotation } = rotateStartRef.current;
+        const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+        let nextRotation = (initialRotation + (currentAngle - startAngle)) % 360;
+        if (nextRotation < 0) nextRotation += 360;
+        onUpdateRotation?.(rotatingLayerId, Math.round(nextRotation));
+        return;
+      }
+
       if (resizingLayerId) {
-        const { startX, startY, startScale, startWidth, corner } = resizeStartRef.current;
+        const { startX, startY, startScale, startWidth, startHeight, corner } = resizeStartRef.current;
         if (corner === 'e' || corner === 'w') {
           let deltaX = (e.clientX - startX) / zoom;
           if (corner === 'w') deltaX = -deltaX;
-          const nextWidth = Math.max(180, Math.min(520, startWidth + deltaX * 2));
+          const nextWidth = Math.max(120, Math.min(1080, startWidth + deltaX * 2));
           onUpdateWidth?.(resizingLayerId, Math.round(nextWidth));
+          return;
+        }
+
+        if (corner === 'n' || corner === 's') {
+          let deltaY = (e.clientY - startY) / zoom;
+          if (corner === 'n') deltaY = -deltaY;
+          const nextHeight = Math.max(60, Math.min(1200, startHeight + deltaY * 2));
+          onUpdateHeight?.(resizingLayerId, Math.round(nextHeight));
           return;
         }
 
@@ -217,21 +273,43 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       const deltaX = ((e.clientX - dragStartRef.current.x) / rect.width) * 100;
       const deltaY = ((e.clientY - dragStartRef.current.y) / rect.height) * 100;
 
-      const nextX = Math.max(5, Math.min(95, dragStartRef.current.layerX + deltaX));
-      const nextY = Math.max(5, Math.min(95, dragStartRef.current.layerY + deltaY));
+      let nextX = Math.max(5, Math.min(95, dragStartRef.current.layerX + deltaX));
+      let nextY = Math.max(5, Math.min(95, dragStartRef.current.layerY + deltaY));
 
-      onUpdatePosition(draggingLayerId, { x: Math.round(nextX), y: Math.round(nextY) });
+      // Snapping magnético
+      const activeLayer = project.layers.find((l) => l.id === draggingLayerId);
+      if (activeLayer) {
+        const pixelX = (nextX / 100) * project.preset.width;
+        const pixelY = (nextY / 100) * project.preset.height;
+        const snap = calculateSnapping(
+          draggingLayerId,
+          pixelX,
+          pixelY,
+          activeLayer.width ?? 380,
+          activeLayer.height ?? 200,
+          project.preset.width,
+          project.preset.height,
+          project.layers
+        );
+        nextX = (snap.x / project.preset.width) * 100;
+        nextY = (snap.y / project.preset.height) * 100;
+        setGuides(snap.guides);
+      }
+
+      onUpdatePosition(draggingLayerId, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
     };
 
     const handleMouseUp = () => {
-      if (draggingLayerId || resizingLayerId) {
+      if (draggingLayerId || resizingLayerId || rotatingLayerId) {
         onCommitPositionChange?.();
       }
       setDraggingLayerId(null);
       setResizingLayerId(null);
+      setRotatingLayerId(null);
+      setGuides([]);
     };
 
-    if (draggingLayerId || resizingLayerId) {
+    if (draggingLayerId || resizingLayerId || rotatingLayerId) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -240,7 +318,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingLayerId, resizingLayerId, onUpdatePosition, onUpdateScale, onCommitPositionChange, canvasRef]);
+  }, [draggingLayerId, resizingLayerId, rotatingLayerId, zoom, project.layers, project.preset.width, project.preset.height, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     onSetZoom(0.55);
@@ -374,6 +452,22 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             </div>
           )}
 
+          {/* GUÍAS DE SNAPPING MAGNÉTICO EN TIEMPO REAL */}
+          {guides.map((g, i) => (
+            <div
+              key={i}
+              className="pointer-events-none absolute z-40"
+              style={{
+                backgroundColor: g.color,
+                left: g.orientation === 'vertical' ? `${g.points[0]}px` : 0,
+                top: g.orientation === 'horizontal' ? `${g.points[1]}px` : 0,
+                width: g.orientation === 'horizontal' ? '100%' : '1.5px',
+                height: g.orientation === 'vertical' ? '100%' : '1.5px',
+                boxShadow: `0 0 8px ${g.color}`,
+              }}
+            />
+          ))}
+
           {/* RENDER LAYERS */}
           {project.layers.map((layer) => {
             if (layer.visible === false) return null;
@@ -445,7 +539,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 style={{
                   left: `${layer.position.x}%`,
                   top: `${layer.position.y}%`,
-                  transform: `translate(-50%, -50%) scale(${layer.scale ?? 1})`,
+                  transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${layer.scale ?? 1})`,
                   zIndex: layer.zIndex,
                   width: getBlockWidth(layer.blockType, layer.width),
                   minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
@@ -672,38 +766,60 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {/* BOUNDING BOX CORNER & LATERAL HANDLES CON ARRASTRE DE REDIMENSIÓN */}
                 {isSelected && !isLocked && (
                   <>
+                    {/* MANEJADOR SUPERIOR DE ROTACIÓN ANGULAR */}
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-brand-cyan pointer-events-none" />
+                    <div
+                      onMouseDown={(e) => handleRotateStart(e, layer)}
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 size-4 rounded-full bg-white border-2 border-primary shadow-xl cursor-grab active:cursor-grabbing hover:scale-125 transition-transform flex items-center justify-center z-30"
+                      title="Arrastrar para rotar libremente"
+                    >
+                      <div className="size-1.5 rounded-full bg-primary" />
+                    </div>
+
                     {/* ESQUINAS: ESCALA PROPORCIONAL */}
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'nw')}
-                      className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'ne')}
-                      className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'sw')}
-                      className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'se')}
-                      className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
 
                     {/* LATERALES: AJUSTE DE ANCHURA (WIDTH) */}
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'w')}
-                      className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para cambiar el ancho (Width)"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'e')}
-                      className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para cambiar el ancho (Width)"
+                    />
+
+                    {/* SUPERIOR E INFERIOR: AJUSTE DE ALTURA (HEIGHT) */}
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'n')}
+                      className="absolute -top-2 left-1/2 -translate-x-1/2 h-2 w-5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
+                      title="Arrastrar para cambiar el alto (Height)"
+                    />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer, 's')}
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-2 w-5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
+                      title="Arrastrar para cambiar el alto (Height)"
                     />
                   </>
                 )}
