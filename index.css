@@ -85,6 +85,31 @@
   .text-caption {
     @apply font-sans font-medium text-[12px] leading-[1.4] tracking-[0.02em];
   }
+
+  /* Custom Dark Scrollbar for Studio & Backoffice */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 210, 189, 0.3) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 210, 189, 0.25);
+    border-radius: 9999px;
+    transition: background 0.2s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 210, 189, 0.5);
+  }
 }
 
 /* Ocultar botón flotante de WhatsApp cuando el menú móvil está abierto */
