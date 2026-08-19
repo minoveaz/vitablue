@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   Layers,
 } from 'lucide-react';
+import { InlineEditableText } from './InlineEditableText';
 
 interface ImageStageProps {
   project: ImageProject;
@@ -50,6 +51,7 @@ interface ImageStageProps {
   onUngroupLayer?: (id: string) => void;
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
+  onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
   onSetZoom: (zoom: number) => void;
 }
 
@@ -76,6 +78,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onUngroupLayer,
   onDuplicateLayer,
   onRemoveLayer,
+  onUpdateLayerProps,
   onSetZoom,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -724,11 +727,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
                 {layer.blockType === 'HookAlertBadge' && (
                   <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-[#94D2BD] shadow-lg backdrop-blur-md">
-                    <span className="relative flex size-2">
+                    <span className="relative flex size-2 shrink-0">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
                     </span>
-                    <span>{String(blockProps.badge ?? 'ASESORA ASIGNADA · EN DIRECTO')}</span>
+                    <InlineEditableText
+                      text={String(blockProps.badge ?? 'ASESORA ASIGNADA · EN DIRECTO')}
+                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { badge: newVal })}
+                    />
                   </div>
                 )}
 
@@ -747,12 +753,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       </div>
                     </div>
                     <div className="mt-1.5 space-y-0.5">
-                      <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
-                        {String(blockProps.name ?? 'Sofía')}
-                      </h3>
-                      <p className="text-xs font-bold text-[#94D2BD]">
-                        {String(blockProps.role ?? 'Asesora Especialista en Visados')}
-                      </p>
+                      <InlineEditableText
+                        text={String(blockProps.name ?? 'Sofía')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { name: newVal })}
+                        className="font-display text-xl font-black text-white tracking-tight leading-tight block"
+                        as="h3"
+                      />
+                      <InlineEditableText
+                        text={String(blockProps.role ?? 'Asesora Especialista en Visados')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { role: newVal })}
+                        className="text-xs font-bold text-[#94D2BD] block"
+                        as="p"
+                      />
                     </div>
                   </div>
                 )}
@@ -760,7 +772,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {layer.blockType === 'AdvisorQuoteBox' && (
                   <div className="w-full rounded-2xl border border-teal-500/20 bg-slate-950/70 p-4 text-center shadow-inner backdrop-blur-md">
                     <p className="text-xs font-medium italic text-slate-200 leading-relaxed">
-                      "{String(blockProps.message ?? '')}"
+                      "
+                      <InlineEditableText
+                        text={String(blockProps.message ?? 'Te acompañamos en todo el proceso')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { message: newVal })}
+                        as="span"
+                      />
+                      "
                     </p>
                   </div>
                 )}
@@ -770,8 +788,11 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     type="button"
                     className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <MessageSquare className="size-4 fill-white" />
-                    <span>{String(blockProps.whatsAppText ?? 'Pregúntanos por WhatsApp')}</span>
+                    <MessageSquare className="size-4 fill-white shrink-0" />
+                    <InlineEditableText
+                      text={String(blockProps.whatsAppText ?? 'Pregúntanos por WhatsApp')}
+                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { whatsAppText: newVal })}
+                    />
                   </button>
                 )}
 
@@ -781,12 +802,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-teal-900/40 text-teal-400">
                       <Building2 className="size-5" />
                     </div>
-                    <h3 className="font-display text-base font-black text-white tracking-tight">
-                      {String(blockProps.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
-                    </h3>
-                    <p className="mt-1 text-xs text-[#94D2BD]">
-                      {String(blockProps.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
-                    </p>
+                    <InlineEditableText
+                      text={String(blockProps.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
+                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
+                      className="font-display text-base font-black text-white tracking-tight block w-full text-center"
+                      as="h3"
+                    />
+                    <InlineEditableText
+                      text={String(blockProps.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
+                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { subtitle: newVal })}
+                      className="mt-1 text-xs text-[#94D2BD] block w-full text-center"
+                      as="p"
+                    />
                   </div>
                 )}
 
@@ -796,9 +823,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       ? 'border-amber-500/40 bg-amber-500/10 text-amber-300 shadow-md'
                       : 'border-white/10 bg-white/5 text-white'
                   }`}>
-                    <strong className="font-display text-sm font-black tracking-wider uppercase">
-                      {String(blockProps.name ?? 'ASEGURADORA')}
-                    </strong>
+                    <InlineEditableText
+                      text={String(blockProps.name ?? 'ASEGURADORA')}
+                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { name: newVal })}
+                      className="font-display text-sm font-black tracking-wider uppercase"
+                      as="strong"
+                    />
                     {Boolean(blockProps.badge) && (
                       <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold ${
                         blockProps.color === '#EE9B00' || Boolean(blockProps.highlight)
@@ -806,7 +836,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                           : 'bg-white/10 text-teal-300'
                       }`}>
                         <Check className="size-2.5" />
-                        <span>{String(blockProps.badge)}</span>
+                        <InlineEditableText
+                          text={String(blockProps.badge)}
+                          onSave={(newVal) => onUpdateLayerProps?.(layer.id, { badge: newVal })}
+                        />
                       </span>
                     )}
                   </div>
@@ -820,22 +853,31 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 )}
 
                 {layer.blockType === 'TrustBadgeTitle' && (
-                  <h3 className="font-display text-lg font-black text-white tracking-tight leading-snug text-center w-full">
-                    {String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
-                  </h3>
+                  <InlineEditableText
+                    text={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
+                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
+                    className="font-display text-lg font-black text-white tracking-tight leading-snug text-center w-full block"
+                    as="h3"
+                  />
                 )}
 
                 {layer.blockType === 'TrustBadgeSubtitle' && (
-                  <p className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center w-full">
-                    {String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
-                  </p>
+                  <InlineEditableText
+                    text={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
+                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { subtitle: newVal })}
+                    className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center w-full block"
+                    as="p"
+                  />
                 )}
 
                 {/* SUBCAPAS DE COMPARISON CARD */}
                 {layer.blockType === 'ComparisonHeader' && (
-                  <h3 className="font-display text-sm font-black text-white tracking-tight uppercase text-center w-full">
-                    {String(blockProps.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
-                  </h3>
+                  <InlineEditableText
+                    text={String(blockProps.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
+                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
+                    className="font-display text-sm font-black text-white tracking-tight uppercase text-center w-full block"
+                    as="h3"
+                  />
                 )}
 
                 {layer.blockType === 'ComparisonWrongBox' && (
@@ -844,11 +886,20 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       <span className="flex size-4 items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-black">
                         <X className="size-3" />
                       </span>
-                      <span>{String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje Común')}</span>
+                      <InlineEditableText
+                        text={String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje Común')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { wrongOptionTitle: newVal })}
+                        as="span"
+                      />
                     </div>
-                    <p className="text-[11px] text-rose-200/80 leading-relaxed pl-6">
-                      {String(blockProps.wrongOptionDesc ?? '')}
-                    </p>
+                    <div className="pl-6">
+                      <InlineEditableText
+                        text={String(blockProps.wrongOptionDesc ?? 'No válido para extranjeros')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { wrongOptionDesc: newVal })}
+                        className="text-[11px] text-rose-200/80 leading-relaxed block"
+                        as="p"
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -858,11 +909,20 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[9px] font-black">
                         <Check className="size-3" />
                       </span>
-                      <span>{String(blockProps.correctOptionTitle ?? 'Seguro VitaBlue Extranjería')}</span>
+                      <InlineEditableText
+                        text={String(blockProps.correctOptionTitle ?? 'Seguro VitaBlue Extranjería')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { correctOptionTitle: newVal })}
+                        as="span"
+                      />
                     </div>
-                    <p className="text-[11px] text-emerald-100 font-medium leading-relaxed pl-6">
-                      {String(blockProps.correctOptionDesc ?? '')}
-                    </p>
+                    <div className="pl-6">
+                      <InlineEditableText
+                        text={String(blockProps.correctOptionDesc ?? 'Cumple 100% con los requisitos consulares')}
+                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { correctOptionDesc: newVal })}
+                        className="text-[11px] text-emerald-100 font-medium leading-relaxed block"
+                        as="p"
+                      />
+                    </div>
                   </div>
                 )}
 
