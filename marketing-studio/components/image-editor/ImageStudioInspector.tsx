@@ -5,6 +5,13 @@ import {
   Scaling,
   Maximize2,
   Ungroup,
+  Move,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  AlignHorizontalJustifyCenter,
+  AlignVerticalJustifyCenter,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -14,6 +21,7 @@ export interface ImageStudioInspectorProps {
   selectedLayer: ImageLayer | null;
   onUpdateLayerProps: (id: string, props: Record<string, unknown>) => void;
   onUpdateLayerScale?: (id: string, scale: number) => void;
+  onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
@@ -25,6 +33,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   selectedLayer,
   onUpdateLayerProps,
   onUpdateLayerScale,
+  onUpdateLayerPosition,
   onFitToCanvas,
   onUngroupLayer,
   onUpdateBackground,
@@ -99,6 +108,15 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   const props = selectedLayer.props as Record<string, unknown>;
 
+  const handleNudgePosition = (deltaX: number, deltaY: number) => {
+    if (!onUpdateLayerPosition) return;
+    const currentX = selectedLayer.position.x;
+    const currentY = selectedLayer.position.y;
+    const newX = Math.max(5, Math.min(95, currentX + deltaX));
+    const newY = Math.max(5, Math.min(95, currentY + deltaY));
+    onUpdateLayerPosition(selectedLayer.id, { x: Math.round(newX), y: Math.round(newY) });
+  };
+
   return (
     <ModuleContextPanel
       label={`Bloque: ${selectedLayer.title}`}
@@ -120,7 +138,80 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </span>
         </div>
 
-        {/* CONTROL DE TAMAÑO Y ESCALA */}
+        {/* 1. CONTROL DE POSICIÓN Y ALINEACIÓN */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-3">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Move className="size-3.5 text-brand-cyan" />
+              <span>Posición y Ubicación</span>
+            </span>
+            <span className="font-mono text-brand-cyan text-[11px]">
+              X: {selectedLayer.position.x}% · Y: {selectedLayer.position.y}%
+            </span>
+          </div>
+
+          {/* CONTROLES DE DESPLAZAMIENTO (NUDGE) */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleNudgePosition(-4, 0)}
+                className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Mover a la izquierda"
+              >
+                <ArrowLeft className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNudgePosition(0, -4)}
+                className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Mover arriba"
+              >
+                <ArrowUp className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNudgePosition(0, 4)}
+                className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Mover abajo"
+              >
+                <ArrowDown className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNudgePosition(4, 0)}
+                className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Mover a la derecha"
+              >
+                <ArrowRight className="size-3.5" />
+              </button>
+            </div>
+
+            {/* BOTONES DE CENTRADO RÁPIDO */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: 50, y: selectedLayer.position.y })}
+                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-bold text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Centrar horizontalmente"
+              >
+                <AlignHorizontalJustifyCenter className="size-3" />
+                <span>Centrar X</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onUpdateLayerPosition?.(selectedLayer.id, { x: selectedLayer.position.x, y: 50 })}
+                className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-bold text-slate-300 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Centrar verticalmente"
+              >
+                <AlignVerticalJustifyCenter className="size-3" />
+                <span>Centrar Y</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. CONTROL DE TAMAÑO Y ESCALA */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
             <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
@@ -135,7 +226,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           <div className="flex items-center gap-2">
             <input
               type="range"
-              min={0.4}
+              min={0.35}
               max={2.0}
               step={0.05}
               value={selectedLayer.scale ?? 1}
@@ -194,7 +285,100 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
 
-        {/* 1. MOTIONSADVISORCARD */}
+        {/* 3. EDITORES ESPECÍFICOS SEGÚN TIPO DE BLOQUE */}
+
+        {/* A. SUBCAPA: HOOK ALERT BADGE */}
+        {selectedLayer.blockType === 'HookAlertBadge' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Texto del Badge</label>
+              <input
+                type="text"
+                value={String(props.badge ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { badge: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* B. SUBCAPA: ADVISOR AVATAR BADGE */}
+        {selectedLayer.blockType === 'AdvisorAvatarBadge' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre</label>
+              <input
+                type="text"
+                value={String(props.name ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { name: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Cargo / Especialidad</label>
+              <input
+                type="text"
+                value={String(props.role ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { role: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Foto de Asesor/a</label>
+              <div className="grid grid-cols-3 gap-2">
+                {avatarOptions.map((opt) => (
+                  <button
+                    key={opt.name}
+                    type="button"
+                    onClick={() => onUpdateLayerProps(selectedLayer.id, { avatarUrl: opt.url, name: opt.name })}
+                    className={`flex flex-col items-center gap-1.5 rounded-xl border p-2 text-center transition-all ${
+                      props.avatarUrl === opt.url
+                        ? 'border-brand-cyan bg-primary/20 text-white'
+                        : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <img src={opt.url} alt={opt.name} className="size-10 rounded-full object-cover shadow-sm" />
+                    <span className="text-[10px] font-bold">{opt.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* C. SUBCAPA: ADVISOR QUOTE BOX */}
+        {selectedLayer.blockType === 'AdvisorQuoteBox' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Cita / Mensaje</label>
+              <textarea
+                value={String(props.message ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { message: e.target.value })}
+                rows={3}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none leading-relaxed"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* D. SUBCAPA: WHATSAPP CTA BUTTON */}
+        {selectedLayer.blockType === 'WhatsAppCtaButton' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Texto del Botón CTA</label>
+              <input
+                type="text"
+                value={String(props.whatsAppText ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { whatsAppText: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* E. MOTIONADVISORCARD (COMPLETO) */}
         {selectedLayer.blockType === 'MotionAdvisorCard' && (
           <div className="space-y-3">
             <div>
