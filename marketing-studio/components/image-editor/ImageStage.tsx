@@ -210,6 +210,20 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             const isSelected = layer.id === selectedLayerId;
             const blockProps = layer.props as Record<string, unknown>;
 
+            const getBlockWidth = (blockType?: string) => {
+              switch (blockType) {
+                case 'MotionAdvisorCard':
+                  return '380px';
+                case 'MotionTrustBadge':
+                  return '420px';
+                case 'MotionComparisonCard':
+                case 'MotionProviderGrid':
+                  return '460px';
+                default:
+                  return '420px';
+              }
+            };
+
             return (
               <div
                 key={layer.id}
@@ -218,7 +232,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   e.stopPropagation();
                   onSelectLayer(layer.id);
                 }}
-                className={`absolute cursor-move transition-shadow ${
+                className={`absolute cursor-move transition-shadow select-none shrink-0 ${
                   isSelected
                     ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-transparent shadow-2xl'
                     : 'hover:ring-1 hover:ring-white/40'
@@ -228,7 +242,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   top: `${layer.position.y}%`,
                   transform: `translate(-50%, -50%) scale(${layer.scale ?? 1})`,
                   zIndex: layer.zIndex,
-                  maxWidth: '92%',
+                  width: getBlockWidth(layer.blockType),
+                  minWidth: getBlockWidth(layer.blockType),
+                  maxWidth: 'none',
+                  flexShrink: 0,
                 }}
               >
                 {/* RENDER BLOCK TYPES */}
