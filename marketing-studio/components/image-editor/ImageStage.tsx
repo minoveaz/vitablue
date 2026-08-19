@@ -369,12 +369,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     e.stopPropagation();
     onSelectLayer(layer.id);
     setResizingLayerId(layer.id);
+
+    const layerEl = (e.currentTarget as HTMLElement).closest('.canvas-layer-item') as HTMLElement | null;
+    const currentScale = layer.scale ?? 1;
+    const realWidth = layerEl ? Math.round(layerEl.offsetWidth / currentScale) : 380;
+    const realHeight = layerEl ? Math.round(layerEl.offsetHeight / currentScale) : 200;
+
     resizeStartRef.current = {
       startX: e.clientX,
       startY: e.clientY,
-      startScale: layer.scale ?? 1,
-      startWidth: layer.width ?? 380,
-      startHeight: layer.height ?? 200,
+      startScale: currentScale,
+      startWidth: layer.width ?? realWidth,
+      startHeight: layer.height ?? realHeight,
       corner,
     };
   };
@@ -457,17 +463,17 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       if (resizingLayerId) {
         const { startX, startY, startScale, startWidth, startHeight, corner } = resizeStartRef.current;
         if (corner === 'e' || corner === 'w') {
-          let deltaX = (e.clientX - startX) / zoom;
-          if (corner === 'w') deltaX = -deltaX;
-          const nextWidth = Math.max(120, Math.min(1080, startWidth + deltaX * 2));
+          const rawDeltaX = (e.clientX - startX) / (zoom * startScale);
+          const deltaX = corner === 'w' ? -rawDeltaX : rawDeltaX;
+          const nextWidth = Math.max(40, Math.min(2400, startWidth + deltaX * 2));
           onUpdateWidth?.(resizingLayerId, Math.round(nextWidth));
           return;
         }
 
         if (corner === 'n' || corner === 's') {
-          let deltaY = (e.clientY - startY) / zoom;
-          if (corner === 'n') deltaY = -deltaY;
-          const nextHeight = Math.max(60, Math.min(1200, startHeight + deltaY * 2));
+          const rawDeltaY = (e.clientY - startY) / (zoom * startScale);
+          const deltaY = corner === 'n' ? -rawDeltaY : rawDeltaY;
+          const nextHeight = Math.max(20, Math.min(2400, startHeight + deltaY * 2));
           onUpdateHeight?.(resizingLayerId, Math.round(nextHeight));
           return;
         }
@@ -485,7 +491,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         }
 
         const delta = (deltaX + deltaY) / 2;
-        const nextScale = Math.max(0.35, Math.min(2.5, startScale + delta * 0.006));
+        const nextScale = Math.max(0.2, Math.min(3.5, startScale + delta * 0.005));
         onUpdateScale(resizingLayerId, parseFloat(nextScale.toFixed(2)));
         return;
       }

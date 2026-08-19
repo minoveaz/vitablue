@@ -185,7 +185,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         if (isBadge) {
           return (
             <div
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 shadow-lg backdrop-blur-md"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 shadow-lg backdrop-blur-md w-full h-full"
               style={{
                 fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
                 fontSize: layer.fontSize ? `${layer.fontSize}px` : '13px',
@@ -206,7 +206,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
 
         return (
           <div
-            className="w-full select-none"
+            className="w-full h-full flex flex-col justify-center select-none"
             style={{
               fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
               fontSize: layer.fontSize ? `${layer.fontSize}px` : '24px',
