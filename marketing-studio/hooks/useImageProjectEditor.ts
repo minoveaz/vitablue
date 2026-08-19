@@ -505,6 +505,41 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const reorderLayers = useCallback((reorderedLayerIds: string[]) => {
+    setProject((prev) => {
+      const total = reorderedLayerIds.length;
+      const nextLayers = prev.layers.map((layer) => {
+        const indexInList = reorderedLayerIds.indexOf(layer.id);
+        if (indexInList === -1) return layer;
+        return {
+          ...layer,
+          zIndex: total - indexInList,
+        };
+      });
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const toggleAllLayersLock = useCallback((locked: boolean) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) => ({ ...l, locked }));
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const toggleAllLayersVisibility = useCallback((visible: boolean) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) => ({ ...l, visible }));
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const addBlockLayer = useCallback((blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => {
     let initialProps: Record<string, unknown> = defaultProps ?? {};
     let initialTitle = 'Bloque Visual';
@@ -948,8 +983,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     removeLayer,
     toggleLayerLock,
     toggleLayerVisibility,
+    toggleAllLayersLock,
+    toggleAllLayersVisibility,
     renameLayer,
     moveLayerZIndex,
+    reorderLayers,
     addBlockLayer,
     updateBackground,
     alignSelectedLayers,

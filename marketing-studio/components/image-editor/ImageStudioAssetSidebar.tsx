@@ -18,32 +18,42 @@ import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 export interface ImageStudioAssetSidebarProps {
   project: ImageProject;
   selectedLayerId: string | null;
-  onSelectLayer: (id: string) => void;
+  selectedLayerIds?: string[];
+  onSelectLayer: (id: string, isShift?: boolean) => void;
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
   onToggleLock: (id: string) => void;
   onToggleVisibility: (id: string) => void;
+  onToggleAllLock?: (locked: boolean) => void;
+  onToggleAllVisibility?: (visible: boolean) => void;
   onMoveZIndex: (id: string, direction: 'up' | 'down') => void;
+  onReorderLayers?: (layerIds: string[]) => void;
   onRenameLayer: (id: string, title: string) => void;
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
+  onDeleteSelectedLayers?: () => void;
   onCollapse?: () => void;
 }
 
 export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = ({
   project,
   selectedLayerId,
+  selectedLayerIds = [],
   onSelectLayer,
   onLoadTemplate,
   onAddBlock,
   onUpdateBackground,
   onToggleLock,
   onToggleVisibility,
+  onToggleAllLock,
+  onToggleAllVisibility,
   onMoveZIndex,
+  onReorderLayers,
   onRenameLayer,
   onDuplicateLayer,
   onRemoveLayer,
+  onDeleteSelectedLayers,
   onCollapse,
 }) => {
   const [activeTab, setActiveTab] = useState<'templates' | 'blocks' | 'layers' | 'brand' | 'media'>('templates');
@@ -279,7 +289,27 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
           </div>
         )}
 
-        {/* 3. BRAND KIT */}
+        {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
+        {activeTab === 'layers' && (
+          <ImageStudioLayersPanel
+            project={project}
+            selectedLayerId={selectedLayerId}
+            selectedLayerIds={selectedLayerIds}
+            onSelectLayer={onSelectLayer}
+            onToggleLock={onToggleLock}
+            onToggleVisibility={onToggleVisibility}
+            onToggleAllLock={onToggleAllLock}
+            onToggleAllVisibility={onToggleAllVisibility}
+            onMoveZIndex={onMoveZIndex}
+            onReorderLayers={onReorderLayers}
+            onRenameLayer={onRenameLayer}
+            onDuplicateLayer={onDuplicateLayer}
+            onRemoveLayer={onRemoveLayer}
+            onDeleteSelectedLayers={onDeleteSelectedLayers}
+          />
+        )}
+
+        {/* 4. BRAND KIT */}
         {activeTab === 'brand' && (
           <div className="space-y-3">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block px-1">

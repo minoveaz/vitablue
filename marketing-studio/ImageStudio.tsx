@@ -202,16 +202,21 @@ export const ImageStudio: React.FC = () => {
           <ImageStudioAssetSidebar
             project={editor.project}
             selectedLayerId={editor.selectedLayerId}
-            onSelectLayer={editor.selectLayer}
+            selectedLayerIds={editor.selectedLayerIds}
+            onSelectLayer={handleSelectLayer}
             onLoadTemplate={handleLoadTemplate}
             onAddBlock={handleAddBlock}
             onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
             onToggleLock={editor.toggleLayerLock}
             onToggleVisibility={editor.toggleLayerVisibility}
+            onToggleAllLock={editor.toggleAllLayersLock}
+            onToggleAllVisibility={editor.toggleAllLayersVisibility}
             onMoveZIndex={editor.moveLayerZIndex}
+            onReorderLayers={editor.reorderLayers}
             onRenameLayer={editor.renameLayer}
             onDuplicateLayer={editor.duplicateLayer}
             onRemoveLayer={editor.removeLayer}
+            onDeleteSelectedLayers={editor.deleteSelectedLayers}
             onCollapse={() => setIsContextSidebarOpen(false)}
           />
         ) : undefined
