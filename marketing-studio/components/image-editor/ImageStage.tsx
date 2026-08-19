@@ -640,12 +640,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         <div className="absolute top-4 z-40" onClick={(e) => e.stopPropagation()}>
           <ImageQuickToolbar
             layer={selectedLayer}
+            selectedCount={selectedLayerIds.length > 0 ? selectedLayerIds.length : 1}
             onDuplicate={onDuplicateLayer}
+            onDuplicateSelected={onDuplicateSelectedLayers}
             onRemove={onRemoveLayer}
+            onDeleteSelected={onDeleteSelectedLayers}
+            onGroup={onGroupSelectedLayers}
             onScaleChange={onUpdateScale}
             onCenter={(id) => onUpdatePosition(id, { x: 50, y: 50 })}
             onUngroup={onUngroupLayer}
             onFitToCanvas={onFitToCanvas}
+            onToggleLock={onToggleLock}
+            onToggleFlipHorizontal={onToggleFlipHorizontal}
           />
         </div>
       )}
