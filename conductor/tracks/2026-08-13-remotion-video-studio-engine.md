@@ -355,34 +355,52 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
   - Atajos `Cmd+Z` (Undo), `Cmd+Shift+Z` / `Ctrl+Y` (Redo) y botones en toolbar.
   - Scrollbar oscuro ultra-fino (`.custom-scrollbar`).
 
-#### 🎨 Rail de 9 Herramientas de Edición Rápida (Canva-Style Drawer):
+#### 🎨 Rail de 9 Herramientas de Edición Rápida (De lo Atómico a lo Macro):
 
 ```text
 ┌─── TOOL RAIL (16) ───┐ ┌──────── FLYOUT DRAWER (360px) ────────┐
-│ 📑  1. Plantillas     │ │ Filtros por objetivo de campaña       │
-│ 🧩  2. Bloques        │ │ Bloques de conversión de seguros     │
-│ 🔷  3. Elementos      │ │ Formas, badges de urgencia, mockups  │
-│ 🔤  4. Texto          │ │ H1, H2, H3 y combinaciones con CTR   │
-│ 🎨  5. Kit de Marca   │ │ Paleta oficial VitaBlue, logos SVG   │
-│ 📁  6. Medios/Fotos   │ │ Stock visados/médicos + Drag & drop  │
-│ 📑  7. Capas          │ │ Árbol Drag & drop, bloqueo, ocultar  │
-│ ✨  8. Copys con IA   │ │ Hooks de extranjería y llamadas CTA  │
-│ 🎵  9. Audio & Video  │ │ Pistas, SFX y puente a Remotion      │
+│                      │ │ Barra de Búsqueda Superior            │
+│  1. 🔤  Texto        │ │ + Pastillas de Subcategorías          │
+│  2. 🔷  Elementos    │ │ + Cuadrícula de Recursos con Preview  │
+│  3. 📁  Medios       │ │                                       │
+│  4. 📑  Capas        │ │                                       │
+│  5. 🎨  Kit de Marca │ │                                       │
+│  6. 🧩  Bloques      │ │                                       │
+│  7. 📑  Plantillas   │ │                                       │
+│  8. ✨  Copys con IA │ │                                       │
+│  9. 🎵  Audio/Video  │ │                                       │
 └──────────────────────┘ └───────────────────────────────────────┘
 ```
 
-- [x] **1. Plantillas (`Templates`):** Filtros por Visado Estudiante, Nómadas Digitales, Comparativas, etc.
-- [x] **2. Bloques (`Conversion Blocks`):** Asesora, Garantía Consular, Grid Aseguradoras, Comparativa ❌ vs ✅.
-- [ ] **3. Elementos (`Elements & Shapes`):** Rectángulos, círculos, pastillas, marcos iPhone, badges de urgencia e iconografía médica/legal.
-- [ ] **4. Texto (`Text & Typography`):** H1/H2/H3 con clases Poppins/Inter y combinaciones tipográficas pre-diseñadas de alto CTR.
-- [x] **5. Kit de Marca (`Brand Kit`):** Paleta semántica Opción 3, logos SVG y degradados Midnight/Ocean.
-- [ ] **6. Medios y Fotos (`Uploads & Stock`):** Stock de extranjería/salud y dropzone de archivos locales.
-- [x] **7. Capas (`Layers Manager`):** Árbol de capas con Drag & Drop, bloqueo, ocultar y selección múltiple.
-- [ ] **8. Asistente IA de Copywriting (`AI Copy & Magic Hooks`):** Generador de ganchos de visados y CTAs.
-- [ ] **9. Audio & Video Bridge (`Remotion Bridge`):** Música de fondo y botón 1-clic para convertir estático a vídeo animado.
+##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
+- [ ] **1. 🔤 Texto (`Text & Typography`):**
+  - Subcategorías: *Básicos (H1/H2/H3)*, *Ganchos de Alto CTR*, *Ofertas y Precios*, *Llamadas a la Acción (CTAs)*, *Citas/Testimonios*.
+  - Clases semánticas Poppins Bold 700 / Inter Regular 400 y combinaciones prediseñadas.
+- [ ] **2. 🔷 Elementos (`Elements & Shapes`):**
+  - Subcategorías: *Formas Básicas*, *Badges de Extranjería*, *Mockups de Dispositivos (iPhone)*, *Iconos Médicos & Legales*, *Flechas/Punteros*.
+- [ ] **3. 📁 Medios y Fotos (`Media & Uploads`):**
+  - Subcategorías: *Mis Subidos (Dropzone)*, *Estudiantes Internacionales*, *Pasaportes & Visados*, *Médicos & Clínicas*, *Nómadas Digitales*.
+- [x] **4. 📑 Capas (`Layers Manager`):**
+  - Árbol de capas con Drag & Drop, bloqueo, visibilidad y selección múltiple agrupable (`Cmd+G`).
+
+##### 🔵 Zona 2: Identidad y Marca (5)
+- [x] **5. 🎨 Kit de Marca (`Brand Kit`):**
+  - Subcategorías: *Logos Oficiales (SVG)*, *Paleta VitaBlue Opción 3 (Ocean Teal, Amber Gold, Midnight, Mint)*, *Fuentes*, *Fondos & Gradientes*.
+
+##### 🟣 Zona 3: Aceleración y Composición Rápida (6 - 7)
+- [x] **6. 🧩 Bloques de Conversión (`Conversion Blocks`):**
+  - Subcategorías: *Asesoras Asignadas*, *Grids de Aseguradoras*, *Comparativas ❌ vs ✅*, *Sellos de Garantía Consular*.
+- [x] **7. 📑 Plantillas Completas (`Templates`):**
+  - Subcategorías: *Visados Estudiantes*, *Nómadas Digitales*, *Comparativas*, *Historias & Reels*.
+
+##### 🟡 Zona 4: Inteligencia y Multimedia (8 - 9)
+- [ ] **8. ✨ Copys con IA (`AI Copywriter & Hooks`):**
+  - Subcategorías: *Ganchos de Entrada (Hooks)*, *Derribar Objeciones (Copagos/Carencias)*, *Por País (Colombia/México/Perú)*, *Urgencia*.
+- [ ] **9. 🎵 Audio & Video Bridge (`Remotion Video Generator`):**
+  - Pistas de sonido, SFX y botón 1-clic "Convertir a Video animado en Remotion".
 - [ ] **Carrusel Multi-Página (Instagram / LinkedIn):** Paginador inferior `[ Slide 1 ] [ Slide 2 ] [ + ]` y exportador multi-slide ZIP/PDF.
 
-**Salida:** Estudio creativo unificado para crear anuncios estáticos y carruseles en segundos con la máxima tasa de conversión en redes.
+**Salida:** Suite creativa estructurada con ergonomía profesional Canva-style para producción de creatividades estáticas y vídeo en segundos.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 
