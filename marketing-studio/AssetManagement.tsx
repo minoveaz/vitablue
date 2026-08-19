@@ -248,7 +248,7 @@ export const AssetManagement: React.FC = () => {
               {/* MOCKUP FRAME DISPOSITIVO MÓVIL ESTILO IPHONE CON RING DE SOMBRA */}
               <div className="flex w-full items-center justify-center p-2 sm:p-4 bg-slate-100/60 rounded-3xl border border-slate-200">
                 <div
-                  className={`w-full overflow-hidden rounded-[44px] border-4 border-slate-800 bg-[#001219] p-5 shadow-2xl flex flex-col items-center justify-center relative ring-8 ring-slate-300/40 transition-all ${
+                  className={`w-full overflow-hidden rounded-[44px] border-4 border-slate-800 bg-[#001219] p-4 shadow-2xl flex flex-col justify-between relative ring-8 ring-slate-300/40 transition-all ${
                     aspectRatio === '9:16'
                       ? 'aspect-[9/16] max-w-[340px]'
                       : aspectRatio === '1:1'
@@ -256,16 +256,39 @@ export const AssetManagement: React.FC = () => {
                         : 'aspect-video max-w-[500px] rounded-3xl'
                   }`}
                   style={{
-                    backgroundImage: 'radial-gradient(circle at 50% 15%, rgba(0, 95, 115, 0.45) 0%, #001219 75%)',
+                    backgroundImage: 'radial-gradient(circle at 50% 25%, rgba(0, 95, 115, 0.6) 0%, #001219 85%)',
                   }}
                 >
-                  {/* Dynamic Island Notch (solo en 9:16) */}
+                  {/* Dynamic Island Notch & Story Progress Bar (solo en 9:16) */}
                   {aspectRatio === '9:16' && (
-                    <div className="absolute top-3 z-30 h-4 w-20 rounded-full bg-black shadow-inner" />
+                    <div className="w-full z-20">
+                      <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-30 h-4 w-20 rounded-full bg-black shadow-inner" />
+                      
+                      {/* Story Progress Bars */}
+                      <div className="mt-4 flex items-center gap-1.5 w-full">
+                        <div className="h-1 flex-1 rounded-full bg-white/40 overflow-hidden"><div className="h-full w-full bg-white" /></div>
+                        <div className="h-1 flex-1 rounded-full bg-white/40 overflow-hidden"><div className="h-full w-2/3 bg-white" /></div>
+                        <div className="h-1 flex-1 rounded-full bg-white/40" />
+                      </div>
+
+                      {/* Profile Header Bar */}
+                      <div className="mt-2.5 flex items-center justify-between w-full text-white">
+                        <div className="flex items-center gap-2">
+                          <div className="size-6 rounded-full bg-[#005F73] flex items-center justify-center font-black text-[9px] text-white ring-1 ring-white/50">
+                            VB
+                          </div>
+                          <div>
+                            <span className="text-[11px] font-bold block leading-none text-white">vitablue.es</span>
+                            <span className="text-[9px] text-[#94D2BD] leading-none font-medium">Publicidad</span>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/70">✕</span>
+                      </div>
+                    </div>
                   )}
 
                   {/* Componente Renderizado al tamaño exacto */}
-                  <div className="w-full flex items-center justify-center my-auto">
+                  <div className="w-full flex items-center justify-center my-auto py-2 z-20">
                     {selectedComponentId === 'MotionAdvisorCard' && (
                       <MotionAdvisorCard
                         name={advisorProps.name}
@@ -306,6 +329,16 @@ export const AssetManagement: React.FC = () => {
                       />
                     )}
                   </div>
+
+                  {/* Bottom Reel Info Bar (solo en 9:16) */}
+                  {aspectRatio === '9:16' && (
+                    <div className="mt-auto flex items-center justify-between text-white/80 z-20 pt-2 border-t border-white/10">
+                      <span className="text-[10px] font-medium flex items-center gap-1 text-[#94D2BD]">
+                        <span>🎵</span> Audio original · VitaBlue
+                      </span>
+                      <span className="text-[10px] font-bold text-[#EE9B00]">Ver más ↗</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
