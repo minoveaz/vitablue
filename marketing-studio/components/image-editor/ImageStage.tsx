@@ -1036,12 +1036,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </div>
       </div>
 
-      {/* BOTTOM CONTROLS BAR: ZOOM & SAFE ZONES */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 backdrop-blur-md z-40 text-white text-xs">
+      {/* BOTTOM CONTROLS BAR: ZOOM & SAFE ZONES (CENTERED) */}
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-2xl border border-slate-800/90 bg-[#001219]/90 px-3.5 py-2 shadow-2xl backdrop-blur-xl z-40 text-white text-xs animate-fadeIn">
         <button
           type="button"
           onClick={() => onSetZoom(Math.max(0.25, zoom - 0.1))}
-          className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
           title="Reducir zoom"
         >
           <Minus className="size-3.5" />
@@ -1054,22 +1054,28 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           step={0.05}
           value={zoom}
           onChange={(e) => onSetZoom(parseFloat(e.target.value))}
-          className="w-16 accent-primary"
+          className="w-20 accent-primary cursor-pointer"
         />
 
         <button
           type="button"
           onClick={() => onSetZoom(Math.min(1.5, zoom + 0.1))}
-          className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
           title="Aumentar zoom"
         >
           <Plus className="size-3.5" />
         </button>
 
+        <span className="font-mono text-[11px] text-brand-cyan min-w-[36px] text-center font-bold">
+          {Math.round(zoom * 100)}%
+        </span>
+
+        <div className="h-4 w-px bg-slate-800" />
+
         <button
           type="button"
           onClick={handleResetFit}
-          className="flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition-colors"
+          className="flex items-center gap-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:text-white transition-colors shadow-xs"
           title="Centrar y ajustar al lienzo"
         >
           <Maximize2 className="size-3 text-brand-cyan" />
