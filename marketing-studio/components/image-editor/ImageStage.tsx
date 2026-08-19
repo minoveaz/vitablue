@@ -14,14 +14,15 @@ import {
   Minus,
   Plus,
   Maximize2,
-  CheckCircle2,
   MessageSquare,
   Ungroup,
   Copy,
   Trash2,
   Building2,
   Shield,
-  XCircle,
+  Check,
+  X,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface ImageStageProps {
@@ -248,12 +249,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
 
-  // Compute aspect ratio dimensions
-  const aspectWidth = project.preset.width;
-  const aspectHeight = project.preset.height;
-  const baseWidth = 540;
-  const computedHeight = (baseWidth * aspectHeight) / aspectWidth;
-
   return (
     <div
       ref={containerRef}
@@ -351,39 +346,30 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         }}
       >
         {/* BADGE DE LIENZO ACTIVO */}
-        {isCanvasSelected && (
-          <div className="absolute -top-6 left-0 flex items-center gap-1.5 text-[10px] font-mono font-bold text-brand-cyan tracking-wide animate-fadeIn">
-            <span className="inline-block size-1.5 rounded-full bg-brand-cyan animate-pulse" />
-            <span>Lienzo ({project.preset.name} · {project.preset.aspectRatio})</span>
-          </div>
-        )}
-
+        {/* ARTBOARD (STAGE) */}
         <div
           ref={canvasRef}
           onClick={(e) => {
             e.stopPropagation();
             onSelectCanvas();
           }}
-          className={`relative overflow-hidden rounded-none transition-all cursor-default ${
+          className={`relative overflow-hidden transition-all ${
             isCanvasSelected
-              ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-slate-950 shadow-[0_0_50px_rgba(148,210,189,0.25),0_0_0_1px_rgba(148,210,189,0.8)]'
-              : 'border border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.85)]'
+              ? 'ring-2 ring-primary ring-offset-4 ring-offset-[#001219]'
+              : 'shadow-[0_20px_50px_rgba(0,0,0,0.6)]'
           }`}
           style={{
-            width: `${baseWidth}px`,
-            height: `${computedHeight}px`,
+            width: `${project.preset.width}px`,
+            height: `${project.preset.height}px`,
             background: project.background.gradient ?? project.background.color ?? '#001219',
           }}
         >
-          {/* SAFE ZONES OVERLAY */}
+          {/* SAFE ZONES OVERLAY (STORIES / REELS / 4:5 ADS) */}
           {showSafeZones && (
             <div className="pointer-events-none absolute inset-0 z-50 border-2 border-dashed border-amber-400/60 p-8">
               <div className="flex justify-between text-[10px] font-mono font-bold text-amber-400">
                 <span>Safe Margin Top</span>
                 <span>Instagram / TikTok Area</span>
-              </div>
-              <div className="absolute bottom-4 left-8 text-[10px] font-mono font-bold text-amber-400">
-                Safe Margin Bottom
               </div>
             </div>
           )}
@@ -400,35 +386,37 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               if (customWidth) return `${customWidth}px`;
               switch (blockType) {
                 case 'MotionAdvisorCard':
-                case 'GlassCardSurface':
                   return '380px';
+                case 'GlassCardSurface':
+                  return blockProps.width ? `${blockProps.width}px` : '440px';
                 case 'MotionTrustBadge':
                   return '420px';
                 case 'MotionComparisonCard':
                 case 'MotionProviderGrid':
-                  return '460px';
+                  return '440px';
                 case 'HookAlertBadge':
                   return 'auto';
                 case 'AdvisorAvatarBadge':
-                  return '320px';
+                  return '340px';
                 case 'AdvisorQuoteBox':
-                  return '400px';
+                  return '340px';
                 case 'WhatsAppCtaButton':
-                  return '360px';
+                  return '340px';
                 case 'ProviderGridHeader':
                   return '380px';
                 case 'ProviderBadge':
-                  return '170px';
+                  return '185px';
                 case 'TrustShieldIcon':
                   return 'auto';
                 case 'TrustBadgeTitle':
-                  return '360px';
+                  return '380px';
                 case 'TrustBadgeSubtitle':
                   return '380px';
                 case 'ComparisonHeader':
+                  return '380px';
                 case 'ComparisonWrongBox':
                 case 'ComparisonCorrectBox':
-                  return '420px';
+                  return '380px';
                 default:
                   return '420px';
               }
@@ -468,9 +456,11 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {/* RENDER BLOCK TYPES */}
                 {layer.blockType === 'GlassCardSurface' && (
                   <div
-                    className="w-full h-[520px] rounded-3xl border border-teal-500/40 bg-[#001219]/95 shadow-2xl backdrop-blur-xl pointer-events-none"
+                    className="w-full rounded-3xl border border-teal-500/30 bg-[#001219]/90 shadow-2xl backdrop-blur-xl pointer-events-none"
                     style={{
-                      boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 95, 115, 0.3)',
+                      width: `${blockProps.width ?? 440}px`,
+                      height: `${blockProps.height ?? 380}px`,
+                      boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
                     }}
                   />
                 )}
@@ -507,16 +497,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                           <span>{String(blockProps.name ?? 'A').charAt(0)}</span>
                         )}
                       </div>
-                      <div className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-md ring-2 ring-[#001219]">
-                        <CheckCircle2 className="size-4" />
+                      <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219] translate-x-1 translate-y-0.5">
+                        <ShieldCheck className="size-3.5" />
                       </div>
                     </div>
-                    <strong className="font-display text-lg font-bold text-white tracking-tight">
-                      {String(blockProps.name ?? 'Sofía')}
-                    </strong>
-                    <span className="text-xs font-medium text-teal-300/80">
-                      {String(blockProps.role ?? 'Asesora Especialista')}
-                    </span>
+                    <div className="mt-1.5 space-y-0.5">
+                      <h3 className="font-display text-xl font-black text-white tracking-tight leading-tight">
+                        {String(blockProps.name ?? 'Sofía')}
+                      </h3>
+                      <p className="text-xs font-bold text-[#94D2BD]">
+                        {String(blockProps.role ?? 'Asesora Especialista en Visados')}
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -541,27 +533,37 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 {/* SUBCAPAS DE GRID DE ASEGURADORAS */}
                 {layer.blockType === 'ProviderGridHeader' && (
                   <div className="flex flex-col items-center text-center">
-                    <div className="mb-2 flex size-10 items-center justify-center rounded-xl bg-teal-500/20 text-brand-cyan shadow-inner">
+                    <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-teal-900/40 text-teal-400">
                       <Building2 className="size-5" />
                     </div>
-                    <h3 className="font-display text-sm font-black tracking-wider text-white uppercase leading-snug">
+                    <h3 className="font-display text-base font-black text-white tracking-tight">
                       {String(blockProps.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
                     </h3>
-                    <p className="text-[11px] font-medium text-slate-300 mt-0.5">
+                    <p className="mt-1 text-xs text-[#94D2BD]">
                       {String(blockProps.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
                     </p>
                   </div>
                 )}
 
                 {layer.blockType === 'ProviderBadge' && (
-                  <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-teal-500/30 bg-[#001219]/90 p-3 text-center shadow-lg backdrop-blur-md">
-                    <span className="font-display text-xs font-black tracking-wider text-amber-400 uppercase">
+                  <div className={`flex w-full flex-col items-center justify-center rounded-2xl border p-3.5 transition-all ${
+                    blockProps.color === '#EE9B00' || blockProps.highlight
+                      ? 'border-amber-500/40 bg-amber-500/10 text-amber-300 shadow-md'
+                      : 'border-white/10 bg-white/5 text-white'
+                  }`}>
+                    <strong className="font-display text-sm font-black tracking-wider uppercase">
                       {String(blockProps.name ?? 'ASEGURADORA')}
-                    </span>
-                    <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-brand-cyan">
-                      <CheckCircle2 className="size-3" />
-                      <span>{String(blockProps.badge ?? 'Sin Copagos')}</span>
-                    </span>
+                    </strong>
+                    {Boolean(blockProps.badge) && (
+                      <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold ${
+                        blockProps.color === '#EE9B00' || Boolean(blockProps.highlight)
+                          ? 'bg-amber-950/60 text-amber-300 border border-amber-500/30'
+                          : 'bg-white/10 text-teal-300'
+                      }`}>
+                        <Check className="size-2.5" />
+                        <span>{String(blockProps.badge)}</span>
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -573,45 +575,49 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 )}
 
                 {layer.blockType === 'TrustBadgeTitle' && (
-                  <h3 className="font-display text-base font-black tracking-wide text-white uppercase text-center leading-snug">
+                  <h3 className="font-display text-lg font-black text-white tracking-tight leading-snug text-center">
                     {String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
                   </h3>
                 )}
 
                 {layer.blockType === 'TrustBadgeSubtitle' && (
-                  <p className="text-xs font-medium text-slate-300 text-center leading-relaxed">
+                  <p className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center">
                     {String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
                   </p>
                 )}
 
                 {/* SUBCAPAS DE COMPARISON CARD */}
                 {layer.blockType === 'ComparisonHeader' && (
-                  <h3 className="font-display text-base font-black tracking-tight text-white uppercase text-center">
-                    {String(blockProps.title ?? 'Comparativa de Cobertura')}
+                  <h3 className="font-display text-sm font-black text-white tracking-tight uppercase text-center">
+                    {String(blockProps.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
                   </h3>
                 )}
 
                 {layer.blockType === 'ComparisonWrongBox' && (
-                  <div className="flex w-full items-start gap-3 rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 backdrop-blur-md shadow-lg">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
-                      <XCircle className="size-5" />
+                  <div className="rounded-2xl border border-rose-500/40 bg-rose-950/30 p-3.5 text-left w-full">
+                    <div className="flex items-center gap-2 text-rose-400 font-bold text-xs mb-1">
+                      <span className="flex size-4 items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-black">
+                        <X className="size-3" />
+                      </span>
+                      <span>{String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje Común')}</span>
                     </div>
-                    <div>
-                      <strong className="text-xs font-bold text-rose-300 block">{String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje')}</strong>
-                      <p className="text-[11px] text-slate-300 leading-snug mt-0.5">{String(blockProps.wrongOptionDesc ?? '')}</p>
-                    </div>
+                    <p className="text-[11px] text-rose-200/80 leading-relaxed pl-6">
+                      {String(blockProps.wrongOptionDesc ?? '')}
+                    </p>
                   </div>
                 )}
 
                 {layer.blockType === 'ComparisonCorrectBox' && (
-                  <div className="flex w-full items-start gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 backdrop-blur-md shadow-lg">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                      <CheckCircle2 className="size-5" />
+                  <div className="rounded-2xl border border-emerald-500/50 bg-emerald-950/40 p-3.5 shadow-md text-left w-full">
+                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-1">
+                      <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[9px] font-black">
+                        <Check className="size-3" />
+                      </span>
+                      <span>{String(blockProps.correctOptionTitle ?? 'Seguro VitaBlue Extranjería')}</span>
                     </div>
-                    <div>
-                      <strong className="text-xs font-bold text-emerald-300 block">{String(blockProps.correctOptionTitle ?? 'Seguro de Salud Sin Copagos')}</strong>
-                      <p className="text-[11px] text-slate-300 leading-snug mt-0.5">{String(blockProps.correctOptionDesc ?? '')}</p>
-                    </div>
+                    <p className="text-[11px] text-emerald-100 font-medium leading-relaxed pl-6">
+                      {String(blockProps.correctOptionDesc ?? '')}
+                    </p>
                   </div>
                 )}
 
