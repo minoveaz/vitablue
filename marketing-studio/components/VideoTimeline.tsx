@@ -1,155 +1,202 @@
-import React from 'react';
-import type { Layer, Scene } from '../../packages/video-studio/src/domain/videoProject';
+import React, { useRef } from 'react';
+import type { Scene } from '../../packages/video-studio/src/domain/videoProject';
 import { videoTemplateRegistry } from '../../packages/video-studio/src/engine/templateRegistry';
+import { Type, MessageSquare, ShieldCheck, Image, Music, Eye, EyeOff } from 'lucide-react';
 
-interface VideoTimelineProps {
+export interface VideoTimelineProps {
   scenes: Scene[];
   currentFrame: number;
   fps: number;
   onSeek: (frame: number) => void;
   onSelectScene: (sceneId: string, startFrame: number) => void;
-  onResizeScene: (sceneId: string, durationInFrames: number) => void;
+  onResizeScene?: (sceneId: string, durationInFrames: number) => void;
   selectedLayerId?: string;
   onSelectLayer: (layerId: string) => void;
   onToggleLayer: (layerId: string, property: 'visible' | 'locked') => void;
-  onRemoveLayer: (layerId: string) => void;
-  onAddTextLayer: () => void;
-  onAddLayer: (type: 'image' | 'video' | 'audio') => void;
+  onRemoveLayer?: (layerId: string) => void;
+  onContextMenu?: (e: React.MouseEvent, target: { type: 'scene'; sceneId: string } | { type: 'layer'; sceneId: string; layerId: string }) => void;
 }
 
 export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   scenes,
   currentFrame,
-  fps,
+  fps = 30,
   onSeek,
   onSelectScene,
-  onResizeScene,
   selectedLayerId,
   onSelectLayer,
   onToggleLayer,
-  onRemoveLayer,
-  onAddTextLayer,
-  onAddLayer,
+  onContextMenu,
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const totalFrames = scenes.reduce((total, scene) => total + scene.durationInFrames, 0);
-  const activeScene = scenes.find((scene) => {
-    const sceneStart = scenes
-      .slice(0, scenes.indexOf(scene))
-      .reduce((total, previousScene) => total + previousScene.durationInFrames, 0);
-    return currentFrame >= sceneStart && currentFrame < sceneStart + scene.durationInFrames;
-  });
-  const layerLabel = (layer: Layer): string => ({
-    text: 'Texto',
-    image: 'Imagen',
-    video: 'Vídeo',
-    audio: 'Audio',
-    shape: 'Forma',
-    component: 'Componente',
-  }[layer.type]);
-  const layerStart = (layer: Layer): number => layer.timing?.startFrame ?? 0;
-  const layerDuration = (layer: Layer, scene: Scene): number => layer.timing?.durationInFrames ?? scene.durationInFrames;
-  const hasMissingSource = (layer: Layer): boolean => (
-    (layer.type === 'image' || layer.type === 'video') && !layer.asset.src
-  ) || (layer.type === 'audio' && !layer.src);
+  const totalSeconds = totalFrames / fps;
+
+  const playheadPercent = totalFrames > 0 ? (currentFrame / totalFrames) * 100 : 0;
+
+  const handleTimelineClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const bounds = containerRef.current.getBoundingClientRect();
+    const clickX = event.clientX - bounds.left;
+    const targetPercent = Math.max(0, Math.min(1, clickX / bounds.width));
+    const targetFrame = Math.round(targetPercent * totalFrames);
+    onSeek(targetFrame);
+  };
 
   return (
-    <div className="w-full max-w-[760px] rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">Timeline</span>
-        <span className="font-mono text-[10px] font-bold text-slate-400">{(currentFrame / fps).toFixed(1)}s / {(totalFrames / fps).toFixed(1)}s</span>
-      </div>
+    <div className="flex h-56 shrink-0 flex-col border-t border-slate-800 bg-slate-950 text-white select-none">
+      {/* TIMELINE TIME RULER */}
       <div
-        className="relative flex h-16 w-full gap-1 overflow-hidden rounded-xl bg-slate-100 p-1"
-        onClick={(event) => {
-          const bounds = event.currentTarget.getBoundingClientRect();
-          const frame = Math.round(((event.clientX - bounds.left) / bounds.width) * totalFrames);
-          onSeek(Math.max(0, Math.min(totalFrames - 1, frame)));
-        }}
+        className="relative h-6 shrink-0 border-b border-slate-800/80 bg-slate-900/60 px-4 flex items-center cursor-pointer"
+        onClick={handleTimelineClick}
       >
-        {scenes.map((scene, index) => {
-          const sceneStart = scenes
-            .slice(0, index)
-            .reduce((total, previousScene) => total + previousScene.durationInFrames, 0);
-          const isActive = currentFrame >= sceneStart && currentFrame < sceneStart + scene.durationInFrames;
-          const width = totalFrames > 0 ? `${(scene.durationInFrames / totalFrames) * 100}%` : '0%';
-
-          return (
-            <div
-              key={scene.id}
-              className={`relative flex min-w-0 flex-col justify-between overflow-hidden rounded-lg border px-2 py-1.5 text-left transition-colors ${
-                isActive ? 'border-primary bg-primary/10 text-primary' : 'border-transparent bg-white text-slate-500 hover:border-primary/30'
-              }`}
-              style={{ width }}
-              title={`${videoTemplateRegistry[scene.templateId].label} · ${(scene.durationInFrames / fps).toFixed(1)}s`}
-            >
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onSelectScene(scene.id, sceneStart);
-                }}
-                className="flex min-w-0 flex-1 flex-col justify-between text-left"
-              >
-                <span className="truncate text-[10px] font-black">{index + 1}. {videoTemplateRegistry[scene.templateId].label}</span>
-                <span className="font-mono text-[9px] opacity-70">{(scene.durationInFrames / fps).toFixed(1)}s</span>
-              </button>
-              <input
-                type="range"
-                aria-label={`Duración de escena ${index + 1}`}
-                min={30}
-                max={1800}
-                step={30}
-                value={scene.durationInFrames}
-                onClick={(event) => event.stopPropagation()}
-                onChange={(event) => onResizeScene(scene.id, Number(event.target.value))}
-                className="absolute -bottom-1 left-1 right-1 h-1 cursor-ew-resize accent-primary"
-              />
-            </div>
-          );
-        })}
-        {totalFrames > 0 && (
-          <div
-            className="pointer-events-none absolute bottom-0 top-0 z-10 w-0.5 bg-red-500 shadow-sm"
-            style={{ left: `${Math.min(100, Math.max(0, (currentFrame / totalFrames) * 100))}%` }}
-          />
-        )}
-      </div>
-      {activeScene && (
-        <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3">
-          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-500">
-            <span>Pistas de escena</span>
-            <div className="flex gap-2">
-              <button type="button" onClick={onAddTextLayer} className="text-primary hover:underline">+ Texto</button>
-              <button type="button" onClick={() => onAddLayer('image')} className="text-primary hover:underline">+ Imagen</button>
-              <button type="button" onClick={() => onAddLayer('video')} className="text-primary hover:underline">+ Vídeo</button>
-              <button type="button" onClick={() => onAddLayer('audio')} className="text-primary hover:underline">+ Audio</button>
-            </div>
-          </div>
-          {activeScene.layers.length === 0 ? (
-            <p className="text-[10px] text-slate-400">Esta escena aún no tiene clips temporales.</p>
-          ) : activeScene.layers.map((layer) => {
-            const duration = layerDuration(layer, activeScene);
+        <div className="relative w-full h-full flex items-center">
+          {Array.from({ length: Math.ceil(totalSeconds) + 1 }).map((_, sec) => {
+            const leftPercent = totalSeconds > 0 ? (sec / totalSeconds) * 100 : 0;
             return (
-              <div key={layer.id} className={`flex h-7 items-center gap-2 rounded-md px-2 text-[10px] ${selectedLayerId === layer.id ? 'bg-primary/10 ring-1 ring-primary/30' : 'bg-slate-50'}`}>
-                <button type="button" onClick={() => onSelectLayer(layer.id)} className="w-20 shrink-0 text-left font-bold text-slate-500">{layerLabel(layer)}</button>
-                <div className="relative h-3 flex-1 rounded bg-slate-200">
-                  <span
-                    className="absolute inset-y-0 rounded bg-primary/70"
-                    style={{
-                      left: `${(layerStart(layer) / activeScene.durationInFrames) * 100}%`,
-                      width: `${(duration / activeScene.durationInFrames) * 100}%`,
-                    }}
-                  />
-                </div>
-                <span className="w-16 text-right font-mono text-slate-400">{(duration / fps).toFixed(1)}s</span>
-                {hasMissingSource(layer) && <span className="font-bold text-amber-600" title="Falta la fuente del recurso">Sin fuente</span>}
-                <button type="button" onClick={() => onToggleLayer(layer.id, 'visible')} className="text-slate-400" aria-label="Alternar visibilidad">{layer.visible === false ? 'Oculto' : 'Visible'}</button>
-                <button type="button" onClick={() => onRemoveLayer(layer.id)} className="text-red-400" aria-label="Eliminar capa">×</button>
+              <div
+                key={sec}
+                style={{ left: `${leftPercent}%` }}
+                className="absolute flex flex-col items-center -translate-x-1/2"
+              >
+                <span className="font-mono text-[9px] font-bold text-slate-400">{sec}s</span>
+                <div className="h-1.5 w-px bg-slate-700 mt-0.5" />
               </div>
             );
           })}
         </div>
-      )}
+      </div>
+
+      {/* TRACKS CONTAINER WITH SCRUBBING & PLAYHEAD */}
+      <div
+        ref={containerRef}
+        className="relative flex-1 overflow-x-hidden overflow-y-auto p-3 space-y-2 cursor-pointer"
+        onClick={handleTimelineClick}
+      >
+        {/* PLAYHEAD (AGUJA ROJA) */}
+        <div
+          style={{ left: `${playheadPercent}%` }}
+          className="pointer-events-none absolute inset-y-0 z-30 w-px bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] -translate-x-1/2"
+        >
+          <div className="size-2.5 rounded-full bg-red-500 shadow-md -translate-x-1/2 -translate-y-1" />
+        </div>
+
+        {/* PISTA 1: ESCENAS PRINCIPALES */}
+        <div className="relative flex h-14 w-full gap-1.5 rounded-xl bg-slate-900/80 p-1 border border-slate-800">
+          {scenes.map((scene, index) => {
+            const sceneStart = scenes
+              .slice(0, index)
+              .reduce((total, prev) => total + prev.durationInFrames, 0);
+            const isActive = currentFrame >= sceneStart && currentFrame < sceneStart + scene.durationInFrames;
+            const width = totalFrames > 0 ? `${(scene.durationInFrames / totalFrames) * 100}%` : '0%';
+
+            return (
+              <div
+                key={scene.id}
+                style={{ width }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onContextMenu?.(e, { type: 'scene', sceneId: scene.id });
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectScene(scene.id, sceneStart);
+                }}
+                className={`group relative flex min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
+                  isActive
+                    ? 'border-primary bg-primary/20 text-white shadow-xs'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between min-w-0">
+                  <span className="truncate text-[10px] font-bold">
+                    {index + 1}. {videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}
+                  </span>
+                  <span className="font-mono text-[9px] text-slate-400 shrink-0">
+                    {(scene.durationInFrames / fps).toFixed(1)}s
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                  <span>{scene.layers.length} capas</span>
+                  {scene.transition?.type !== 'none' && (
+                    <span className="rounded bg-slate-800 px-1 text-[8px] text-brand-cyan">
+                      {scene.transition?.type}
+                    </span>
+                  )}
+                </div>
+
+                {/* Tirador de Resize a la derecha */}
+                <div
+                  className="absolute right-0 inset-y-0 w-2 cursor-ew-resize hover:bg-primary/40 transition-colors"
+                  title="Estirar o acortar duración de escena"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* PISTA 2: CAPAS DE TEXTO Y OVERLAYS DE LA ESCENA ACTIVA */}
+        <div className="flex items-center gap-2 overflow-x-auto py-1">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 shrink-0 w-16">Capas:</span>
+          {scenes.flatMap((s) => s.layers.map((l) => ({ ...l, sceneId: s.id }))).map((layer) => {
+            const isSelected = layer.id === selectedLayerId;
+            return (
+              <div
+                key={layer.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectLayer(layer.id);
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onContextMenu?.(e, { type: 'layer', sceneId: layer.sceneId, layerId: layer.id });
+                }}
+                className={`flex items-center gap-2 rounded-lg border px-2.5 py-1 text-xs transition-all cursor-pointer ${
+                  isSelected
+                    ? 'border-accent bg-accent/20 text-white shadow-xs ring-1 ring-accent'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                }`}
+              >
+                {layer.type === 'text' ? (
+                  <Type className="size-3 text-brand-cyan shrink-0" />
+                ) : layer.type === 'subtitle' ? (
+                  <MessageSquare className="size-3 text-accent shrink-0" />
+                ) : layer.type === 'component' ? (
+                  <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
+                ) : layer.type === 'audio' ? (
+                  <Music className="size-3 text-purple-400 shrink-0" />
+                ) : (
+                  <Image className="size-3 text-slate-400 shrink-0" />
+                )}
+                <span className="truncate max-w-[120px] font-semibold text-[11px]">
+                  {layer.type === 'text'
+                    ? (layer as any).text
+                    : layer.type === 'subtitle'
+                      ? (layer as any).text
+                      : layer.type === 'component'
+                        ? (layer as any).componentId
+                        : layer.type}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleLayer(layer.id, 'visible');
+                  }}
+                  className="text-slate-500 hover:text-white"
+                >
+                  {layer.visible === false ? <EyeOff className="size-3 text-amber-400" /> : <Eye className="size-3" />}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

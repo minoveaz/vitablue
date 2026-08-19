@@ -8,9 +8,12 @@ export type SceneTemplateId =
   | 'requirements_list'
   | 'advisor_cta';
 
-export type LayerType = 'text' | 'image' | 'video' | 'shape' | 'component' | 'audio';
+export type LayerType = 'text' | 'subtitle' | 'image' | 'video' | 'shape' | 'component' | 'audio';
 
-export type TransitionType = 'none' | 'fade' | 'slide';
+export type TransitionType = 'none' | 'fade' | 'slide' | 'zoom';
+
+export type TextAnimationType = 'none' | 'fade' | 'pop' | 'slide-up' | 'typewriter';
+export type SubtitleStylePreset = 'viral-yellow' | 'classic-box' | 'clean-white';
 
 export interface AssetRef {
   assetId?: string;
@@ -25,36 +28,66 @@ export interface LayerTiming {
 
 export interface LayerBase {
   id: string;
+  name?: string;
   timing?: LayerTiming;
   visible?: boolean;
   locked?: boolean;
+  zIndex?: number;
 }
 
 export interface TextLayer extends LayerBase {
   type: 'text';
   text: string;
+  fontSize?: number;
+  color?: string;
+  backgroundColor?: string;
+  position?: { x: number; y: number } | 'top' | 'center' | 'bottom';
+  align?: 'left' | 'center' | 'right';
+  animation?: TextAnimationType;
+}
+
+export interface SubtitleLayer extends LayerBase {
+  type: 'subtitle';
+  text: string;
+  highlightWords?: string[];
+  stylePreset?: SubtitleStylePreset;
+  fontSize?: number;
+  color?: string;
+  position?: 'bottom' | 'center' | 'top';
 }
 
 export interface ImageLayer extends LayerBase {
   type: 'image';
   asset: AssetRef;
   alt?: string;
+  position?: { x: number; y: number } | 'top' | 'center' | 'bottom';
+  width?: number;
+  height?: number;
 }
 
 export interface VideoLayer extends LayerBase {
   type: 'video';
   asset: AssetRef;
+  position?: { x: number; y: number } | 'top' | 'center' | 'bottom';
+  width?: number;
+  height?: number;
 }
 
 export interface ShapeLayer extends LayerBase {
   type: 'shape';
-  shape: 'rectangle' | 'circle';
+  shape: 'rectangle' | 'circle' | 'pill' | 'badge';
+  color?: string;
+  opacity?: number;
+  width?: number;
+  height?: number;
+  position?: { x: number; y: number } | 'top' | 'center' | 'bottom';
 }
 
 export interface ComponentLayer extends LayerBase {
   type: 'component';
   componentId: string;
   props: Record<string, unknown>;
+  position?: { x: number; y: number } | 'top' | 'center' | 'bottom';
 }
 
 export interface AudioLayer extends LayerBase {
@@ -65,6 +98,7 @@ export interface AudioLayer extends LayerBase {
 
 export type Layer =
   | TextLayer
+  | SubtitleLayer
   | ImageLayer
   | VideoLayer
   | ShapeLayer
@@ -87,6 +121,7 @@ export interface Scene {
 
 export interface AudioTrack {
   id: string;
+  name?: string;
   src: string;
   startFrame: number;
   durationInFrames?: number;
@@ -109,7 +144,7 @@ export interface VideoProject {
 export interface VideoProjectRepository {
   load(projectId: string): Promise<VideoProject | null>;
   save(project: VideoProject): Promise<void>;
-  duplicate(projectId: string): Promise<VideoProject>;
+  list(): Promise<Array<{ id: string; name: string; updatedAt: string }>>;
 }
 
 export interface SceneTiming {
@@ -118,19 +153,36 @@ export interface SceneTiming {
   endFrame: number;
 }
 
-export interface ProjectValidationIssue {
-  code:
-    | 'empty_project_id'
-    | 'empty_scene_id'
-    | 'duplicate_scene_id'
-    | 'invalid_fps'
-    | 'invalid_dimensions'
-    | 'invalid_scene_duration'
-    | 'empty_scene_template'
-    | 'unregistered_scene_template'
-    | 'invalid_transition_duration'
-    | 'invalid_layer_timing';
+export interface ValidationIssue {
+  type?: 'error' | 'warning';
   message: string;
+  code?: string;
   sceneId?: string;
   layerId?: string;
+  field?: string;
+}
+
+export type ProjectValidationIssue = ValidationIssue;
+
+export interface ValidationResult {
+  valid: boolean;
+  issues: ValidationIssue[];
+}
+
+export interface VideoProjectValidator {
+  validate(project: VideoProject): ValidationResult;
+}
+
+export interface RenderRequest {
+  projectId: string;
+  project: VideoProject;
+  outputPath?: string;
+  quality?: 'draft' | 'production';
+}
+
+export interface RenderResult {
+  success: boolean;
+  outputPath?: string;
+  durationSeconds?: number;
+  error?: string;
 }

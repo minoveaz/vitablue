@@ -459,6 +459,8 @@ const DocumentIntelligence: React.FC = () => {
     <BackofficeShell
       title="Document Intelligence"
       eyebrow="Operaciones documentales"
+      breadcrumbs={['Tools', 'Document Intelligence']}
+      mode="split"
     >
       <div className="flex h-full min-h-0 flex-col gap-5 overflow-hidden">
         {header}

@@ -231,35 +231,53 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 
 **Salida:** un vídeo vertical generado desde JSON utilizando componentes de VitaBlue.
 
-### Fase 3 - Editor de storyboard eficiente
+### Fase 3 - Editor de storyboard eficiente, Brand Kit & Multi-Resolución (Inspiración Canva)
 
-- [ ] Crear una pantalla privada en Marketing Studio.
-- [ ] Mantener el editor como aplicación de VitaBlue, sin introducir todavía organización, workspace, Brand Hub ni repositorios multi-tenant.
+- [x] Crear una pantalla privada en Marketing Studio alineada con los contratos y receta `CreativeEditor` de LoopDev (`full-bleed`).
+- [x] Mantener el editor como aplicación de VitaBlue, sin introducir todavía organización, workspace, Brand Hub ni repositorios multi-tenant.
+- [x] **Brand Kit VitaBlue en `ModuleContextSidebar`:** Integración directa de componentes de marca (`AdvisorCard`, `ProductCard`, `WhatsAppBadge`), paleta de tokens (`Ocean`, `Midnight`, `Mint`, `Amber`), tipografías e ilustraciones categorizadas (`Salud`, `Mascotas`, `Viajes`).
+- [x] **Magic Resize Multi-Resolución:** Soporte multi-resolución en caliente: 9:16 (Vertical Reels/TikTok/Shorts), 1:1 (Cuadrado Feed/LinkedIn) y 16:9 (Landscape YouTube).
+- [x] **Safe Zones Overlay (Márgenes de Redes Sociales):** Guías visuales superpuestas para previsualizar y respetar las zonas tapadas por la interfaz de TikTok e Instagram Reels.
+- [x] **Edición Visual Directa en el Canvas (`On-Canvas Editing`):**
+  - Selección de elementos mediante clic en pantalla con recuadro delimitador (*bounding box*).
+  - Reposicionamiento por arrastre libre (*drag-and-drop on canvas*) con guías inteligentes de centrado.
+  - Edición rápida de texto por doble clic en el lienzo.
+  - Barra flotante de acciones rápidas sobre la capa seleccionada (tamaño, color, duplicar, Z-Index, eliminar).
+  - Menú contextual de clic derecho en cualquier punto del `VideoStage` (Añadir texto, subtítulo, forma o componente en esas coordenadas).
+- [x] Selector de zoom (`Fit`, `50%`, `75%`, `100%`) y conmutador de tema de marca.
 - [x] Listar, seleccionar, duplicar, eliminar y reordenar escenas.
 - [x] Editar duración y contenido de la escena activa.
 - [x] Mostrar formularios específicos por plantilla.
 - [x] Añadir presets de proyecto y de formato.
-- [ ] Implementar preview con `@remotion/player`.
+- [x] Implementar preview interactivo con `@remotion/player`.
 - [x] Sincronizar reproducción, pausa, reinicio, frame actual y escena activa.
 - [x] Añadir scrubbing y salto directo a una escena.
 - [x] Avisar de textos largos, campos faltantes y contenido que exceda límites.
 - [x] No borrar contenido automáticamente al cambiar una plantilla sin confirmación.
 - [x] Mantener el estado mediante memoria o una implementación local sustituible, sin poner `localStorage` dentro del dominio.
 
-**Salida:** una persona no técnica puede crear y ajustar un vídeo sin editar código.
+**Salida:** una persona no técnica puede crear y adaptar un vídeo con la identidad de VitaBlue en múltiples formatos sin editar código, tanto desde paneles como interactuando directamente sobre el vídeo.
 
-### Fase 4 - Timeline y edición audiovisual
+### Fase 4 - Timeline profesional, pistas superpuestas, menú contextual y sincronización tri-direccional (Inspiración CapCut)
 
-- [x] Mostrar una timeline horizontal con escala temporal.
-- [x] Representar cada escena como un bloque editable.
-- [x] Añadir cabezal de reproducción sincronizado con el Player.
-- [x] Permitir ajustar inicio y duración mediante interacción controlada.
-- [ ] Añadir tracks de texto, imagen, componente, vídeo y audio cuando el caso de uso lo justifique.
-- [x] Añadir transiciones con presets seguros.
-- [x] Añadir reordenación mediante drag-and-drop con teclado como alternativa accesible.
+- [x] Mostrar una timeline horizontal con escala temporal en segundos y frames.
+- [x] Representar cada escena como un bloque editable con tiradores para estirar/encoger duración en frames.
+- [x] **Split at Playhead:** Dividir escena o capa en el frame exacto del cabezal de reproducción (`Cmd+B`, botón de tijeras o menú contextual).
+- [x] **Pistas Superpuestas (Overlays):** Pista de escenas, Pista de textos/subtítulos, Pista de componentes de marca y Pista de audio con forma de onda (waveforms).
+- [x] **Menú Contextual de Clic Derecho (`VideoContextMenu`):**
+  - En Escena: Duplicar, Dividir (Split), Duración rápida, Cambiar plantilla, Eliminar.
+  - En Capa: Ocultar/Mostrar, Bloquear, Reordenar Z-Index, Eliminar.
+- [x] **Transiciones entre Escenas:** Conector `[⚡/+]` entre bloques con selector de transiciones (`Fade`, `Slide`, `Zoom`, `Cut`).
+- [x] **Atajos de Teclado Profesionales:** `Espacio` (Play/Pause), `Cmd+B` (Split), `←/→` (1 frame), `Shift+←/→` (1 seg), `Delete/Backspace` (Borrar).
+- [x] **Inspector Contextual Inteligente (`ModuleContextPanel`):**
+  - Edición de copies, colores y efectos de entrada (*Fade in*, *Slide up*, *Pop*).
+  - Control de duración, fondo y alertas de límite de caracteres en tiempo real.
+- [x] **Sincronización Tri-direccional en Tiempo Real:** Cambios en el `VideoStage` (Lienzo) ↔ `VideoTimeline` (Tiempo) ↔ `ModuleContextPanel` (Inspector) se propagan de forma instantánea.
+- [x] Añadir cabezal de reproducción sincronizado bidireccionalmente con el Player.
+- [x] Permitir reordenación mediante drag-and-drop con teclado como alternativa accesible.
 - [x] Mantener límites para evitar escenas imposibles de renderizar.
 
-**Salida:** edición temporal suficientemente potente para producción de contenido corto, sin intentar replicar un editor profesional completo.
+**Salida:** edición temporal y visual fluida, precisa y con ergonomía híbrida entre Canva y CapCut para producción de contenido publicitario.
 
 ### Fase 5 - Exportación y biblioteca de plantillas
 

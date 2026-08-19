@@ -1,12 +1,11 @@
+export * from './contracts';
+export * from './PlatformHeader';
+export * from './SuiteSidebar';
+export * from './SuiteCanvas';
+export * from './ModuleHeader';
+export * from './ModuleContextSidebar';
+export * from './ModuleContextPanel';
+export * from './SuiteShell';
+export * from './SuiteRuntime';
+export * from './types';
 export { default as BackofficeShell } from './BackofficeShell';
-export { BACKOFFICE_MODULES, CREATIVE_EDITOR_REGIONS } from './fixtures';
-export type {
-  BackofficeBreadcrumb,
-  BackofficeModuleConfig,
-  BackofficeModuleState,
-  BackofficeNavigationMode,
-  BackofficeShellMode,
-  BackofficeShellProps,
-  BackofficeSidebarMode,
-} from './types';
-export type { CreativeEditorRegion } from './fixtures';

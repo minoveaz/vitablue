@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { generateProfileSvg, generateCoverSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import {
   Check,
@@ -38,8 +38,6 @@ import { CampaignManager } from '@/marketing-studio/components/CampaignManager';
 import { CampaignOverview } from '@/marketing-studio/components/CampaignOverview';
 import { useAuth } from '@/context/AuthContext';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
-import SaaSShell from '@/components/layouts/SaaSShell';
-import { backofficeNavigation } from '@/components/layouts/BackofficeShell';
 import { 
   getConnections, 
   syncConnectionsWithSupabase,
@@ -251,10 +249,14 @@ const MarketingStudio: React.FC = () => {
     }
   };
 
-  const StudioShell = section === 'content' ? SaaSShell : MarketingStudioShell;
+  if (section === 'content') {
+    return <SocialGenerator />;
+  }
+
+  const StudioShell = MarketingStudioShell;
 
   return (
-    <StudioShell navigation={backofficeNavigation} {...(section === 'content' ? { hideNavigation: true, hideHeader: true, title: studioTitle } : { title: studioTitle })}>
+    <StudioShell title={studioTitle} mode="overview">
       {/* SIDEBAR NAVIGATION */}
       <aside className="hidden">
         <div className="p-6">
@@ -279,7 +281,7 @@ const MarketingStudio: React.FC = () => {
             <Link to="/marketing-studio/conexiones" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'connections' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Globe size={16} className="shrink-0" /> Conexiones API
             </Link>
-            <Link to="/marketing-studio/generador-contenido" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'content' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+            <Link to="/marketing-studio/generador-contenido" className="flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
               <Sparkles size={16} /> Generador de contenido
             </Link>
           </nav>
@@ -311,7 +313,6 @@ const MarketingStudio: React.FC = () => {
               {section === 'campaigns' && 'Planificador de Campañas Multicanal'}
               {section === 'links' && 'Enlaces de campaña'}
               {section === 'connections' && 'Configuración de Conexiones de API'}
-              {section === 'content' && 'Generador Automático de Contenido'}
             </h2>
           </div>
 
@@ -1025,13 +1026,6 @@ const MarketingStudio: React.FC = () => {
         )}
 
         {section === 'links' && <MarketingLinks />}
-
-        {/* CONTENT GENERATOR MODULE */}
-        {section === 'content' && (
-          <div className="animate-fadeIn">
-            <SocialGenerator />
-          </div>
-        )}
         <ConfirmModal
           open={Boolean(pendingDisconnect)}
           variant="danger"
