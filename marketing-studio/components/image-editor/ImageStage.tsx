@@ -493,8 +493,29 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
-    onSetZoom(0.55);
     setPanOffset({ x: 0, y: 0 });
+    if (!containerRef.current) {
+      onSetZoom(0.55);
+      return;
+    }
+
+    const containerW = containerRef.current.clientWidth;
+    const containerH = containerRef.current.clientHeight;
+
+    // Margen visual de seguridad para respiración y barras flotantes
+    const availableW = Math.max(200, containerW - 80);
+    const availableH = Math.max(200, containerH - 130);
+
+    const canvasW = project.preset.width || 1080;
+    const canvasH = project.preset.height || 1350;
+
+    const scaleX = availableW / canvasW;
+    const scaleY = availableH / canvasH;
+
+    const fitZoom = Math.min(scaleX, scaleY);
+    const clampedZoom = Math.max(0.15, Math.min(1.5, fitZoom));
+
+    onSetZoom(parseFloat(clampedZoom.toFixed(2)));
   };
 
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
