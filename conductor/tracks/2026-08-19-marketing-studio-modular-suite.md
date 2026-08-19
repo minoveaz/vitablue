@@ -106,26 +106,38 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Mantener compatibilidad total mediante redirecciones de rutas en `App.tsx` y `config/routes.ts`.
 - [x] Actualizar `MarketingStudioShell.tsx` con resolución automática de pilares, breadcrumbs y badges de contexto.
 
-### Fase 2 - Consolidación de Brand Hub
+### Fase 2 - Creative Studio: Editor de Assets Visuales & Gráficos (Image & Graphic Studio)
+- [ ] Crear el editor interactivo de assets visuales e imágenes (`/backoffice/marketing-studio/creative-studio/image-editor` o pestaña en Creative Studio).
+- [ ] Soporte para lienzos multi-formato con previsualización en vivo en alta fidelidad:
+  - `1:1` Post cuadrado (Instagram / LinkedIn).
+  - `9:16` Story / Reel Overlay (TikTok / Instagram Stories).
+  - `16:9` Banner horizontal / YouTube Thumbnail / Landscape.
+- [ ] Editor visual interactivo para los bloques gráficos clave:
+  - **Tarjeta de Asesor:** Selector de foto/avatar, badge de estado en vivo, mensaje personalizado y botón WhatsApp con resplandor.
+  - **Sellos de Garantía Consular & Trust:** Badges de certificación, checks oficiales y textos de validez.
+  - **Parrilla de Aseguradoras:** Selector de compañías oficiales (Sanitas, Adeslas, Asisa, DKV) y etiquetas de cobertura.
+  - **Comparativa Visual (Antes vs Después):** Contraste ❌ vs ✅ con opciones personalizadas.
+  - **Gancho Titular & Alerta:** Titular de alto impacto con badge de advertencia.
+- [ ] Inspector de personalización rápida: tipografía, colores del Brand Hub, radios de borde, opacidad de cristal (*glassmorphism*) y fondos.
+- [ ] Motor de exportación directa en alta resolución:
+  - Descarga instantánea en **PNG** y **WebP** a 1080p para publicación directa en redes.
+- [ ] Guardado directo como **Activo Reutilizable en Asset DAM** y botón "Enviar a Video Studio" para consumirlo en vídeos.
+
+### Fase 3 - Creative Studio: Consumo de Assets en Video Studio (Remotion)
+- [ ] Permitir insertar los bloques visuales editados directamente en cualquier escena del Video Generator con 1 solo clic.
+- [ ] Adaptación automática del bloque al aspect ratio de la escena de vídeo activa.
+- [ ] Formulario ultraligero en el inspector de vídeo (solo modificar textos, sin tocar maquetación ni estilos).
+
+### Fase 4 - Consolidación de Brand Hub (Identidad, Perfiles y Tono IA)
 - [ ] Unificar la gestión de Identidad Visual y Perfiles Sociales en una experiencia fluida.
 - [ ] Añadir panel de configuración de Tono & Voz para alimentar las directrices del Asistente IA.
-
-### Fase 3 - Consolidación de Asset Manager / DAM
-- [ ] Catálogo completo de componentes MotionKit con previsualización en dispositivo móvil (9:16, 1:1, 16:9).
-- [ ] Soporte para descarga de snapshots estáticos (PNG) directamente desde el DAM.
-- [ ] Organización de biblioteca de audios y pistas con etiquetas de búsqueda.
-
-### Fase 4 - Creative Studio: Inserción de Bloques Visuales "Ready-to-Use"
-- [ ] Permitir insertar bloques visuales completos (Asesora, Checks de requisitos, Comparativas) con 1 clic en el Video Generator.
-- [ ] Formularios de edición ultraligeros en el inspector (solo modificar textos/copies, sin alterar layouts ni maquetación).
-- [ ] Sincronización multi-resolución en caliente (9:16, 1:1, 16:9).
 
 ### Fase 5 - Gemini Creative Copilot (Asistente IA)
 - [ ] Contrato tipado `VideoAssistant` para generación de guiones a partir de un brief o temática.
 - [ ] Generación automática de ganchos (*hooks*) de alta retención para Reels y TikTok.
 - [ ] Estructuración de proyectos de vídeo en 4 escenas con capas y componentes de MotionKit pre-configurados.
 
-### Fase 6 - Campaign Orchestrator & Portabilidad a LoopDev
+### Fase 6 - Campaign Orchestrator & Portabilidad canónica a LoopDev
 - [ ] Conexión fluida entre las piezas generadas en Creative Studio y los enlaces UTM de Campaign Orchestrator.
 - [ ] Extracción limpia de paquetes agnósticos (`@loopdev/video-engine`, `@loopdev/brand-hub`) para integración canónica en LoopDev.
 
