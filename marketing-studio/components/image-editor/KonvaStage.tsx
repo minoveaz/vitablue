@@ -5,6 +5,7 @@ import { ImageProject, ImageLayer } from '../../types/imageStudio';
 import { KonvaTextNode } from './konva/KonvaTextNode';
 import { KonvaShapeNode } from './konva/KonvaShapeNode';
 import { KonvaImageNode } from './konva/KonvaImageNode';
+import { KonvaMotionCardNode } from './konva/KonvaMotionCardNode';
 import { calculateSnapping, SnapGuideLine } from '../../hooks/useKonvaSnapping';
 import {
   Minus,
@@ -298,6 +299,26 @@ export const KonvaStage: React.FC<KonvaStageProps> = ({
                     onTransformEnd={(e: Konva.KonvaEventObject<Event>) => handleTransformEnd(e, layer)}
                   >
                     <KonvaShapeNode
+                      layer={layer}
+                      isSelected={isSelected}
+                      onSelect={() => onSelectLayer(layer.id)}
+                    />
+                  </Group>
+                );
+              }
+
+              if (layer.type === 'block') {
+                return (
+                  <Group
+                    key={layer.id}
+                    x={posX}
+                    y={posY}
+                    rotation={layer.rotation ?? 0}
+                    onDragMove={(e: Konva.KonvaEventObject<DragEvent>) => handleDragMove(e, layer)}
+                    onDragEnd={handleDragEnd}
+                    onTransformEnd={(e: Konva.KonvaEventObject<Event>) => handleTransformEnd(e, layer)}
+                  >
+                    <KonvaMotionCardNode
                       layer={layer}
                       isSelected={isSelected}
                       onSelect={() => onSelectLayer(layer.id)}

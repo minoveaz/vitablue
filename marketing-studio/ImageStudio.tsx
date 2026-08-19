@@ -196,6 +196,7 @@ export const ImageStudio: React.FC = () => {
             onUpdateLayerScale={editor.updateLayerScale}
             onUpdateLayerWidth={editor.updateLayerWidth}
             onUpdateLayerHeight={editor.updateLayerHeight}
+            onUpdateLayerRotation={editor.updateLayerRotation}
             onUpdateLayerPosition={editor.updateLayerPosition}
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}

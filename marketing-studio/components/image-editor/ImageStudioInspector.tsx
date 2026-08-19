@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ArrowLeftRight,
   ArrowUpDown,
+  RotateCw,
   AlignHorizontalJustifyCenter,
   AlignVerticalJustifyCenter,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ export interface ImageStudioInspectorProps {
   onUpdateLayerScale?: (id: string, scale: number) => void;
   onUpdateLayerWidth?: (id: string, width?: number) => void;
   onUpdateLayerHeight?: (id: string, height?: number) => void;
+  onUpdateLayerRotation?: (id: string, rotation: number) => void;
   onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
@@ -39,6 +41,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateLayerScale,
   onUpdateLayerWidth,
   onUpdateLayerHeight,
+  onUpdateLayerRotation,
   onUpdateLayerPosition,
   onFitToCanvas,
   onUngroupLayer,
@@ -388,6 +391,56 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <span>Desagrupar en Elementos Libres</span>
               </button>
             )}
+          </div>
+        </div>
+
+        {/* 5. CONTROL DE ROTACIÓN ANGULAR */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <RotateCw className="size-3.5 text-brand-cyan" />
+              <span>Rotación Angular</span>
+            </span>
+            <span className="font-mono text-brand-cyan">
+              {Math.round(selectedLayer.rotation ?? 0)}°
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={0}
+              max={360}
+              step={1}
+              value={Math.round(selectedLayer.rotation ?? 0)}
+              onChange={(e) => onUpdateLayerRotation?.(selectedLayer.id, parseInt(e.target.value, 10))}
+              className="flex-1 accent-primary"
+            />
+            <button
+              type="button"
+              onClick={() => onUpdateLayerRotation?.(selectedLayer.id, 0)}
+              className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:bg-slate-700 transition-colors"
+              title="Restablecer a 0°"
+            >
+              0°
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 pt-1">
+            {[0, 90, 180, 270].map((angle) => (
+              <button
+                key={angle}
+                type="button"
+                onClick={() => onUpdateLayerRotation?.(selectedLayer.id, angle)}
+                className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                  Math.round(selectedLayer.rotation ?? 0) === angle
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {angle}°
+              </button>
+            ))}
           </div>
         </div>
 
