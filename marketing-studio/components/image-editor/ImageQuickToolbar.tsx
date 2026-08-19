@@ -81,12 +81,12 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
       )}
 
       {/* DESAGRUPAR EN ELEMENTOS LIBRES */}
-      {layer.blockType === 'MotionAdvisorCard' && onUngroup && (
+      {['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard'].includes(layer.blockType ?? '') && onUngroup && (
         <button
           type="button"
           onClick={() => onUngroup(layer.id)}
           className="flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300 hover:bg-amber-500/20 transition-colors shadow-xs"
-          title="Desagrupar en capas independientes (avatar, cita, textos, botón)"
+          title="Desagrupar en capas y elementos libres independientes"
         >
           <Ungroup className="size-3 text-amber-400" />
           <span>Desagrupar</span>

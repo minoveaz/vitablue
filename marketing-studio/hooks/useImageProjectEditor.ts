@@ -278,9 +278,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const layer = prev.layers.find((l) => l.id === layerId);
       if (!layer) return prev;
 
+      let subLayers: ImageLayer[] = [];
+      const props = layer.props as Record<string, unknown>;
+
       if (layer.blockType === 'MotionAdvisorCard') {
-        const props = layer.props as Record<string, unknown>;
-        const subLayers: ImageLayer[] = [
+        subLayers = [
           {
             id: `layer-frame-${Date.now()}`,
             type: 'block',
@@ -292,22 +294,22 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
               bg: 'rgba(0, 18, 25, 0.95)',
               borderColor: 'rgba(20, 184, 166, 0.4)',
             },
-            position: { x: 50, y: 50 },
+            position: { x: layer.position.x, y: layer.position.y },
             zIndex: 1,
             scale: layer.scale ?? 1,
           },
           {
-            id: `layer-badge-${Date.now()}`,
+            id: `layer-badge-${Date.now() + 1}`,
             type: 'badge',
             blockType: 'HookAlertBadge',
             title: 'Badge de Estado',
             props: { badge: props.badge ?? 'ASESORA ASIGNADA · EN DIRECTO' },
-            position: { x: 50, y: 22 },
+            position: { x: layer.position.x, y: Math.max(10, layer.position.y - 28) },
             zIndex: 2,
             scale: layer.scale ?? 1,
           },
           {
-            id: `layer-avatar-${Date.now()}`,
+            id: `layer-avatar-${Date.now() + 2}`,
             type: 'block',
             blockType: 'AdvisorAvatarBadge',
             title: 'Avatar con Verificación',
@@ -316,35 +318,220 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
               name: props.name ?? 'Sofía',
               role: props.role ?? 'Asesora Especialista en Visados',
             },
-            position: { x: 50, y: 44 },
+            position: { x: layer.position.x, y: Math.max(15, layer.position.y - 6) },
             zIndex: 3,
             scale: layer.scale ?? 1,
           },
           {
-            id: `layer-quote-${Date.now()}`,
+            id: `layer-quote-${Date.now() + 3}`,
             type: 'block',
             blockType: 'AdvisorQuoteBox',
             title: 'Caja de Mensaje',
             props: { message: props.message ?? 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.' },
-            position: { x: 50, y: 68 },
+            position: { x: layer.position.x, y: Math.min(90, layer.position.y + 18) },
             zIndex: 4,
             scale: layer.scale ?? 1,
           },
           {
-            id: `layer-cta-${Date.now()}`,
+            id: `layer-cta-${Date.now() + 4}`,
             type: 'block',
             blockType: 'WhatsAppCtaButton',
             title: 'Botón WhatsApp',
             props: { whatsAppText: props.whatsAppText ?? 'Pregúntanos por WhatsApp' },
-            position: { x: 50, y: 84 },
+            position: { x: layer.position.x, y: Math.min(95, layer.position.y + 34) },
             zIndex: 5,
             scale: layer.scale ?? 1,
           },
         ];
+      } else if (layer.blockType === 'MotionProviderGrid') {
+        subLayers = [
+          {
+            id: `layer-grid-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Parrilla',
+            props: {
+              width: 440,
+              height: 380,
+              bg: 'rgba(0, 18, 25, 0.95)',
+              borderColor: 'rgba(20, 184, 166, 0.4)',
+            },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: 1,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-grid-header-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'ProviderGridHeader',
+            title: 'Título de Aseguradoras',
+            props: {
+              title: props.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS',
+              subtitle: props.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados',
+            },
+            position: { x: layer.position.x, y: Math.max(10, layer.position.y - 24) },
+            zIndex: 2,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-grid-sanitas-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Sanitas',
+            props: { name: 'SANITAS', badge: 'Sin Copagos', color: '#EE9B00' },
+            position: { x: Math.max(15, layer.position.x - 18), y: Math.max(15, layer.position.y + 2) },
+            zIndex: 3,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-grid-adeslas-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Adeslas',
+            props: { name: 'ADESLAS', badge: 'Visa Ready', color: '#94D2BD' },
+            position: { x: Math.min(85, layer.position.x + 18), y: Math.max(15, layer.position.y + 2) },
+            zIndex: 4,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-grid-asisa-${Date.now() + 4}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Asisa',
+            props: { name: 'ASISA', badge: '100% Válido', color: '#94D2BD' },
+            position: { x: Math.max(15, layer.position.x - 18), y: Math.min(90, layer.position.y + 26) },
+            zIndex: 5,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-grid-dkv-${Date.now() + 5}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta DKV',
+            props: { name: 'DKV', badge: 'Repatriación', color: '#94D2BD' },
+            position: { x: Math.min(85, layer.position.x + 18), y: Math.min(90, layer.position.y + 26) },
+            zIndex: 6,
+            scale: layer.scale ?? 1,
+          },
+        ];
+      } else if (layer.blockType === 'MotionTrustBadge') {
+        subLayers = [
+          {
+            id: `layer-trust-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Sello',
+            props: {
+              width: 420,
+              height: 340,
+              bg: 'rgba(0, 18, 25, 0.95)',
+              borderColor: 'rgba(238, 155, 0, 0.4)',
+            },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: 1,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-trust-icon-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'TrustShieldIcon',
+            title: 'Escudo de Garantía',
+            props: {},
+            position: { x: layer.position.x, y: Math.max(10, layer.position.y - 24) },
+            zIndex: 2,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-trust-badge-${Date.now() + 2}`,
+            type: 'badge',
+            blockType: 'HookAlertBadge',
+            title: 'Badge Garantía',
+            props: { badge: props.highlight ?? 'GARANTÍA CONSULAR' },
+            position: { x: layer.position.x, y: Math.max(15, layer.position.y - 2) },
+            zIndex: 3,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-trust-title-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'TrustBadgeTitle',
+            title: 'Título de Garantía',
+            props: { title: props.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO' },
+            position: { x: layer.position.x, y: Math.min(90, layer.position.y + 16) },
+            zIndex: 4,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-trust-sub-${Date.now() + 4}`,
+            type: 'block',
+            blockType: 'TrustBadgeSubtitle',
+            title: 'Subtítulo de Garantía',
+            props: { subtitle: props.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida' },
+            position: { x: layer.position.x, y: Math.min(95, layer.position.y + 32) },
+            zIndex: 5,
+            scale: layer.scale ?? 1,
+          },
+        ];
+      } else if (layer.blockType === 'MotionComparisonCard') {
+        subLayers = [
+          {
+            id: `layer-comp-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Comparativa',
+            props: {
+              width: 460,
+              height: 460,
+              bg: 'rgba(0, 18, 25, 0.95)',
+              borderColor: 'rgba(20, 184, 166, 0.4)',
+            },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: 1,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-comp-header-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'ComparisonHeader',
+            title: 'Título Comparativo',
+            props: { title: props.title ?? 'Comparativa de Cobertura' },
+            position: { x: layer.position.x, y: Math.max(10, layer.position.y - 30) },
+            zIndex: 2,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-comp-wrong-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'ComparisonWrongBox',
+            title: 'Opción Rechazada',
+            props: {
+              wrongOptionTitle: props.wrongOptionTitle ?? 'Seguro de Viaje Estándar',
+              wrongOptionDesc: props.wrongOptionDesc ?? 'No válido para trámites de extranjería ni visados sin copagos.',
+            },
+            position: { x: layer.position.x, y: Math.max(15, layer.position.y - 4) },
+            zIndex: 3,
+            scale: layer.scale ?? 1,
+          },
+          {
+            id: `layer-comp-correct-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'ComparisonCorrectBox',
+            title: 'Opción Aprobada',
+            props: {
+              correctOptionTitle: props.correctOptionTitle ?? 'Seguro Sin Copagos VitaBlue',
+              correctOptionDesc: props.correctOptionDesc ?? '100% Aprobado para consulados y visados en España.',
+            },
+            position: { x: layer.position.x, y: Math.min(95, layer.position.y + 26) },
+            zIndex: 4,
+            scale: layer.scale ?? 1,
+          },
+        ];
+      }
 
+      if (subLayers.length > 0) {
         const otherLayers = prev.layers.filter((l) => l.id !== layerId);
         const next = { ...prev, layers: [...otherLayers, ...subLayers], updatedAt: new Date().toISOString() };
-        setSelectedLayerId(subLayers[4].id);
+        setSelectedLayerId(subLayers[1].id);
         pushHistory(next);
         return next;
       }

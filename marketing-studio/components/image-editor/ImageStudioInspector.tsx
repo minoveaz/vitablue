@@ -324,12 +324,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <span>Auto-Ajustar al Lienzo</span>
             </button>
 
-            {selectedLayer.blockType === 'MotionAdvisorCard' && (
+            {['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard'].includes(selectedLayer.blockType ?? '') && (
               <button
                 type="button"
                 onClick={() => onUngroupLayer?.(selectedLayer.id)}
                 className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold text-slate-200 hover:border-amber-400 hover:text-amber-300 transition-all shadow-xs"
-                title="Separar avatar, textos y botón en capas independientes para moverlos libremente"
+                title="Separar este bloque en elementos y capas independientes para moverlos libremente"
               >
                 <Ungroup className="size-3.5 text-amber-400" />
                 <span>Desagrupar en Elementos Libres</span>
@@ -425,6 +425,130 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 type="text"
                 value={String(props.whatsAppText ?? '')}
                 onChange={(e) => onUpdateLayerProps(selectedLayer.id, { whatsAppText: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* E. SUBCAPA: PROVIDER GRID HEADER */}
+        {selectedLayer.blockType === 'ProviderGridHeader' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Título de Parrilla</label>
+              <input
+                type="text"
+                value={String(props.title ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { title: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Subtítulo</label>
+              <input
+                type="text"
+                value={String(props.subtitle ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { subtitle: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* F. SUBCAPA: PROVIDER BADGE */}
+        {selectedLayer.blockType === 'ProviderBadge' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de Aseguradora</label>
+              <input
+                type="text"
+                value={String(props.name ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { name: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Etiqueta de Cobertura</label>
+              <input
+                type="text"
+                value={String(props.badge ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { badge: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* G. SUBCAPA: TRUST BADGE TITLE & SUBTITLE */}
+        {selectedLayer.blockType === 'TrustBadgeTitle' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Título de Garantía</label>
+              <input
+                type="text"
+                value={String(props.title ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { title: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {selectedLayer.blockType === 'TrustBadgeSubtitle' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Subtítulo de Garantía</label>
+              <textarea
+                value={String(props.subtitle ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { subtitle: e.target.value })}
+                rows={2}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* H. SUBCAPA: COMPARISON BOXES */}
+        {selectedLayer.blockType === 'ComparisonWrongBox' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-rose-400 mb-1">Título (No Válido)</label>
+              <input
+                type="text"
+                value={String(props.wrongOptionTitle ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { wrongOptionTitle: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Descripción</label>
+              <textarea
+                value={String(props.wrongOptionDesc ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { wrongOptionDesc: e.target.value })}
+                rows={2}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {selectedLayer.blockType === 'ComparisonCorrectBox' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-emerald-400 mb-1">Título (Válido)</label>
+              <input
+                type="text"
+                value={String(props.correctOptionTitle ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { correctOptionTitle: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Descripción</label>
+              <textarea
+                value={String(props.correctOptionDesc ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { correctOptionDesc: e.target.value })}
+                rows={2}
                 className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white focus:border-primary focus:outline-none"
               />
             </div>

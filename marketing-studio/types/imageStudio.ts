@@ -102,6 +102,14 @@ export type ImageBlockType =
   | 'AdvisorAvatarBadge'
   | 'AdvisorQuoteBox'
   | 'WhatsAppCtaButton'
+  | 'ProviderGridHeader'
+  | 'ProviderBadge'
+  | 'TrustShieldIcon'
+  | 'TrustBadgeTitle'
+  | 'TrustBadgeSubtitle'
+  | 'ComparisonHeader'
+  | 'ComparisonWrongBox'
+  | 'ComparisonCorrectBox'
   | 'CustomText';
 
 export interface ImageLayer {

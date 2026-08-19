@@ -19,6 +19,9 @@ import {
   Ungroup,
   Copy,
   Trash2,
+  Building2,
+  Shield,
+  XCircle,
 } from 'lucide-react';
 
 interface ImageStageProps {
@@ -282,7 +285,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             {contextMenu.layer.title}
           </div>
 
-          {contextMenu.layer.blockType === 'MotionAdvisorCard' && onUngroupLayer && (
+          {['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard'].includes(contextMenu.layer.blockType ?? '') && onUngroupLayer && (
             <button
               type="button"
               onClick={() => {
@@ -408,6 +411,20 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   return '400px';
                 case 'WhatsAppCtaButton':
                   return '360px';
+                case 'ProviderGridHeader':
+                  return '380px';
+                case 'ProviderBadge':
+                  return '170px';
+                case 'TrustShieldIcon':
+                  return 'auto';
+                case 'TrustBadgeTitle':
+                  return '360px';
+                case 'TrustBadgeSubtitle':
+                  return '380px';
+                case 'ComparisonHeader':
+                case 'ComparisonWrongBox':
+                case 'ComparisonCorrectBox':
+                  return '420px';
                 default:
                   return '420px';
               }
@@ -513,6 +530,84 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   </button>
                 )}
 
+                {/* SUBCAPAS DE GRID DE ASEGURADORAS */}
+                {layer.blockType === 'ProviderGridHeader' && (
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-2 flex size-10 items-center justify-center rounded-xl bg-teal-500/20 text-brand-cyan shadow-inner">
+                      <Building2 className="size-5" />
+                    </div>
+                    <h3 className="font-display text-sm font-black tracking-wider text-white uppercase leading-snug">
+                      {String(blockProps.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
+                    </h3>
+                    <p className="text-[11px] font-medium text-slate-300 mt-0.5">
+                      {String(blockProps.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
+                    </p>
+                  </div>
+                )}
+
+                {layer.blockType === 'ProviderBadge' && (
+                  <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-teal-500/30 bg-[#001219]/90 p-3 text-center shadow-lg backdrop-blur-md">
+                    <span className="font-display text-xs font-black tracking-wider text-amber-400 uppercase">
+                      {String(blockProps.name ?? 'ASEGURADORA')}
+                    </span>
+                    <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-brand-cyan">
+                      <CheckCircle2 className="size-3" />
+                      <span>{String(blockProps.badge ?? 'Sin Copagos')}</span>
+                    </span>
+                  </div>
+                )}
+
+                {/* SUBCAPAS DE TRUST BADGE */}
+                {layer.blockType === 'TrustShieldIcon' && (
+                  <div className="flex size-14 items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400 shadow-inner">
+                    <Shield className="size-7" />
+                  </div>
+                )}
+
+                {layer.blockType === 'TrustBadgeTitle' && (
+                  <h3 className="font-display text-base font-black tracking-wide text-white uppercase text-center leading-snug">
+                    {String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
+                  </h3>
+                )}
+
+                {layer.blockType === 'TrustBadgeSubtitle' && (
+                  <p className="text-xs font-medium text-slate-300 text-center leading-relaxed">
+                    {String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
+                  </p>
+                )}
+
+                {/* SUBCAPAS DE COMPARISON CARD */}
+                {layer.blockType === 'ComparisonHeader' && (
+                  <h3 className="font-display text-base font-black tracking-tight text-white uppercase text-center">
+                    {String(blockProps.title ?? 'Comparativa de Cobertura')}
+                  </h3>
+                )}
+
+                {layer.blockType === 'ComparisonWrongBox' && (
+                  <div className="flex w-full items-start gap-3 rounded-2xl border border-rose-500/40 bg-rose-950/40 p-4 backdrop-blur-md shadow-lg">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
+                      <XCircle className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="text-xs font-bold text-rose-300 block">{String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje')}</strong>
+                      <p className="text-[11px] text-slate-300 leading-snug mt-0.5">{String(blockProps.wrongOptionDesc ?? '')}</p>
+                    </div>
+                  </div>
+                )}
+
+                {layer.blockType === 'ComparisonCorrectBox' && (
+                  <div className="flex w-full items-start gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 backdrop-blur-md shadow-lg">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                      <CheckCircle2 className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="text-xs font-bold text-emerald-300 block">{String(blockProps.correctOptionTitle ?? 'Seguro de Salud Sin Copagos')}</strong>
+                      <p className="text-[11px] text-slate-300 leading-snug mt-0.5">{String(blockProps.correctOptionDesc ?? '')}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* BLOQUES MOTION KIT ORIGINALES (AGRUPADOS) */}
                 {layer.blockType === 'MotionTrustBadge' && (
                   <MotionTrustBadge
                     title={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
