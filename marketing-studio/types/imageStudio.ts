@@ -3,7 +3,7 @@ import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 export interface ImageFormatPreset {
   id: string;
   name: string;
-  category: 'instagram' | 'stories' | 'facebook' | 'linkedin' | 'twitter' | 'youtube' | 'custom';
+  category: 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter' | 'youtube' | 'web_marketing' | 'custom';
   width: number;
   height: number;
   aspectRatio: string;
@@ -13,6 +13,7 @@ export interface ImageFormatPreset {
 }
 
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
+  // INSTAGRAM
   {
     id: 'instagram-portrait',
     name: 'Post de Instagram (4:5)',
@@ -38,24 +39,85 @@ export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
   {
     id: 'story-vertical',
     name: 'Historia & Reel (9:16)',
-    category: 'stories',
+    category: 'instagram',
     width: 1080,
     height: 1920,
     aspectRatio: '9:16',
-    description: 'Pantalla completa vertical para TikTok, Reels y Stories',
+    description: 'Pantalla completa vertical para Reels e Stories',
     iconName: 'Smartphone',
-    recommendedFor: 'Stories, TikTok y overlays de vídeo',
+    recommendedFor: 'Stories y Reels de Instagram',
+  },
+
+  // TIKTOK
+  {
+    id: 'tiktok-vertical',
+    name: 'TikTok Full Screen (9:16)',
+    category: 'tiktok',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    description: 'Formato vertical inmersivo para TikTok y Shorts',
+    iconName: 'Smartphone',
+    recommendedFor: 'TikTok Ads y Organic Feed',
   },
   {
-    id: 'landscape-banner',
-    name: 'Banner & YouTube (16:9)',
-    category: 'youtube',
-    width: 1920,
+    id: 'tiktok-cover',
+    name: 'TikTok Video Cover (1:1)',
+    category: 'tiktok',
+    width: 1080,
     height: 1080,
-    aspectRatio: '16:9',
-    description: 'Horizontal para YouTube, web y displays de Google',
+    aspectRatio: '1:1',
+    description: 'Miniatura y portada de perfil en TikTok',
+    iconName: 'Square',
+    recommendedFor: 'Portada de vídeos de TikTok',
+  },
+
+  // LINKEDIN
+  {
+    id: 'linkedin-post',
+    name: 'Post Feed de LinkedIn',
+    category: 'linkedin',
+    width: 1200,
+    height: 627,
+    aspectRatio: '1.91:1',
+    description: 'Optimizado para el feed profesional de LinkedIn',
+    iconName: 'Linkedin',
+    recommendedFor: 'Contenido B2B y artículos profesionales',
+  },
+  {
+    id: 'linkedin-square',
+    name: 'LinkedIn Cuadrado (1:1)',
+    category: 'linkedin',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    description: 'Carruseles y posts visuales de alto engagement en LinkedIn',
+    iconName: 'Square',
+    recommendedFor: 'Carruseles en PDF y posts de infografía',
+  },
+  {
+    id: 'linkedin-cover',
+    name: 'Portada de Empresa LinkedIn',
+    category: 'linkedin',
+    width: 1128,
+    height: 191,
+    aspectRatio: '5.9:1',
+    description: 'Banner corporativo de página de empresa en LinkedIn',
     iconName: 'Tv',
-    recommendedFor: 'Miniaturas y cabeceras web',
+    recommendedFor: 'Página de empresa VitaBlue',
+  },
+
+  // FACEBOOK / META
+  {
+    id: 'facebook-post',
+    name: 'Post de Facebook (1.91:1)',
+    category: 'facebook',
+    width: 1200,
+    height: 630,
+    aspectRatio: '1.91:1',
+    description: 'Post horizontal para el feed de noticias de Facebook',
+    iconName: 'Facebook',
+    recommendedFor: 'Campañas de Meta Ads y feed de noticias',
   },
   {
     id: 'facebook-cover',
@@ -66,19 +128,10 @@ export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
     aspectRatio: '820:312',
     description: 'Cabecera oficial para páginas de Facebook',
     iconName: 'Facebook',
-    recommendedFor: 'Branding de página corporativa',
+    recommendedFor: 'Branding de página corporativa en Facebook',
   },
-  {
-    id: 'linkedin-post',
-    name: 'Post para LinkedIn',
-    category: 'linkedin',
-    width: 1200,
-    height: 627,
-    aspectRatio: '1.91:1',
-    description: 'Optimizado para el feed profesional de LinkedIn',
-    iconName: 'Linkedin',
-    recommendedFor: 'Contenido B2B y artículos',
-  },
+
+  // X (TWITTER)
   {
     id: 'twitter-header',
     name: 'Cabecera de X (Twitter)',
@@ -88,7 +141,77 @@ export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
     aspectRatio: '3:1',
     description: 'Banner superior de perfil en X',
     iconName: 'Twitter',
-    recommendedFor: 'Perfil de marca en X',
+    recommendedFor: 'Perfil oficial de marca en X',
+  },
+  {
+    id: 'twitter-post',
+    name: 'Post con Imagen en X',
+    category: 'twitter',
+    width: 1200,
+    height: 675,
+    aspectRatio: '16:9',
+    description: 'Publicación horizontal optimizada para la cronología de X',
+    iconName: 'Twitter',
+    recommendedFor: 'Hilos y anuncios en X',
+  },
+
+  // YOUTUBE
+  {
+    id: 'landscape-banner',
+    name: 'Miniatura & YouTube (16:9)',
+    category: 'youtube',
+    width: 1920,
+    height: 1080,
+    aspectRatio: '16:9',
+    description: 'Horizontal para YouTube, web y displays de Google',
+    iconName: 'Tv',
+    recommendedFor: 'Miniaturas de YouTube y cabeceras web',
+  },
+  {
+    id: 'youtube-channel-art',
+    name: 'Banner de Canal YouTube',
+    category: 'youtube',
+    width: 2560,
+    height: 1440,
+    aspectRatio: '16:9',
+    description: 'Cabecera de canal para desktop, TV y móvil',
+    iconName: 'Tv',
+    recommendedFor: 'Canal oficial de YouTube',
+  },
+
+  // WEB & MARKETING (NO REDES SOCIALES)
+  {
+    id: 'web-hero',
+    name: 'Hero Banner Web (16:9)',
+    category: 'web_marketing',
+    width: 1920,
+    height: 1080,
+    aspectRatio: '16:9',
+    description: 'Cabecera principal para landing pages y sitios web',
+    iconName: 'Monitor',
+    recommendedFor: 'Landing pages de visados y seguros',
+  },
+  {
+    id: 'web-display-square',
+    name: 'Display Ad Cuadrado (300×250 / 600×600)',
+    category: 'web_marketing',
+    width: 600,
+    height: 600,
+    aspectRatio: '1:1',
+    description: 'Banner Display para Google Ads y medios digitales',
+    iconName: 'Square',
+    recommendedFor: 'Campañas de Google Display Network',
+  },
+  {
+    id: 'web-newsletter',
+    name: 'Cabecera Newsletter / Email (2:1)',
+    category: 'web_marketing',
+    width: 600,
+    height: 300,
+    aspectRatio: '2:1',
+    description: 'Encabezado para boletines y comunicaciones por correo',
+    iconName: 'Mail',
+    recommendedFor: 'Plantillas de email marketing',
   },
 ];
 

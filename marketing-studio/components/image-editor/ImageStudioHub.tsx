@@ -36,6 +36,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
   const [selectedFormatFilter, setSelectedFormatFilter] = useState<string>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalTab, setCreateModalTab] = useState<'blank' | 'template'>('blank');
+  const [modalCategoryTab, setModalCategoryTab] = useState<string>('all');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('instagram-portrait');
   const [newProjectTitle, setNewProjectTitle] = useState('');
 
@@ -393,11 +394,50 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
-                    Formato de Red Social
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-60 overflow-y-auto pr-1">
-                    {IMAGE_FORMAT_PRESETS.map((preset) => {
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                      Categoría / Red Social
+                    </label>
+                    <span className="text-[11px] font-mono text-brand-cyan">
+                      {IMAGE_FORMAT_PRESETS.length} formatos disponibles
+                    </span>
+                  </div>
+
+                  {/* CATEGORY SELECTOR PILLS */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 no-scrollbar scroll-smooth border-b border-slate-800/80">
+                    {[
+                      { id: 'all', label: 'Todos' },
+                      { id: 'instagram', label: '📸 Instagram' },
+                      { id: 'tiktok', label: '🎵 TikTok' },
+                      { id: 'linkedin', label: '💼 LinkedIn' },
+                      { id: 'facebook', label: '👥 Facebook' },
+                      { id: 'twitter', label: '🐦 X (Twitter)' },
+                      { id: 'youtube', label: '🎬 YouTube' },
+                      { id: 'web_marketing', label: '🌐 Web & Displays' },
+                    ].map((cat) => {
+                      const isActive = modalCategoryTab === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setModalCategoryTab(cat.id)}
+                          className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
+                            isActive
+                              ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/50 shadow-xs'
+                              : 'bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white border border-slate-800'
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* PRESETS GRID FOR SELECTED CATEGORY */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
+                    {IMAGE_FORMAT_PRESETS.filter(
+                      (p) => modalCategoryTab === 'all' || p.category === modalCategoryTab
+                    ).map((preset) => {
                       const isSelected = selectedPresetId === preset.id;
                       return (
                         <button
@@ -407,23 +447,29 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                           className={`flex flex-col items-start p-3 rounded-2xl border text-left transition-all ${
                             isSelected
                               ? 'border-brand-cyan bg-primary/20 text-white shadow-md ring-1 ring-brand-cyan'
-                              : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700'
+                              : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900/60'
                           }`}
                         >
                           <div className="flex items-center justify-between w-full mb-1">
-                            <span className="text-xs font-bold">{preset.name}</span>
-                            <span className="text-[10px] font-mono text-brand-cyan">{preset.aspectRatio}</span>
+                            <span className="text-xs font-bold text-slate-100">{preset.name}</span>
+                            <span className="text-[10px] font-mono font-bold text-brand-cyan bg-brand-cyan/10 px-1.5 py-0.5 rounded-md">
+                              {preset.aspectRatio}
+                            </span>
                           </div>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            {preset.width} × {preset.height} px
-                          </span>
+                          <p className="text-[11px] text-slate-400 line-clamp-1 mb-1.5">
+                            {preset.description}
+                          </p>
+                          <div className="flex items-center justify-between w-full text-[10px] font-mono text-slate-500 pt-1.5 border-t border-slate-900">
+                            <span>{preset.width} × {preset.height} px</span>
+                            <span className="text-amber-400/90 font-sans truncate max-w-[130px]">{preset.recommendedFor}</span>
+                          </div>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="pt-2 flex justify-end gap-3">
+                <div className="pt-2 flex justify-end gap-3 border-t border-slate-800/80">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
