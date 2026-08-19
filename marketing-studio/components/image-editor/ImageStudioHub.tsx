@@ -320,21 +320,22 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         )}
       </div>
 
-      {/* CREATE NEW DESIGN MODAL */}
+      {/* CREATE NEW DESIGN MODAL (TAMAÑO GRANDE Y ALTURA FIJA ESTABLE) */}
       {isCreateModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn"
           onClick={() => setIsCreateModalOpen(false)}
         >
           <div
-            className="w-full max-w-2xl rounded-3xl border border-slate-800 bg-[#001219] p-6 shadow-2xl space-y-6"
+            className="w-full max-w-4xl h-[700px] rounded-3xl border border-slate-800 bg-[#001219] p-6 shadow-2xl flex flex-col justify-between overflow-hidden animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             {/* MODAL HEADER */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
               <div>
-                <h2 className="font-display text-lg font-bold text-white">
-                  Crear Nuevo Diseño
+                <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
+                  <Sparkles className="size-4 text-brand-cyan" />
+                  <span>Crear Nuevo Diseño</span>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
                   Selecciona el formato de lienzo o parte desde una plantilla oficial prediseñada.
@@ -350,13 +351,13 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
             </div>
 
             {/* MODAL TABS */}
-            <div className="grid grid-cols-2 rounded-2xl bg-slate-950 p-1 border border-slate-800 text-xs font-bold">
+            <div className="grid grid-cols-2 rounded-2xl bg-slate-950 p-1 my-3 border border-slate-800 text-xs font-bold shrink-0">
               <button
                 type="button"
                 onClick={() => setCreateModalTab('blank')}
                 className={`flex items-center justify-center gap-2 rounded-xl py-2 transition-all ${
                   createModalTab === 'blank'
-                    ? 'bg-slate-800 text-brand-cyan shadow-sm'
+                    ? 'bg-slate-800 text-brand-cyan shadow-sm ring-1 ring-brand-cyan/20'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -368,7 +369,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                 onClick={() => setCreateModalTab('template')}
                 className={`flex items-center justify-center gap-2 rounded-xl py-2 transition-all ${
                   createModalTab === 'template'
-                    ? 'bg-slate-800 text-brand-cyan shadow-sm'
+                    ? 'bg-slate-800 text-brand-cyan shadow-sm ring-1 ring-brand-cyan/20'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -377,110 +378,115 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
               </button>
             </div>
 
-            {/* TAB 1: BLANK CANVAS */}
+            {/* TAB 1: BLANK CANVAS (ALTURA INTERNA FLEXIBLE Y FIJA) */}
             {createModalTab === 'blank' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
-                    Título del Diseño (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    value={newProjectTitle}
-                    onChange={(e) => setNewProjectTitle(e.target.value)}
-                    placeholder="Ej: Anuncio Visado Sanitas 4:5"
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 text-xs text-white placeholder-slate-600 focus:border-brand-cyan focus:outline-none"
-                  />
+              <div className="flex-1 flex flex-col min-h-0 justify-between">
+                <div className="space-y-3 shrink-0 mb-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                      Título del Diseño (Opcional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newProjectTitle}
+                      onChange={(e) => setNewProjectTitle(e.target.value)}
+                      placeholder="Ej: Anuncio Visado Sanitas 4:5"
+                      className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-white placeholder-slate-600 focus:border-brand-cyan focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        Categoría / Red Social
+                      </label>
+                      <span className="text-[11px] font-mono text-brand-cyan">
+                        {IMAGE_FORMAT_PRESETS.length} formatos disponibles
+                      </span>
+                    </div>
+
+                    {/* CATEGORY SELECTOR PILLS */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 no-scrollbar scroll-smooth">
+                      {[
+                        { id: 'all', label: 'Todos' },
+                        { id: 'instagram', label: '📸 Instagram' },
+                        { id: 'tiktok', label: '🎵 TikTok' },
+                        { id: 'linkedin', label: '💼 LinkedIn' },
+                        { id: 'facebook', label: '👥 Facebook' },
+                        { id: 'twitter', label: '🐦 X (Twitter)' },
+                        { id: 'youtube', label: '🎬 YouTube' },
+                        { id: 'web_marketing', label: '🌐 Web & Displays' },
+                      ].map((cat) => {
+                        const isActive = modalCategoryTab === cat.id;
+                        return (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => setModalCategoryTab(cat.id)}
+                            className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
+                              isActive
+                                ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/50 shadow-xs'
+                                : 'bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white border border-slate-800'
+                            }`}
+                          >
+                            {cat.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      Categoría / Red Social
-                    </label>
-                    <span className="text-[11px] font-mono text-brand-cyan">
-                      {IMAGE_FORMAT_PRESETS.length} formatos disponibles
-                    </span>
-                  </div>
-
-                  {/* CATEGORY SELECTOR PILLS */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 no-scrollbar scroll-smooth border-b border-slate-800/80">
-                    {[
-                      { id: 'all', label: 'Todos' },
-                      { id: 'instagram', label: '📸 Instagram' },
-                      { id: 'tiktok', label: '🎵 TikTok' },
-                      { id: 'linkedin', label: '💼 LinkedIn' },
-                      { id: 'facebook', label: '👥 Facebook' },
-                      { id: 'twitter', label: '🐦 X (Twitter)' },
-                      { id: 'youtube', label: '🎬 YouTube' },
-                      { id: 'web_marketing', label: '🌐 Web & Displays' },
-                    ].map((cat) => {
-                      const isActive = modalCategoryTab === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => setModalCategoryTab(cat.id)}
-                          className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
-                            isActive
-                              ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/50 shadow-xs'
-                              : 'bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white border border-slate-800'
-                          }`}
-                        >
-                          {cat.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* PRESETS GRID FOR SELECTED CATEGORY */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
-                    {IMAGE_FORMAT_PRESETS.filter(
-                      (p) => modalCategoryTab === 'all' || p.category === modalCategoryTab
-                    ).map((preset) => {
-                      const isSelected = selectedPresetId === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          onClick={() => setSelectedPresetId(preset.id)}
-                          className={`flex flex-col items-start p-3 rounded-2xl border text-left transition-all ${
-                            isSelected
-                              ? 'border-brand-cyan bg-primary/20 text-white shadow-md ring-1 ring-brand-cyan'
-                              : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900/60'
-                          }`}
-                        >
+                {/* PRESETS GRID FOR SELECTED CATEGORY (CON SCROLL FLUIDO) */}
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                  {IMAGE_FORMAT_PRESETS.filter(
+                    (p) => modalCategoryTab === 'all' || p.category === modalCategoryTab
+                  ).map((preset) => {
+                    const isSelected = selectedPresetId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setSelectedPresetId(preset.id)}
+                        className={`flex flex-col justify-between p-3 rounded-2xl border text-left transition-all ${
+                          isSelected
+                            ? 'border-brand-cyan bg-primary/20 text-white shadow-md ring-1 ring-brand-cyan'
+                            : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900/60'
+                        }`}
+                      >
+                        <div>
                           <div className="flex items-center justify-between w-full mb-1">
-                            <span className="text-xs font-bold text-slate-100">{preset.name}</span>
-                            <span className="text-[10px] font-mono font-bold text-brand-cyan bg-brand-cyan/10 px-1.5 py-0.5 rounded-md">
+                            <span className="text-xs font-bold text-slate-100 truncate pr-1">{preset.name}</span>
+                            <span className="text-[10px] font-mono font-bold text-brand-cyan bg-brand-cyan/10 px-1.5 py-0.5 rounded-md shrink-0">
                               {preset.aspectRatio}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-400 line-clamp-1 mb-1.5">
+                          <p className="text-[11px] text-slate-400 line-clamp-2 mb-2 leading-tight">
                             {preset.description}
                           </p>
-                          <div className="flex items-center justify-between w-full text-[10px] font-mono text-slate-500 pt-1.5 border-t border-slate-900">
-                            <span>{preset.width} × {preset.height} px</span>
-                            <span className="text-amber-400/90 font-sans truncate max-w-[130px]">{preset.recommendedFor}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                        </div>
+                        <div className="flex items-center justify-between w-full text-[10px] font-mono text-slate-500 pt-1.5 border-t border-slate-900">
+                          <span>{preset.width} × {preset.height} px</span>
+                          <span className="text-amber-400/90 font-sans truncate max-w-[110px]">{preset.recommendedFor}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="pt-2 flex justify-end gap-3 border-t border-slate-800/80">
+                {/* MODAL FOOTER */}
+                <div className="pt-3 mt-3 flex justify-end items-center gap-3 border-t border-slate-800/80 shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-white"
+                    className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-white"
                   >
                     Cancelar
                   </button>
                   <button
                     type="button"
                     onClick={handleCreateBlank}
-                    className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-md transition-all"
+                    className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <span>Crear Lienzo</span>
                     <ArrowRight className="size-3.5" />
@@ -489,10 +495,10 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
               </div>
             )}
 
-            {/* TAB 2: FROM TEMPLATE */}
+            {/* TAB 2: FROM TEMPLATE (ALTURA EXACTA SIN SALTOS) */}
             {createModalTab === 'template' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
+              <div className="flex-1 flex flex-col min-h-0 justify-between">
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {INITIAL_IMAGE_TEMPLATES.map((tmpl) => (
                     <button
                       key={tmpl.id}
@@ -501,7 +507,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       className="group flex flex-col justify-between p-3.5 rounded-2xl border border-slate-800 bg-slate-950 text-left hover:border-brand-cyan hover:bg-slate-900/60 transition-all"
                     >
                       <div
-                        className="w-full h-24 rounded-xl mb-3 flex items-center justify-center p-2 text-center"
+                        className="w-full h-32 rounded-xl mb-3 flex items-center justify-center p-3 text-center border border-slate-800"
                         style={{
                           background: tmpl.background.gradient ?? tmpl.background.color ?? '#001219',
                         }}
@@ -512,10 +518,21 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       </div>
                       <div className="flex items-center justify-between text-[11px] text-slate-400">
                         <span className="font-semibold text-slate-200">{tmpl.preset.name}</span>
-                        <span className="font-mono text-brand-cyan">{tmpl.preset.aspectRatio}</span>
+                        <span className="font-mono text-brand-cyan font-bold">{tmpl.preset.aspectRatio}</span>
                       </div>
                     </button>
                   ))}
+                </div>
+
+                {/* MODAL FOOTER */}
+                <div className="pt-3 mt-3 flex justify-end items-center gap-3 border-t border-slate-800/80 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateModalOpen(false)}
+                    className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-white"
+                  >
+                    Cancelar
+                  </button>
                 </div>
               </div>
             )}
