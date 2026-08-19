@@ -31,6 +31,13 @@ export const ImageStudio: React.FC = () => {
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
 
+  // Abrir automáticamente el inspector al seleccionar una capa
+  useEffect(() => {
+    if (editor.selectedLayerId) {
+      setIsInspectorOpen(true);
+    }
+  }, [editor.selectedLayerId]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -83,11 +90,15 @@ export const ImageStudio: React.FC = () => {
     } else {
       editor.selectLayer(id);
     }
+    if (id) {
+      setIsInspectorOpen(true);
+    }
   };
 
   const handleSelectCanvas = () => {
     editor.selectLayer('');
     setIsCanvasSelected(true);
+    setIsInspectorOpen(true);
   };
 
   const handleDeselectAll = () => {
@@ -97,12 +108,16 @@ export const ImageStudio: React.FC = () => {
 
   const handleLoadTemplate = (template: typeof editor.project) => {
     editor.loadTemplate(template);
+    setIsCanvasSelected(false);
+    setIsInspectorOpen(true);
     setToastMessage(`Plantilla "${template.title}" cargada.`);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0]) => {
     editor.addBlockLayer(blockType);
+    setIsCanvasSelected(false);
+    setIsInspectorOpen(true);
     setToastMessage('Bloque añadido al lienzo.');
     setTimeout(() => setToastMessage(null), 3000);
   };
