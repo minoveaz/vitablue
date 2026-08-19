@@ -156,21 +156,6 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
         </button>
       </div>
 
-      {/* CONTENIDO DE LA PESTAÑA DE CAPAS */}
-      {activeTab === 'layers' && (
-        <ImageStudioLayersPanel
-          project={project}
-          selectedLayerId={selectedLayerId}
-          onSelectLayer={onSelectLayer}
-          onToggleLock={onToggleLock}
-          onToggleVisibility={onToggleVisibility}
-          onMoveZIndex={onMoveZIndex}
-          onRenameLayer={onRenameLayer}
-          onDuplicateLayer={onDuplicateLayer}
-          onRemoveLayer={onRemoveLayer}
-        />
-      )}
-
       {/* CONTENIDO DE LA PESTAÑA */}
       <div className="space-y-3">
         {/* 1. PLANTILLAS */}

@@ -311,30 +311,47 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                 </div>
 
                 {/* DERECHA: CONTROLES RÁPIDOS */}
-                <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                  {/* REORDER UP / DOWN BUTTONS */}
-                  <button
-                    type="button"
-                    onClick={() => onMoveZIndex(layer.id, 'up')}
-                    disabled={index === 0}
-                    className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
-                    title="Traer al frente"
-                  >
-                    <ArrowUp className="size-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onMoveZIndex(layer.id, 'down')}
-                    disabled={index === sortedLayers.length - 1}
-                    className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
-                    title="Enviar al fondo"
-                  >
-                    <ArrowDown className="size-3" />
-                  </button>
+                <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  {/* ACCIONES SECUNDARIAS EN HOVER / SELECCIONADO */}
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={() => onMoveZIndex(layer.id, 'up')}
+                      disabled={index === 0}
+                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
+                      title="Traer al frente"
+                    >
+                      <ArrowUp className="size-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onMoveZIndex(layer.id, 'down')}
+                      disabled={index === sortedLayers.length - 1}
+                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
+                      title="Enviar al fondo"
+                    >
+                      <ArrowDown className="size-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDuplicateLayer(layer.id)}
+                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                      title="Duplicar capa"
+                    >
+                      <Copy className="size-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onRemoveLayer(layer.id)}
+                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors"
+                      title="Eliminar capa"
+                    >
+                      <Trash2 className="size-3" />
+                    </button>
+                    <div className="h-3 w-px bg-slate-800 mx-0.5" />
+                  </div>
 
-                  <div className="h-3 w-px bg-slate-800 mx-0.5" />
-
-                  {/* LOCK TOGGLE */}
+                  {/* LOCK TOGGLE (SIEMPRE VISIBLE SI BLOQUEADA O HOVER) */}
                   <button
                     type="button"
                     onClick={() => onToggleLock(layer.id)}
@@ -348,7 +365,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                     {isLocked ? <Lock className="size-3" /> : <Unlock className="size-3" />}
                   </button>
 
-                  {/* VISIBILITY TOGGLE */}
+                  {/* VISIBILITY TOGGLE (SIEMPRE VISIBLE) */}
                   <button
                     type="button"
                     onClick={() => onToggleVisibility(layer.id)}
@@ -360,26 +377,6 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                     title={isVisible ? 'Ocultar capa' : 'Mostrar capa'}
                   >
                     {isVisible ? <Eye className="size-3" /> : <EyeOff className="size-3" />}
-                  </button>
-
-                  {/* DUPLICATE BUTTON */}
-                  <button
-                    type="button"
-                    onClick={() => onDuplicateLayer(layer.id)}
-                    className="flex size-6 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-800 hover:text-slate-200 transition-colors"
-                    title="Duplicar capa"
-                  >
-                    <Copy className="size-3" />
-                  </button>
-
-                  {/* DELETE BUTTON */}
-                  <button
-                    type="button"
-                    onClick={() => onRemoveLayer(layer.id)}
-                    className="flex size-6 items-center justify-center rounded-lg text-slate-500 hover:bg-rose-950/60 hover:text-rose-400 transition-colors"
-                    title="Eliminar capa"
-                  >
-                    <Trash2 className="size-3" />
                   </button>
                 </div>
               </div>
