@@ -358,28 +358,28 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 #### 🎨 Rail de 9 Herramientas de Edición Rápida (De lo Atómico a lo Macro):
 
 ```text
-┌─── TOOL RAIL (16) ───┐ ┌──────── FLYOUT DRAWER (360px) ────────┐
-│                      │ │ Barra de Búsqueda Superior            │
-│  1. 🔤  Texto        │ │ + Pastillas de Subcategorías          │
-│  2. 🔷  Elementos    │ │ + Cuadrícula de Recursos con Preview  │
-│  3. 📁  Medios       │ │                                       │
-│  4. 📑  Capas        │ │                                       │
-│  5. 🎨  Kit de Marca │ │                                       │
-│  6. 🧩  Bloques      │ │                                       │
-│  7. 📑  Plantillas   │ │                                       │
-│  8. ✨  Copys con IA │ │                                       │
-│  9. 🎵  Audio/Video  │ │                                       │
-└──────────────────────┘ └───────────────────────────────────────┘
+┌─── TOOL RAIL (16) ───┐ ┌────────────── FLYOUT DRAWER SPLIT (380px - 420px) ─────────────┐
+│                      │ │ 🔍 Barra de Búsqueda Superior                                  │
+│  1. 🔤  Texto        │ ├──────────────────────┬─────────────────────────────────────────┤
+│  2. 🔷  Elementos    │ │ 📑 SUBCATEGORÍAS     │ 👁️ PREVISUALIZACIÓN Y RECURSOS          │
+│  3. 📁  Medios       │ │  (Columna Izquierda) │  (Cuadrícula Interactiva con 1-Clic)    │
+│  4. 📑  Capas        │ ├──────────────────────┼─────────────────────────────────────────┤
+│  5. 🎨  Kit de Marca │ │ • Filtros rápidos    │ ┌──────────────────┐┌─────────────────┐ │
+│  6. 🧩  Bloques      │ │ • Sub-grupos         │ │ Tarjeta Recurso  ││ Tarjeta Recurso │ │
+│  7. 📑  Plantillas   │ │ • Badges con conteo  │ └──────────────────┘└─────────────────┘ │
+│  8. ✨  Copys con IA │ │ • "Ver todo"         │ ┌──────────────────┐┌─────────────────┐ │
+│  9. 🎵  Audio/Video  │ │                      │ │ Tarjeta Recurso  ││ Tarjeta Recurso │ │
+└──────────────────────┘ └──────────────────────┴─────────────────────────────────────────┘
 ```
 
 ##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
 - [ ] **1. 🔤 Texto (`Text & Typography`):**
-  - Subcategorías: *Básicos (H1/H2/H3)*, *Ganchos de Alto CTR*, *Ofertas y Precios*, *Llamadas a la Acción (CTAs)*, *Citas/Testimonios*.
-  - Clases semánticas Poppins Bold 700 / Inter Regular 400 y combinaciones prediseñadas.
+  - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Ganchos CTR, Ofertas/Precios, CTAs, Testimonios*) + Columna derecha (*Previsualización tipográfica en vivo con 1-clic insert*).
+  - Jerarquías Poppins Bold 700 / Semibold 600 / Inter Regular 400 y combinaciones prediseñadas de alto CTR.
 - [ ] **2. 🔷 Elementos (`Elements & Shapes`):**
-  - Subcategorías: *Formas Básicas*, *Badges de Extranjería*, *Mockups de Dispositivos (iPhone)*, *Iconos Médicos & Legales*, *Flechas/Punteros*.
+  - **Estructura Split 2 Zonas:** Columna izquierda (*Formas, Badges Extranjería, Mockups iPhone, Iconos Salud/Legal, Flechas*) + Columna derecha (*Preview de badges con glow y formas SVG*).
 - [ ] **3. 📁 Medios y Fotos (`Media & Uploads`):**
-  - Subcategorías: *Mis Subidos (Dropzone)*, *Estudiantes Internacionales*, *Pasaportes & Visados*, *Médicos & Clínicas*, *Nómadas Digitales*.
+  - **Estructura Split 2 Zonas:** Columna izquierda (*Mis Subidos, Estudiantes, Pasaportes/Visados, Médicos, Nómadas*) + Columna derecha (*Dropzone + Galería con hover de inserción*).
 - [x] **4. 📑 Capas (`Layers Manager`):**
   - Árbol de capas con Drag & Drop, bloqueo, visibilidad y selección múltiple agrupable (`Cmd+G`).
 
@@ -399,6 +399,11 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 - [ ] **9. 🎵 Audio & Video Bridge (`Remotion Video Generator`):**
   - Pistas de sonido, SFX y botón 1-clic "Convertir a Video animado en Remotion".
 - [ ] **Carrusel Multi-Página (Instagram / LinkedIn):** Paginador inferior `[ Slide 1 ] [ Slide 2 ] [ + ]` y exportador multi-slide ZIP/PDF.
+
+##### 🎛️ Inspector Contextual Inteligente (Panel Derecho):
+- Panel lateral no intrusivo con botón colapsador `❯` y switch `[ ⚙️ Propiedades ]` en toolbar.
+- Actualización reactiva de propiedades según la capa seleccionada (tipografía, colores, avatar, WhatsApp, opacidad, filtros, sombras).
+- Quick Toolbar flotante sobre el lienzo para acciones instantáneas (Duplicar, Eliminar, Auto-Ajustar, Desagrupar).
 
 **Salida:** Suite creativa estructurada con ergonomía profesional Canva-style para producción de creatividades estáticas y vídeo en segundos.
 
