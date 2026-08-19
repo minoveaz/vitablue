@@ -108,7 +108,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
-        <div className="absolute top-4 z-40">
+        <div className="absolute top-4 z-40" onClick={(e) => e.stopPropagation()}>
           <ImageQuickToolbar
             layer={selectedLayer}
             onDuplicate={onDuplicateLayer}
@@ -129,7 +129,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       >
         <div
           ref={canvasRef}
-          className="relative overflow-hidden rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-slate-800 transition-all"
+          onClick={() => onSelectLayer(null)}
+          className="relative overflow-hidden rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-slate-800 transition-all cursor-default"
           style={{
             width: `${baseWidth}px`,
             height: `${computedHeight}px`,
@@ -158,6 +159,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               <div
                 key={layer.id}
                 onMouseDown={(e) => handleMouseDown(e, layer)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectLayer(layer.id);
+                }}
                 className={`absolute cursor-move transition-shadow ${
                   isSelected
                     ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-transparent shadow-2xl'
