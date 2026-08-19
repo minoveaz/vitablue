@@ -130,8 +130,8 @@ export const ImageStudio: React.FC = () => {
         title="Image & Graphic Studio"
         eyebrow="Creative Studio"
         breadcrumbs={['Marketing Studio', 'Image Studio']}
-        mode="standard"
-        hideModuleHeader={false}
+        mode="full-bleed"
+        hideModuleHeader={true}
       >
         <ImageStudioHub onOpenProject={(id) => setSearchParams({ assetId: id })} />
       </BackofficeShell>
