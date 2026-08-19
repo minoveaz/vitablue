@@ -63,7 +63,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         onKeyDown={handleKeyDown}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
-        className={`${className} cursor-text outline-none ring-1 ring-brand-cyan/80 bg-white/10 rounded-xs px-1 select-text transition-all`}
+        className={`${className} !cursor-text outline-none ring-1 ring-brand-cyan/80 bg-white/10 rounded-xs px-1 select-text transition-all`}
       >
         {text}
       </Component>
@@ -76,7 +76,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         e.stopPropagation();
         setIsEditing(true);
       }}
-      className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
+      className={`${className} cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       title="Doble clic para editar texto directamente"
     >
       {text}

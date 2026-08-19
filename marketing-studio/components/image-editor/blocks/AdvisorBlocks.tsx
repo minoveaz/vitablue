@@ -67,14 +67,13 @@ export const AdvisorQuoteBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, pro
 );
 
 export const WhatsAppCtaButtonBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <button
-    type="button"
-    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+  <div
+    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] select-none"
   >
-    <MessageSquare className="size-4 fill-white shrink-0" />
+    <MessageSquare className="size-4 fill-white shrink-0 pointer-events-none" />
     <InlineEditableText
       text={String(props.whatsAppText ?? 'Pregúntanos por WhatsApp')}
       onSave={(newVal) => onUpdateProps?.(layerId, { whatsAppText: newVal })}
     />
-  </button>
+  </div>
 );
