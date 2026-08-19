@@ -26,7 +26,15 @@ export const SocialGenerator: React.FC = () => {
     );
   }
 
-  const playerRef = useRef<PlayerRef>(null);
+  const [playerInstance, setPlayerInstance] = useState<PlayerRef | null>(null);
+  const playerRef = useRef<PlayerRef | null>(null);
+
+  const handlePlayerRef = (instance: PlayerRef | null) => {
+    playerRef.current = instance;
+    if (instance !== playerInstance) {
+      setPlayerInstance(instance);
+    }
+  };
 
   // Editor State Hook
   const {
@@ -76,7 +84,7 @@ export const SocialGenerator: React.FC = () => {
 
   // Player Sync Effect
   useEffect(() => {
-    const player = playerRef.current;
+    const player = playerInstance || playerRef.current;
     if (!player) return;
 
     const onFrameChange = (e: { detail: { frame: number } }) => {
@@ -102,12 +110,14 @@ export const SocialGenerator: React.FC = () => {
     player.addEventListener('play', onPlay);
     player.addEventListener('pause', onPause);
 
+    setIsPlaying(player.isPlaying());
+
     return () => {
       player.removeEventListener('frameupdate', onFrameChange);
       player.removeEventListener('play', onPlay);
       player.removeEventListener('pause', onPause);
     };
-  }, [scenes, activeSlideId]);
+  }, [playerInstance, scenes, activeSlideId]);
 
   // Keyboard Shortcuts (CapCut-style)
   useEffect(() => {
@@ -143,22 +153,32 @@ export const SocialGenerator: React.FC = () => {
   }, [isPlaying, currentFrame, totalFrames, selectedLayerId, activeScene]);
 
   const handlePlayPause = () => {
-    if (!playerRef.current) return;
-    if (playerRef.current.isPlaying()) {
-      playerRef.current.pause();
+    const player = playerInstance || playerRef.current;
+    if (!player) return;
+    if (player.isPlaying()) {
+      player.pause();
+      setIsPlaying(false);
     } else {
-      playerRef.current.play();
+      if (currentFrame >= totalFrames - 1) {
+        player.seekTo(0);
+        setCurrentFrame(0);
+      }
+      player.play();
+      setIsPlaying(true);
     }
   };
 
   const handleRestart = () => {
-    if (!playerRef.current) return;
-    playerRef.current.seekTo(0);
+    const player = playerInstance || playerRef.current;
+    if (!player) return;
+    player.seekTo(0);
+    setCurrentFrame(0);
   };
 
   const handleSeek = (frame: number) => {
-    if (!playerRef.current) return;
-    playerRef.current.seekTo(frame);
+    const player = playerInstance || playerRef.current;
+    if (!player) return;
+    player.seekTo(frame);
     setCurrentFrame(frame);
   };
 
@@ -284,7 +304,7 @@ export const SocialGenerator: React.FC = () => {
         {/* ZONA 3: VIDEO STAGE (CANVAS & PLAYER) */}
         <VideoStage
           slides={scenes}
-          playerRef={playerRef}
+          playerRef={handlePlayerRef}
           aspectRatio={aspectRatio}
           activeScene={activeScene}
           showSafeZones={showSafeZones}

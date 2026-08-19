@@ -12,7 +12,7 @@ export type ZoomLevel = 'fit' | number;
 
 export interface VideoStageProps {
   slides: SlideData[];
-  playerRef: React.RefObject<PlayerRef | null>;
+  playerRef: React.Ref<PlayerRef>;
   aspectRatio: VideoAspectRatio;
   activeScene?: Scene;
   showSafeZones?: boolean;
@@ -48,8 +48,8 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   const stageRef = useRef<HTMLDivElement>(null);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const isSpacePressedRef = useRef(false);
+  const [isHandToolActive, setIsHandToolActive] = useState(false);
+  const isHandToolActiveRef = useRef(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const totalFrames = slides.reduce((total, slide) => total + slide.durationInFrames, 0);
@@ -78,8 +78,8 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         const factor = Math.exp(-e.deltaY * 0.006);
         const nextZoom = Math.max(25, Math.min(300, Math.round(currentZoom * factor)));
         onZoomLevelChange?.(nextZoom);
-      } else if (isSpacePressedRef.current || zoomLevel !== 'fit') {
-        // Desplazamiento con dos dedos cuando se está haciendo zoom o pulsando espacio
+      } else if (zoomLevel !== 'fit' || isHandToolActiveRef.current) {
+        // Desplazamiento con dos dedos cuando se está haciendo zoom
         e.preventDefault();
         setPanOffset((prev) => ({
           x: prev.x - e.deltaX,
@@ -94,18 +94,18 @@ export const VideoStage: React.FC<VideoStageProps> = ({
     };
   }, [zoomLevel, onZoomLevelChange]);
 
-  // 2. DETECCIÓN DE BARRA ESPACIADORA PARA MODO MANO (PAN)
+  // 2. DETECCIÓN DE TECLA ALT / OPTION PARA MODO MANO (PAN)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
-        setIsSpacePressed(true);
-        isSpacePressedRef.current = true;
+      if (e.key === 'Alt') {
+        setIsHandToolActive(true);
+        isHandToolActiveRef.current = true;
       }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        setIsSpacePressed(false);
-        isSpacePressedRef.current = false;
+      if (e.key === 'Alt') {
+        setIsHandToolActive(false);
+        isHandToolActiveRef.current = false;
       }
     };
 
@@ -118,11 +118,14 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isSpacePressed || e.button === 1 /* Middle click */) {
+    // Si arrastra el fondo o usa botón central (rueda) o tiene tecla Alt pulsada
+    if (isHandToolActive || e.button === 1 || (zoomLevel !== 'fit' && e.target === stageRef.current)) {
       e.preventDefault();
       setIsPanning(true);
       dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      try {
+        (stageRef.current as HTMLElement)?.setPointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
@@ -139,10 +142,8 @@ export const VideoStage: React.FC<VideoStageProps> = ({
     if (isPanning) {
       setIsPanning(false);
       try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {
-        // Ignorar si el puntero ya fue liberado
-      }
+        (stageRef.current as HTMLElement)?.releasePointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
@@ -167,7 +168,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       onContextMenu={onContextMenu}
       onClick={() => onSelectLayer?.(undefined)}
       className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] select-none ${
-        isSpacePressed ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
+        isHandToolActive ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
       }`}
     >
       {/* CONTENEDOR TRANSFORMABLE DEL LIENZO CON ZOOM Y PAN */}
