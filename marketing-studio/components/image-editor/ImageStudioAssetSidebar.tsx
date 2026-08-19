@@ -8,6 +8,8 @@ import {
 import { ImageBlockType, ImageProject } from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
+import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
+import { TextPresetItem } from '../../data/textPresets';
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -17,6 +19,7 @@ export interface ImageStudioAssetDrawerContentProps {
   onSelectLayer: (id: string, isShift?: boolean) => void;
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
+  onAddTextLayer?: (preset: TextPresetItem) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
   onToggleLock: (id: string) => void;
   onToggleVisibility: (id: string) => void;
@@ -38,6 +41,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onSelectLayer,
   onLoadTemplate,
   onAddBlock,
+  onAddTextLayer,
   onUpdateBackground,
   onToggleLock,
   onToggleVisibility,
@@ -65,6 +69,13 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
   return (
     <div className="space-y-4 select-none">
+      {/* 0. TEXTO & TIPOGRAFÍAS EN SPLIT 2-ZONAS */}
+      {activeTab === 'text' && onAddTextLayer && (
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioTextDrawer onAddTextLayer={onAddTextLayer} />
+        </div>
+      )}
+
       {/* 1. PLANTILLAS EN GRID DE 2 COLUMNAS (AMPLIO Y VISUAL) */}
       {activeTab === 'templates' && (
         <div className="space-y-3">

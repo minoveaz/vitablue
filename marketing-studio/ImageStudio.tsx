@@ -9,14 +9,22 @@ import { ImageStudioInspector } from './components/image-editor/ImageStudioInspe
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
-import { FileText, Sparkles, Layers, Palette, Image as ImageIcon } from 'lucide-react';
+import {
+  Type,
+  Shapes,
+  Image as ImageIcon,
+  Layers,
+  Palette,
+  Sparkles,
+  FileText,
+} from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const assetId = searchParams.get('assetId');
 
   const canvasRef = useRef<HTMLDivElement | null>(null);
-  const [activeToolId, setActiveToolId] = useState<string | null>('templates');
+  const [activeToolId, setActiveToolId] = useState<string | null>('text');
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -89,15 +97,12 @@ export const ImageStudio: React.FC = () => {
   }, [editor]);
 
   const handleSelectLayer = (id: string, isShift?: boolean) => {
-    setIsCanvasSelected(false);
     if (isShift) {
       editor.toggleLayerSelection(id);
     } else {
       editor.selectLayer(id);
     }
-    if (id) {
-      setIsInspectorOpen(true);
-    }
+    setIsCanvasSelected(false);
   };
 
   const handleSelectCanvas = () => {
@@ -113,36 +118,39 @@ export const ImageStudio: React.FC = () => {
 
   const handleLoadTemplate = (template: typeof editor.project) => {
     editor.loadTemplate(template);
-    setIsCanvasSelected(false);
-    setIsInspectorOpen(true);
-    setToastMessage(`Plantilla "${template.title}" cargada.`);
-    setTimeout(() => setToastMessage(null), 3000);
+    showToast('Plantilla cargada con éxito');
   };
 
   const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0]) => {
     editor.addBlockLayer(blockType);
-    setIsCanvasSelected(false);
-    setIsInspectorOpen(true);
-    setToastMessage('Bloque añadido al lienzo.');
-    setTimeout(() => setToastMessage(null), 3000);
+    showToast('Bloque añadido al lienzo');
   };
 
-  const handleExport = async (format: 'png' | 'jpeg' | 'svg' = 'png') => {
-    await editor.exportImage(canvasRef.current, format);
+  const handleExport = (format: 'png' | 'jpeg' | 'svg') => {
+    editor.exportImage(canvasRef.current, format);
+    showToast(`Exportando ${format.toUpperCase()}...`);
   };
 
   const handleCopyToClipboard = async () => {
-    await editor.copyToClipboard(canvasRef.current);
-    setToastMessage('¡Imagen copiada al portapapeles!');
-    setTimeout(() => setToastMessage(null), 3000);
+    const success = await editor.copyToClipboard(canvasRef.current);
+    if (success) {
+      showToast('¡Copiado al portapapeles!');
+    } else {
+      showToast('Error al copiar imagen');
+    }
   };
 
   const handleSaveToDam = () => {
-    setToastMessage('Diseño guardado en la biblioteca.');
+    editor.exportImage(canvasRef.current, 'png');
+    showToast('Guardando en DAM...');
+  };
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // VISTA 1: OVERVIEW / HUB DE PROYECTOS
+  // VISTA 1: HUB / DAM GALLERY DE ASSETS DE IMAGEN
   if (!assetId) {
     return (
       <BackofficeShell
@@ -162,11 +170,13 @@ export const ImageStudio: React.FC = () => {
   }
 
   const studioTools: StudioToolItem[] = [
-    { id: 'templates', label: 'Plantillas', icon: <FileText className="size-4" /> },
-    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
+    { id: 'text', label: 'Texto', icon: <Type className="size-4" /> },
+    { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
+    { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
     { id: 'brand', label: 'Marca', icon: <Palette className="size-4" /> },
-    { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
+    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
+    { id: 'templates', label: 'Plantillas', icon: <FileText className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
@@ -185,6 +195,7 @@ export const ImageStudio: React.FC = () => {
           onSelectLayer={handleSelectLayer}
           onLoadTemplate={handleLoadTemplate}
           onAddBlock={handleAddBlock}
+          onAddTextLayer={editor.addTextLayer}
           onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
           onToggleLock={editor.toggleLayerLock}
           onToggleVisibility={editor.toggleLayerVisibility}

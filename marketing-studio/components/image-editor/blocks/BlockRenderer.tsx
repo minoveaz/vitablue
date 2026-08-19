@@ -27,6 +27,7 @@ import {
   ComparisonCorrectBoxBlock,
 } from './ComparisonBlocks';
 import { GlassCardSurfaceBlock } from './SurfaceBlocks';
+import { InlineEditableText } from '../InlineEditableText';
 
 export interface ImageLayerBlockRendererProps {
   layer: ImageLayer;
@@ -69,6 +70,8 @@ export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, b
     case 'ComparisonWrongBox':
     case 'ComparisonCorrectBox':
       return '380px';
+    case 'CustomText':
+      return blockProps?.tag === 'badge' ? 'auto' : '420px';
     default:
       return '420px';
   }
@@ -172,7 +175,57 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'GlassCardSurface':
       return <GlassCardSurfaceBlock layer={layer} />;
 
+    // 7. CAPAS DE TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES)
+    case 'CustomText':
     default:
+      if (layer.type === 'text' || layer.blockType === 'CustomText') {
+        const textTag = (blockProps.tag as 'h1' | 'h2' | 'h3' | 'p' | 'span') ?? 'p';
+        const isBadge = blockProps.tag === 'badge';
+
+        if (isBadge) {
+          return (
+            <div
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 shadow-lg backdrop-blur-md"
+              style={{
+                fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
+                fontSize: layer.fontSize ? `${layer.fontSize}px` : '13px',
+                fontWeight: layer.fontWeight ?? '800',
+                color: layer.fill ?? '#94D2BD',
+                textAlign: layer.align ?? 'center',
+                letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : '0.5px',
+              }}
+            >
+              <InlineEditableText
+                text={String(blockProps.text ?? layer.title ?? 'Badge')}
+                onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
+                as="span"
+              />
+            </div>
+          );
+        }
+
+        return (
+          <div
+            className="w-full select-none"
+            style={{
+              fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
+              fontSize: layer.fontSize ? `${layer.fontSize}px` : '24px',
+              fontWeight: layer.fontWeight ?? '700',
+              color: layer.fill ?? '#FFFFFF',
+              textAlign: layer.align ?? 'center',
+              letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
+              lineHeight: layer.lineHeight ?? 1.25,
+            }}
+          >
+            <InlineEditableText
+              text={String(blockProps.text ?? layer.title ?? 'Texto')}
+              onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
+              className="w-full block"
+              as={textTag}
+            />
+          </div>
+        );
+      }
       return null;
   }
 };

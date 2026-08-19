@@ -9,6 +9,7 @@ import {
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
 import { saveStoredImageProject } from '../utils/imageProjectStorage';
+import { TextPresetItem } from '../data/textPresets';
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
@@ -626,6 +627,39 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [project.layers.length, pushHistory]);
 
+  const addTextLayer = useCallback((preset?: Partial<TextPresetItem>) => {
+    const newLayer: ImageLayer = {
+      id: `text-${Date.now()}`,
+      type: 'text',
+      blockType: 'CustomText',
+      title: preset?.title ?? preset?.defaultText ?? 'Capa de Texto',
+      props: {
+        text: preset?.defaultText ?? 'Escribe tu texto aquí',
+        tag: preset?.tag ?? 'h2',
+        ...preset?.customProps,
+      },
+      position: { x: 50, y: 50 },
+      zIndex: project.layers.length + 10,
+      scale: 1,
+      fontSize: preset?.fontSize ?? 26,
+      fontWeight: preset?.fontWeight ?? '700',
+      fontFamily: preset?.fontFamily ?? 'Poppins, sans-serif',
+      fill: preset?.fill ?? '#FFFFFF',
+      align: preset?.align ?? 'center',
+      letterSpacing: preset?.letterSpacing ?? 0,
+      lineHeight: preset?.lineHeight ?? 1.2,
+      width: preset?.tag === 'badge' ? 280 : 420,
+    };
+
+    setProject((prev) => {
+      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(newLayer.id);
+      setSelectedLayerIds([newLayer.id]);
+      pushHistory(next);
+      return next;
+    });
+  }, [project.layers.length, pushHistory]);
+
   const updateBackground = useCallback((patch: Partial<CanvasBackground>) => {
     setProject((prev) => {
       const next = {
@@ -1013,6 +1047,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     moveLayerZIndex,
     reorderLayers,
     addBlockLayer,
+    addTextLayer,
     updateBackground,
     alignSelectedLayers,
     distributeSelectedLayers,

@@ -4,7 +4,7 @@ interface InlineEditableTextProps {
   text: string;
   onSave: (newText: string) => void;
   className?: string;
-  as?: 'span' | 'h3' | 'p' | 'strong' | 'div';
+  as?: 'span' | 'h1' | 'h2' | 'h3' | 'p' | 'strong' | 'div';
 }
 
 export const InlineEditableText: React.FC<InlineEditableTextProps> = ({

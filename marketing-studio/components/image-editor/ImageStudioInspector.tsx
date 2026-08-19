@@ -986,6 +986,113 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </div>
           </div>
         )}
+
+        {/* 5. CAPAS DE TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
+        {(selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText') && (
+          <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-950/90 p-3.5">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
+                <Palette className="size-3.5" />
+                <span>Propiedades de Tipografía</span>
+              </span>
+            </div>
+
+            {/* CONTENIDO DEL TEXTO */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Contenido del Texto
+              </label>
+              <textarea
+                value={String(props.text ?? selectedLayer.title ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { text: e.target.value })}
+                rows={3}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none"
+              />
+            </div>
+
+            {/* FAMILIA TIPOGRÁFICA Y PESO */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Fuente
+                </label>
+                <select
+                  value={selectedLayer.fontFamily ?? 'Poppins, sans-serif'}
+                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontFamily: e.target.value })}
+                  className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2.5 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
+                >
+                  <option value="Poppins, sans-serif">Poppins (Display)</option>
+                  <option value="Inter, sans-serif">Inter (Sans)</option>
+                  <option value="system-ui, sans-serif">System UI</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Grosor
+                </label>
+                <select
+                  value={selectedLayer.fontWeight ?? '700'}
+                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontWeight: e.target.value })}
+                  className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2.5 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
+                >
+                  <option value="400">Regular (400)</option>
+                  <option value="600">Semibold (600)</option>
+                  <option value="700">Bold (700)</option>
+                  <option value="800">ExtraBold (800)</option>
+                  <option value="900">Black (900)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* TAMAÑO DE FUENTE */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase">
+                <span>Tamaño de Letra</span>
+                <span className="font-mono text-brand-cyan">{selectedLayer.fontSize ?? 24}px</span>
+              </div>
+              <input
+                type="range"
+                min={11}
+                max={64}
+                step={1}
+                value={selectedLayer.fontSize ?? 24}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontSize: parseInt(e.target.value, 10) })}
+                className="w-full accent-teal-400"
+              />
+            </div>
+
+            {/* PALETA DE COLORES RÁPIDOS */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Color del Texto
+              </label>
+              <div className="flex items-center gap-1.5">
+                {[
+                  { label: 'Blanco', color: '#FFFFFF' },
+                  { label: 'Mint', color: '#94D2BD' },
+                  { label: 'Gold', color: '#EE9B00' },
+                  { label: 'Teal', color: '#005F73' },
+                  { label: 'Rose', color: '#F43F5E' },
+                  { label: 'Slate', color: '#94A3B8' },
+                ].map((c) => (
+                  <button
+                    key={c.color}
+                    type="button"
+                    title={c.label}
+                    onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c.color })}
+                    className={`size-6 rounded-full border transition-all ${
+                      (selectedLayer.fill ?? '#FFFFFF') === c.color
+                        ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-110'
+                        : 'border-slate-700 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: c.color }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ModuleContextPanel>
   );
