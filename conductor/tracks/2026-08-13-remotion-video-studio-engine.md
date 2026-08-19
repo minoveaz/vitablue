@@ -373,7 +373,7 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 ```
 
 ##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
-- [ ] **1. 🔤 Texto (`Text & Typography`):**
+- [x] **1. 🔤 Texto (`Text & Typography`):**
   - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Ganchos CTR, Ofertas/Precios, CTAs, Testimonios*) + Columna derecha (*Previsualización tipográfica en vivo con 1-clic insert*).
   - Jerarquías Poppins Bold 700 / Semibold 600 / Inter Regular 400 y combinaciones prediseñadas de alto CTR.
 - [ ] **2. 🔷 Elementos (`Elements & Shapes`):**
