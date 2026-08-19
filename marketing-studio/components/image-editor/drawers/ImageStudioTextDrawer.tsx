@@ -61,19 +61,19 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
       {/* 1. BUSCADOR SUPERIOR */}
       <div className="p-3 border-b border-slate-800/80 bg-slate-950/80 shrink-0">
         <div className="relative flex items-center">
-          <Search className="absolute left-3 size-3.5 text-slate-500 pointer-events-none" />
+          <Search className="absolute left-3 size-4 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar títulos, ganchos, precios..."
-            className="w-full rounded-xl border border-slate-800 bg-slate-900/90 pl-8.5 pr-7 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/40"
+            className="w-full rounded-xl border border-slate-800 bg-slate-900/90 pl-9 pr-8 py-2 text-xs text-slate-200 placeholder:text-slate-500 focus:border-brand-cyan focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-cyan/40 transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 text-slate-500 hover:text-slate-300"
+              className="absolute right-2.5 p-0.5 text-slate-400 hover:text-slate-200 transition-colors"
             >
               <X className="size-3.5" />
             </button>
