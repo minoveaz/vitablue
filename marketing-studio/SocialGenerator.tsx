@@ -329,6 +329,7 @@ export const SocialGenerator: React.FC = () => {
           onSeek={handleSeek}
           onSelectScene={handleSelectScene}
           onResizeScene={(sceneId, dur) => updateScene(sceneId, { durationInFrames: dur })}
+          onUpdateSceneTransition={(sceneId, transition) => updateScene(sceneId, { transition })}
           selectedLayerId={selectedLayerId}
           onSelectLayer={(id) => {
             setSelectedLayerId(id);

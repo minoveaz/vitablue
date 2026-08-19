@@ -1,7 +1,7 @@
 import React from 'react';
 import { Audio, Img, interpolate, OffthreadVideo, Sequence, useCurrentFrame, useVideoConfig, spring } from 'remotion';
 import type { VideoBrandAdapter } from '../engine/brandAdapter';
-import type { VideoProject, TextLayer, SubtitleLayer, ShapeLayer } from '../domain/videoProject';
+import type { VideoProject, TextLayer, SubtitleLayer, ShapeLayer, AudioLayer } from '../domain/videoProject';
 import { defaultVisaRejectionProject } from '../domain/defaultProject';
 import { resolveVideoTemplate } from '../engine/templateRegistry';
 import { SceneRenderer } from './SceneRenderer';
@@ -16,6 +16,64 @@ export interface VisaRejectionProps {
 
 type VisaRejectionStoryboardProps = Pick<VisaRejectionProps, 'slides'>;
 
+const AnimatedTextLayerItem: React.FC<{ layer: TextLayer }> = ({ layer }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const fontSize = layer.fontSize ?? 40;
+  const color = layer.color ?? '#ffffff';
+  const bg = layer.backgroundColor ? { backgroundColor: layer.backgroundColor, padding: '12px 24px', borderRadius: 16 } : {};
+
+  let positionStyle: React.CSSProperties = { left: 60, right: 60, bottom: 240, textAlign: layer.align ?? 'center' };
+  if (typeof layer.position === 'object') {
+    positionStyle = { left: `${layer.position.x}%`, top: `${layer.position.y}%`, transform: 'translate(-50%, -50%)', textAlign: layer.align ?? 'center' };
+  } else if (layer.position === 'top') {
+    positionStyle = { left: 60, right: 60, top: 160, textAlign: layer.align ?? 'center' };
+  } else if (layer.position === 'center') {
+    positionStyle = { left: 60, right: 60, top: '48%', transform: 'translateY(-50%)', textAlign: layer.align ?? 'center' };
+  }
+
+  // Animaciones de entrada de texto
+  const anim = layer.animation ?? 'none';
+  let animTransform = '';
+  let animOpacity = 1;
+  let textToRender = layer.text;
+
+  if (anim === 'pop') {
+    const scale = spring({ frame, fps, config: { damping: 12, stiffness: 200 } });
+    animTransform = `scale(${scale})`;
+  } else if (anim === 'slide-up') {
+    const s = spring({ frame, fps, config: { damping: 15 } });
+    animTransform = `translateY(${interpolate(s, [0, 1], [40, 0])}px)`;
+    animOpacity = interpolate(frame, [0, 10], [0, 1], { extrapolateRight: 'clamp' });
+  } else if (anim === 'fade') {
+    animOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  } else if (anim === 'typewriter') {
+    const chars = Math.floor(interpolate(frame, [0, Math.min(60, layer.text.length * 2)], [0, layer.text.length], { extrapolateRight: 'clamp' }));
+    textToRender = layer.text.slice(0, chars);
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        zIndex: layer.zIndex ?? 30,
+        fontSize,
+        fontWeight: 800,
+        color,
+        lineHeight: 1.25,
+        textShadow: '0 4px 12px rgba(0,0,0,0.6)',
+        opacity: animOpacity,
+        ...positionStyle,
+        transform: positionStyle.transform ? `${positionStyle.transform} ${animTransform}` : animTransform || undefined,
+        ...bg,
+      }}
+    >
+      {textToRender}
+    </div>
+  );
+};
+
 const TimedTextLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) => (
   <>
     {layers
@@ -23,41 +81,102 @@ const TimedTextLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) 
       .map((layer) => {
         const startFrame = layer.timing?.startFrame ?? 0;
         const durationInFrames = layer.timing?.durationInFrames ?? 90;
-        const fontSize = layer.fontSize ?? 40;
-        const color = layer.color ?? '#ffffff';
-        const bg = layer.backgroundColor ? { backgroundColor: layer.backgroundColor, padding: '12px 24px', borderRadius: 16 } : {};
-
-        let positionStyle: React.CSSProperties = { left: 60, right: 60, bottom: 240, textAlign: layer.align ?? 'center' };
-        if (typeof layer.position === 'object') {
-          positionStyle = { left: `${layer.position.x}%`, top: `${layer.position.y}%`, transform: 'translate(-50%, -50%)', textAlign: layer.align ?? 'center' };
-        } else if (layer.position === 'top') {
-          positionStyle = { left: 60, right: 60, top: 160, textAlign: layer.align ?? 'center' };
-        } else if (layer.position === 'center') {
-          positionStyle = { left: 60, right: 60, top: '48%', transform: 'translateY(-50%)', textAlign: layer.align ?? 'center' };
-        }
 
         return (
           <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
-            <div
-              style={{
-                position: 'absolute',
-                zIndex: layer.zIndex ?? 30,
-                fontSize,
-                fontWeight: 800,
-                color,
-                lineHeight: 1.25,
-                textShadow: '0 4px 12px rgba(0,0,0,0.6)',
-                ...positionStyle,
-                ...bg,
-              }}
-            >
-              {layer.text}
-            </div>
+            <AnimatedTextLayerItem layer={layer} />
           </Sequence>
         );
       })}
   </>
 );
+
+const AnimatedSubtitleLayerItem: React.FC<{ layer: SubtitleLayer }> = ({ layer }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const preset = layer.stylePreset ?? 'viral-yellow';
+
+  let textColor = '#EE9B00';
+  let bgStyle: React.CSSProperties = {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    padding: '14px 28px',
+    borderRadius: 20,
+    border: '2px solid rgba(238, 155, 0, 0.3)',
+  };
+
+  if (preset === 'clean-white') {
+    textColor = '#ffffff';
+    bgStyle = { textShadow: '0 4px 16px rgba(0,0,0,0.8)' };
+  } else if (preset === 'classic-box') {
+    textColor = '#ffffff';
+    bgStyle = { backgroundColor: '#005F73', padding: '12px 24px', borderRadius: 16 };
+  }
+
+  let subtitlePosStyle: React.CSSProperties = {
+    left: 60,
+    right: 60,
+    bottom: 220,
+    display: 'flex',
+    justifyContent: 'center',
+    textAlign: 'center',
+  };
+
+  if (typeof layer.position === 'object') {
+    subtitlePosStyle = {
+      left: `${layer.position.x}%`,
+      top: `${layer.position.y}%`,
+      transform: 'translate(-50%, -50%)',
+      display: 'flex',
+      justifyContent: 'center',
+      textAlign: 'center',
+    };
+  } else if (layer.position === 'top') {
+    subtitlePosStyle = { left: 60, right: 60, top: 160, display: 'flex', justifyContent: 'center', textAlign: 'center' };
+  } else if (layer.position === 'center') {
+    subtitlePosStyle = { left: 60, right: 60, top: '50%', transform: 'translateY(-50%)', display: 'flex', justifyContent: 'center', textAlign: 'center' };
+  }
+
+  // Animaciones de subtítulo
+  const anim = layer.animation ?? 'pop';
+  let animTransform = '';
+  let animOpacity = 1;
+
+  if (anim === 'pop') {
+    const scale = spring({ frame, fps, config: { damping: 10, stiffness: 220 } });
+    animTransform = `scale(${scale})`;
+  } else if (anim === 'slide-up') {
+    const s = spring({ frame, fps, config: { damping: 15 } });
+    animTransform = `translateY(${interpolate(s, [0, 1], [30, 0])}px)`;
+    animOpacity = interpolate(frame, [0, 8], [0, 1], { extrapolateRight: 'clamp' });
+  } else if (anim === 'fade') {
+    animOpacity = interpolate(frame, [0, 12], [0, 1], { extrapolateRight: 'clamp' });
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        zIndex: layer.zIndex ?? 40,
+        opacity: animOpacity,
+        ...subtitlePosStyle,
+        transform: subtitlePosStyle.transform ? `${subtitlePosStyle.transform} ${animTransform}` : animTransform || undefined,
+      }}
+    >
+      <span
+        style={{
+          fontSize: layer.fontSize ?? 44,
+          fontWeight: 900,
+          color: textColor,
+          letterSpacing: '-0.01em',
+          ...bgStyle,
+        }}
+      >
+        {layer.text}
+      </span>
+    </div>
+  );
+};
 
 const TimedSubtitleLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) => (
   <>
@@ -66,69 +185,10 @@ const TimedSubtitleLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers
       .map((layer) => {
         const startFrame = layer.timing?.startFrame ?? 0;
         const durationInFrames = layer.timing?.durationInFrames ?? 90;
-        const preset = layer.stylePreset ?? 'viral-yellow';
-
-        let textColor = '#EE9B00';
-        let bgStyle: React.CSSProperties = {
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          padding: '14px 28px',
-          borderRadius: 20,
-          border: '2px solid rgba(238, 155, 0, 0.3)',
-        };
-
-        if (preset === 'clean-white') {
-          textColor = '#ffffff';
-          bgStyle = { textShadow: '0 4px 16px rgba(0,0,0,0.8)' };
-        } else if (preset === 'classic-box') {
-          textColor = '#ffffff';
-          bgStyle = { backgroundColor: '#005F73', padding: '12px 24px', borderRadius: 16 };
-        }
-
-        let subtitlePosStyle: React.CSSProperties = {
-          left: 60,
-          right: 60,
-          bottom: 220,
-          display: 'flex',
-          justifyContent: 'center',
-          textAlign: 'center',
-        };
-
-        if (typeof layer.position === 'object') {
-          subtitlePosStyle = {
-            left: `${layer.position.x}%`,
-            top: `${layer.position.y}%`,
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            justifyContent: 'center',
-            textAlign: 'center',
-          };
-        } else if (layer.position === 'top') {
-          subtitlePosStyle = { left: 60, right: 60, top: 160, display: 'flex', justifyContent: 'center', textAlign: 'center' };
-        } else if (layer.position === 'center') {
-          subtitlePosStyle = { left: 60, right: 60, top: '50%', transform: 'translateY(-50%)', display: 'flex', justifyContent: 'center', textAlign: 'center' };
-        }
 
         return (
           <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
-            <div
-              style={{
-                position: 'absolute',
-                zIndex: layer.zIndex ?? 40,
-                ...subtitlePosStyle,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: layer.fontSize ?? 44,
-                  fontWeight: 900,
-                  color: textColor,
-                  letterSpacing: '-0.01em',
-                  ...bgStyle,
-                }}
-              >
-                {layer.text}
-              </span>
-            </div>
+            <AnimatedSubtitleLayerItem layer={layer} />
           </Sequence>
         );
       })}
@@ -167,6 +227,22 @@ const TimedShapeLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers })
   </>
 );
 
+const AnimatedAudioLayerItem: React.FC<{ layer: AudioLayer; durationInFrames: number }> = ({ layer, durationInFrames }) => {
+  const frame = useCurrentFrame();
+  const baseVolume = layer.volume ?? 1;
+  const fadeIn = layer.fadeInDuration ?? 15;
+  const fadeOut = layer.fadeOutDuration ?? 15;
+
+  let vol = baseVolume;
+  if (fadeIn > 0 && frame < fadeIn) {
+    vol = interpolate(frame, [0, fadeIn], [0, baseVolume], { extrapolateRight: 'clamp' });
+  } else if (fadeOut > 0 && frame > durationInFrames - fadeOut) {
+    vol = interpolate(frame, [durationInFrames - fadeOut, durationInFrames], [baseVolume, 0], { extrapolateRight: 'clamp' });
+  }
+
+  return <Audio src={layer.src} volume={vol} />;
+};
+
 const TimedMediaLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers }) => (
   <>
     {layers
@@ -189,7 +265,7 @@ const TimedMediaLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers })
             {layer.type === 'video' && (
               <OffthreadVideo src={src} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: layer.zIndex ?? 2, opacity: 0.7 }} />
             )}
-            {layer.type === 'audio' && <Audio src={src} volume={layer.volume ?? 1} />}
+            {layer.type === 'audio' && <AnimatedAudioLayerItem layer={layer as AudioLayer} durationInFrames={durationInFrames} />}
           </Sequence>
         );
       })}
@@ -232,16 +308,33 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({
   });
   const activeTemplate = activeSlide ? resolveVideoTemplate(activeSlide.templateId) : null;
   const transitionDuration = Math.min(
-    activeSlide?.transition?.durationInFrames ?? 0,
-    Math.floor((activeSlide?.durationInFrames ?? 0) / 2),
+    activeSlide?.transition?.durationInFrames ?? 15,
+    Math.floor((activeSlide?.durationInFrames ?? 30) / 2),
   );
   const transitionProgress = transitionDuration > 0
     ? interpolate(localFrame, [0, transitionDuration], [0, 1], { extrapolateRight: 'clamp' })
     : 1;
   const transitionType = activeSlide?.transition?.type ?? 'none';
-  const contentTransform = transitionType === 'slide'
-    ? `translateX(${interpolate(transitionProgress, [0, 1], [80, 0])}px)`
-    : undefined;
+
+  // Configuración de estilos de transición dinámica entre escenas
+  let sceneStyle: React.CSSProperties = {
+    opacity: slideSpring,
+  };
+
+  if (transitionType === 'fade') {
+    sceneStyle.opacity = slideSpring * transitionProgress;
+  } else if (transitionType === 'slide') {
+    const translateX = interpolate(transitionProgress, [0, 1], [100, 0]);
+    sceneStyle.transform = `translateX(${translateX}px)`;
+    sceneStyle.opacity = transitionProgress;
+  } else if (transitionType === 'zoom') {
+    const scale = interpolate(transitionProgress, [0, 1], [0.8, 1]);
+    sceneStyle.transform = `scale(${scale})`;
+    sceneStyle.opacity = transitionProgress;
+  } else if (transitionType === 'wipe') {
+    const wipePercent = interpolate(transitionProgress, [0, 1], [0, 100]);
+    sceneStyle.clipPath = `polygon(0 0, ${wipePercent}% 0, ${wipePercent}% 100%, 0 100%)`;
+  }
 
   const isSquare = aspectRatio === 'square';
   const isLandscape = aspectRatio === 'landscape';
@@ -287,12 +380,12 @@ export const ReelVisaRejection: React.FC<VisaRejectionProps> = ({
         </span>
       </div>
 
-      {/* Dynamic Slide Layouts */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10, gap: '40px', opacity: slideSpring * (transitionType === 'fade' ? transitionProgress : 1), transform: contentTransform }}>
+      {/* Dynamic Slide Layouts with Transition Effect */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10, gap: '40px', ...sceneStyle }}>
         {activeSlide && <SceneRenderer scene={activeSlide} brandAdapter={brandAdapter} />}
       </div>
 
-      {/* Timed Overlays & Text Layers */}
+      {/* Timed Overlays & Text Layers with In-animations */}
       {activeSlide && <TimedTextLayers layers={activeSlide.layers} />}
       {activeSlide && <TimedSubtitleLayers layers={activeSlide.layers} />}
       {activeSlide && <TimedShapeLayers layers={activeSlide.layers} />}

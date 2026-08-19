@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trash2, AlertTriangle, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
-import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, TransitionType } from '../../../packages/video-studio/src/domain/videoProject';
+import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, AudioLayer, TransitionType } from '../../../packages/video-studio/src/domain/videoProject';
 import { resolveLayerPosition } from '../../../packages/video-studio/src/domain/videoProject';
 
 export interface CreativeEditorInspectorProps {
@@ -97,6 +97,21 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               </div>
 
               <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
+                <select
+                  value={(selectedLayer as TextLayer).animation ?? 'none'}
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as any })}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-200 focus:border-primary focus:outline-none"
+                >
+                  <option value="none">Ninguna</option>
+                  <option value="pop">Pop (Rebote elástico)</option>
+                  <option value="slide-up">Slide up (Deslizar hacia arriba)</option>
+                  <option value="fade">Fade in (Aparecer)</option>
+                  <option value="typewriter">Typewriter (Máquina de escribir)</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
                   Tamaño de Fuente: {(selectedLayer as TextLayer).fontSize ?? 40}px
                 </label>
@@ -138,6 +153,20 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                   rows={2}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
+                <select
+                  value={(selectedLayer as SubtitleLayer).animation ?? 'pop'}
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as any })}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-200 focus:border-primary focus:outline-none"
+                >
+                  <option value="pop">Pop (Rebote Viral)</option>
+                  <option value="slide-up">Slide up</option>
+                  <option value="fade">Fade in</option>
+                  <option value="none">Ninguna</option>
+                </select>
               </div>
 
               <div>
@@ -185,6 +214,55 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                   onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...(selectedLayer as ComponentLayer).props, cta: e.target.value } })}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* EDITOR ESPECÍFICO DE AUDIO */}
+          {selectedLayer.type === 'audio' && (
+            <div className="space-y-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">Propiedades de Audio</span>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Volumen</label>
+                  <span className="font-mono text-xs font-bold text-purple-400">
+                    {Math.round(((selectedLayer as AudioLayer).volume ?? 1) * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={(selectedLayer as AudioLayer).volume ?? 1}
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { volume: Number(e.target.value) })}
+                  className="w-full accent-purple-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fade In (frames)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={(selectedLayer as AudioLayer).fadeInDuration ?? 15}
+                    onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeInDuration: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fade Out (frames)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={(selectedLayer as AudioLayer).fadeOutDuration ?? 15}
+                    onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeOutDuration: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -305,15 +383,17 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Transición de Salida</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Transición de Entrada</label>
             <select
               value={activeScene.transition?.type ?? 'none'}
-              onChange={(e) => onUpdateScene(activeScene.id, { transition: { type: e.target.value as TransitionType, durationInFrames: 15 } })}
+              onChange={(e) => onUpdateScene(activeScene.id, { transition: { type: e.target.value as TransitionType, durationInFrames: activeScene.transition?.durationInFrames ?? 15 } })}
               className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
             >
               <option value="none">Ninguna (Corte directo)</option>
               <option value="fade">Disolver (Fade)</option>
               <option value="slide">Deslizar (Slide)</option>
+              <option value="zoom">Zoom (Zoom In)</option>
+              <option value="wipe">Barrido (Wipe)</option>
             </select>
           </div>
 

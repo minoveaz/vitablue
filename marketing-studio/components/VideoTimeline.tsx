@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
-import type { Scene } from '../../packages/video-studio/src/domain/videoProject';
+import React, { useRef, useState } from 'react';
+import type { Scene, TransitionConfig } from '../../packages/video-studio/src/domain/videoProject';
 import { videoTemplateRegistry } from '../../packages/video-studio/src/engine/templateRegistry';
-import { Type, MessageSquare, ShieldCheck, Image, Music, Eye, EyeOff } from 'lucide-react';
+import { Type, MessageSquare, ShieldCheck, Image, Music, Eye, EyeOff, Zap } from 'lucide-react';
+import { TransitionSelectorModal } from './creative-editor/TransitionSelectorModal';
 
 export interface VideoTimelineProps {
   scenes: Scene[];
@@ -10,6 +11,7 @@ export interface VideoTimelineProps {
   onSeek: (frame: number) => void;
   onSelectScene: (sceneId: string, startFrame: number) => void;
   onResizeScene?: (sceneId: string, durationInFrames: number) => void;
+  onUpdateSceneTransition?: (sceneId: string, transition: TransitionConfig) => void;
   selectedLayerId?: string;
   onSelectLayer: (layerId: string) => void;
   onToggleLayer: (layerId: string, property: 'visible' | 'locked') => void;
@@ -23,6 +25,8 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   fps = 30,
   onSeek,
   onSelectScene,
+  onResizeScene: _onResizeScene,
+  onUpdateSceneTransition,
   selectedLayerId,
   onSelectLayer,
   onToggleLayer,
@@ -31,6 +35,8 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const totalFrames = scenes.reduce((total, scene) => total + scene.durationInFrames, 0);
   const totalSeconds = totalFrames / fps;
+
+  const [activeTransitionSceneId, setActiveTransitionSceneId] = useState<string | null>(null);
 
   const playheadPercent = totalFrames > 0 ? (currentFrame / totalFrames) * 100 : 0;
 
@@ -42,6 +48,8 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
     const targetFrame = Math.round(targetPercent * totalFrames);
     onSeek(targetFrame);
   };
+
+  const activeTransitionScene = scenes.find((s) => s.id === activeTransitionSceneId);
 
   return (
     <div className="flex h-56 shrink-0 flex-col border-t border-slate-800 bg-slate-950 text-white select-none">
@@ -81,8 +89,8 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
           <div className="size-2.5 rounded-full bg-red-500 shadow-md -translate-x-1/2 -translate-y-1" />
         </div>
 
-        {/* PISTA 1: ESCENAS PRINCIPALES */}
-        <div className="relative flex h-14 w-full gap-1.5 rounded-xl bg-slate-900/80 p-1 border border-slate-800">
+        {/* PISTA 1: ESCENAS PRINCIPALES CON CONECTORES [⚡] */}
+        <div className="relative flex h-14 w-full items-center rounded-xl bg-slate-900/80 p-1 border border-slate-800">
           {scenes.map((scene, index) => {
             const sceneStart = scenes
               .slice(0, index)
@@ -91,58 +99,73 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
             const width = totalFrames > 0 ? `${(scene.durationInFrames / totalFrames) * 100}%` : '0%';
 
             return (
-              <div
-                key={scene.id}
-                style={{ width }}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onContextMenu?.(e, { type: 'scene', sceneId: scene.id });
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectScene(scene.id, sceneStart);
-                }}
-                className={`group relative flex min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
-                  isActive
-                    ? 'border-primary bg-primary/20 text-white shadow-xs'
-                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <div className="flex items-center justify-between min-w-0">
-                  <span className="truncate text-[10px] font-bold">
-                    {index + 1}. {videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}
-                  </span>
-                  <span className="font-mono text-[9px] text-slate-400 shrink-0">
-                    {(scene.durationInFrames / fps).toFixed(1)}s
-                  </span>
-                </div>
+              <React.Fragment key={scene.id}>
+                {/* BOTÓN CONECTOR DE TRANSICIÓN ENTRE ESCENAS */}
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveTransitionSceneId(scene.id);
+                    }}
+                    className={`relative z-20 -mx-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border shadow-sm transition-all ${
+                      scene.transition?.type && scene.transition.type !== 'none'
+                        ? 'border-accent bg-accent text-slate-950 scale-110'
+                        : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500 hover:text-white'
+                    }`}
+                    title={`Transición hacia ${index + 1}: ${scene.transition?.type ?? 'Corte directo'}`}
+                  >
+                    <Zap className="size-3" />
+                  </button>
+                )}
 
-                <div className="flex items-center gap-1 text-[9px] text-slate-500">
-                  <span>{scene.layers.length} capas</span>
-                  {scene.transition?.type !== 'none' && (
-                    <span className="rounded bg-slate-800 px-1 text-[8px] text-brand-cyan">
-                      {scene.transition?.type}
-                    </span>
-                  )}
-                </div>
-
-                {/* Tirador de Resize a la derecha */}
                 <div
-                  className="absolute right-0 inset-y-0 w-2 cursor-ew-resize hover:bg-primary/40 transition-colors"
-                  title="Estirar o acortar duración de escena"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
+                  style={{ width }}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onContextMenu?.(e, { type: 'scene', sceneId: scene.id });
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectScene(scene.id, sceneStart);
+                  }}
+                  className={`group relative flex h-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
+                    isActive
+                      ? 'border-primary bg-primary/20 text-white shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between min-w-0">
+                    <span className="truncate text-[10px] font-bold">
+                      {index + 1}. {videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}
+                    </span>
+                    <span className="font-mono text-[9px] text-slate-400 shrink-0">
+                      {(scene.durationInFrames / fps).toFixed(1)}s
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                    <span>{scene.layers.length} capas</span>
+                    {scene.transition?.type && scene.transition.type !== 'none' && (
+                      <span className="rounded bg-accent/20 px-1 text-[8px] font-bold text-accent">
+                        {scene.transition.type}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </React.Fragment>
             );
           })}
         </div>
 
-        {/* PISTA 2: CAPAS DE TEXTO Y OVERLAYS DE LA ESCENA ACTIVA */}
+        {/* PISTA 2: CAPAS DE TEXTO, OVERLAYS Y AUDIO DE LA ESCENA */}
         <div className="flex items-center gap-2 overflow-x-auto py-1">
           <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 shrink-0 w-16">Capas:</span>
           {scenes.flatMap((s) => s.layers.map((l) => ({ ...l, sceneId: s.id }))).map((layer) => {
             const isSelected = layer.id === selectedLayerId;
+            const isAudio = layer.type === 'audio';
+
             return (
               <div
                 key={layer.id}
@@ -167,20 +190,39 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                   <MessageSquare className="size-3 text-accent shrink-0" />
                 ) : layer.type === 'component' ? (
                   <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
-                ) : layer.type === 'audio' ? (
+                ) : isAudio ? (
                   <Music className="size-3 text-purple-400 shrink-0" />
                 ) : (
                   <Image className="size-3 text-slate-400 shrink-0" />
                 )}
-                <span className="truncate max-w-[120px] font-semibold text-[11px]">
-                  {layer.type === 'text'
-                    ? (layer as any).text
-                    : layer.type === 'subtitle'
+
+                {/* VISUALIZACIÓN DE FORMA DE ONDA SI ES AUDIO */}
+                {isAudio ? (
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-0.5 h-3">
+                      {[40, 75, 100, 60, 90, 45, 80, 100, 70, 50].map((h, i) => (
+                        <div
+                          key={i}
+                          style={{ height: `${h}%` }}
+                          className="w-0.5 bg-purple-400 rounded-full"
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-purple-300 font-mono">
+                      {Math.round(((layer as any).volume ?? 1) * 100)}%
+                    </span>
+                  </div>
+                ) : (
+                  <span className="truncate max-w-[120px] font-semibold text-[11px]">
+                    {layer.type === 'text'
                       ? (layer as any).text
-                      : layer.type === 'component'
-                        ? (layer as any).componentId
-                        : layer.type}
-                </span>
+                      : layer.type === 'subtitle'
+                        ? (layer as any).text
+                        : layer.type === 'component'
+                          ? (layer as any).componentId
+                          : layer.type}
+                  </span>
+                )}
 
                 <button
                   type="button"
@@ -188,7 +230,7 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                     e.stopPropagation();
                     onToggleLayer(layer.id, 'visible');
                   }}
-                  className="text-slate-500 hover:text-white"
+                  className="text-slate-500 hover:text-white ml-1"
                 >
                   {layer.visible === false ? <EyeOff className="size-3 text-amber-400" /> : <Eye className="size-3" />}
                 </button>
@@ -197,6 +239,19 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
           })}
         </div>
       </div>
+
+      {/* MODAL DE TRANSICIÓN ENTRE ESCENAS */}
+      {activeTransitionScene && (
+        <TransitionSelectorModal
+          isOpen={Boolean(activeTransitionScene)}
+          sceneId={activeTransitionScene.id}
+          currentTransition={activeTransitionScene.transition}
+          onClose={() => setActiveTransitionSceneId(null)}
+          onSelectTransition={(sceneId, transition) => {
+            onUpdateSceneTransition?.(sceneId, transition);
+          }}
+        />
+      )}
     </div>
   );
 };

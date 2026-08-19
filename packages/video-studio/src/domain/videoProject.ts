@@ -10,7 +10,7 @@ export type SceneTemplateId =
 
 export type LayerType = 'text' | 'subtitle' | 'image' | 'video' | 'shape' | 'component' | 'audio';
 
-export type TransitionType = 'none' | 'fade' | 'slide' | 'zoom';
+export type TransitionType = 'none' | 'fade' | 'slide' | 'zoom' | 'wipe';
 
 export type TextAnimationType = 'none' | 'fade' | 'pop' | 'slide-up' | 'typewriter';
 export type SubtitleStylePreset = 'viral-yellow' | 'classic-box' | 'clean-white';
@@ -54,6 +54,7 @@ export interface SubtitleLayer extends LayerBase {
   fontSize?: number;
   color?: string;
   position?: { x: number; y: number } | 'bottom' | 'center' | 'top';
+  animation?: TextAnimationType;
 }
 
 export interface ImageLayer extends LayerBase {
@@ -94,6 +95,8 @@ export interface AudioLayer extends LayerBase {
   type: 'audio';
   src: string;
   volume?: number;
+  fadeInDuration?: number;
+  fadeOutDuration?: number;
 }
 
 export type Layer =
