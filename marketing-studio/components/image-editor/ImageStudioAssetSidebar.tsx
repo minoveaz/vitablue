@@ -68,13 +68,15 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
       variant="dark"
       onCollapse={onCollapse}
     >
-      {/* PESTAÑAS PRINCIPALES */}
-      <div className="grid grid-cols-5 rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800 text-center">
+      {/* PESTAÑAS PRINCIPALES CON DISEÑO FLUIDO Y SCROLL SUAVE */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 no-scrollbar scroll-smooth border-b border-slate-800/80">
         <button
           type="button"
           onClick={() => setActiveTab('templates')}
-          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
-            activeTab === 'templates' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'templates'
+              ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/40 shadow-xs ring-1 ring-brand-cyan/20'
+              : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/80'
           }`}
           title="Plantillas prediseñadas"
         >
@@ -85,8 +87,10 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
         <button
           type="button"
           onClick={() => setActiveTab('blocks')}
-          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
-            activeTab === 'blocks' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'blocks'
+              ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/40 shadow-xs ring-1 ring-brand-cyan/20'
+              : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/80'
           }`}
           title="Bloques visuales para insertar"
         >
@@ -97,25 +101,29 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
         <button
           type="button"
           onClick={() => setActiveTab('layers')}
-          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
-            activeTab === 'layers' ? 'bg-slate-800 text-brand-cyan shadow-xs ring-1 ring-brand-cyan/30' : 'text-slate-400 hover:text-slate-200'
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'layers'
+              ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/40 shadow-xs ring-1 ring-brand-cyan/20'
+              : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/80'
           }`}
           title="Árbol de capas del lienzo"
         >
-          <div className="relative">
-            <Layers className="size-3.5" />
-            <span className="absolute -top-1 -right-2 flex size-3 items-center justify-center rounded-full bg-brand-cyan text-[8px] font-black text-slate-950">
-              {project.layers.length}
-            </span>
-          </div>
+          <Layers className="size-3.5" />
           <span>Capas</span>
+          <span className={`ml-0.5 flex size-4 items-center justify-center rounded-full text-[10px] font-black ${
+            activeTab === 'layers' ? 'bg-brand-cyan text-slate-950' : 'bg-slate-800 text-slate-300'
+          }`}>
+            {project.layers.length}
+          </span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('brand')}
-          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
-            activeTab === 'brand' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'brand'
+              ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/40 shadow-xs ring-1 ring-brand-cyan/20'
+              : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/80'
           }`}
           title="Identidad de marca y DAM"
         >
@@ -126,10 +134,12 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
         <button
           type="button"
           onClick={() => setActiveTab('media')}
-          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
-            activeTab === 'media' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+            activeTab === 'media'
+              ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/40 shadow-xs ring-1 ring-brand-cyan/20'
+              : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/80'
           }`}
-          title="Fotografías oficiales de asesores"
+          title="Fotos y activos subidos"
         >
           <ImageIcon className="size-3.5" />
           <span>Medios</span>
