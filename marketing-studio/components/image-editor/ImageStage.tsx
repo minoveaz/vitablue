@@ -33,6 +33,7 @@ interface ImageStageProps {
   onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
   onUpdateScale: (id: string, scale: number) => void;
+  onUpdateWidth?: (id: string, width?: number) => void;
   onCommitPositionChange?: () => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
@@ -53,6 +54,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onDeselectAll,
   onUpdatePosition,
   onUpdateScale,
+  onUpdateWidth,
   onCommitPositionChange,
   onFitToCanvas,
   onUngroupLayer,
@@ -78,11 +80,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     startX: number;
     startY: number;
     startScale: number;
-    corner: 'nw' | 'ne' | 'se' | 'sw';
+    startWidth: number;
+    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w';
   }>({
     startX: 0,
     startY: 0,
     startScale: 1,
+    startWidth: 380,
     corner: 'se',
   });
 
@@ -159,7 +163,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const handleResizeStart = (
     e: React.MouseEvent,
     layer: ImageLayer,
-    corner: 'nw' | 'ne' | 'se' | 'sw' = 'se'
+    corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w' = 'se'
   ) => {
     e.stopPropagation();
     onSelectLayer(layer.id);
@@ -168,6 +172,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       startX: e.clientX,
       startY: e.clientY,
       startScale: layer.scale ?? 1,
+      startWidth: layer.width ?? 380,
       corner,
     };
   };
@@ -175,7 +180,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (resizingLayerId) {
-        const { startX, startY, startScale, corner } = resizeStartRef.current;
+        const { startX, startY, startScale, startWidth, corner } = resizeStartRef.current;
+        if (corner === 'e' || corner === 'w') {
+          let deltaX = (e.clientX - startX) / zoom;
+          if (corner === 'w') deltaX = -deltaX;
+          const nextWidth = Math.max(180, Math.min(520, startWidth + deltaX * 2));
+          onUpdateWidth?.(resizingLayerId, Math.round(nextWidth));
+          return;
+        }
+
         let deltaX = e.clientX - startX;
         let deltaY = e.clientY - startY;
 
@@ -376,7 +389,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             const isSelected = layer.id === selectedLayerId;
             const blockProps = layer.props as Record<string, unknown>;
 
-            const getBlockWidth = (blockType?: string) => {
+            const getBlockWidth = (blockType?: string, customWidth?: number) => {
+              if (customWidth) return `${customWidth}px`;
               switch (blockType) {
                 case 'MotionAdvisorCard':
                 case 'GlassCardSurface':
@@ -420,8 +434,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   top: `${layer.position.y}%`,
                   transform: `translate(-50%, -50%) scale(${layer.scale ?? 1})`,
                   zIndex: layer.zIndex,
-                  width: getBlockWidth(layer.blockType),
-                  minWidth: getBlockWidth(layer.blockType) === 'auto' ? 'auto' : getBlockWidth(layer.blockType),
+                  width: getBlockWidth(layer.blockType, layer.width),
+                  minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
                   maxWidth: 'none',
                   flexShrink: 0,
                 }}
@@ -528,28 +542,41 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   />
                 )}
 
-                {/* BOUNDING BOX CORNER HANDLES CON ARRASTRE DE REDIMENSIÓN */}
+                {/* BOUNDING BOX CORNER & LATERAL HANDLES CON ARRASTRE DE REDIMENSIÓN */}
                 {isSelected && (
                   <>
+                    {/* ESQUINAS: ESCALA PROPORCIONAL */}
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'nw')}
                       className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
-                      title="Arrastrar para redimensionar"
+                      title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'ne')}
                       className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
-                      title="Arrastrar para redimensionar"
+                      title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'sw')}
                       className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
-                      title="Arrastrar para redimensionar"
+                      title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
                       onMouseDown={(e) => handleResizeStart(e, layer, 'se')}
                       className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
-                      title="Arrastrar para redimensionar"
+                      title="Arrastrar para redimensionar proporcionalmente"
+                    />
+
+                    {/* LATERALES: AJUSTE DE ANCHURA (WIDTH) */}
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'w')}
+                      className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para cambiar el ancho (Width)"
+                    />
+                    <div
+                      onMouseDown={(e) => handleResizeStart(e, layer, 'e')}
+                      className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      title="Arrastrar para cambiar el ancho (Width)"
                     />
                   </>
                 )}

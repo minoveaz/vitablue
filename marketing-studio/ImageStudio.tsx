@@ -151,6 +151,7 @@ export const ImageStudio: React.FC = () => {
             selectedLayer={editor.selectedLayer}
             onUpdateLayerProps={editor.updateLayerProps}
             onUpdateLayerScale={editor.updateLayerScale}
+            onUpdateLayerWidth={editor.updateLayerWidth}
             onUpdateLayerPosition={editor.updateLayerPosition}
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}
@@ -187,6 +188,7 @@ export const ImageStudio: React.FC = () => {
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
+          onUpdateWidth={editor.updateLayerWidth}
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}

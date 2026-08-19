@@ -113,6 +113,7 @@ export interface ImageLayer {
   position: { x: number; y: number }; // Percentage (0-100)
   zIndex: number;
   scale: number;
+  width?: number; // Width in px or relative
   rotation?: number;
   opacity?: number;
   locked?: boolean;

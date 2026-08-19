@@ -108,6 +108,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const updateLayerWidth = useCallback((layerId: string, width?: number) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, width: width ? Math.max(160, Math.min(520, width)) : undefined } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const duplicateLayer = useCallback((layerId: string) => {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
@@ -371,6 +382,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerProps,
     updateLayerPosition,
     updateLayerScale,
+    updateLayerWidth,
     commitPositionChange,
     fitLayerToCanvas,
     ungroupLayer,

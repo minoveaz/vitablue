@@ -10,6 +10,7 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
+  ArrowLeftRight,
   AlignHorizontalJustifyCenter,
   AlignVerticalJustifyCenter,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ export interface ImageStudioInspectorProps {
   selectedLayer: ImageLayer | null;
   onUpdateLayerProps: (id: string, props: Record<string, unknown>) => void;
   onUpdateLayerScale?: (id: string, scale: number) => void;
+  onUpdateLayerWidth?: (id: string, width?: number) => void;
   onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
@@ -33,6 +35,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   selectedLayer,
   onUpdateLayerProps,
   onUpdateLayerScale,
+  onUpdateLayerWidth,
   onUpdateLayerPosition,
   onFitToCanvas,
   onUngroupLayer,
@@ -211,12 +214,62 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
 
-        {/* 2. CONTROL DE TAMAÑO Y ESCALA */}
+        {/* 2. CONTROL DE ANCHO / ANCHURA (WIDTH) */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <ArrowLeftRight className="size-3.5 text-brand-cyan" />
+              <span>Ancho / Anchura (Width)</span>
+            </span>
+            <span className="font-mono text-brand-cyan">
+              {selectedLayer.width ? `${selectedLayer.width}px` : 'Auto'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={200}
+              max={500}
+              step={10}
+              value={selectedLayer.width ?? 380}
+              onChange={(e) => onUpdateLayerWidth?.(selectedLayer.id, parseInt(e.target.value, 10))}
+              className="flex-1 accent-primary"
+            />
+            <button
+              type="button"
+              onClick={() => onUpdateLayerWidth?.(selectedLayer.id, undefined)}
+              className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:bg-slate-700 transition-colors"
+              title="Restablecer a Ancho Automático"
+            >
+              Auto
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 pt-1">
+            {[280, 340, 380, 460].map((w) => (
+              <button
+                key={w}
+                type="button"
+                onClick={() => onUpdateLayerWidth?.(selectedLayer.id, w)}
+                className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                  selectedLayer.width === w
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {w}px
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. CONTROL DE TAMAÑO Y ESCALA */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
             <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
               <Scaling className="size-3.5 text-brand-cyan" />
-              <span>Tamaño / Escala</span>
+              <span>Tamaño / Escala General</span>
             </span>
             <span className="font-mono text-brand-cyan">
               {Math.round((selectedLayer.scale ?? 1) * 100)}%
