@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Film,
   Smartphone,
@@ -11,6 +11,7 @@ import {
   Download,
   LoaderCircle,
   CheckCircle2,
+  Image as ImageIcon,
 } from 'lucide-react';
 import type { VideoAspectRatio, ZoomLevel } from './VideoStage';
 
@@ -188,6 +189,16 @@ export const CreativeEditorToolbar: React.FC<CreativeEditorToolbarProps> = ({
             <span>Preset</span>
           </button>
         )}
+
+        {/* LINK TO IMAGE STUDIO */}
+        <Link
+          to="/backoffice/marketing-studio/image-studio"
+          className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          title="Abrir Image & Graphic Studio (Canva)"
+        >
+          <ImageIcon className="size-3.5 text-primary" />
+          <span className="hidden md:inline">Image Studio</span>
+        </Link>
 
         {/* BOTÓN PRINCIPAL EXPORTAR MP4 */}
         {onExportMp4 && (

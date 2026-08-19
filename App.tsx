@@ -35,6 +35,7 @@ const ToolsHome = lazy(() => import('@/pages/backoffice/ToolsHome'));
 const ProductCatalog = lazy(() => import('@/pages/backoffice/ProductCatalog'));
 const DocumentIntelligence = lazy(() => import('@/pages/backoffice/DocumentIntelligence'));
 const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'));
+const ImageStudio = lazy(() => import('@/marketing-studio/ImageStudio'));
 
 const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
   .filter((route) => route.path.startsWith('/backoffice'))
@@ -50,7 +51,9 @@ const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
         ? ProductCatalog
         : route.path === '/backoffice/tools/document-intelligence'
           ? DocumentIntelligence
-          : MarketingStudio;
+          : route.path === '/backoffice/marketing-studio/image-studio' || route.path === '/backoffice/marketing-studio/creative-studio/image-editor'
+            ? ImageStudio
+            : MarketingStudio;
     return { path: route.path, element: <ProtectedRoute><View /></ProtectedRoute> };
   });
 

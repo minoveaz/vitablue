@@ -107,25 +107,26 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Actualizar `MarketingStudioShell.tsx` con resolución automática de pilares, breadcrumbs y badges de contexto.
 
 ### Fase 2 - Creative Studio: Editor de Assets Visuales & Gráficos (Image & Graphic Studio)
-- [ ] **Stack Tecnológico:**
+- [x] **Stack Tecnológico:**
   - **Lienzo React + Tailwind (WYSIWYG):** Renderizado en vivo usando componentes React puros y tokens semánticos de marca.
   - **Exportación en Cliente (`html-to-image`):** Generación instantánea en navegador a PNG / WebP en 1080p nativo sin dependencias de servidor.
   - **Integración con Remotion Still / Video:** Mismo contrato de componentes consumible por Remotion (`<Still />` o escenas de vídeo).
-- [ ] **Estructura de Interfaz (Inspirada en Canva):**
+- [x] **Estructura de Interfaz (Inspirada en Canva):**
   - **Top Bar:** Botón volver, título editable, selector de presets / *Magic Resize* (4:5 Post Instagram, 1:1 Cuadrado, 9:16 Story/Reel, 16:9 Landscape, Portadas), botón *Guardar en DAM*, *Enviar a Video Studio* y *Descargar PNG*.
   - **Left Rail + Drawer:** Pestañas para Plantillas, Bloques Visuales (MotionKit), Texto, Brand Kit (Tokens/Logos) y Fotos/Medios.
   - **Lienzo Central (`ImageStage`):** Arrastre libre (*drag & drop*), selección con *bounding box*, guías magnéticas de centrado y controles de zoom (`Fit`, `50%`, `75%`, `100%`).
   - **Barra Flotante de Acciones Rápidas:** Color, tipografía, vidrio (*glassmorphism*), alineación, Z-Index, duplicar y eliminar.
-  - **Right Context Inspector (`ImageContextPanel`):** Formulario dinámico para el bloque seleccionado (foto de asesor, citas, sellos, comparativas).
-- [ ] Editor visual interactivo para los bloques gráficos clave:
+  - **Right Context Inspector (`ImageContextInspector`):** Formulario dinámico para el bloque seleccionado (foto de asesor, citas, sellos, comparativas).
+- [x] Editor visual interactivo para los bloques gráficos clave:
   - **Tarjeta de Asesor:** Selector de foto/avatar, badge de estado en vivo, mensaje personalizado y botón WhatsApp con resplandor.
   - **Sellos de Garantía Consular & Trust:** Badges de certificación, checks oficiales y textos de validez.
   - **Parrilla de Aseguradoras:** Selector de compañías oficiales (Sanitas, Adeslas, Asisa, DKV) y etiquetas de cobertura.
   - **Comparativa Visual (Antes vs Después):** Contraste ❌ vs ✅ con opciones personalizadas.
   - **Gancho Titular & Alerta:** Titular de alto impacto con badge de advertencia.
-- [ ] Motor de exportación directa en alta resolución:
-  - Descarga instantánea en **PNG** y **WebP** a 1080p para publicación directa en redes.
-- [ ] Guardado directo como **Activo Reutilizable en Asset DAM** y botón "Enviar a Video Studio" para consumirlo en vídeos.
+- [x] Motor de exportación directa en alta resolución:
+  - Descarga instantánea en **PNG**, **JPEG** y **SVG** a 1080p para publicación directa en redes.
+- [x] Guardado directo como **Activo Reutilizable en Asset DAM** y botón "A Video Studio" para consumirlo en vídeos.
+- [x] Navegación unificada entre *Video Studio (Reels)* e *Image Studio (Canva)* con un solo clic.
 
 ### Fase 3 - Creative Studio: Consumo de Assets en Video Studio (Remotion)
 - [ ] Permitir insertar los bloques visuales editados directamente en cualquier escena del Video Generator con 1 solo clic.

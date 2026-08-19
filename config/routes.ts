@@ -126,6 +126,8 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/backoffice/marketing-studio/conexiones', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/assets', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/generador-contenido', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/image-studio', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/marketing-studio/creative-studio/image-editor', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/dam/video/new', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
 

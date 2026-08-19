@@ -33,7 +33,8 @@ export const backofficeNavigation = [
   { to: '/backoffice/marketing-studio/identidad-de-marca', label: 'Identidad de marca', icon: Palette },
   { to: '/backoffice/marketing-studio/perfiles-sociales', label: 'Perfiles sociales', icon: Image },
   { to: '/backoffice/marketing-studio/assets', label: 'Asset Manager (DAM)', icon: Layers },
-  { to: '/backoffice/marketing-studio/generador-contenido', label: 'Creative Studio (Vídeo)', icon: Video },
+  { to: '/backoffice/marketing-studio/generador-contenido', label: 'Video Studio (Reels)', icon: Video },
+  { to: '/backoffice/marketing-studio/image-studio', label: 'Image Studio (Canva)', icon: Image },
   { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: BarChart3 },
   { to: '/backoffice/marketing-studio/enlaces', label: 'Enlaces y UTMs', icon: Link2 },
   { to: '/backoffice/marketing-studio/conexiones', label: 'Conexiones API', icon: Globe },
@@ -87,6 +88,7 @@ export const vitablueBackofficeSchema: NavigationSchema = {
       priority: 4,
       items: [
         { id: 'content', kind: 'module', moduleId: 'content', label: 'Video Studio (Reels)', icon: 'Video', priority: 1, route: { routeId: '/backoffice/marketing-studio/generador-contenido' } },
+        { id: 'image-studio', kind: 'module', moduleId: 'image-studio', label: 'Image Studio (Canva)', icon: 'Image', priority: 2, route: { routeId: '/backoffice/marketing-studio/image-studio' } },
       ],
     },
     {
@@ -118,6 +120,7 @@ export const defaultAccessMap: AccessMap = {
   profiles: 'enabled',
   assets: 'enabled',
   content: 'enabled',
+  'image-studio': 'enabled',
   campaigns: 'enabled',
   links: 'enabled',
   connections: 'enabled',
