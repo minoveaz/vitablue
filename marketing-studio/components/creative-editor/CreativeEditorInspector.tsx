@@ -2,6 +2,7 @@ import React from 'react';
 import { Trash2, AlertTriangle, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, TransitionType } from '../../../packages/video-studio/src/domain/videoProject';
+import { resolveLayerPosition } from '../../../packages/video-studio/src/domain/videoProject';
 
 export interface CreativeEditorInspectorProps {
   activeScene: Scene | undefined;
@@ -187,6 +188,75 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               </div>
             </div>
           )}
+
+          {/* SECCIÓN DE POSICIÓN Y ALINEACIÓN (COMÚN A TODAS LAS CAPAS VISUALES) */}
+          {selectedLayer.type !== 'audio' && (() => {
+            const layerPos = resolveLayerPosition('position' in selectedLayer ? selectedLayer.position : undefined);
+            return (
+              <div className="pt-3 border-t border-slate-800 space-y-3">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">Posición en el Lienzo</span>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                      Eje X: {layerPos.x}%
+                    </label>
+                    <input
+                      type="range"
+                      min={5}
+                      max={95}
+                      value={layerPos.x}
+                      onChange={(e) => {
+                        onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: Number(e.target.value), y: layerPos.y } });
+                      }}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                      Eje Y: {layerPos.y}%
+                    </label>
+                    <input
+                      type="range"
+                      min={5}
+                      max={95}
+                      value={layerPos.y}
+                      onChange={(e) => {
+                        onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: layerPos.x, y: Number(e.target.value) } });
+                      }}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+                </div>
+
+                {/* BOTONES DE ALINEACIÓN RÁPIDA */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 15 } })}
+                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                  >
+                    Arriba
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 50 } })}
+                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                  >
+                    Centro
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 80 } })}
+                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                  >
+                    Abajo
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       ) : (
         /* MODO B: INSPECTOR DE ESCENA ACTIVA */

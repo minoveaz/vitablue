@@ -45,6 +45,8 @@ export const SocialGenerator: React.FC = () => {
     duplicateLayer,
     removeLayer,
     updateLayer,
+    updateLayerPosition,
+    reorderLayer,
     getSceneWarnings,
     loadPreset,
   } = useVideoProjectEditor();
@@ -284,6 +286,7 @@ export const SocialGenerator: React.FC = () => {
           slides={scenes}
           playerRef={playerRef}
           aspectRatio={aspectRatio}
+          activeScene={activeScene}
           showSafeZones={showSafeZones}
           zoomLevel={zoomLevel}
           selectedLayerId={selectedLayerId}
@@ -291,6 +294,11 @@ export const SocialGenerator: React.FC = () => {
             setSelectedLayerId(id);
             if (id) setIsInspectorOpen(true);
           }}
+          onUpdateLayer={updateLayer}
+          onUpdateLayerPosition={updateLayerPosition}
+          onDuplicateLayer={duplicateLayer}
+          onDeleteLayer={removeLayer}
+          onReorderLayer={reorderLayer}
           onContextMenu={(e) => {
             e.preventDefault();
             const rect = e.currentTarget.getBoundingClientRect();

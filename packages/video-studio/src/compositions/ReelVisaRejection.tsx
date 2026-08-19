@@ -84,18 +84,37 @@ const TimedSubtitleLayers: React.FC<{ layers: SlideData['layers'] }> = ({ layers
           bgStyle = { backgroundColor: '#005F73', padding: '12px 24px', borderRadius: 16 };
         }
 
+        let subtitlePosStyle: React.CSSProperties = {
+          left: 60,
+          right: 60,
+          bottom: 220,
+          display: 'flex',
+          justifyContent: 'center',
+          textAlign: 'center',
+        };
+
+        if (typeof layer.position === 'object') {
+          subtitlePosStyle = {
+            left: `${layer.position.x}%`,
+            top: `${layer.position.y}%`,
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            textAlign: 'center',
+          };
+        } else if (layer.position === 'top') {
+          subtitlePosStyle = { left: 60, right: 60, top: 160, display: 'flex', justifyContent: 'center', textAlign: 'center' };
+        } else if (layer.position === 'center') {
+          subtitlePosStyle = { left: 60, right: 60, top: '50%', transform: 'translateY(-50%)', display: 'flex', justifyContent: 'center', textAlign: 'center' };
+        }
+
         return (
           <Sequence key={layer.id} from={startFrame} durationInFrames={durationInFrames}>
             <div
               style={{
                 position: 'absolute',
-                left: 60,
-                right: 60,
-                bottom: 220,
-                zIndex: 40,
-                display: 'flex',
-                justifyContent: 'center',
-                textAlign: 'center',
+                zIndex: layer.zIndex ?? 40,
+                ...subtitlePosStyle,
               }}
             >
               <span

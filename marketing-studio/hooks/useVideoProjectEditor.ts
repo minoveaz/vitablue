@@ -221,6 +221,25 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
     });
   };
 
+  const updateLayerPosition = (sceneId: string, layerId: string, position: { x: number; y: number }) => {
+    updateLayer(sceneId, layerId, { position });
+  };
+
+  const reorderLayer = (sceneId: string, layerId: string, direction: 'up' | 'down') => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const index = scene.layers.findIndex((l) => l.id === layerId);
+      if (index < 0) return scene;
+      const targetIndex = direction === 'up' ? index + 1 : index - 1;
+      if (targetIndex < 0 || targetIndex >= scene.layers.length) return scene;
+
+      const layers = [...scene.layers];
+      const [moved] = layers.splice(index, 1);
+      layers.splice(targetIndex, 0, moved);
+      return { ...scene, layers };
+    }));
+  };
+
   const getSceneWarnings = (sceneId: string) => {
     const scene = scenes.find((s) => s.id === sceneId);
     if (!scene) return [];
@@ -245,6 +264,8 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
     duplicateLayer,
     removeLayer,
     updateLayer,
+    updateLayerPosition,
+    reorderLayer,
     getSceneWarnings,
     loadPreset,
   };

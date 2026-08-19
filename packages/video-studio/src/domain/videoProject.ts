@@ -53,7 +53,7 @@ export interface SubtitleLayer extends LayerBase {
   stylePreset?: SubtitleStylePreset;
   fontSize?: number;
   color?: string;
-  position?: 'bottom' | 'center' | 'top';
+  position?: { x: number; y: number } | 'bottom' | 'center' | 'top';
 }
 
 export interface ImageLayer extends LayerBase {
@@ -185,4 +185,17 @@ export interface RenderResult {
   outputPath?: string;
   durationSeconds?: number;
   error?: string;
+}
+
+export function resolveLayerPosition(position: { x: number; y: number } | string | undefined, defaultY = 50): { x: number; y: number } {
+  if (typeof position === 'object' && position !== null) {
+    return {
+      x: Math.max(0, Math.min(100, position.x)),
+      y: Math.max(0, Math.min(100, position.y)),
+    };
+  }
+  if (position === 'top') return { x: 50, y: 15 };
+  if (position === 'center') return { x: 50, y: 50 };
+  if (position === 'bottom') return { x: 50, y: 80 };
+  return { x: 50, y: defaultY };
 }

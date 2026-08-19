@@ -2,7 +2,9 @@ import React from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../../../packages/video-studio/src/compositions/ReelVisaRejection';
 import { vitablueBrandAdapter } from '../../../packages/video-studio/src/adapters/vitablue';
+import type { Scene, Layer } from '../../../packages/video-studio/src/domain/videoProject';
 import { SafeZonesOverlay } from './SafeZonesOverlay';
+import { OnCanvasEditorOverlay } from './OnCanvasEditorOverlay';
 
 export type VideoAspectRatio = 'vertical' | 'square' | 'landscape';
 
@@ -10,10 +12,16 @@ export interface VideoStageProps {
   slides: SlideData[];
   playerRef: React.RefObject<PlayerRef | null>;
   aspectRatio: VideoAspectRatio;
+  activeScene?: Scene;
   showSafeZones?: boolean;
   zoomLevel?: 'fit' | '50' | '75' | '100';
   selectedLayerId?: string;
   onSelectLayer?: (layerId: string | undefined) => void;
+  onUpdateLayer?: (sceneId: string, layerId: string, changes: Partial<Layer>) => void;
+  onUpdateLayerPosition?: (sceneId: string, layerId: string, pos: { x: number; y: number }) => void;
+  onDuplicateLayer?: (sceneId: string, layerId: string) => void;
+  onDeleteLayer?: (sceneId: string, layerId: string) => void;
+  onReorderLayer?: (sceneId: string, layerId: string, direction: 'up' | 'down') => void;
   onContextMenu?: (e: React.MouseEvent) => void;
 }
 
@@ -21,10 +29,16 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   slides,
   playerRef,
   aspectRatio,
+  activeScene,
   showSafeZones = false,
   zoomLevel = 'fit',
-  selectedLayerId: _selectedLayerId,
+  selectedLayerId,
   onSelectLayer,
+  onUpdateLayer,
+  onUpdateLayerPosition,
+  onDuplicateLayer,
+  onDeleteLayer,
+  onReorderLayer,
   onContextMenu,
 }) => {
   const totalFrames = slides.reduce((total, slide) => total + slide.durationInFrames, 0);
@@ -73,6 +87,18 @@ export const VideoStage: React.FC<VideoStageProps> = ({
 
         {/* Safe Zones Overlay */}
         <SafeZonesOverlay visible={showSafeZones && aspectRatio === 'vertical'} />
+
+        {/* On-Canvas Direct Interactive Layer Overlay */}
+        <OnCanvasEditorOverlay
+          scene={activeScene}
+          selectedLayerId={selectedLayerId}
+          onSelectLayer={onSelectLayer ?? (() => {})}
+          onUpdateLayer={onUpdateLayer ?? (() => {})}
+          onUpdateLayerPosition={onUpdateLayerPosition ?? (() => {})}
+          onDuplicateLayer={onDuplicateLayer ?? (() => {})}
+          onDeleteLayer={onDeleteLayer ?? (() => {})}
+          onReorderLayer={onReorderLayer ?? (() => {})}
+        />
       </div>
     </div>
   );
