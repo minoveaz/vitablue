@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toPng, toJpeg, toSvg } from 'html-to-image';
 import {
   ImageProject,
@@ -8,6 +8,7 @@ import {
   CanvasBackground,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
+import { saveStoredImageProject } from '../utils/imageProjectStorage';
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
@@ -19,6 +20,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [zoom, setZoom] = useState<number>(0.55);
   const [showSafeZones, setShowSafeZones] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
+
+  // Re-sync if initialProject changes (e.g. routing between assets)
+  useEffect(() => {
+    if (initialProject && initialProject.id !== project.id) {
+      setProject(initialProject);
+      setSelectedLayerId(initialProject.layers[0]?.id ?? null);
+      setHistory([initialProject]);
+      setHistoryIndex(0);
+    }
+  }, [initialProject?.id]);
 
   // History stack for Undo / Redo
   const [history, setHistory] = useState<ImageProject[]>([project]);
@@ -30,6 +42,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       return [...newHistory, nextProject];
     });
     setHistoryIndex((prev) => prev + 1);
+    saveStoredImageProject(nextProject);
+    setLastSavedAt(new Date().toISOString());
   }, [historyIndex]);
 
   const undo = useCallback(() => {
@@ -615,6 +629,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     showSafeZones,
     setShowSafeZones,
     isExporting,
+    lastSavedAt,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < history.length - 1,
     undo,

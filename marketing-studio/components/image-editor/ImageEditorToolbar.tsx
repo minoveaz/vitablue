@@ -18,6 +18,7 @@ import {
   Facebook,
   Linkedin,
   Layers,
+  ArrowLeft,
 } from 'lucide-react';
 import { ImageFormatPreset, IMAGE_FORMAT_PRESETS, ImageProject } from '../../types/imageStudio';
 
@@ -28,6 +29,8 @@ export interface ImageEditorToolbarProps {
   isExporting: boolean;
   showSafeZones: boolean;
   isInspectorOpen: boolean;
+  lastSavedAt?: string;
+  onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
   onUndo: () => void;
@@ -45,6 +48,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   isExporting,
   showSafeZones,
   isInspectorOpen,
+  lastSavedAt,
+  onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
   onUndo,
@@ -89,8 +94,20 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
 
   return (
     <div className="flex h-10 w-full items-center justify-between gap-3 text-white select-none">
-      {/* SECCIÓN IZQUIERDA: TÍTULO DEL PROYECTO + PRESET ACTIVO */}
+      {/* SECCIÓN IZQUIERDA: BOTÓN VOLVER + TÍTULO DEL PROYECTO + PRESET ACTIVO */}
       <div className="flex items-center gap-3 min-w-0">
+        {onBackToHub && (
+          <button
+            type="button"
+            onClick={onBackToHub}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-bold text-slate-300 hover:bg-slate-900 hover:text-white hover:border-slate-700 transition-colors shrink-0"
+            title="Volver a la galería de proyectos (Hub)"
+          >
+            <ArrowLeft className="size-3.5 text-slate-400" />
+            <span className="hidden sm:inline">Hub</span>
+          </button>
+        )}
+
         <div className="flex items-center gap-2 pr-3 border-r border-slate-800 shrink-0">
           <div className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-brand-cyan">
             <ImageIcon className="size-3.5" />
@@ -99,8 +116,17 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
             type="text"
             value={project.title}
             onChange={(e) => onUpdateTitle(e.target.value)}
-            className="truncate text-xs font-bold text-slate-100 bg-transparent hover:bg-slate-900/60 focus:bg-slate-900 border border-transparent hover:border-slate-800 focus:border-primary rounded-md px-1.5 py-0.5 max-w-[180px] sm:max-w-[220px] transition-all outline-none"
+            className="truncate text-xs font-bold text-slate-100 bg-transparent hover:bg-slate-900/60 focus:bg-slate-900 border border-transparent hover:border-slate-800 focus:border-primary rounded-md px-1.5 py-0.5 max-w-[150px] sm:max-w-[200px] transition-all outline-none"
           />
+        </div>
+
+        {/* BADGE DE AUTOGUARDADO LOCAL */}
+        <div
+          className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2 py-0.5 rounded-full shrink-0"
+          title={lastSavedAt ? `Guardado localmente: ${new Date(lastSavedAt).toLocaleTimeString()}` : 'Guardado en LocalStorage'}
+        >
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Guardado local</span>
         </div>
 
         {/* SELECTOR RÁPIDO DE FORMATOS Y MAGIC RESIZE */}

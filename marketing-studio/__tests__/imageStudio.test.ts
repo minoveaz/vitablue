@@ -47,3 +47,19 @@ describe('ImageStudio Presets & Templates', () => {
     expect(templatesWithCompoundBlocks.length).toBeGreaterThanOrEqual(4);
   });
 });
+
+describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
+  it('loads stored projects or seeds with templates', async () => {
+    const { getStoredImageProjects, createBlankImageProject, duplicateStoredImageProject } = await import('../utils/imageProjectStorage');
+    const projects = getStoredImageProjects();
+    expect(projects.length).toBeGreaterThanOrEqual(4);
+
+    const blank = createBlankImageProject('instagram-portrait', 'Test Blank');
+    expect(blank.id).toBeTruthy();
+    expect(blank.title).toBe('Test Blank');
+
+    const copy = duplicateStoredImageProject(blank.id);
+    expect(copy).toBeDefined();
+    expect(copy?.title).toContain('(Copia)');
+  });
+});

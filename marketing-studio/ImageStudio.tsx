@@ -1,22 +1,37 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BackofficeShell from '../components/layouts/BackofficeShell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
 import { ImageStage } from './components/image-editor/ImageStage';
+import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
+import { getStoredImageProjects } from './utils/imageProjectStorage';
 import { FolderOpen } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const assetId = searchParams.get('assetId');
+
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isContextSidebarOpen, setIsContextSidebarOpen] = useState(true);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const editor = useImageProjectEditor();
+  // Load project by assetId from localStorage if present
+  const initialProject = React.useMemo(() => {
+    if (!assetId) return undefined;
+    const stored = getStoredImageProjects();
+    return stored.find((p) => p.id === assetId);
+  }, [assetId]);
+
+  const editor = useImageProjectEditor(initialProject);
 
   // ATAJOS DE TECLADO GLOBALES (Cmd+Z, Ctrl+Z, Redo, Delete, Duplicar)
   useEffect(() => {
+    if (!assetId) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable) {
@@ -61,7 +76,7 @@ export const ImageStudio: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [editor]);
+  }, [editor, assetId]);
 
   const handleSaveToDam = () => {
     setToastMessage('✅ Activo guardado con éxito en la Biblioteca DAM');
@@ -108,6 +123,22 @@ export const ImageStudio: React.FC = () => {
     setIsInspectorOpen(true);
   };
 
+  // IF NO ASSET ID IS PRESENT, RENDER THE PROJECTS OVERVIEW HUB
+  if (!assetId) {
+    return (
+      <BackofficeShell
+        title="Image & Graphic Studio"
+        eyebrow="Creative Studio"
+        breadcrumbs={['Marketing Studio', 'Image Studio']}
+        mode="standard"
+        hideModuleHeader={false}
+      >
+        <ImageStudioHub onOpenProject={(id) => setSearchParams({ assetId: id })} />
+      </BackofficeShell>
+    );
+  }
+
+  // IF ASSET ID IS PRESENT, RENDER THE FULL CANVAS EDITOR
   return (
     <BackofficeShell
       title="Image & Graphic Studio"
@@ -124,6 +155,8 @@ export const ImageStudio: React.FC = () => {
           isExporting={editor.isExporting}
           showSafeZones={editor.showSafeZones}
           isInspectorOpen={isInspectorOpen}
+          lastSavedAt={editor.lastSavedAt}
+          onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
           onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
           onUndo={editor.undo}
