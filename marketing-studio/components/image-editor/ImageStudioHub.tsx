@@ -110,7 +110,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#001219] text-slate-100 p-6 md:p-10 font-sans overflow-y-auto">
+    <div className="h-full w-full bg-[#001219] text-slate-100 p-6 md:p-10 font-sans overflow-y-auto">
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
