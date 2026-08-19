@@ -87,7 +87,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     currentY: number;
   } | null>(null);
   const [guides, setGuides] = useState<Array<{ points: [number, number, number, number]; color: string; orientation: 'vertical' | 'horizontal' }>>([]);
-  const [hoveredLayerId, setHoveredLayerId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
   const effectiveHandMode = toolMode === 'hand' || isSpacePressed;
@@ -183,21 +182,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       // Gesto de pellizco (Pinch-to-zoom en Trackpad de macOS/Windows genera e.ctrlKey o e.metaKey)
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
-        const activeTargetId = hoveredLayerId ?? selectedLayerId;
-        const targetLayer = project.layers.find((l) => l.id === activeTargetId);
-
-        // Si el cursor está sobre un componente o hay un componente activo: reescala el componente
-        if (targetLayer && hoveredLayerId) {
-          const factor = Math.exp(-e.deltaY * 0.006);
-          const currentScale = targetLayer.scale ?? 1;
-          const nextScale = Math.max(0.35, Math.min(2.5, currentScale * factor));
-          onUpdateScale(targetLayer.id, parseFloat(nextScale.toFixed(2)));
-        } else {
-          // Si el cursor está en el fondo del lienzo o fuera: zoom general del lienzo
-          const factor = Math.exp(-e.deltaY * 0.008);
-          const nextZoom = Math.max(0.15, Math.min(3.0, zoom * factor));
-          onSetZoom(parseFloat(nextZoom.toFixed(2)));
-        }
+        // Zoom general del lienzo (estándar universal Canva / Figma)
+        const factor = Math.exp(-e.deltaY * 0.008);
+        const nextZoom = Math.max(0.15, Math.min(3.0, zoom * factor));
+        onSetZoom(parseFloat(nextZoom.toFixed(2)));
       } else {
         // Desplazamiento panorámico (Pan) con dos dedos
         e.preventDefault();
@@ -212,7 +200,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     return () => {
       containerEl.removeEventListener('wheel', handleWheel);
     };
-  }, [zoom, hoveredLayerId, selectedLayerId, project.layers, onSetZoom, onUpdateScale]);
+  }, [zoom, onSetZoom]);
 
   const handleContainerMouseDown = (e: React.MouseEvent) => {
     if (effectiveHandMode || e.button === 1) {
@@ -748,8 +736,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 key={layer.id}
                 onMouseDown={(e) => handleMouseDown(e, layer)}
                 onContextMenu={(e) => handleContextMenu(e, layer)}
-                onMouseEnter={() => setHoveredLayerId(layer.id)}
-                onMouseLeave={() => setHoveredLayerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectLayer(layer.id, e.shiftKey || e.metaKey || e.ctrlKey);
