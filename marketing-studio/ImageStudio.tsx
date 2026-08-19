@@ -265,6 +265,11 @@ export const ImageStudio: React.FC = () => {
           onSelectLayer={handleSelectLayer}
           onSelectMultipleLayers={editor.selectMultipleLayers}
           onGroupSelectedLayers={editor.groupSelectedLayers}
+          onDeleteSelectedLayers={editor.deleteSelectedLayers}
+          onToggleLock={editor.toggleLayerLock}
+          onToggleVisibility={editor.toggleLayerVisibility}
+          onMoveZIndex={editor.moveLayerZIndex}
+          onAlignSelectedLayers={editor.alignSelectedLayers}
           onSelectCanvas={handleSelectCanvas}
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}

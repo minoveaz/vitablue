@@ -11,10 +11,21 @@ import {
   Maximize2,
   Layers,
   Ungroup,
+  FolderPlus,
   Copy,
   Trash2,
   MousePointer,
   Hand,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  ArrowUp,
+  ArrowDown,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignVerticalJustifyCenter,
 } from 'lucide-react';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
@@ -29,6 +40,11 @@ interface ImageStageProps {
   onSelectLayer: (id: string, isShift?: boolean) => void;
   onSelectMultipleLayers?: (ids: string[]) => void;
   onGroupSelectedLayers?: () => void;
+  onDeleteSelectedLayers?: () => void;
+  onToggleLock?: (id: string) => void;
+  onToggleVisibility?: (id: string) => void;
+  onMoveZIndex?: (id: string, direction: 'up' | 'down') => void;
+  onAlignSelectedLayers?: (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
   onSelectCanvas: () => void;
   onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
@@ -56,6 +72,11 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onSelectLayer,
   onSelectMultipleLayers,
   onGroupSelectedLayers,
+  onDeleteSelectedLayers,
+  onToggleLock,
+  onToggleVisibility,
+  onMoveZIndex,
+  onAlignSelectedLayers,
   onSelectCanvas,
   onDeselectAll,
   onUpdatePosition,
@@ -221,9 +242,31 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     const target = e.target as HTMLElement;
-    if (!target.closest('.canvas-layer-item') && !target.closest('.artboard-bg') && !target.closest('.interactive-handle')) {
+    if (
+      target.closest('.canvas-layer-item') ||
+      target.closest('.interactive-handle') ||
+      target.closest('.artboard-bg')
+    ) {
+      return;
+    }
+
+    // Iniciar Marquee Selection desde el espacio exterior
+    if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
       onDeselectAll();
     }
+
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const startX = (e.clientX - rect.left) / zoom;
+    const startY = (e.clientY - rect.top) / zoom;
+
+    setIsMarqueeSelecting(true);
+    setMarqueeBox({
+      startX,
+      startY,
+      currentX: startX,
+      currentY: startY,
+    });
   };
 
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
@@ -308,10 +351,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const handleContextMenu = (e: React.MouseEvent, layer: ImageLayer) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelectLayer(layer.id);
+    if (!selectedLayerIds.includes(layer.id)) {
+      onSelectLayer(layer.id, false);
+    }
     setContextMenu({
-      x: e.clientX,
-      y: e.clientY,
+      x: Math.min(window.innerWidth - 270, e.clientX),
+      y: Math.min(window.innerHeight - 440, e.clientY),
       layer,
     });
   };
@@ -566,70 +611,278 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </div>
       )}
 
-      {/* RIGHT-CLICK CONTEXT MENU */}
+      {/* RIGHT-CLICK CONTEXT MENU (ESTILO CANVA) */}
       {contextMenu && (
         <div
           style={{ left: contextMenu.x, top: contextMenu.y }}
-          className="fixed z-50 min-w-[220px] rounded-2xl border border-slate-700 bg-slate-950/95 p-1.5 shadow-2xl backdrop-blur-xl animate-fadeIn text-xs text-slate-200"
+          className="fixed z-50 min-w-[240px] max-w-[280px] rounded-2xl border border-slate-700/80 bg-slate-950/95 p-1.5 shadow-2xl backdrop-blur-xl animate-fadeIn text-xs text-slate-200 divide-y divide-slate-800/80 select-none"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
-            {contextMenu.layer.title}
+          {/* HEADER / TITULAR */}
+          <div className="px-3 py-1.5 flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 truncate">
+              {selectedLayerIds.length > 1
+                ? `${selectedLayerIds.length} Elementos Seleccionados`
+                : contextMenu.layer.title}
+            </span>
           </div>
 
-          {['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard'].includes(contextMenu.layer.blockType ?? '') && onUngroupLayer && (
+          {/* SECCIÓN 1: ACCIONES BÁSICAS (DUPLICAR, ELIMINAR) */}
+          <div className="py-1">
             <button
               type="button"
               onClick={() => {
-                onUngroupLayer(contextMenu.layer.id);
+                if (selectedLayerIds.length > 1) {
+                  selectedLayerIds.forEach((id) => onDuplicateLayer(id));
+                } else {
+                  onDuplicateLayer(contextMenu.layer.id);
+                }
                 setContextMenu(null);
               }}
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left font-bold text-amber-300 hover:bg-amber-500/20 transition-colors"
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
-              <Ungroup className="size-4 text-amber-400" />
-              <span>Desagrupar en Elementos Libres</span>
+              <div className="flex items-center gap-2">
+                <Copy className="size-3.5 text-slate-400" />
+                <span>Duplicar</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">⌘D</kbd>
             </button>
-          )}
 
-          {onFitToCanvas && (
             <button
               type="button"
               onClick={() => {
-                onFitToCanvas(contextMenu.layer.id);
+                if (selectedLayerIds.length > 1 && onDeleteSelectedLayers) {
+                  onDeleteSelectedLayers();
+                } else {
+                  onRemoveLayer(contextMenu.layer.id);
+                }
                 setContextMenu(null);
               }}
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left hover:bg-slate-800 hover:text-white transition-colors"
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left text-rose-400 hover:bg-rose-950/50 hover:text-rose-300 transition-colors"
             >
-              <Maximize2 className="size-4 text-primary" />
-              <span>Auto-Ajustar al Lienzo</span>
+              <div className="flex items-center gap-2">
+                <Trash2 className="size-3.5 text-rose-400" />
+                <span>Eliminar</span>
+              </div>
+              <kbd className="text-[10px] text-rose-400/60 font-mono">DELETE</kbd>
             </button>
+          </div>
+
+          {/* SECCIÓN 2: AGRUPACIÓN / DESAGRUPACIÓN */}
+          {(selectedLayerIds.length >= 2 || ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(contextMenu.layer.blockType ?? '')) && (
+            <div className="py-1">
+              {selectedLayerIds.length >= 2 && onGroupSelectedLayers && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onGroupSelectedLayers();
+                    setContextMenu(null);
+                  }}
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left font-bold text-brand-cyan hover:bg-brand-cyan/20 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <FolderPlus className="size-3.5 text-brand-cyan" />
+                    <span>Agrupar elementos</span>
+                  </div>
+                  <kbd className="text-[10px] text-brand-cyan/80 font-mono">⌘G</kbd>
+                </button>
+              )}
+
+              {onUngroupLayer && ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(contextMenu.layer.blockType ?? '') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUngroupLayer(contextMenu.layer.id);
+                    setContextMenu(null);
+                  }}
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left font-bold text-amber-300 hover:bg-amber-500/20 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Ungroup className="size-3.5 text-amber-400" />
+                    <span>Desagrupar en Elementos Libres</span>
+                  </div>
+                  <kbd className="text-[10px] text-amber-400/80 font-mono">⇧⌘G</kbd>
+                </button>
+              )}
+            </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              onDuplicateLayer(contextMenu.layer.id);
-              setContextMenu(null);
-            }}
-            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left hover:bg-slate-800 hover:text-white transition-colors"
-          >
-            <Copy className="size-4 text-slate-400" />
-            <span>Duplicar Capa</span>
-          </button>
+          {/* SECCIÓN 3: CAPA / ORDEN Z */}
+          <div className="py-1">
+            <button
+              type="button"
+              onClick={() => {
+                onMoveZIndex?.(contextMenu.layer.id, 'up');
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowUp className="size-3.5 text-slate-400" />
+                <span>Traer al frente</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">]</kbd>
+            </button>
 
-          <div className="my-1 border-t border-slate-800" />
+            <button
+              type="button"
+              onClick={() => {
+                onMoveZIndex?.(contextMenu.layer.id, 'down');
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowDown className="size-3.5 text-slate-400" />
+                <span>Enviar al fondo</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">[</kbd>
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              onRemoveLayer(contextMenu.layer.id);
-              setContextMenu(null);
-            }}
-            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors"
-          >
-            <Trash2 className="size-4 text-rose-400" />
-            <span>Eliminar Capa</span>
-          </button>
+          {/* SECCIÓN 4: ALINEACIÓN AL LIENZO */}
+          <div className="py-1">
+            <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500">
+              Alinear al Lienzo
+            </div>
+            <div className="grid grid-cols-4 gap-1 px-2 py-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
+                    onAlignSelectedLayers('left');
+                  } else {
+                    onUpdatePosition(contextMenu.layer.id, { x: 20, y: contextMenu.layer.position.y });
+                  }
+                  setContextMenu(null);
+                }}
+                className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Alinear a la izquierda"
+              >
+                <AlignLeft className="size-3" />
+                <span>Izq</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
+                    onAlignSelectedLayers('center');
+                  } else {
+                    onUpdatePosition(contextMenu.layer.id, { x: 50, y: contextMenu.layer.position.y });
+                  }
+                  setContextMenu(null);
+                }}
+                className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Centrar horizontalmente"
+              >
+                <AlignCenter className="size-3" />
+                <span>Centro</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
+                    onAlignSelectedLayers('right');
+                  } else {
+                    onUpdatePosition(contextMenu.layer.id, { x: 80, y: contextMenu.layer.position.y });
+                  }
+                  setContextMenu(null);
+                }}
+                className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Alinear a la derecha"
+              >
+                <AlignRight className="size-3" />
+                <span>Der</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
+                    onAlignSelectedLayers('middle');
+                  } else {
+                    onUpdatePosition(contextMenu.layer.id, { x: contextMenu.layer.position.x, y: 50 });
+                  }
+                  setContextMenu(null);
+                }}
+                className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                title="Centrar verticalmente"
+              >
+                <AlignVerticalJustifyCenter className="size-3" />
+                <span>Medio</span>
+              </button>
+            </div>
+          </div>
+
+          {/* SECCIÓN 5: BLOQUEO, VISIBILIDAD Y AUTO-AJUSTE */}
+          <div className="py-1">
+            {onToggleLock && (
+              <button
+                type="button"
+                onClick={() => {
+                  onToggleLock(contextMenu.layer.id);
+                  setContextMenu(null);
+                }}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  {contextMenu.layer.locked ? (
+                    <>
+                      <Unlock className="size-3.5 text-amber-400" />
+                      <span>Desbloquear capa</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="size-3.5 text-slate-400" />
+                      <span>Bloquear capa</span>
+                    </>
+                  )}
+                </div>
+                <kbd className="text-[10px] text-slate-500 font-mono">⌥⇧L</kbd>
+              </button>
+            )}
+
+            {onToggleVisibility && (
+              <button
+                type="button"
+                onClick={() => {
+                  onToggleVisibility(contextMenu.layer.id);
+                  setContextMenu(null);
+                }}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  {contextMenu.layer.visible === false ? (
+                    <>
+                      <Eye className="size-3.5 text-brand-cyan" />
+                      <span>Mostrar capa</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="size-3.5 text-slate-400" />
+                      <span>Ocultar capa</span>
+                    </>
+                  )}
+                </div>
+              </button>
+            )}
+
+            {onFitToCanvas && (
+              <button
+                type="button"
+                onClick={() => {
+                  onFitToCanvas(contextMenu.layer.id);
+                  setContextMenu(null);
+                }}
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+              >
+                <Maximize2 className="size-3.5 text-primary" />
+                <span>Auto-Ajustar al Lienzo</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 
