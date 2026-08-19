@@ -6,7 +6,7 @@ import { FolderOpen } from 'lucide-react';
 import BackofficeShell from '@/components/layouts/BackofficeShell';
 import { useVideoProjectEditor } from './hooks/useVideoProjectEditor';
 import { CreativeEditorToolbar } from './components/creative-editor/CreativeEditorToolbar';
-import { VideoStage, VideoAspectRatio } from './components/creative-editor/VideoStage';
+import { VideoStage, VideoAspectRatio, ZoomLevel } from './components/creative-editor/VideoStage';
 import { TransportControls } from './components/creative-editor/TransportControls';
 import { VideoTimeline } from './components/VideoTimeline';
 import { CreativeEditorAssetSidebar } from './components/creative-editor/CreativeEditorAssetSidebar';
@@ -57,7 +57,7 @@ export const SocialGenerator: React.FC = () => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<VideoAspectRatio>('vertical');
   const [showSafeZones, setShowSafeZones] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState<'fit' | '50' | '75' | '100'>('fit');
+  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('fit');
   const [isContextSidebarOpen, setIsContextSidebarOpen] = useState(true);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
@@ -289,6 +289,7 @@ export const SocialGenerator: React.FC = () => {
           activeScene={activeScene}
           showSafeZones={showSafeZones}
           zoomLevel={zoomLevel}
+          onZoomLevelChange={setZoomLevel}
           selectedLayerId={selectedLayerId}
           onSelectLayer={(id) => {
             setSelectedLayerId(id);

@@ -12,7 +12,7 @@ import {
   LoaderCircle,
   CheckCircle2,
 } from 'lucide-react';
-import type { VideoAspectRatio } from './VideoStage';
+import type { VideoAspectRatio, ZoomLevel } from './VideoStage';
 
 export interface CreativeEditorToolbarProps {
   projectTitle?: string;
@@ -20,8 +20,8 @@ export interface CreativeEditorToolbarProps {
   onAspectRatioChange: (ratio: VideoAspectRatio) => void;
   showSafeZones: boolean;
   onToggleSafeZones: () => void;
-  zoomLevel: 'fit' | '50' | '75' | '100';
-  onZoomLevelChange: (zoom: 'fit' | '50' | '75' | '100') => void;
+  zoomLevel: ZoomLevel;
+  onZoomLevelChange: (zoom: ZoomLevel) => void;
   isInspectorOpen: boolean;
   onToggleInspector: () => void;
   onLoadPreset?: () => void;
@@ -128,14 +128,21 @@ export const CreativeEditorToolbar: React.FC<CreativeEditorToolbarProps> = ({
           <ZoomIn className="size-3.5 text-slate-500" />
           <select
             aria-label="Nivel de zoom del visor"
-            value={zoomLevel}
-            onChange={(e) => onZoomLevelChange(e.target.value as typeof zoomLevel)}
+            value={zoomLevel.toString()}
+            onChange={(e) => {
+              const val = e.target.value;
+              onZoomLevelChange(val === 'fit' ? 'fit' : Number(val));
+            }}
             className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-[11px] font-bold text-slate-300 focus:border-primary focus:outline-none"
           >
             <option value="fit">Ajustar</option>
+            {typeof zoomLevel === 'number' && ![50, 75, 100, 150].includes(zoomLevel) && (
+              <option value={zoomLevel.toString()}>{zoomLevel}%</option>
+            )}
             <option value="50">50%</option>
             <option value="75">75%</option>
             <option value="100">100%</option>
+            <option value="150">150%</option>
           </select>
         </div>
 

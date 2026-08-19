@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../../../packages/video-studio/src/compositions/ReelVisaRejection';
 import { vitablueBrandAdapter } from '../../../packages/video-studio/src/adapters/vitablue';
 import type { Scene, Layer } from '../../../packages/video-studio/src/domain/videoProject';
 import { SafeZonesOverlay } from './SafeZonesOverlay';
 import { OnCanvasEditorOverlay } from './OnCanvasEditorOverlay';
+import { Minus, Plus, Maximize2, RotateCcw } from 'lucide-react';
 
 export type VideoAspectRatio = 'vertical' | 'square' | 'landscape';
+export type ZoomLevel = 'fit' | number;
 
 export interface VideoStageProps {
   slides: SlideData[];
@@ -14,7 +16,8 @@ export interface VideoStageProps {
   aspectRatio: VideoAspectRatio;
   activeScene?: Scene;
   showSafeZones?: boolean;
-  zoomLevel?: 'fit' | '50' | '75' | '100';
+  zoomLevel?: ZoomLevel;
+  onZoomLevelChange?: (zoom: ZoomLevel) => void;
   selectedLayerId?: string;
   onSelectLayer?: (layerId: string | undefined) => void;
   onUpdateLayer?: (sceneId: string, layerId: string, changes: Partial<Layer>) => void;
@@ -32,6 +35,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   activeScene,
   showSafeZones = false,
   zoomLevel = 'fit',
+  onZoomLevelChange,
   selectedLayerId,
   onSelectLayer,
   onUpdateLayer,
@@ -41,6 +45,13 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   onReorderLayer,
   onContextMenu,
 }) => {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const isSpacePressedRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   const totalFrames = slides.reduce((total, slide) => total + slide.durationInFrames, 0);
 
   // Dynamic Resolution Specs
@@ -51,54 +62,233 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   };
 
   const currentRes = resolutionMap[aspectRatio];
+  const numericZoom = typeof zoomLevel === 'number' ? zoomLevel : 100;
+  const isFit = zoomLevel === 'fit';
+
+  // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & TWO-FINGER PAN)
+  useEffect(() => {
+    const stageEl = stageRef.current;
+    if (!stageEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Gesto de pellizco (Pinch-to-zoom en Trackpad de macOS/Windows genera e.ctrlKey o e.metaKey)
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const currentZoom = typeof zoomLevel === 'number' ? zoomLevel : 100;
+        const factor = Math.exp(-e.deltaY * 0.006);
+        const nextZoom = Math.max(25, Math.min(300, Math.round(currentZoom * factor)));
+        onZoomLevelChange?.(nextZoom);
+      } else if (isSpacePressedRef.current || zoomLevel !== 'fit') {
+        // Desplazamiento con dos dedos cuando se está haciendo zoom o pulsando espacio
+        e.preventDefault();
+        setPanOffset((prev) => ({
+          x: prev.x - e.deltaX,
+          y: prev.y - e.deltaY,
+        }));
+      }
+    };
+
+    stageEl.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      stageEl.removeEventListener('wheel', handleWheel);
+    };
+  }, [zoomLevel, onZoomLevelChange]);
+
+  // 2. DETECCIÓN DE BARRA ESPACIADORA PARA MODO MANO (PAN)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        setIsSpacePressed(true);
+        isSpacePressedRef.current = true;
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        setIsSpacePressed(false);
+        isSpacePressedRef.current = false;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isSpacePressed || e.button === 1 /* Middle click */) {
+      e.preventDefault();
+      setIsPanning(true);
+      dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (isPanning) {
+      setPanOffset({
+        x: e.clientX - dragStartRef.current.x,
+        y: e.clientY - dragStartRef.current.y,
+      });
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isPanning) {
+      setIsPanning(false);
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {
+        // Ignorar si el puntero ya fue liberado
+      }
+    }
+  };
+
+  const handleResetFit = () => {
+    onZoomLevelChange?.('fit');
+    setPanOffset({ x: 0, y: 0 });
+  };
+
+  const handleStepZoom = (delta: number) => {
+    const next = Math.max(25, Math.min(200, numericZoom + delta));
+    onZoomLevelChange?.(next);
+  };
+
+  const scaleTransform = isFit ? 1 : numericZoom / 100;
 
   return (
     <div
-      className="relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]"
+      ref={stageRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
       onContextMenu={onContextMenu}
       onClick={() => onSelectLayer?.(undefined)}
+      className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] select-none ${
+        isSpacePressed ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
+      }`}
     >
+      {/* CONTENEDOR TRANSFORMABLE DEL LIENZO CON ZOOM Y PAN */}
       <div
-        className={`relative max-h-full max-w-full overflow-hidden rounded-2xl border-2 border-slate-800 bg-black shadow-2xl transition-all duration-200 ${currentRes.aspectClass}`}
         style={{
-          height: zoomLevel === 'fit' ? '100%' : zoomLevel === '50' ? '50%' : zoomLevel === '75' ? '75%' : '100%',
+          transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${scaleTransform})`,
+          transformOrigin: 'center center',
+          transition: isPanning ? 'none' : 'transform 0.1s ease-out',
         }}
+        className="relative flex h-full max-h-full items-center justify-center pointer-events-auto"
+      >
+        <div
+          className={`relative max-h-full max-w-full overflow-hidden rounded-2xl border-2 border-slate-800 bg-black shadow-2xl ${currentRes.aspectClass}`}
+          style={{ height: '100%' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Player
+            ref={playerRef}
+            component={ReelVisaRejection}
+            inputProps={{
+              slides,
+              brandAdapter: vitablueBrandAdapter,
+              aspectRatio,
+            }}
+            durationInFrames={Math.max(totalFrames, 1)}
+            compositionWidth={currentRes.width}
+            compositionHeight={currentRes.height}
+            fps={30}
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+            controls={false}
+            loop
+          />
+
+          {/* Safe Zones Overlay */}
+          <SafeZonesOverlay visible={showSafeZones && aspectRatio === 'vertical'} />
+
+          {/* On-Canvas Direct Interactive Layer Overlay */}
+          <OnCanvasEditorOverlay
+            scene={activeScene}
+            selectedLayerId={selectedLayerId}
+            onSelectLayer={onSelectLayer ?? (() => {})}
+            onUpdateLayer={onUpdateLayer ?? (() => {})}
+            onUpdateLayerPosition={onUpdateLayerPosition ?? (() => {})}
+            onDuplicateLayer={onDuplicateLayer ?? (() => {})}
+            onDeleteLayer={onDeleteLayer ?? (() => {})}
+            onReorderLayer={onReorderLayer ?? (() => {})}
+          />
+        </div>
+      </div>
+
+      {/* BARRA INFERIOR FLOTANTE DE CONTROL DE ZOOM (ESTILO CANVA / CAPCUT) */}
+      <div
+        className="absolute bottom-4 right-4 z-40 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3 py-1.5 text-xs text-white shadow-2xl backdrop-blur-md ring-1 ring-white/5"
         onClick={(e) => e.stopPropagation()}
       >
-        <Player
-          ref={playerRef}
-          component={ReelVisaRejection}
-          inputProps={{
-            slides,
-            brandAdapter: vitablueBrandAdapter,
-            aspectRatio,
-          }}
-          durationInFrames={Math.max(totalFrames, 1)}
-          compositionWidth={currentRes.width}
-          compositionHeight={currentRes.height}
-          fps={30}
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-          controls={false}
-          loop
+        {/* BOTÓN RESTABLECER PAN SI SE HA MOVIDO */}
+        {(panOffset.x !== 0 || panOffset.y !== 0) && (
+          <button
+            type="button"
+            onClick={() => setPanOffset({ x: 0, y: 0 })}
+            className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            title="Centrar lienzo"
+          >
+            <RotateCcw className="size-3.5" />
+          </button>
+        )}
+
+        {/* BOTÓN ZOOM OUT (-) */}
+        <button
+          type="button"
+          onClick={() => handleStepZoom(-10)}
+          className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          title="Alejar (Zoom out)"
+        >
+          <Minus className="size-3.5" />
+        </button>
+
+        {/* SLIDER DE ZOOM */}
+        <input
+          type="range"
+          min={25}
+          max={200}
+          step={5}
+          value={numericZoom}
+          onChange={(e) => onZoomLevelChange?.(Number(e.target.value))}
+          className="w-20 sm:w-28 accent-primary h-1 bg-slate-700 rounded-lg cursor-pointer"
+          title={`Zoom: ${numericZoom}%`}
         />
 
-        {/* Safe Zones Overlay */}
-        <SafeZonesOverlay visible={showSafeZones && aspectRatio === 'vertical'} />
+        {/* BOTÓN ZOOM IN (+) */}
+        <button
+          type="button"
+          onClick={() => handleStepZoom(10)}
+          className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          title="Acercar (Zoom in)"
+        >
+          <Plus className="size-3.5" />
+        </button>
 
-        {/* On-Canvas Direct Interactive Layer Overlay */}
-        <OnCanvasEditorOverlay
-          scene={activeScene}
-          selectedLayerId={selectedLayerId}
-          onSelectLayer={onSelectLayer ?? (() => {})}
-          onUpdateLayer={onUpdateLayer ?? (() => {})}
-          onUpdateLayerPosition={onUpdateLayerPosition ?? (() => {})}
-          onDuplicateLayer={onDuplicateLayer ?? (() => {})}
-          onDeleteLayer={onDeleteLayer ?? (() => {})}
-          onReorderLayer={onReorderLayer ?? (() => {})}
-        />
+        {/* INDICADOR DE PORCENTAJE NUMÉRICO */}
+        <span className="font-mono text-[11px] font-bold text-slate-200 min-w-[36px] text-center">
+          {isFit ? 'Ajustar' : `${numericZoom}%`}
+        </span>
+
+        {/* BOTÓN AJUSTAR (FIT) */}
+        <button
+          type="button"
+          onClick={handleResetFit}
+          className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition-all ${
+            isFit
+              ? 'bg-primary/30 text-brand-cyan border border-primary/40'
+              : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+          }`}
+          title="Ajustar al tamaño de pantalla"
+        >
+          <Maximize2 className="size-3" />
+          <span>Ajustar</span>
+        </button>
       </div>
     </div>
   );
