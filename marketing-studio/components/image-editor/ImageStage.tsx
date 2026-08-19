@@ -134,6 +134,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const baseWidth = 540;
   const computedHeight = (baseWidth * aspectHeight) / aspectWidth;
 
+  const isCanvasSelected = selectedLayerId === null;
+
   return (
     <div
       ref={containerRef}
@@ -161,10 +163,22 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           transformOrigin: 'center center',
         }}
       >
+        {/* BADGE DE LIENZO ACTIVO */}
+        {isCanvasSelected && (
+          <div className="absolute -top-6 left-0 flex items-center gap-1.5 text-[10px] font-mono font-bold text-brand-cyan tracking-wide animate-fadeIn">
+            <span className="inline-block size-1.5 rounded-full bg-brand-cyan animate-pulse" />
+            <span>Lienzo ({project.preset.name} · {project.preset.aspectRatio})</span>
+          </div>
+        )}
+
         <div
           ref={canvasRef}
           onClick={() => onSelectLayer(null)}
-          className="relative overflow-hidden rounded-none shadow-[0_0_50px_rgba(0,0,0,0.85)] border border-slate-800 transition-all cursor-default"
+          className={`relative overflow-hidden rounded-none transition-all cursor-default ${
+            isCanvasSelected
+              ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-slate-950 shadow-[0_0_50px_rgba(148,210,189,0.25),0_0_0_1px_rgba(148,210,189,0.8)]'
+              : 'border border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.85)]'
+          }`}
           style={{
             width: `${baseWidth}px`,
             height: `${computedHeight}px`,
