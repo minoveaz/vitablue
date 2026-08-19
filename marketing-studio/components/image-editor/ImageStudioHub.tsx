@@ -437,37 +437,90 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                   </div>
                 </div>
 
-                {/* PRESETS GRID FOR SELECTED CATEGORY (CON SCROLL FLUIDO) */}
-                <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                {/* PRESETS GRID FOR SELECTED CATEGORY (CON SILUETA DE PREVISUALIZACIÓN VISUAL) */}
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {IMAGE_FORMAT_PRESETS.filter(
                     (p) => modalCategoryTab === 'all' || p.category === modalCategoryTab
                   ).map((preset) => {
                     const isSelected = selectedPresetId === preset.id;
+                    
+                    // Cálculo de proporción para la silueta dentro de la caja de 100px
+                    const ratio = preset.width / preset.height;
+                    const maxH = 80;
+                    const maxW = 120;
+                    let w = maxH * ratio;
+                    let h = maxH;
+                    if (w > maxW) {
+                      w = maxW;
+                      h = maxW / ratio;
+                    }
+
                     return (
                       <button
                         key={preset.id}
                         type="button"
                         onClick={() => setSelectedPresetId(preset.id)}
-                        className={`flex flex-col justify-between p-3 rounded-2xl border text-left transition-all ${
+                        className={`flex flex-col justify-between p-3.5 rounded-2xl border text-left transition-all group ${
                           isSelected
-                            ? 'border-brand-cyan bg-primary/20 text-white shadow-md ring-1 ring-brand-cyan'
+                            ? 'border-brand-cyan bg-primary/20 text-white shadow-lg ring-1 ring-brand-cyan'
                             : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900/60'
                         }`}
                       >
+                        {/* HEADER DE TARJETA */}
                         <div>
                           <div className="flex items-center justify-between w-full mb-1">
-                            <span className="text-xs font-bold text-slate-100 truncate pr-1">{preset.name}</span>
-                            <span className="text-[10px] font-mono font-bold text-brand-cyan bg-brand-cyan/10 px-1.5 py-0.5 rounded-md shrink-0">
+                            <span className="text-xs font-bold text-slate-100 truncate pr-1 group-hover:text-brand-cyan transition-colors">
+                              {preset.name}
+                            </span>
+                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 transition-colors ${
+                              isSelected ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-900 text-slate-400'
+                            }`}>
                               {preset.aspectRatio}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-400 line-clamp-2 mb-2 leading-tight">
+                          <p className="text-[11px] text-slate-400 line-clamp-1 mb-2">
                             {preset.description}
                           </p>
                         </div>
-                        <div className="flex items-center justify-between w-full text-[10px] font-mono text-slate-500 pt-1.5 border-t border-slate-900">
-                          <span>{preset.width} × {preset.height} px</span>
-                          <span className="text-amber-400/90 font-sans truncate max-w-[110px]">{preset.recommendedFor}</span>
+
+                        {/* PREVISUALIZACIÓN VISUAL DE PROPORCIONES DE LIENZO */}
+                        <div className="my-1.5 flex h-24 w-full items-center justify-center rounded-xl bg-slate-950/90 border border-slate-800/80 p-2 relative overflow-hidden group-hover:border-teal-500/30 transition-colors">
+                          {/* Patrón de cuadrícula de fondo */}
+                          <div
+                            className="absolute inset-0 opacity-15"
+                            style={{
+                              backgroundImage: 'radial-gradient(circle, #94D2BD 1px, transparent 1px)',
+                              backgroundSize: '8px 8px',
+                            }}
+                          />
+
+                          {/* Silueta de proporción real */}
+                          <div
+                            className={`rounded-md border flex flex-col items-center justify-center relative transition-all shadow-md ${
+                              isSelected
+                                ? 'border-brand-cyan bg-gradient-to-br from-teal-900/70 to-primary/40 text-brand-cyan shadow-teal-950/50 ring-1 ring-brand-cyan/30'
+                                : 'border-slate-700/80 bg-gradient-to-br from-slate-900 to-slate-950 text-slate-400'
+                            }`}
+                            style={{
+                              width: `${Math.round(w)}px`,
+                              height: `${Math.round(h)}px`,
+                            }}
+                          >
+                            <span className="text-[10px] font-mono font-black drop-shadow-xs">
+                              {preset.aspectRatio}
+                            </span>
+                            <span className="text-[8px] font-mono text-slate-400 mt-0.5">
+                              {preset.width}×{preset.height}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* FOOTER DE TARJETA CON MEDIDAS Y USO */}
+                        <div className="flex items-center justify-between w-full text-[10px] font-mono text-slate-500 pt-2 border-t border-slate-900">
+                          <span className="text-slate-400 font-semibold">{preset.width} × {preset.height} px</span>
+                          <span className="text-amber-400/90 font-sans truncate max-w-[110px]" title={preset.recommendedFor}>
+                            {preset.recommendedFor}
+                          </span>
                         </div>
                       </button>
                     );
