@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Palette,
   Sliders,
@@ -22,6 +21,11 @@ import {
   Smartphone,
   Circle,
   Square as SquareIcon,
+  FlipHorizontal,
+  FlipVertical,
+  Paintbrush,
+  Eye,
+  BoxSelect,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -38,6 +42,13 @@ export interface ImageStudioInspectorProps {
   onUpdateLayerFilter?: (id: string, filter: ImageLayer['filter']) => void;
   onUpdateLayerAdjustments?: (id: string, adjustments: { brightness?: number; contrast?: number; blur?: number }) => void;
   onUpdateLayerClipShape?: (id: string, clipShape: ImageLayer['clipShape']) => void;
+  onToggleFlipHorizontal?: (id: string) => void;
+  onToggleFlipVertical?: (id: string) => void;
+  onUpdateLayerOpacity?: (id: string, opacity: number) => void;
+  onUpdateLayerShadowPreset?: (id: string, preset: ImageLayer['shadowPreset']) => void;
+  onUpdateLayerBorder?: (id: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => void;
+  onCopyStyle?: (id: string) => void;
+  onPasteStyle?: (id: string) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
@@ -56,6 +67,13 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateLayerFilter,
   onUpdateLayerAdjustments,
   onUpdateLayerClipShape,
+  onToggleFlipHorizontal,
+  onToggleFlipVertical,
+  onUpdateLayerOpacity,
+  onUpdateLayerShadowPreset,
+  onUpdateLayerBorder,
+  onCopyStyle,
+  onPasteStyle,
   onFitToCanvas,
   onUngroupLayer,
   onUpdateBackground,
@@ -158,6 +176,57 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
             Z-Index: {selectedLayer.zIndex}
           </span>
+        </div>
+
+        {/* BARRA DE ACCIONES RÁPIDAS (CANVA-STYLE) */}
+        <div className="grid grid-cols-4 gap-1 rounded-2xl border border-slate-800 bg-slate-950/80 p-1.5">
+          <button
+            type="button"
+            onClick={() => onCopyStyle?.(selectedLayer.id)}
+            className="flex flex-col items-center justify-center gap-1 rounded-xl p-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-900 hover:text-brand-cyan transition-colors"
+            title="Copiar Estilo Visual (⌥⌘C)"
+          >
+            <Paintbrush className="size-3.5 text-brand-cyan" />
+            <span>Copiar</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onPasteStyle?.(selectedLayer.id)}
+            className="flex flex-col items-center justify-center gap-1 rounded-xl p-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-900 hover:text-brand-cyan transition-colors"
+            title="Pegar Estilo Visual (⌥⌘V)"
+          >
+            <Paintbrush className="size-3.5 text-amber-400" />
+            <span>Pegar</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onToggleFlipHorizontal?.(selectedLayer.id)}
+            className={`flex flex-col items-center justify-center gap-1 rounded-xl p-1.5 text-[10px] font-bold transition-colors ${
+              selectedLayer.flipHorizontal
+                ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/40'
+                : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+            }`}
+            title="Voltear Horizontalmente"
+          >
+            <FlipHorizontal className="size-3.5" />
+            <span>Flip H</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onToggleFlipVertical?.(selectedLayer.id)}
+            className={`flex flex-col items-center justify-center gap-1 rounded-xl p-1.5 text-[10px] font-bold transition-colors ${
+              selectedLayer.flipVertical
+                ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/40'
+                : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+            }`}
+            title="Voltear Verticalmente"
+          >
+            <FlipVertical className="size-3.5" />
+            <span>Flip V</span>
+          </button>
         </div>
 
         {/* 1. CONTROL DE POSICIÓN Y ALINEACIÓN */}
@@ -595,6 +664,151 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* 7. OPACIDAD Y TRANSPARENCIA */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Eye className="size-3.5 text-brand-cyan" />
+              <span>Opacidad / Transparencia</span>
+            </span>
+            <span className="font-mono text-brand-cyan">
+              {Math.round((selectedLayer.opacity !== undefined ? selectedLayer.opacity : 1) * 100)}%
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={0.05}
+              max={1.0}
+              step={0.05}
+              value={selectedLayer.opacity !== undefined ? selectedLayer.opacity : 1}
+              onChange={(e) => onUpdateLayerOpacity?.(selectedLayer.id, parseFloat(e.target.value))}
+              className="flex-1 accent-primary"
+            />
+            <button
+              type="button"
+              onClick={() => onUpdateLayerOpacity?.(selectedLayer.id, 1)}
+              className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:bg-slate-700 transition-colors"
+              title="Restablecer al 100%"
+            >
+              100%
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 pt-1">
+            {[0.25, 0.5, 0.75, 1.0].map((val) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => onUpdateLayerOpacity?.(selectedLayer.id, val)}
+                className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                  Math.abs((selectedLayer.opacity !== undefined ? selectedLayer.opacity : 1) - val) < 0.04
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {Math.round(val * 100)}%
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 8. SOMBRAS Y RESPLANDORES (SHADOW PRESETS) */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Sparkles className="size-3.5 text-accent" />
+              <span>Sombras y Resplandores</span>
+            </span>
+            <span className="font-mono text-brand-cyan text-[11px] capitalize">
+              {selectedLayer.shadowPreset ?? 'Ninguna'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { id: 'none', label: 'Ninguna' },
+              { id: 'soft', label: 'Suave' },
+              { id: 'deep', label: 'Profunda' },
+              { id: 'glow_teal', label: 'Glow Teal' },
+              { id: 'glow_gold', label: 'Glow Gold' },
+              { id: 'neon', label: 'Neón Cyber' },
+            ].map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => onUpdateLayerShadowPreset?.(selectedLayer.id, s.id as ImageLayer['shadowPreset'])}
+                className={`rounded-lg py-1.5 text-[10px] font-bold border transition-all ${
+                  (selectedLayer.shadowPreset ?? 'none') === s.id
+                    ? 'border-brand-cyan bg-primary/20 text-brand-cyan shadow-xs'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 9. BORDES Y ESQUINAS (STROKE & CORNER RADIUS) */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <BoxSelect className="size-3.5 text-brand-cyan" />
+              <span>Bordes y Redondeo</span>
+            </span>
+          </div>
+
+          {/* RADIO DE ESQUINA */}
+          <div className="space-y-1 text-[11px]">
+            <div className="flex items-center justify-between text-slate-400">
+              <span>Radio de Esquinas</span>
+              <span className="font-mono text-slate-200">{selectedLayer.borderRadius ?? 0}px</span>
+            </div>
+            <div className="grid grid-cols-5 gap-1">
+              {[0, 8, 16, 24, 9999].map((rad) => (
+                <button
+                  key={rad}
+                  type="button"
+                  onClick={() => onUpdateLayerBorder?.(selectedLayer.id, { borderRadius: rad })}
+                  className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                    (selectedLayer.borderRadius ?? 0) === rad
+                      ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {rad === 9999 ? 'Pill' : `${rad}px`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* GROSOR DE BORDE */}
+          <div className="pt-2 border-t border-slate-900 space-y-1 text-[11px]">
+            <div className="flex items-center justify-between text-slate-400">
+              <span>Grosor de Borde</span>
+              <span className="font-mono text-slate-200">{selectedLayer.borderWidth ?? 0}px</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {[0, 1, 2, 4].map((bw) => (
+                <button
+                  key={bw}
+                  type="button"
+                  onClick={() => onUpdateLayerBorder?.(selectedLayer.id, { borderWidth: bw, borderColor: selectedLayer.borderColor ?? '#94D2BD' })}
+                  className={`rounded-lg py-1 text-[10px] font-bold border transition-colors ${
+                    (selectedLayer.borderWidth ?? 0) === bw
+                      ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {bw === 0 ? 'Sin borde' : `${bw}px`}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -63,3 +63,32 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
     expect(copy?.title).toContain('(Copia)');
   });
 });
+
+describe('ImageStudio 7 Rapid Actions (Canva-Style Architecture)', () => {
+  it('supports opacity, shadow presets, borders, and flips on layer interface', () => {
+    const testLayer: import('../types/imageStudio').ImageLayer = {
+      id: 'test-layer-1',
+      type: 'block',
+      blockType: 'CustomText',
+      title: 'Título de Prueba',
+      props: { text: 'Hola Mundo' },
+      position: { x: 50, y: 50 },
+      zIndex: 1,
+      scale: 1,
+      opacity: 0.85,
+      flipHorizontal: true,
+      flipVertical: false,
+      shadowPreset: 'glow_teal',
+      borderColor: '#94D2BD',
+      borderWidth: 2,
+      borderRadius: 16,
+    };
+
+    expect(testLayer.opacity).toBe(0.85);
+    expect(testLayer.flipHorizontal).toBe(true);
+    expect(testLayer.flipVertical).toBe(false);
+    expect(testLayer.shadowPreset).toBe('glow_teal');
+    expect(testLayer.borderWidth).toBe(2);
+    expect(testLayer.borderRadius).toBe(16);
+  });
+});

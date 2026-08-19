@@ -26,6 +26,10 @@ import {
   AlignCenter,
   AlignRight,
   AlignVerticalJustifyCenter,
+  FlipHorizontal,
+  FlipVertical,
+  Paintbrush,
+  Clipboard,
 } from 'lucide-react';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
@@ -42,6 +46,13 @@ interface ImageStageProps {
   onGroupSelectedLayers?: () => void;
   onDeleteSelectedLayers?: () => void;
   onDuplicateSelectedLayers?: () => void;
+  onCopySelectedLayers?: () => void;
+  onPasteLayers?: () => void;
+  onCopyLayerStyle?: (id?: string) => void;
+  onPasteLayerStyle?: (id?: string) => void;
+  onToggleFlipHorizontal?: (id: string) => void;
+  onToggleFlipVertical?: (id: string) => void;
+  onNudgeSelectedLayers?: (dx: number, dy: number) => void;
   onToggleLock?: (id: string) => void;
   onToggleVisibility?: (id: string) => void;
   onMoveZIndex?: (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => void;
@@ -75,6 +86,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onGroupSelectedLayers,
   onDeleteSelectedLayers,
   onDuplicateSelectedLayers,
+  onCopySelectedLayers,
+  onPasteLayers,
+  onCopyLayerStyle,
+  onPasteLayerStyle,
+  onToggleFlipHorizontal,
+  onToggleFlipVertical,
+  onNudgeSelectedLayers,
   onToggleLock,
   onToggleVisibility,
   onMoveZIndex,
@@ -149,6 +167,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       }
       if (e.key.toLowerCase() === 'h') {
         setToolMode('hand');
+      }
+      if (e.key === 'ArrowLeft') {
+        onNudgeSelectedLayers?.(e.shiftKey ? -2.0 : -0.2, 0);
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        onNudgeSelectedLayers?.(e.shiftKey ? 2.0 : 0.2, 0);
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        onNudgeSelectedLayers?.(0, e.shiftKey ? -2.0 : -0.2);
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        onNudgeSelectedLayers?.(0, e.shiftKey ? 2.0 : 0.2);
+        e.preventDefault();
       }
     };
 
@@ -635,8 +666,68 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             </span>
           </div>
 
-          {/* SECCIÓN 1: ACCIONES BÁSICAS (DUPLICAR, ELIMINAR) */}
+          {/* SECCIÓN 1: ACCIONES DE PORTAPAPELES Y EDICIÓN (CANVA-STYLE) */}
           <div className="py-1">
+            <button
+              type="button"
+              onClick={() => {
+                onCopySelectedLayers?.();
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Copy className="size-3.5 text-slate-400" />
+                <span>Copiar</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">⌘C</kbd>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onPasteLayers?.();
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Clipboard className="size-3.5 text-slate-400" />
+                <span>Pegar</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">⌘V</kbd>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onCopyLayerStyle?.(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Paintbrush className="size-3.5 text-brand-cyan" />
+                <span>Copiar estilo</span>
+              </div>
+              <kbd className="text-[10px] text-brand-cyan/80 font-mono">⌥⌘C</kbd>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onPasteLayerStyle?.(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <Paintbrush className="size-3.5 text-brand-cyan" />
+                <span>Pegar estilo</span>
+              </div>
+              <kbd className="text-[10px] text-brand-cyan/80 font-mono">⌥⌘V</kbd>
+            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -778,7 +869,40 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             </button>
           </div>
 
-          {/* SECCIÓN 4: ALINEACIÓN AL LIENZO */}
+          {/* SECCIÓN 4: VOLTEAR / FLIP (HORIZONTAL / VERTICAL) */}
+          <div className="py-1">
+            <button
+              type="button"
+              onClick={() => {
+                onToggleFlipHorizontal?.(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <FlipHorizontal className="size-3.5 text-slate-400" />
+                <span>Voltear horizontal (Flip H)</span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-mono">⇄</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onToggleFlipVertical?.(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <FlipVertical className="size-3.5 text-slate-400" />
+                <span>Voltear vertical (Flip V)</span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-mono">⇅</span>
+            </button>
+          </div>
+
+          {/* SECCIÓN 5: ALINEACIÓN AL LIENZO */}
           <div className="py-1">
             <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500">
               Alinear al Lienzo
@@ -1043,6 +1167,21 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               return parts.length > 0 ? parts.join(' ') : undefined;
             };
 
+            const getShadowStyle = (preset?: ImageLayer['shadowPreset'], l?: ImageLayer) => {
+              if (preset === 'soft') return '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)';
+              if (preset === 'deep') return '0 25px 50px -12px rgba(0, 0, 0, 0.7)';
+              if (preset === 'glow_teal') return '0 0 25px rgba(148, 210, 189, 0.6), 0 0 10px rgba(0, 95, 115, 0.8)';
+              if (preset === 'glow_gold') return '0 0 25px rgba(238, 155, 0, 0.6), 0 0 10px rgba(202, 103, 2, 0.8)';
+              if (preset === 'neon') return '0 0 5px #00FFFF, 0 0 20px #005F73, 0 0 40px #001219';
+              if (l?.shadowBlur || l?.shadowColor) {
+                return `${l.shadowOffsetX ?? 0}px ${l.shadowOffsetY ?? 4}px ${l.shadowBlur ?? 10}px ${l.shadowColor ?? 'rgba(0,0,0,0.4)'}`;
+              }
+              return undefined;
+            };
+
+            const scaleX = (layer.scale ?? 1) * (layer.flipHorizontal ? -1 : 1);
+            const scaleY = (layer.scale ?? 1) * (layer.flipVertical ? -1 : 1);
+
             const getClipClass = (shape?: ImageLayer['clipShape']) => {
               switch (shape) {
                 case 'circle':
@@ -1088,7 +1227,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 style={{
                   left: `${layer.position.x}%`,
                   top: `${layer.position.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${layer.scale ?? 1})`,
+                  transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${scaleX}, ${scaleY})`,
                   zIndex: layer.zIndex,
                   width: getBlockWidth(layer.blockType, layer.width),
                   minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
@@ -1096,6 +1235,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   height: layer.height ? `${layer.height}px` : 'auto',
                   minHeight: layer.height ? `${layer.height}px` : 'auto',
                   flexShrink: 0,
+                  opacity: layer.opacity !== undefined ? layer.opacity : 1,
+                  boxShadow: getShadowStyle(layer.shadowPreset, layer),
+                  borderWidth: layer.borderWidth ? `${layer.borderWidth}px` : undefined,
+                  borderColor: layer.borderColor || undefined,
+                  borderStyle: layer.borderWidth ? 'solid' : undefined,
+                  borderRadius: layer.borderRadius ? `${layer.borderRadius}px` : undefined,
                   filter: getFilterStyle(layer.filter, layer.brightness, layer.contrast, layer.blur),
                 }}
               >

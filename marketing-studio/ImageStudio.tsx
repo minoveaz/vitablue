@@ -81,6 +81,51 @@ export const ImageStudio: React.FC = () => {
         }
       }
 
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
+        if (e.altKey) {
+          editor.copyLayerStyle();
+          showToast('Estilo copiado al portapapeles');
+        } else {
+          editor.copySelectedLayers();
+          showToast('Capa(s) copiada(s) al portapapeles');
+        }
+        e.preventDefault();
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'v') {
+        if (e.altKey) {
+          editor.pasteLayerStyle();
+          showToast('Estilo pegado');
+        } else {
+          editor.pasteLayers();
+          showToast('Capa(s) pegada(s)');
+        }
+        e.preventDefault();
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        if (editor.selectedLayerIds.length > 1) {
+          editor.duplicateSelectedLayers();
+        } else if (editor.selectedLayerId) {
+          editor.duplicateLayer(editor.selectedLayerId);
+        }
+      }
+
+      if (e.key === 'ArrowLeft') {
+        editor.nudgeSelectedLayers(e.shiftKey ? -2.0 : -0.2, 0);
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        editor.nudgeSelectedLayers(e.shiftKey ? 2.0 : 0.2, 0);
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        editor.nudgeSelectedLayers(0, e.shiftKey ? -2.0 : -0.2);
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        editor.nudgeSelectedLayers(0, e.shiftKey ? 2.0 : 0.2);
+        e.preventDefault();
+      }
+
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (editor.selectedLayerIds.length > 0) {
           editor.deleteSelectedLayers();
@@ -244,6 +289,13 @@ export const ImageStudio: React.FC = () => {
             onUpdateLayerFilter={editor.updateLayerFilter}
             onUpdateLayerAdjustments={editor.updateLayerAdjustments}
             onUpdateLayerClipShape={editor.updateLayerClipShape}
+            onToggleFlipHorizontal={editor.toggleFlipHorizontal}
+            onToggleFlipVertical={editor.toggleFlipVertical}
+            onUpdateLayerOpacity={editor.updateLayerOpacity}
+            onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
+            onUpdateLayerBorder={editor.updateLayerBorder}
+            onCopyStyle={editor.copyLayerStyle}
+            onPasteStyle={editor.pasteLayerStyle}
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}
             onUpdateBackground={editor.updateBackground}
@@ -267,6 +319,13 @@ export const ImageStudio: React.FC = () => {
           onGroupSelectedLayers={editor.groupSelectedLayers}
           onDeleteSelectedLayers={editor.deleteSelectedLayers}
           onDuplicateSelectedLayers={editor.duplicateSelectedLayers}
+          onCopySelectedLayers={editor.copySelectedLayers}
+          onPasteLayers={editor.pasteLayers}
+          onCopyLayerStyle={editor.copyLayerStyle}
+          onPasteLayerStyle={editor.pasteLayerStyle}
+          onToggleFlipHorizontal={editor.toggleFlipHorizontal}
+          onToggleFlipVertical={editor.toggleFlipVertical}
+          onNudgeSelectedLayers={editor.nudgeSelectedLayers}
           onToggleLock={editor.toggleLayerLock}
           onToggleVisibility={editor.toggleLayerVisibility}
           onMoveZIndex={editor.moveLayerZIndex}

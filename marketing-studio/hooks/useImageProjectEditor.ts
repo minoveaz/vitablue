@@ -47,6 +47,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [historyLength, setHistoryLength] = useState<number>(1);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
+  // Clipboard refs para Copiar/Pegar capas y Copiar/Pegar estilos (Canva-style)
+  const clipboardLayersRef = useRef<ImageLayer[]>([]);
+  const clipboardStyleRef = useRef<Partial<ImageLayer>>({});
+
   const pushHistory = useCallback((nextProject: ImageProject) => {
     const clone: ImageProject = JSON.parse(JSON.stringify(nextProject));
     const currentIdx = historyIndexRef.current;
@@ -526,6 +530,155 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, title } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const copySelectedLayers = useCallback(() => {
+    const layersToCopy = project.layers.filter((l) => selectedLayerIds.includes(l.id));
+    if (layersToCopy.length > 0) {
+      clipboardLayersRef.current = JSON.parse(JSON.stringify(layersToCopy));
+    }
+  }, [project.layers, selectedLayerIds]);
+
+  const pasteLayers = useCallback(() => {
+    if (!clipboardLayersRef.current || clipboardLayersRef.current.length === 0) return;
+    setProject((prev) => {
+      const newLayers: ImageLayer[] = clipboardLayersRef.current.map((layer, i) => ({
+        ...JSON.parse(JSON.stringify(layer)),
+        id: `layer-${Date.now()}-${i}`,
+        position: {
+          x: Math.min(92, layer.position.x + 3),
+          y: Math.min(92, layer.position.y + 3),
+        },
+        zIndex: prev.layers.length + 1 + i,
+      }));
+
+      const next = {
+        ...prev,
+        layers: [...prev.layers, ...newLayers],
+        updatedAt: new Date().toISOString(),
+      };
+      setSelectedLayerIds(newLayers.map((l) => l.id));
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const copyLayerStyle = useCallback((layerId?: string) => {
+    const targetId = layerId ?? selectedLayerIds[0];
+    const layer = project.layers.find((l) => l.id === targetId);
+    if (!layer) return;
+    clipboardStyleRef.current = {
+      opacity: layer.opacity,
+      fill: layer.fill,
+      stroke: layer.stroke,
+      strokeWidth: layer.strokeWidth,
+      cornerRadius: layer.cornerRadius,
+      fontFamily: layer.fontFamily,
+      fontSize: layer.fontSize,
+      fontWeight: layer.fontWeight,
+      align: layer.align,
+      letterSpacing: layer.letterSpacing,
+      lineHeight: layer.lineHeight,
+      filter: layer.filter,
+      brightness: layer.brightness,
+      contrast: layer.contrast,
+      blur: layer.blur,
+      clipShape: layer.clipShape,
+      shadowPreset: layer.shadowPreset,
+      shadowColor: layer.shadowColor,
+      shadowBlur: layer.shadowBlur,
+      borderColor: layer.borderColor,
+      borderWidth: layer.borderWidth,
+      borderRadius: layer.borderRadius,
+      flipHorizontal: layer.flipHorizontal,
+      flipVertical: layer.flipVertical,
+    };
+  }, [project.layers, selectedLayerIds]);
+
+  const pasteLayerStyle = useCallback((targetLayerId?: string) => {
+    if (!clipboardStyleRef.current || Object.keys(clipboardStyleRef.current).length === 0) return;
+    const styleToApply = clipboardStyleRef.current;
+    const idsToApply = targetLayerId ? [targetLayerId] : selectedLayerIds;
+    if (idsToApply.length === 0) return;
+
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) => (idsToApply.includes(l.id) ? { ...l, ...styleToApply } : l));
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const toggleFlipHorizontal = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, flipHorizontal: !l.flipHorizontal } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const toggleFlipVertical = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, flipVertical: !l.flipVertical } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const nudgeSelectedLayers = useCallback((dx: number, dy: number) => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) => {
+        if (!selectedLayerIds.includes(l.id)) return l;
+        return {
+          ...l,
+          position: {
+            x: Math.round(Math.max(0, Math.min(100, l.position.x + dx)) * 10) / 10,
+            y: Math.round(Math.max(0, Math.min(100, l.position.y + dy)) * 10) / 10,
+          },
+        };
+      });
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const updateLayerOpacity = useCallback((layerId: string, opacity: number) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, opacity: Math.max(0, Math.min(1, opacity)) } : l
+      );
+      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+    });
+  }, []);
+
+  const updateLayerShadowPreset = useCallback((layerId: string, shadowPreset: ImageLayer['shadowPreset']) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, shadowPreset } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const updateLayerBorder = useCallback((layerId: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, ...border } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -1079,6 +1232,16 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     ungroupLayer,
     duplicateLayer,
     duplicateSelectedLayers,
+    copySelectedLayers,
+    pasteLayers,
+    copyLayerStyle,
+    pasteLayerStyle,
+    toggleFlipHorizontal,
+    toggleFlipVertical,
+    nudgeSelectedLayers,
+    updateLayerOpacity,
+    updateLayerShadowPreset,
+    updateLayerBorder,
     removeLayer,
     toggleLayerLock,
     toggleLayerVisibility,

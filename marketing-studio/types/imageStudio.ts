@@ -260,11 +260,17 @@ export interface ImageLayer {
   align?: 'left' | 'center' | 'right';
   letterSpacing?: number;
   lineHeight?: number;
+  shadowPreset?: 'none' | 'soft' | 'deep' | 'glow_teal' | 'glow_gold' | 'neon';
   shadowColor?: string;
   shadowBlur?: number;
   shadowOffsetX?: number;
   shadowOffsetY?: number;
   shadowOpacity?: number;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
+  flipHorizontal?: boolean;
+  flipVertical?: boolean;
   src?: string; // Image source URL
   filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'blur' | 'teal_tint' | 'gold_tint';
   brightness?: number; // 50 to 150
