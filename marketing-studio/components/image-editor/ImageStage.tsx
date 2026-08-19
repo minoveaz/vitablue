@@ -16,6 +16,9 @@ import {
   Maximize2,
   CheckCircle2,
   MessageSquare,
+  Ungroup,
+  Copy,
+  Trash2,
 } from 'lucide-react';
 
 interface ImageStageProps {
@@ -30,6 +33,8 @@ interface ImageStageProps {
   onDeselectAll: () => void;
   onUpdatePosition: (id: string, position: { x: number; y: number }) => void;
   onUpdateScale: (id: string, scale: number) => void;
+  onFitToCanvas?: (id: string) => void;
+  onUngroupLayer?: (id: string) => void;
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
   onSetZoom: (zoom: number) => void;
@@ -47,6 +52,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onDeselectAll,
   onUpdatePosition,
   onUpdateScale,
+  onFitToCanvas,
+  onUngroupLayer,
   onDuplicateLayer,
   onRemoveLayer,
   onSetZoom,
@@ -55,6 +62,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
   const dragStartRef = useRef<{ x: number; y: number; layerX: number; layerY: number }>({
     x: 0,
@@ -68,6 +76,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     startY: 0,
     startScale: 1,
   });
+
+  // Cerrar menú contextual al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
 
   // 1. GESTOS DE TRACKPAD (PINCH TO ZOOM & TWO-FINGER PAN)
   useEffect(() => {
@@ -107,6 +122,17 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       layerX: layer.position.x,
       layerY: layer.position.y,
     };
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, layer: ImageLayer) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectLayer(layer.id);
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      layer,
+    });
   };
 
   const handleResizeStart = (e: React.MouseEvent, layer: ImageLayer) => {
@@ -186,7 +212,76 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             onRemove={onRemoveLayer}
             onScaleChange={onUpdateScale}
             onCenter={(id) => onUpdatePosition(id, { x: 50, y: 50 })}
+            onUngroup={onUngroupLayer}
+            onFitToCanvas={onFitToCanvas}
           />
+        </div>
+      )}
+
+      {/* RIGHT-CLICK CONTEXT MENU */}
+      {contextMenu && (
+        <div
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          className="fixed z-50 min-w-[220px] rounded-2xl border border-slate-700 bg-slate-950/95 p-1.5 shadow-2xl backdrop-blur-xl animate-fadeIn text-xs text-slate-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+            {contextMenu.layer.title}
+          </div>
+
+          {contextMenu.layer.blockType === 'MotionAdvisorCard' && onUngroupLayer && (
+            <button
+              type="button"
+              onClick={() => {
+                onUngroupLayer(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left font-bold text-amber-300 hover:bg-amber-500/20 transition-colors"
+            >
+              <Ungroup className="size-4 text-amber-400" />
+              <span>Desagrupar en Elementos Libres</span>
+            </button>
+          )}
+
+          {onFitToCanvas && (
+            <button
+              type="button"
+              onClick={() => {
+                onFitToCanvas(contextMenu.layer.id);
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left hover:bg-slate-800 hover:text-white transition-colors"
+            >
+              <Maximize2 className="size-4 text-primary" />
+              <span>Auto-Ajustar al Lienzo</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              onDuplicateLayer(contextMenu.layer.id);
+              setContextMenu(null);
+            }}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <Copy className="size-4 text-slate-400" />
+            <span>Duplicar Capa</span>
+          </button>
+
+          <div className="my-1 border-t border-slate-800" />
+
+          <button
+            type="button"
+            onClick={() => {
+              onRemoveLayer(contextMenu.layer.id);
+              setContextMenu(null);
+            }}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-rose-400 hover:bg-rose-950/60 hover:text-rose-300 transition-colors"
+          >
+            <Trash2 className="size-4 text-rose-400" />
+            <span>Eliminar Capa</span>
+          </button>
         </div>
       )}
 
@@ -267,6 +362,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               <div
                 key={layer.id}
                 onMouseDown={(e) => handleMouseDown(e, layer)}
+                onContextMenu={(e) => handleContextMenu(e, layer)}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectLayer(layer.id);

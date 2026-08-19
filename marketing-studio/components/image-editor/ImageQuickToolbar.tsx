@@ -5,6 +5,8 @@ import {
   ZoomIn,
   ZoomOut,
   AlignCenter,
+  Ungroup,
+  Maximize2,
 } from 'lucide-react';
 import { ImageLayer } from '../../types/imageStudio';
 
@@ -14,6 +16,8 @@ interface ImageQuickToolbarProps {
   onRemove: (id: string) => void;
   onScaleChange: (id: string, scale: number) => void;
   onCenter: (id: string) => void;
+  onUngroup?: (id: string) => void;
+  onFitToCanvas?: (id: string) => void;
 }
 
 export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
@@ -22,6 +26,8 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
   onRemove,
   onScaleChange,
   onCenter,
+  onUngroup,
+  onFitToCanvas,
 }) => {
   return (
     <div className="flex items-center gap-1 rounded-2xl border border-slate-800 bg-slate-950/90 p-1.5 shadow-2xl backdrop-blur-md select-none z-40 animate-fadeIn text-xs text-white">
@@ -62,6 +68,31 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
         <AlignCenter className="size-3.5" />
       </button>
 
+      {/* AUTO AJUSTAR AL LIENZO */}
+      {onFitToCanvas && (
+        <button
+          type="button"
+          onClick={() => onFitToCanvas(layer.id)}
+          className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          title="Auto-ajustar al lienzo"
+        >
+          <Maximize2 className="size-3.5" />
+        </button>
+      )}
+
+      {/* DESAGRUPAR EN ELEMENTOS LIBRES */}
+      {layer.blockType === 'MotionAdvisorCard' && onUngroup && (
+        <button
+          type="button"
+          onClick={() => onUngroup(layer.id)}
+          className="flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300 hover:bg-amber-500/20 transition-colors shadow-xs"
+          title="Desagrupar en capas independientes (avatar, cita, textos, botón)"
+        >
+          <Ungroup className="size-3 text-amber-400" />
+          <span>Desagrupar</span>
+        </button>
+      )}
+
       {/* DUPLICAR */}
       <button
         type="button"
@@ -78,8 +109,8 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
       <button
         type="button"
         onClick={() => onRemove(layer.id)}
-        className="flex size-6 items-center justify-center rounded text-rose-400 hover:bg-rose-950 transition-colors"
-        title="Eliminar elemento"
+        className="flex size-6 items-center justify-center rounded text-rose-400 hover:bg-rose-950 hover:text-rose-300 transition-colors"
+        title="Eliminar capa"
       >
         <Trash2 className="size-3.5" />
       </button>

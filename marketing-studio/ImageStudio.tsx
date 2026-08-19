@@ -139,6 +139,8 @@ export const ImageStudio: React.FC = () => {
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
           onUpdateScale={editor.updateLayerScale}
+          onFitToCanvas={editor.fitLayerToCanvas}
+          onUngroupLayer={editor.ungroupLayer}
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
