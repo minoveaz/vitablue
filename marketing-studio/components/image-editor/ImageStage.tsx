@@ -143,6 +143,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
     e.stopPropagation();
     onSelectLayer(layer.id);
+    if (layer.locked) return;
     setDraggingLayerId(layer.id);
     dragStartRef.current = {
       x: e.clientX,
@@ -389,7 +390,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
           {/* RENDER LAYERS */}
           {project.layers.map((layer) => {
+            if (layer.visible === false) return null;
+
             const isSelected = layer.id === selectedLayerId;
+            const isLocked = Boolean(layer.locked);
             const blockProps = layer.props as Record<string, unknown>;
 
             const getBlockWidth = (blockType?: string, customWidth?: number) => {
@@ -441,9 +445,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   e.stopPropagation();
                   onSelectLayer(layer.id);
                 }}
-                className={`absolute cursor-move transition-shadow select-none shrink-0 ${
+                className={`absolute transition-shadow select-none shrink-0 ${
+                  isLocked ? 'cursor-default' : 'cursor-move'
+                } ${
                   isSelected
-                    ? 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-transparent shadow-2xl'
+                    ? isLocked
+                      ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-transparent shadow-2xl'
+                      : 'ring-2 ring-brand-cyan ring-offset-2 ring-offset-transparent shadow-2xl'
                     : 'hover:ring-1 hover:ring-white/40'
                 }`}
                 style={{
@@ -637,8 +645,16 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   />
                 )}
 
+                {/* LOCK BADGE IF SELECTED AND LOCKED */}
+                {isSelected && isLocked && (
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[10px] font-bold text-slate-950 shadow-md backdrop-blur-xs">
+                    <span>🔒</span>
+                    <span>Capa Bloqueada</span>
+                  </div>
+                )}
+
                 {/* BOUNDING BOX CORNER & LATERAL HANDLES CON ARRASTRE DE REDIMENSIÓN */}
-                {isSelected && (
+                {isSelected && !isLocked && (
                   <>
                     {/* ESQUINAS: ESCALA PROPORCIONAL */}
                     <div

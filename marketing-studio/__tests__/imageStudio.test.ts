@@ -37,4 +37,13 @@ describe('ImageStudio Presets & Templates', () => {
       expect(template.background).toBeDefined();
     });
   });
+
+  it('supports compound block types designed for ungrouping', () => {
+    const templatesWithCompoundBlocks = INITIAL_IMAGE_TEMPLATES.filter((t) =>
+      t.layers.some((l) =>
+        ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard'].includes(l.blockType ?? '')
+      )
+    );
+    expect(templatesWithCompoundBlocks.length).toBeGreaterThanOrEqual(4);
+  });
 });

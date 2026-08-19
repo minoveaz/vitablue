@@ -8,25 +8,45 @@ import {
   ShieldCheck,
   SplitSquareVertical,
   Grid,
+  Layers,
 } from 'lucide-react';
 import { ModuleContextSidebar } from '../../../components/backoffice-shell/ModuleContextSidebar';
 import { ImageBlockType, ImageProject } from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
+import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 
 export interface ImageStudioAssetSidebarProps {
+  project: ImageProject;
+  selectedLayerId: string | null;
+  onSelectLayer: (id: string) => void;
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
+  onToggleLock: (id: string) => void;
+  onToggleVisibility: (id: string) => void;
+  onMoveZIndex: (id: string, direction: 'up' | 'down') => void;
+  onRenameLayer: (id: string, title: string) => void;
+  onDuplicateLayer: (id: string) => void;
+  onRemoveLayer: (id: string) => void;
   onCollapse?: () => void;
 }
 
 export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = ({
+  project,
+  selectedLayerId,
+  onSelectLayer,
   onLoadTemplate,
   onAddBlock,
   onUpdateBackground,
+  onToggleLock,
+  onToggleVisibility,
+  onMoveZIndex,
+  onRenameLayer,
+  onDuplicateLayer,
+  onRemoveLayer,
   onCollapse,
 }) => {
-  const [activeTab, setActiveTab] = useState<'templates' | 'blocks' | 'brand' | 'media'>('templates');
+  const [activeTab, setActiveTab] = useState<'templates' | 'blocks' | 'layers' | 'brand' | 'media'>('templates');
 
   const brandColors = [
     { name: 'Ocean Teal', value: '#005F73', gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)' },
@@ -49,7 +69,7 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
       onCollapse={onCollapse}
     >
       {/* PESTAÑAS PRINCIPALES */}
-      <div className="grid grid-cols-4 rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800 text-center">
+      <div className="grid grid-cols-5 rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800 text-center">
         <button
           type="button"
           onClick={() => setActiveTab('templates')}
@@ -68,10 +88,27 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
           className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
             activeTab === 'blocks' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
-          title="Bloques visuales de MotionKit"
+          title="Bloques visuales para insertar"
         >
           <Sparkles className="size-3.5" />
           <span>Bloques</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('layers')}
+          className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
+            activeTab === 'layers' ? 'bg-slate-800 text-brand-cyan shadow-xs ring-1 ring-brand-cyan/30' : 'text-slate-400 hover:text-slate-200'
+          }`}
+          title="Árbol de capas del lienzo"
+        >
+          <div className="relative">
+            <Layers className="size-3.5" />
+            <span className="absolute -top-1 -right-2 flex size-3 items-center justify-center rounded-full bg-brand-cyan text-[8px] font-black text-slate-950">
+              {project.layers.length}
+            </span>
+          </div>
+          <span>Capas</span>
         </button>
 
         <button
@@ -80,10 +117,10 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
           className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[11px] font-bold transition-all ${
             activeTab === 'brand' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
-          title="Brand Kit y colores oficiales"
+          title="Identidad de marca y DAM"
         >
           <Palette className="size-3.5" />
-          <span>Brand</span>
+          <span>Marca</span>
         </button>
 
         <button
@@ -98,6 +135,21 @@ export const ImageStudioAssetSidebar: React.FC<ImageStudioAssetSidebarProps> = (
           <span>Medios</span>
         </button>
       </div>
+
+      {/* CONTENIDO DE LA PESTAÑA DE CAPAS */}
+      {activeTab === 'layers' && (
+        <ImageStudioLayersPanel
+          project={project}
+          selectedLayerId={selectedLayerId}
+          onSelectLayer={onSelectLayer}
+          onToggleLock={onToggleLock}
+          onToggleVisibility={onToggleVisibility}
+          onMoveZIndex={onMoveZIndex}
+          onRenameLayer={onRenameLayer}
+          onDuplicateLayer={onDuplicateLayer}
+          onRemoveLayer={onRemoveLayer}
+        />
+      )}
 
       {/* CONTENIDO DE LA PESTAÑA */}
       <div className="space-y-3">

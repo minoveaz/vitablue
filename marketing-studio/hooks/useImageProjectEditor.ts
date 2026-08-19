@@ -149,6 +149,63 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const toggleLayerLock = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, locked: !l.locked } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const toggleLayerVisibility = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, visible: l.visible === false ? true : false } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const renameLayer = useCallback((layerId: string, title: string) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((l) =>
+        l.id === layerId ? { ...l, title } : l
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const moveLayerZIndex = useCallback((layerId: string, direction: 'up' | 'down') => {
+    setProject((prev) => {
+      const sortedLayers = [...prev.layers].sort((a, b) => a.zIndex - b.zIndex);
+      const currentIndex = sortedLayers.findIndex((l) => l.id === layerId);
+      if (currentIndex === -1) return prev;
+
+      const targetIndex = direction === 'up' ? currentIndex + 1 : currentIndex - 1;
+      if (targetIndex < 0 || targetIndex >= sortedLayers.length) return prev;
+
+      const temp = sortedLayers[currentIndex];
+      sortedLayers[currentIndex] = sortedLayers[targetIndex];
+      sortedLayers[targetIndex] = temp;
+
+      const updatedLayers = sortedLayers.map((layer, idx) => ({
+        ...layer,
+        zIndex: idx + 1,
+      }));
+
+      const next = { ...prev, layers: updatedLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const addBlockLayer = useCallback((blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => {
     let initialProps: Record<string, unknown> = defaultProps ?? {};
     let initialTitle = 'Bloque Visual';
@@ -575,6 +632,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     ungroupLayer,
     duplicateLayer,
     removeLayer,
+    toggleLayerLock,
+    toggleLayerVisibility,
+    renameLayer,
+    moveLayerZIndex,
     addBlockLayer,
     updateBackground,
     exportImage,

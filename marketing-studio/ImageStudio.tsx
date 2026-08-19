@@ -137,9 +137,18 @@ export const ImageStudio: React.FC = () => {
       contextAside={
         isContextSidebarOpen ? (
           <ImageStudioAssetSidebar
+            project={editor.project}
+            selectedLayerId={editor.selectedLayerId}
+            onSelectLayer={editor.selectLayer}
             onLoadTemplate={handleLoadTemplate}
             onAddBlock={handleAddBlock}
             onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
+            onToggleLock={editor.toggleLayerLock}
+            onToggleVisibility={editor.toggleLayerVisibility}
+            onMoveZIndex={editor.moveLayerZIndex}
+            onRenameLayer={editor.renameLayer}
+            onDuplicateLayer={editor.duplicateLayer}
+            onRemoveLayer={editor.removeLayer}
             onCollapse={() => setIsContextSidebarOpen(false)}
           />
         ) : undefined
