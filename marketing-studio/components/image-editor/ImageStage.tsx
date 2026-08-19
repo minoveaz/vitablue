@@ -4,29 +4,17 @@ import {
   ImageLayer,
 } from '../../types/imageStudio';
 import { calculateSnapping } from '../../hooks/useKonvaSnapping';
-import {
-  MotionAdvisorCard,
-  MotionTrustBadge,
-  MotionProviderGrid,
-  MotionComparisonCard,
-} from '../../../packages/video-studio/src/motion-kit';
 import { ImageQuickToolbar } from './ImageQuickToolbar';
 import {
   Minus,
   Plus,
   Maximize2,
-  MessageSquare,
+  Layers,
   Ungroup,
   Copy,
   Trash2,
-  Building2,
-  Shield,
-  Check,
-  X,
-  ShieldCheck,
-  Layers,
 } from 'lucide-react';
-import { InlineEditableText } from './InlineEditableText';
+import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
 interface ImageStageProps {
   project: ImageProject;
@@ -591,45 +579,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             const isLocked = Boolean(layer.locked);
             const blockProps = layer.props as Record<string, unknown>;
 
-            const getBlockWidth = (blockType?: string, customWidth?: number) => {
-              if (customWidth) return `${customWidth}px`;
-              switch (blockType) {
-                case 'MotionAdvisorCard':
-                  return '380px';
-                case 'GlassCardSurface':
-                  return blockProps.width ? `${blockProps.width}px` : '440px';
-                case 'MotionTrustBadge':
-                  return '420px';
-                case 'MotionComparisonCard':
-                case 'MotionProviderGrid':
-                  return '440px';
-                case 'HookAlertBadge':
-                  return 'auto';
-                case 'AdvisorAvatarBadge':
-                  return '340px';
-                case 'AdvisorQuoteBox':
-                  return '340px';
-                case 'WhatsAppCtaButton':
-                  return '340px';
-                case 'ProviderGridHeader':
-                  return '380px';
-                case 'ProviderBadge':
-                  return '185px';
-                case 'TrustShieldIcon':
-                  return 'auto';
-                case 'TrustBadgeTitle':
-                  return '380px';
-                case 'TrustBadgeSubtitle':
-                  return '380px';
-                case 'ComparisonHeader':
-                  return '380px';
-                case 'ComparisonWrongBox':
-                case 'ComparisonCorrectBox':
-                  return '380px';
-                default:
-                  return '420px';
-              }
-            };
+            const getBlockWidth = (blockType?: string, customWidth?: number) =>
+              getBlockDefaultWidth(blockType, customWidth, blockProps);
 
             const getFilterStyle = (filter?: ImageLayer['filter'], brightness = 100, contrast = 100, blur = 0) => {
               const parts: string[] = [];
@@ -699,268 +650,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   filter: getFilterStyle(layer.filter, layer.brightness, layer.contrast, layer.blur),
                 }}
               >
-                {/* RENDER BLOCK TYPES */}
-                {layer.blockType === 'GlassCardSurface' && (
-                  <div
-                    className="w-full rounded-3xl border border-teal-500/30 bg-[#001219]/90 shadow-2xl backdrop-blur-xl pointer-events-none"
-                    style={{
-                      width: '100%',
-                      height: layer.height ? `${layer.height}px` : `${blockProps.height ?? 380}px`,
-                      boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
-                    }}
-                  />
-                )}
-
-                {layer.blockType === 'MotionAdvisorCard' && (
-                  <MotionAdvisorCard
-                    name={String(blockProps.name ?? 'Sofía')}
-                    role={String(blockProps.role ?? 'Asesora')}
-                    badge={String(blockProps.badge ?? 'EN DIRECTO')}
-                    message={String(blockProps.message ?? '')}
-                    avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
-                    whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
-                    tokens={project.brandTokens}
-                    className="!max-w-none !w-full !h-full"
-                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
-                  />
-                )}
-
-                {layer.blockType === 'HookAlertBadge' && (
-                  <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-[#94D2BD] shadow-lg backdrop-blur-md">
-                    <span className="relative flex size-2 shrink-0">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-                    </span>
-                    <InlineEditableText
-                      text={String(blockProps.badge ?? 'ASESORA ASIGNADA · EN DIRECTO')}
-                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { badge: newVal })}
-                    />
-                  </div>
-                )}
-
-                {layer.blockType === 'AdvisorAvatarBadge' && (
-                  <div className="flex flex-col items-center text-center w-full">
-                    <div className="relative mb-2">
-                      <div className="flex size-20 items-center justify-center rounded-full border-2 border-amber-500 bg-[#005F73] text-2xl font-black text-white shadow-xl ring-4 ring-amber-500/25 overflow-hidden">
-                        {blockProps.avatarUrl ? (
-                          <img src={String(blockProps.avatarUrl)} alt={String(blockProps.name ?? 'Asesor')} className="size-full object-cover" />
-                        ) : (
-                          <span>{String(blockProps.name ?? 'A').charAt(0)}</span>
-                        )}
-                      </div>
-                      <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-2 ring-[#001219] translate-x-1 translate-y-0.5">
-                        <ShieldCheck className="size-3.5" />
-                      </div>
-                    </div>
-                    <div className="mt-1.5 space-y-0.5">
-                      <InlineEditableText
-                        text={String(blockProps.name ?? 'Sofía')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { name: newVal })}
-                        className="font-display text-xl font-black text-white tracking-tight leading-tight block"
-                        as="h3"
-                      />
-                      <InlineEditableText
-                        text={String(blockProps.role ?? 'Asesora Especialista en Visados')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { role: newVal })}
-                        className="text-xs font-bold text-[#94D2BD] block"
-                        as="p"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {layer.blockType === 'AdvisorQuoteBox' && (
-                  <div className="w-full rounded-2xl border border-teal-500/20 bg-slate-950/70 p-4 text-center shadow-inner backdrop-blur-md">
-                    <p className="text-xs font-medium italic text-slate-200 leading-relaxed">
-                      "
-                      <InlineEditableText
-                        text={String(blockProps.message ?? 'Te acompañamos en todo el proceso')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { message: newVal })}
-                        as="span"
-                      />
-                      "
-                    </p>
-                  </div>
-                )}
-
-                {layer.blockType === 'WhatsAppCtaButton' && (
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <MessageSquare className="size-4 fill-white shrink-0" />
-                    <InlineEditableText
-                      text={String(blockProps.whatsAppText ?? 'Pregúntanos por WhatsApp')}
-                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { whatsAppText: newVal })}
-                    />
-                  </button>
-                )}
-
-                {/* SUBCAPAS DE GRID DE ASEGURADORAS */}
-                {layer.blockType === 'ProviderGridHeader' && (
-                  <div className="flex flex-col items-center text-center w-full">
-                    <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-teal-900/40 text-teal-400">
-                      <Building2 className="size-5" />
-                    </div>
-                    <InlineEditableText
-                      text={String(blockProps.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
-                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
-                      className="font-display text-base font-black text-white tracking-tight block w-full text-center"
-                      as="h3"
-                    />
-                    <InlineEditableText
-                      text={String(blockProps.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
-                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { subtitle: newVal })}
-                      className="mt-1 text-xs text-[#94D2BD] block w-full text-center"
-                      as="p"
-                    />
-                  </div>
-                )}
-
-                {layer.blockType === 'ProviderBadge' && (
-                  <div className={`flex w-full flex-col items-center justify-center rounded-2xl border p-3.5 transition-all ${
-                    blockProps.color === '#EE9B00' || blockProps.highlight
-                      ? 'border-amber-500/40 bg-amber-500/10 text-amber-300 shadow-md'
-                      : 'border-white/10 bg-white/5 text-white'
-                  }`}>
-                    <InlineEditableText
-                      text={String(blockProps.name ?? 'ASEGURADORA')}
-                      onSave={(newVal) => onUpdateLayerProps?.(layer.id, { name: newVal })}
-                      className="font-display text-sm font-black tracking-wider uppercase"
-                      as="strong"
-                    />
-                    {Boolean(blockProps.badge) && (
-                      <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold ${
-                        blockProps.color === '#EE9B00' || Boolean(blockProps.highlight)
-                          ? 'bg-amber-950/60 text-amber-300 border border-amber-500/30'
-                          : 'bg-white/10 text-teal-300'
-                      }`}>
-                        <Check className="size-2.5" />
-                        <InlineEditableText
-                          text={String(blockProps.badge)}
-                          onSave={(newVal) => onUpdateLayerProps?.(layer.id, { badge: newVal })}
-                        />
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* SUBCAPAS DE TRUST BADGE */}
-                {layer.blockType === 'TrustShieldIcon' && (
-                  <div className="flex size-14 items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400 shadow-inner">
-                    <Shield className="size-7" />
-                  </div>
-                )}
-
-                {layer.blockType === 'TrustBadgeTitle' && (
-                  <InlineEditableText
-                    text={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
-                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
-                    className="font-display text-lg font-black text-white tracking-tight leading-snug text-center w-full block"
-                    as="h3"
-                  />
-                )}
-
-                {layer.blockType === 'TrustBadgeSubtitle' && (
-                  <InlineEditableText
-                    text={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
-                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { subtitle: newVal })}
-                    className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center w-full block"
-                    as="p"
-                  />
-                )}
-
-                {/* SUBCAPAS DE COMPARISON CARD */}
-                {layer.blockType === 'ComparisonHeader' && (
-                  <InlineEditableText
-                    text={String(blockProps.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
-                    onSave={(newVal) => onUpdateLayerProps?.(layer.id, { title: newVal })}
-                    className="font-display text-sm font-black text-white tracking-tight uppercase text-center w-full block"
-                    as="h3"
-                  />
-                )}
-
-                {layer.blockType === 'ComparisonWrongBox' && (
-                  <div className="rounded-2xl border border-rose-500/40 bg-rose-950/30 p-3.5 text-left w-full">
-                    <div className="flex items-center gap-2 text-rose-400 font-bold text-xs mb-1">
-                      <span className="flex size-4 items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-black">
-                        <X className="size-3" />
-                      </span>
-                      <InlineEditableText
-                        text={String(blockProps.wrongOptionTitle ?? 'Seguro de Viaje Común')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { wrongOptionTitle: newVal })}
-                        as="span"
-                      />
-                    </div>
-                    <div className="pl-6">
-                      <InlineEditableText
-                        text={String(blockProps.wrongOptionDesc ?? 'No válido para extranjeros')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { wrongOptionDesc: newVal })}
-                        className="text-[11px] text-rose-200/80 leading-relaxed block"
-                        as="p"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {layer.blockType === 'ComparisonCorrectBox' && (
-                  <div className="rounded-2xl border border-emerald-500/50 bg-emerald-950/40 p-3.5 shadow-md text-left w-full">
-                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-1">
-                      <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[9px] font-black">
-                        <Check className="size-3" />
-                      </span>
-                      <InlineEditableText
-                        text={String(blockProps.correctOptionTitle ?? 'Seguro VitaBlue Extranjería')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { correctOptionTitle: newVal })}
-                        as="span"
-                      />
-                    </div>
-                    <div className="pl-6">
-                      <InlineEditableText
-                        text={String(blockProps.correctOptionDesc ?? 'Cumple 100% con los requisitos consulares')}
-                        onSave={(newVal) => onUpdateLayerProps?.(layer.id, { correctOptionDesc: newVal })}
-                        className="text-[11px] text-emerald-100 font-medium leading-relaxed block"
-                        as="p"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* BLOQUES MOTION KIT ORIGINALES (AGRUPADOS) */}
-                {layer.blockType === 'MotionTrustBadge' && (
-                  <MotionTrustBadge
-                    title={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
-                    subtitle={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa')}
-                    highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
-                    verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
-                    tokens={project.brandTokens}
-                    className="!max-w-none !w-full !h-full"
-                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
-                  />
-                )}
-
-                {layer.blockType === 'MotionProviderGrid' && (
-                  <MotionProviderGrid
-                    title={String(blockProps.title ?? 'Aseguradoras Líderes')}
-                    subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
-                    tokens={project.brandTokens}
-                    className="!max-w-none !w-full !h-full"
-                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
-                  />
-                )}
-
-                {layer.blockType === 'MotionComparisonCard' && (
-                  <MotionComparisonCard
-                    title={String(blockProps.title ?? '')}
-                    wrongOptionTitle={String(blockProps.wrongOptionTitle ?? '')}
-                    wrongOptionDesc={String(blockProps.wrongOptionDesc ?? '')}
-                    correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
-                    correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
-                    tokens={project.brandTokens}
-                    className="!max-w-none !w-full !h-full"
-                    style={{ maxWidth: 'none', width: '100%', height: '100%' }}
-                  />
-                )}
+                {/* RENDER BLOCK VIA MODULAR RENDERER */}
+                <ImageLayerBlockRenderer
+                  layer={layer}
+                  brandTokens={project.brandTokens}
+                  onUpdateLayerProps={onUpdateLayerProps}
+                />
 
                 {/* LOCK BADGE IF SELECTED AND LOCKED */}
                 {isSelected && isLocked && (
