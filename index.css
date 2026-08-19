@@ -58,6 +58,22 @@
   .text-slate-500 { color: #475569; }
   .text-emerald-600 { color: #047857; }
 
+  /* Custom sleek scrollbar for dark panels */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(51, 65, 85, 0.5);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 210, 189, 0.6);
+  }
+
   /* Shared social CTA tokens; kept explicit so Vite HMR cannot drop them when
      the Tailwind config changes during local development. */
   .bg-whatsapp { background-color: var(--color-whatsapp-dark); }

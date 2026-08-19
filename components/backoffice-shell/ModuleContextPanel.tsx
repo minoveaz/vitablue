@@ -60,7 +60,7 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
           )}
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 custom-scrollbar">{children}</div>
       {footerSlot && (
         <div
           className={`shrink-0 border-t p-3 ${
