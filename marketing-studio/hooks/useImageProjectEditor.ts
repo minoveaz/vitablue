@@ -463,6 +463,33 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const duplicateSelectedLayers = useCallback(() => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const layersToDuplicate = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
+      if (layersToDuplicate.length === 0) return prev;
+
+      const newLayers: ImageLayer[] = layersToDuplicate.map((layer, i) => ({
+        ...layer,
+        id: `layer-${Date.now()}-${i}`,
+        position: {
+          x: Math.min(92, layer.position.x + 3),
+          y: Math.min(92, layer.position.y + 3),
+        },
+        zIndex: prev.layers.length + 1 + i,
+      }));
+
+      const next = {
+        ...prev,
+        layers: [...prev.layers, ...newLayers],
+        updatedAt: new Date().toISOString(),
+      };
+      setSelectedLayerIds(newLayers.map((l) => l.id));
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
   const removeLayer = useCallback((layerId: string) => {
     setProject((prev) => {
       const nextLayers = prev.layers.filter((l) => l.id !== layerId);
@@ -506,18 +533,27 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
-  const moveLayerZIndex = useCallback((layerId: string, direction: 'up' | 'down') => {
+  const moveLayerZIndex = useCallback((layerId: string, direction: 'up' | 'down' | 'top' | 'bottom') => {
     setProject((prev) => {
       const sortedLayers = [...prev.layers].sort((a, b) => a.zIndex - b.zIndex);
       const currentIndex = sortedLayers.findIndex((l) => l.id === layerId);
       if (currentIndex === -1) return prev;
 
-      const targetIndex = direction === 'up' ? currentIndex + 1 : currentIndex - 1;
-      if (targetIndex < 0 || targetIndex >= sortedLayers.length) return prev;
+      let targetIndex: number;
+      if (direction === 'top') {
+        targetIndex = sortedLayers.length - 1;
+      } else if (direction === 'bottom') {
+        targetIndex = 0;
+      } else if (direction === 'up') {
+        targetIndex = currentIndex + 1;
+      } else {
+        targetIndex = currentIndex - 1;
+      }
 
-      const temp = sortedLayers[currentIndex];
-      sortedLayers[currentIndex] = sortedLayers[targetIndex];
-      sortedLayers[targetIndex] = temp;
+      if (targetIndex < 0 || targetIndex >= sortedLayers.length || targetIndex === currentIndex) return prev;
+
+      const [removed] = sortedLayers.splice(currentIndex, 1);
+      sortedLayers.splice(targetIndex, 0, removed);
 
       const updatedLayers = sortedLayers.map((layer, idx) => ({
         ...layer,
@@ -983,10 +1019,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         ];
       }
 
+      if (layer.blockType === 'CustomGroup' && Array.isArray(props.childrenLayers)) {
+        subLayers = props.childrenLayers as ImageLayer[];
+      }
+
       if (subLayers.length > 0) {
         const otherLayers = prev.layers.filter((l) => l.id !== layerId);
         const next = { ...prev, layers: [...otherLayers, ...subLayers], updatedAt: new Date().toISOString() };
-        setSelectedLayerId(subLayers[1].id);
+        setSelectedLayerIds(subLayers.map((l) => l.id));
         pushHistory(next);
         return next;
       }
@@ -1038,6 +1078,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     fitLayerToCanvas,
     ungroupLayer,
     duplicateLayer,
+    duplicateSelectedLayers,
     removeLayer,
     toggleLayerLock,
     toggleLayerVisibility,

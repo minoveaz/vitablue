@@ -41,9 +41,10 @@ interface ImageStageProps {
   onSelectMultipleLayers?: (ids: string[]) => void;
   onGroupSelectedLayers?: () => void;
   onDeleteSelectedLayers?: () => void;
+  onDuplicateSelectedLayers?: () => void;
   onToggleLock?: (id: string) => void;
   onToggleVisibility?: (id: string) => void;
-  onMoveZIndex?: (id: string, direction: 'up' | 'down') => void;
+  onMoveZIndex?: (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => void;
   onAlignSelectedLayers?: (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
   onSelectCanvas: () => void;
   onDeselectAll: () => void;
@@ -73,6 +74,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onSelectMultipleLayers,
   onGroupSelectedLayers,
   onDeleteSelectedLayers,
+  onDuplicateSelectedLayers,
   onToggleLock,
   onToggleVisibility,
   onMoveZIndex,
@@ -638,8 +640,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             <button
               type="button"
               onClick={() => {
-                if (selectedLayerIds.length > 1) {
-                  selectedLayerIds.forEach((id) => onDuplicateLayer(id));
+                if (selectedLayerIds.length > 1 && onDuplicateSelectedLayers) {
+                  onDuplicateSelectedLayers();
                 } else {
                   onDuplicateLayer(contextMenu.layer.id);
                 }
@@ -718,6 +720,21 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             <button
               type="button"
               onClick={() => {
+                onMoveZIndex?.(contextMenu.layer.id, 'top');
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowUp className="size-3.5 text-brand-cyan" />
+                <span>Traer al frente (Z-Max)</span>
+              </div>
+              <kbd className="text-[10px] text-brand-cyan/80 font-mono">⇧]</kbd>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
                 onMoveZIndex?.(contextMenu.layer.id, 'up');
                 setContextMenu(null);
               }}
@@ -725,7 +742,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             >
               <div className="flex items-center gap-2">
                 <ArrowUp className="size-3.5 text-slate-400" />
-                <span>Traer al frente</span>
+                <span>Subir un nivel</span>
               </div>
               <kbd className="text-[10px] text-slate-500 font-mono">]</kbd>
             </button>
@@ -740,9 +757,24 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             >
               <div className="flex items-center gap-2">
                 <ArrowDown className="size-3.5 text-slate-400" />
-                <span>Enviar al fondo</span>
+                <span>Bajar un nivel</span>
               </div>
               <kbd className="text-[10px] text-slate-500 font-mono">[</kbd>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                onMoveZIndex?.(contextMenu.layer.id, 'bottom');
+                setContextMenu(null);
+              }}
+              className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowDown className="size-3.5 text-slate-500" />
+                <span>Enviar al fondo (Z-Min)</span>
+              </div>
+              <kbd className="text-[10px] text-slate-500 font-mono">⇧[</kbd>
             </button>
           </div>
 

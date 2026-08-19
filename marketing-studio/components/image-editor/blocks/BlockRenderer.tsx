@@ -85,6 +85,35 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
   const blockProps = (layer.props ?? {}) as Record<string, unknown>;
 
   switch (layer.blockType) {
+    // 0. GRUPOS PERSONALIZADOS MULTI-CAPA
+    case 'CustomGroup': {
+      const children = (blockProps.childrenLayers ?? []) as ImageLayer[];
+      return (
+        <div className="relative w-full h-full pointer-events-none">
+          {children.map((child) => (
+            <div
+              key={child.id}
+              className="absolute pointer-events-auto"
+              style={{
+                left: `${child.position.x - layer.position.x + 50}%`,
+                top: `${child.position.y - layer.position.y + 50}%`,
+                transform: `translate(-50%, -50%) rotate(${child.rotation ?? 0}deg) scale(${child.scale ?? 1})`,
+                zIndex: child.zIndex,
+                width: getBlockDefaultWidth(child.blockType, child.width, child.props as Record<string, unknown>),
+                height: child.height ? `${child.height}px` : 'auto',
+              }}
+            >
+              <ImageLayerBlockRenderer
+                layer={child}
+                brandTokens={brandTokens}
+                onUpdateLayerProps={onUpdateLayerProps}
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     // 1. COMPONENTES MAESTROS MOTION KIT (AGRUPADOS)
     case 'MotionAdvisorCard':
       return (
