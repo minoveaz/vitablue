@@ -7,9 +7,11 @@ import {
   LayoutDashboard,
   Link2,
   Palette,
-  Sparkles,
   Wrench,
   FileScan,
+  Layers,
+  Video,
+  BarChart3,
 } from 'lucide-react';
 import {
   SuiteShell,
@@ -30,11 +32,11 @@ export const backofficeNavigation = [
   { to: '/backoffice/tools/document-intelligence', label: 'Document Intelligence', icon: FileScan, end: true },
   { to: '/backoffice/marketing-studio/identidad-de-marca', label: 'Identidad de marca', icon: Palette },
   { to: '/backoffice/marketing-studio/perfiles-sociales', label: 'Perfiles sociales', icon: Image },
-  { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: LayoutDashboard },
-  { to: '/backoffice/marketing-studio/enlaces', label: 'Enlaces de campaña', icon: Link2 },
+  { to: '/backoffice/marketing-studio/assets', label: 'Asset Manager (DAM)', icon: Layers },
+  { to: '/backoffice/marketing-studio/generador-contenido', label: 'Creative Studio (Vídeo)', icon: Video },
+  { to: '/backoffice/marketing-studio/campanas', label: 'Gestión de campañas', icon: BarChart3 },
+  { to: '/backoffice/marketing-studio/enlaces', label: 'Enlaces y UTMs', icon: Link2 },
   { to: '/backoffice/marketing-studio/conexiones', label: 'Conexiones API', icon: Globe },
-  { to: '/backoffice/marketing-studio/assets', label: 'Gestión de Assets & Kits', icon: Boxes },
-  { to: '/backoffice/marketing-studio/generador-contenido', label: 'Generador de contenido', icon: Sparkles },
 ];
 
 export const vitablueBackofficeSchema: NavigationSchema = {
@@ -63,23 +65,44 @@ export const vitablueBackofficeSchema: NavigationSchema = {
       ],
     },
     {
-      id: 'marketing',
-      label: 'Marketing Studio',
+      id: 'brand-hub',
+      label: '1. Brand Hub',
       priority: 2,
       items: [
         { id: 'brand', kind: 'module', moduleId: 'brand', label: 'Identidad de marca', icon: 'Palette', priority: 1, route: { routeId: '/backoffice/marketing-studio/identidad-de-marca' } },
         { id: 'profiles', kind: 'module', moduleId: 'profiles', label: 'Perfiles sociales', icon: 'Image', priority: 2, route: { routeId: '/backoffice/marketing-studio/perfiles-sociales' } },
-        { id: 'campaigns', kind: 'module', moduleId: 'campaigns', label: 'Gestión de campañas', icon: 'BarChart3', priority: 3, route: { routeId: '/backoffice/marketing-studio/campanas' } },
-        { id: 'links', kind: 'module', moduleId: 'links', label: 'Enlaces de campaña', icon: 'Link2', priority: 4, route: { routeId: '/backoffice/marketing-studio/enlaces' } },
-        { id: 'connections', kind: 'module', moduleId: 'connections', label: 'Conexiones API', icon: 'Globe', priority: 5, route: { routeId: '/backoffice/marketing-studio/conexiones' } },
-        { id: 'assets', kind: 'module', moduleId: 'assets', label: 'Assets & MotionKit', icon: 'Layers', priority: 6, route: { routeId: '/backoffice/marketing-studio/assets' } },
-        { id: 'content', kind: 'module', moduleId: 'content', label: 'Generador y Vídeo', icon: 'Sparkles', priority: 7, route: { routeId: '/backoffice/marketing-studio/generador-contenido' } },
+      ],
+    },
+    {
+      id: 'asset-manager',
+      label: '2. Asset Manager (DAM)',
+      priority: 3,
+      items: [
+        { id: 'assets', kind: 'module', moduleId: 'assets', label: 'Biblioteca & MotionKit', icon: 'Layers', priority: 1, route: { routeId: '/backoffice/marketing-studio/assets' } },
+      ],
+    },
+    {
+      id: 'creative-studio',
+      label: '3. Creative Studio',
+      priority: 4,
+      items: [
+        { id: 'content', kind: 'module', moduleId: 'content', label: 'Video Studio (Reels)', icon: 'Video', priority: 1, route: { routeId: '/backoffice/marketing-studio/generador-contenido' } },
+      ],
+    },
+    {
+      id: 'campaign-orchestrator',
+      label: '4. Campaign Orchestrator',
+      priority: 5,
+      items: [
+        { id: 'campaigns', kind: 'module', moduleId: 'campaigns', label: 'Gestión de campañas', icon: 'BarChart3', priority: 1, route: { routeId: '/backoffice/marketing-studio/campanas' } },
+        { id: 'links', kind: 'module', moduleId: 'links', label: 'Enlaces y UTMs', icon: 'Link2', priority: 2, route: { routeId: '/backoffice/marketing-studio/enlaces' } },
+        { id: 'connections', kind: 'module', moduleId: 'connections', label: 'Conexiones API', icon: 'Globe', priority: 3, route: { routeId: '/backoffice/marketing-studio/conexiones' } },
       ],
     },
     {
       id: 'ai-tools',
       label: 'Herramientas IA',
-      priority: 3,
+      priority: 6,
       items: [
         { id: 'doc-intel', kind: 'module', moduleId: 'doc-intel', label: 'Document Intelligence', icon: 'FileScan', priority: 1, route: { routeId: '/backoffice/tools/document-intelligence' } },
       ],
@@ -93,11 +116,11 @@ export const defaultAccessMap: AccessMap = {
   tools: 'enabled',
   brand: 'enabled',
   profiles: 'enabled',
+  assets: 'enabled',
+  content: 'enabled',
   campaigns: 'enabled',
   links: 'enabled',
   connections: 'enabled',
-  assets: 'enabled',
-  content: 'enabled',
   'doc-intel': 'enabled',
 };
 

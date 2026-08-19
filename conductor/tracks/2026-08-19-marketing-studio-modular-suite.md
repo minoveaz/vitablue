@@ -98,12 +98,13 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 ## 4. Fases de Desarrollo
 
 ### Fase 1 - Reorganización de Navegación y Shell Modular
-- [ ] Actualizar la estructura de navegación en `BackofficeShell.tsx` agrupando los módulos bajo los 4 pilares:
-  - *Brand Hub* (`/backoffice/marketing-studio/brand-hub/*`)
-  - *Asset Manager* (`/backoffice/marketing-studio/assets`)
-  - *Creative Studio* (`/backoffice/marketing-studio/creative-studio/*`)
-  - *Campaign Orchestrator* (`/backoffice/marketing-studio/campaigns/*`)
-- [ ] Mantener compatibilidad total mediante redirecciones de rutas legacy en `App.tsx` y `config/routes.ts`.
+- [x] Actualizar la estructura de navegación en `BackofficeShell.tsx` agrupando los módulos bajo los 4 pilares:
+  - *1. Brand Hub* (`Identidad de marca`, `Perfiles sociales`)
+  - *2. Asset Manager (DAM)* (`Biblioteca & MotionKit`)
+  - *3. Creative Studio* (`Video Studio (Reels & Ads)`)
+  - *4. Campaign Orchestrator* (`Gestión de campañas`, `Enlaces y UTMs`, `Conexiones API`)
+- [x] Mantener compatibilidad total mediante redirecciones de rutas en `App.tsx` y `config/routes.ts`.
+- [x] Actualizar `MarketingStudioShell.tsx` con resolución automática de pilares, breadcrumbs y badges de contexto.
 
 ### Fase 2 - Consolidación de Brand Hub
 - [ ] Unificar la gestión de Identidad Visual y Perfiles Sociales en una experiencia fluida.
