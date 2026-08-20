@@ -4,6 +4,14 @@ import {
   ShieldCheck,
   SplitSquareVertical,
   Grid,
+  UploadCloud,
+  Shield,
+  CheckCircle2,
+  PenTool,
+  Star,
+  Download,
+  Film,
+  Sparkles,
 } from 'lucide-react';
 import { ImageBlockType, ImageProject } from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
@@ -241,27 +249,203 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
       {/* 5. MEDIOS & ASESORAS */}
       {activeTab === 'media' && (
-        <div className="space-y-3">
-          <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-            Asesoras Oficiales de VitaBlue
-          </span>
-          <div className="space-y-2">
-            {advisorPhotos.map((advisor) => (
-              <div
-                key={advisor.name}
-                className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 hover:bg-slate-900 transition-all"
-              >
-                <img
-                  src={advisor.url}
-                  alt={advisor.name}
-                  className="size-12 rounded-full object-cover border-2 border-primary shadow-sm"
-                />
-                <div className="flex-1 min-w-0">
-                  <strong className="block text-xs font-bold text-slate-200">{advisor.name}</strong>
-                  <span className="text-[11px] text-slate-400">{advisor.role}</span>
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/60 p-4 text-center hover:border-primary transition-colors cursor-pointer">
+            <UploadCloud className="size-6 text-brand-cyan mx-auto mb-1.5" />
+            <strong className="block text-xs font-bold text-slate-200">Subir imágenes</strong>
+            <p className="text-[10px] text-slate-500 mt-0.5">PNG, JPG, WebP hasta 10MB</p>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
+              Asesoras Oficiales de VitaBlue
+            </span>
+            <div className="space-y-2">
+              {advisorPhotos.map((advisor) => (
+                <div
+                  key={advisor.name}
+                  className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 hover:bg-slate-900 transition-all"
+                >
+                  <img
+                    src={advisor.url}
+                    alt={advisor.name}
+                    className="size-12 rounded-full object-cover border-2 border-primary shadow-sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <strong className="block text-xs font-bold text-slate-200">{advisor.name}</strong>
+                    <span className="text-[11px] text-slate-400">{advisor.role}</span>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. ELEMENTOS Y FORMAS */}
+      {activeTab === 'elements' && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
+              Formas Geométricas
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => onAddBlock('GlassCardSurface', { width: 340, height: 200, variant: 'teal' })}
+                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-primary transition-all text-slate-300 hover:text-brand-cyan"
+              >
+                <div className="size-8 rounded-lg border border-slate-600 bg-slate-800/60 mb-1" />
+                <span className="text-[10px] font-bold">Tarjeta Glass</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddBlock('GlassCardSurface', { width: 340, height: 200, variant: 'amber' })}
+                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-accent transition-all text-slate-300 hover:text-amber-300"
+              >
+                <div className="size-8 rounded-lg border border-amber-500/50 bg-amber-500/10 mb-1" />
+                <span className="text-[10px] font-bold">Tarjeta Oro</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddBlock('TrustShieldIcon')}
+                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-accent transition-all text-slate-300 hover:text-amber-300"
+              >
+                <Shield className="size-8 text-amber-400 mb-1" />
+                <span className="text-[10px] font-bold">Escudo Visado</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
+              Insignias y Badges Oficiales
+            </span>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => onAddBlock('TrustHighlightPill', { highlight: 'GARANTÍA CONSULAR' })}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-accent hover:bg-slate-900 transition-all text-left"
+              >
+                <span className="rounded-full bg-amber-500/20 px-3 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
+                  GARANTÍA CONSULAR
+                </span>
+                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddBlock('TrustVerifiedPill', { verifiedLabel: 'VERIFICADO PARA EXTRANJERÍA' })}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 hover:bg-slate-900 transition-all text-left"
+              >
+                <span className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3 py-1 text-xs font-bold text-emerald-400">
+                  <CheckCircle2 className="size-3.5" />
+                  <span>VERIFICADO PARA EXTRANJERÍA</span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddBlock('HookAlertBadge', { badge: 'ASESORA ASIGNADA · EN DIRECTO' })}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-teal-500 hover:bg-slate-900 transition-all text-left"
+              >
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-brand-cyan">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>ASESORA ASIGNADA · EN DIRECTO</span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. DIBUJO Y TRAZOS */}
+      {activeTab === 'draw' && (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-center">
+            <PenTool className="size-8 text-brand-cyan mx-auto mb-2" />
+            <strong className="block text-xs font-bold text-slate-200">Herramientas de Dibujo y Trazos</strong>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Añade flechas, anotaciones y resaltados vectoriales directos sobre el arte.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onAddBlock('CustomText', { text: '👉 ¡Haz clic aquí!', tag: 'p', fill: '#EE9B00' })}
+              className="p-3 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left"
+            >
+              <span className="text-base mb-1 block">👉</span>
+              <strong className="block text-xs font-bold text-slate-200">Flecha Llamada</strong>
+              <span className="text-[10px] text-slate-500">Anotación directa</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onAddBlock('CustomText', { text: '⭐ ⭐ ⭐ ⭐ ⭐ 4.9/5', tag: 'p', fill: '#EE9B00' })}
+              className="p-3 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left"
+            >
+              <div className="flex gap-0.5 text-amber-400 mb-1">
+                <Star className="size-3 fill-amber-400" />
+                <Star className="size-3 fill-amber-400" />
+                <Star className="size-3 fill-amber-400" />
+                <Star className="size-3 fill-amber-400" />
+                <Star className="size-3 fill-amber-400" />
               </div>
-            ))}
+              <strong className="block text-xs font-bold text-slate-200">Estrellas Reviews</strong>
+              <span className="text-[10px] text-slate-500">Social proof</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 8. EXPORTACIÓN Y PUENTE CON VIDEO STUDIO */}
+      {activeTab === 'export' && (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Download className="size-4 text-brand-cyan" />
+              <strong className="text-xs font-bold text-slate-200">Exportación de Imagen en Alta Definición</strong>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
+              Genera archivos listos para campañas publicitarias en Meta, Google Display o redes sociales.
+            </p>
+            <div className="space-y-2">
+              <button
+                type="button"
+                className="w-full flex items-center justify-between rounded-xl bg-primary/20 hover:bg-primary/30 border border-primary/40 px-3 py-2 text-xs font-bold text-brand-cyan transition-colors"
+              >
+                <span>Descargar PNG (Transparente / Alta Calidad)</span>
+                <Download className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                className="w-full flex items-center justify-between rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 px-3 py-2 text-xs font-bold text-slate-200 transition-colors"
+              >
+                <span>Descargar JPG (Optimizado para Web)</span>
+                <Download className="size-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-teal-500/30 bg-teal-950/20 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Film className="size-4 text-teal-400" />
+              <strong className="text-xs font-bold text-teal-200">Puente Remotion Video Studio</strong>
+            </div>
+            <p className="text-[11px] text-teal-300/80 leading-relaxed mb-3">
+              Convierte este arte gráfico en una escena animada para el generador de vídeos de marketing.
+            </p>
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 text-xs font-black transition-transform active:scale-95 shadow-md"
+            >
+              <Sparkles className="size-3.5" />
+              <span>Convertir a Escena de Vídeo</span>
+            </button>
           </div>
         </div>
       )}

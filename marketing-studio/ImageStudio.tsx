@@ -10,13 +10,15 @@ import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
 import {
+  LayoutTemplate,
   Type,
   Shapes,
   Image as ImageIcon,
-  Layers,
-  Palette,
   Sparkles,
-  FileText,
+  Palette,
+  Layers,
+  PenTool,
+  Film,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -215,13 +217,15 @@ export const ImageStudio: React.FC = () => {
   }
 
   const studioTools: StudioToolItem[] = [
+    { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" /> },
     { id: 'text', label: 'Texto', icon: <Type className="size-4" /> },
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
-    { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
-    { id: 'brand', label: 'Marca', icon: <Palette className="size-4" /> },
     { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
-    { id: 'templates', label: 'Plantillas', icon: <FileText className="size-4" /> },
+    { id: 'brand', label: 'Marca', icon: <Palette className="size-4" /> },
+    { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
+    { id: 'draw', label: 'Dibujo', icon: <PenTool className="size-4" /> },
+    { id: 'export', label: 'Exportar', icon: <Film className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
