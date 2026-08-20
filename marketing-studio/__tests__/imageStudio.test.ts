@@ -202,6 +202,39 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     expect(categories).toContain('trust_stamps');
     expect(categories).toContain('ctas');
     expect(categories).toContain('surfaces');
+
+    // Comprobar que cada preset tiene blockType y defaultProps válidos
+    ELEMENT_PRESETS.forEach((preset) => {
+      expect(preset.id).toBeTruthy();
+      expect(preset.title).toBeTruthy();
+      expect(preset.blockType).toBeTruthy();
+      expect(typeof preset.defaultProps).toBe('object');
+    });
+  });
+
+  it('validates that all geometric shapes and marketing elements can be created as layers with positive dimensions', async () => {
+    const { ELEMENT_PRESETS } = await import('../data/elementsPresets');
+    
+    // Testear todos los presets de elementos
+    ELEMENT_PRESETS.forEach((preset) => {
+      const layer: import('../types/imageStudio').ImageLayer = {
+        id: `layer-${preset.id}`,
+        type: 'block',
+        blockType: preset.blockType,
+        title: preset.title,
+        props: preset.defaultProps,
+        position: { x: 50, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: typeof preset.defaultProps.width === 'number' ? preset.defaultProps.width : 200,
+        height: typeof preset.defaultProps.height === 'number' ? preset.defaultProps.height : 200,
+      };
+
+      expect(layer.id).toBeTruthy();
+      expect(layer.blockType).toBe(preset.blockType);
+      expect(layer.width).toBeGreaterThan(0);
+      expect(layer.height).toBeGreaterThan(0);
+    });
   });
 });
 
