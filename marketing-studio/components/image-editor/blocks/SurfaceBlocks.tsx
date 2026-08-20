@@ -11,13 +11,15 @@ export const GlassCardSurfaceBlock: React.FC<SurfaceBlockProps> = ({ layer }) =>
 
   return (
     <div
-      className={`w-full h-full rounded-3xl border ${
-        isAmber ? 'border-amber-500/40' : 'border-teal-500/30'
-      } bg-[#001219]/90 shadow-2xl backdrop-blur-xl pointer-events-none transition-all`}
+      className={`w-full h-full rounded-3xl border transition-all ${
+        isAmber
+          ? 'border-amber-500/50 bg-gradient-to-br from-amber-500/20 via-[#001219]/90 to-amber-950/40'
+          : 'border-teal-400/40 bg-gradient-to-br from-teal-500/20 via-[#001219]/90 to-[#005F73]/40'
+      } backdrop-blur-2xl shadow-2xl`}
       style={{
         boxShadow: isAmber
-          ? '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(238, 155, 0, 0.15)'
-          : '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 95, 115, 0.2)',
+          ? '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 35px rgba(238, 155, 0, 0.25)'
+          : '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 95, 115, 0.35)',
       }}
     />
   );

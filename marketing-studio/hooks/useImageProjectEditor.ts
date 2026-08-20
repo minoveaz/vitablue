@@ -909,14 +909,35 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       initialTitle = shapeNames[type] ? `Forma: ${shapeNames[type]}` : `Forma: ${type}`;
     }
 
-    const width = typeof defaultProps?.width === 'number' ? defaultProps.width : (blockType === 'GeometricShape' ? 200 : undefined);
-    const isLineShape = defaultProps?.shapeType === 'line' || defaultProps?.shapeType === 'line-dashed' || defaultProps?.shapeType === 'line-dotted';
-    const isArrowLineShape = defaultProps?.shapeType === 'line-arrow-right' || defaultProps?.shapeType === 'line-arrow-both';
-    const height = typeof defaultProps?.height === 'number' 
-      ? defaultProps.height 
-      : (blockType === 'GeometricShape' 
-          ? (isLineShape ? 12 : isArrowLineShape ? 24 : 200) 
-          : undefined);
+    let width = typeof defaultProps?.width === 'number' ? defaultProps.width : undefined;
+    let height = typeof defaultProps?.height === 'number' ? defaultProps.height : undefined;
+
+    if (blockType === 'GeometricShape') {
+      width = width ?? 200;
+      const isLineShape = defaultProps?.shapeType === 'line' || defaultProps?.shapeType === 'line-dashed' || defaultProps?.shapeType === 'line-dotted';
+      const isArrowLineShape = defaultProps?.shapeType === 'line-arrow-right' || defaultProps?.shapeType === 'line-arrow-both';
+      height = height ?? (isLineShape ? 12 : isArrowLineShape ? 24 : 200);
+    } else if (blockType === 'GlassCardSurface') {
+      width = width ?? 420;
+      height = height ?? 240;
+      initialTitle = defaultProps?.variant === 'amber' ? 'Tarjeta Glass Oro' : 'Tarjeta Glass Teal';
+    } else if (blockType === 'WhatsAppCtaButton') {
+      width = width ?? 340;
+      height = height ?? 56;
+      initialTitle = typeof defaultProps?.ctaText === 'string' ? String(defaultProps.ctaText).replace(/^[^\w\s]+/, '').trim() : 'Botón CTA';
+    } else if (blockType === 'TrustVerifiedPill') {
+      width = width ?? 280;
+      height = height ?? 44;
+      initialTitle = 'Sello: Verificado Extranjería';
+    } else if (blockType === 'TrustHighlightPill') {
+      width = width ?? 240;
+      height = height ?? 40;
+      initialTitle = 'Sello: Garantía Consular';
+    } else if (blockType === 'HookAlertBadge') {
+      width = width ?? 320;
+      height = height ?? 40;
+      initialTitle = 'Badge: Asesora en Directo';
+    }
 
     const fill = (defaultProps?.fill as string) || (blockType === 'GeometricShape' ? '#005F73' : undefined);
     const borderColor = (defaultProps?.stroke as string) || (defaultProps?.borderColor as string);

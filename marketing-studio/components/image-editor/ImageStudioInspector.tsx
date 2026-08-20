@@ -1033,18 +1033,83 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* F. BOTÓN CTA O HOOK ALERT */}
-        {(selectedLayer.blockType === 'WhatsAppCtaButton' || selectedLayer.blockType === 'HookAlertBadge') && (
+        {/* F. BOTÓN CTA */}
+        {selectedLayer.blockType === 'WhatsAppCtaButton' && (
+          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-accent font-black">
+              <MessageSquare className="size-3.5" />
+              <span>Botón CTA / Llamada a la Acción</span>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 block mb-1">Texto del Botón</label>
+              <input
+                type="text"
+                value={String(props.ctaText ?? props.whatsAppText ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { ctaText: e.target.value, whatsAppText: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-accent focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 block mb-1">Color de Fondo</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={String(props.primaryColor ?? '#005F73')}
+                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { primaryColor: e.target.value })}
+                  className="size-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer"
+                />
+                <span className="text-xs font-mono text-slate-300">{String(props.primaryColor ?? '#005F73')}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* G. SUPERFICIE GLASS */}
+        {selectedLayer.blockType === 'GlassCardSurface' && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
-              <MessageSquare className="size-3.5" />
-              <span>Texto del Elemento</span>
+              <Layers className="size-3.5" />
+              <span>Superficie Glassmorphism</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onUpdateLayerProps(selectedLayer.id, { variant: 'teal' })}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold border transition-all ${
+                  props.variant !== 'amber'
+                    ? 'border-teal-400 bg-teal-950/60 text-teal-300'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                Teal Oscuro
+              </button>
+              <button
+                type="button"
+                onClick={() => onUpdateLayerProps(selectedLayer.id, { variant: 'amber' })}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold border transition-all ${
+                  props.variant === 'amber'
+                    ? 'border-amber-400 bg-amber-950/60 text-amber-300'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                Oro / Ámbar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* H. HOOK ALERT BADGE */}
+        {selectedLayer.blockType === 'HookAlertBadge' && (
+          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
+              <Sparkles className="size-3.5" />
+              <span>Texto del Badge</span>
             </div>
             <div>
               <input
                 type="text"
-                value={String(props.whatsAppText ?? props.badge ?? '')}
-                onChange={(e) => onUpdateLayerProps(selectedLayer.id, props.whatsAppText !== undefined ? { whatsAppText: e.target.value } : { badge: e.target.value })}
+                value={String(props.badge ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { badge: e.target.value })}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
               />
             </div>

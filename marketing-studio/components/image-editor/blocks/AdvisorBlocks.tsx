@@ -66,14 +66,30 @@ export const AdvisorQuoteBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, pro
   </div>
 );
 
-export const WhatsAppCtaButtonBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <div
-    className="flex w-full h-full min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_25px_-5px_rgba(37,211,102,0.5)] select-none"
-  >
-    <MessageSquare className="size-4 fill-white shrink-0 pointer-events-none" />
-    <InlineEditableText
-      text={String(props.whatsAppText ?? 'Pregúntanos por WhatsApp')}
-      onSave={(newVal) => onUpdateProps?.(layerId, { whatsAppText: newVal })}
-    />
-  </div>
-);
+export const WhatsAppCtaButtonBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => {
+  const ctaText = String(props.ctaText ?? props.whatsAppText ?? 'Pregúntanos por WhatsApp');
+  const bg = String(props.primaryColor ?? '#005F73');
+  const textColor = String(props.textColor ?? '#FFFFFF');
+  const accentColor = props.accentColor ? String(props.accentColor) : undefined;
+  const isWhatsApp = ctaText.toLowerCase().includes('whatsapp') || bg === '#25D366';
+
+  return (
+    <div
+      className="flex w-full h-full min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold shadow-xl select-none transition-all"
+      style={{
+        backgroundColor: bg,
+        color: textColor,
+        border: accentColor ? `2px solid ${accentColor}` : undefined,
+        boxShadow: `0 10px 25px -5px ${bg}80`,
+      }}
+    >
+      {isWhatsApp && (
+        <MessageSquare className="size-4 fill-current shrink-0 pointer-events-none" />
+      )}
+      <InlineEditableText
+        text={ctaText}
+        onSave={(newVal) => onUpdateProps?.(layerId, { ctaText: newVal, whatsAppText: newVal })}
+      />
+    </div>
+  );
+};
