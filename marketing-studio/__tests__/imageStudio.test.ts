@@ -191,5 +191,17 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     expect(newWidth).toBe(889);
     expect(newFontSize).toBe(32);
   });
+
+  it('provides rich elements presets catalog with CTAs, stamps, surfaces, and shapes', async () => {
+    const { ELEMENT_PRESETS, ELEMENT_PRESET_CATEGORIES } = await import('../data/elementsPresets');
+    expect(ELEMENT_PRESET_CATEGORIES.length).toBeGreaterThanOrEqual(4);
+    expect(ELEMENT_PRESETS.length).toBeGreaterThanOrEqual(8);
+
+    const categories = ELEMENT_PRESETS.map((e) => e.category);
+    expect(categories).toContain('shapes');
+    expect(categories).toContain('trust_stamps');
+    expect(categories).toContain('ctas');
+    expect(categories).toContain('surfaces');
+  });
 });
 

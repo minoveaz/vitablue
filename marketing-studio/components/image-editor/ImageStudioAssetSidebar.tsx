@@ -5,8 +5,6 @@ import {
   SplitSquareVertical,
   Grid,
   UploadCloud,
-  Shield,
-  CheckCircle2,
   Download,
   Film,
   Sparkles,
@@ -16,6 +14,7 @@ import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
 import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
+import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 
@@ -300,84 +299,13 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 6. ELEMENTOS Y FORMAS */}
+      {/* 6. ELEMENTOS Y FORMAS (DRAWER MODULAR PROFESIONAL) */}
       {activeTab === 'elements' && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-              Formas Geométricas
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => onAddBlock('GlassCardSurface', { width: 340, height: 200, variant: 'teal' })}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-primary transition-all text-slate-300 hover:text-brand-cyan"
-              >
-                <div className="size-8 rounded-lg border border-slate-600 bg-slate-800/60 mb-1" />
-                <span className="text-[10px] font-bold">Tarjeta Glass</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddBlock('GlassCardSurface', { width: 340, height: 200, variant: 'amber' })}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-accent transition-all text-slate-300 hover:text-amber-300"
-              >
-                <div className="size-8 rounded-lg border border-amber-500/50 bg-amber-500/10 mb-1" />
-                <span className="text-[10px] font-bold">Tarjeta Oro</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddBlock('TrustShieldIcon')}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-900 hover:border-accent transition-all text-slate-300 hover:text-amber-300"
-              >
-                <Shield className="size-8 text-amber-400 mb-1" />
-                <span className="text-[10px] font-bold">Escudo Visado</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-              Insignias y Badges Oficiales
-            </span>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => onAddBlock('TrustHighlightPill', { highlight: 'GARANTÍA CONSULAR' })}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-accent hover:bg-slate-900 transition-all text-left"
-              >
-                <span className="rounded-full bg-amber-500/20 px-3 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
-                  GARANTÍA CONSULAR
-                </span>
-                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddBlock('TrustVerifiedPill', { verifiedLabel: 'VERIFICADO PARA EXTRANJERÍA' })}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 hover:bg-slate-900 transition-all text-left"
-              >
-                <span className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3 py-1 text-xs font-bold text-emerald-400">
-                  <CheckCircle2 className="size-3.5" />
-                  <span>VERIFICADO PARA EXTRANJERÍA</span>
-                </span>
-                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddBlock('HookAlertBadge', { badge: 'ASESORA ASIGNADA · EN DIRECTO' })}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-teal-500 hover:bg-slate-900 transition-all text-left"
-              >
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-brand-cyan">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>ASESORA ASIGNADA · EN DIRECTO</span>
-                </span>
-                <span className="text-[10px] text-slate-500 font-bold">+ Añadir</span>
-              </button>
-            </div>
-          </div>
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioElementsDrawer
+            onAddBlock={onAddBlock}
+            onInsertSavedLayer={onInsertSavedLayer}
+          />
         </div>
       )}
 
