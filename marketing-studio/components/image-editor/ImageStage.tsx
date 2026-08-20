@@ -1102,26 +1102,32 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           </div>
         )}
 
-        {/* FIGMA-STYLE CANVAS FRAME HEADER LABEL */}
+        {/* FIGMA-STYLE CANVAS FRAME HEADER LABEL (COMPENSATING ZOOM FOR PERFECT CRISP READABILITY) */}
         <div
           onClick={(e) => {
             e.stopPropagation();
             onSelectCanvas();
           }}
-          className={`absolute -top-7 left-0 flex items-center gap-2 px-2.5 py-1 rounded-t-lg text-xs transition-all cursor-pointer select-none ${
+          style={{
+            transform: `scale(${1 / Math.max(zoom, 0.25)}) translateY(-100%)`,
+            transformOrigin: 'bottom left',
+          }}
+          className={`absolute -top-3 left-0 z-30 flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer select-none shadow-lg ${
             isCanvasSelected
-              ? 'bg-primary text-white font-bold shadow-md ring-1 ring-brand-cyan/40'
-              : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800/90 font-medium border-t border-x border-slate-800/80'
+              ? 'bg-primary text-white font-bold ring-2 ring-brand-cyan/60 border border-brand-cyan/40 shadow-xl'
+              : 'bg-slate-900/95 text-slate-300 hover:text-white hover:bg-slate-800 font-semibold border border-slate-700/80 backdrop-blur-md'
           }`}
-          title="Hacer clic para seleccionar y configurar el lienzo"
+          title="Hacer clic para seleccionar y configurar el formato del lienzo"
         >
-          <span className="flex items-center gap-1.5">
-            <span className={isCanvasSelected ? 'text-brand-cyan' : 'text-slate-400'}>
+          <span className="flex items-center gap-2">
+            <span className="text-sm">
               {project.preset.aspectRatio === '9:16' ? '📱' : project.preset.aspectRatio === '4:5' ? '📸' : project.preset.aspectRatio === '1:1' ? '🟦' : '🖥️'}
             </span>
-            <span className="font-semibold">{project.preset.name}</span>
-            <span className={`text-[10px] font-mono ${isCanvasSelected ? 'text-brand-cyan/90' : 'text-slate-500'}`}>
-              · {project.preset.width} × {project.preset.height} px ({project.preset.aspectRatio})
+            <span className="text-xs font-bold text-slate-100">{project.preset.name}</span>
+            <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded-md ${
+              isCanvasSelected ? 'bg-brand-cyan/25 text-brand-cyan font-black' : 'bg-slate-800 text-slate-400 font-bold'
+            }`}>
+              {project.preset.width} × {project.preset.height} px ({project.preset.aspectRatio})
             </span>
           </span>
         </div>

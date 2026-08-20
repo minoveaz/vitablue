@@ -93,10 +93,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   // 1. ESTADO VACÍO: PROPIEDADES DEL LIENZO (CENTRO DE CONTROL CENTRALIZADO)
   if (!selectedLayer) {
     const keyPresets = [
-      { id: 'instagram-portrait', name: 'Post 4:5', ratio: '4:5', dims: '1080×1350' },
-      { id: 'instagram-story', name: 'Story / Reel', ratio: '9:16', dims: '1080×1920' },
-      { id: 'instagram-square', name: 'Cuadrado 1:1', ratio: '1:1', dims: '1080×1080' },
-      { id: 'youtube-thumb', name: 'Banner 16:9', ratio: '16:9', dims: '1920×1080' },
+      { id: 'instagram-portrait', name: 'Post de Instagram (4:5)', ratio: '4:5', dims: '1080 × 1350' },
+      { id: 'story-vertical', name: 'Historia & Reel (9:16)', ratio: '9:16', dims: '1080 × 1920' },
+      { id: 'instagram-square', name: 'Post Cuadrado (1:1)', ratio: '1:1', dims: '1080 × 1080' },
+      { id: 'youtube-thumb', name: 'Banner Horizontal (16:9)', ratio: '16:9', dims: '1920 × 1080' },
     ];
 
     return (
