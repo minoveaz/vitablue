@@ -315,6 +315,8 @@ export const ImageStudio: React.FC = () => {
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}
             onSaveToMyDesigns={editor.saveLayerToMyDesigns}
+            onSetPreset={editor.setPreset}
+            onClearCanvas={editor.clearCanvas}
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />

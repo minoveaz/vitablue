@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Palette,
   Sliders,
   Type,
   Maximize2,
@@ -28,7 +27,7 @@ import {
   BookmarkCheck,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
-import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
+import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset, IMAGE_FORMAT_PRESETS } from '../../types/imageStudio';
 
 export interface ImageStudioInspectorProps {
   project: ImageProject;
@@ -52,6 +51,8 @@ export interface ImageStudioInspectorProps {
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
   onSaveToMyDesigns?: (id: string, customTitle?: string) => void;
+  onSetPreset?: (preset: ImageFormatPreset) => void;
+  onClearCanvas?: () => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
   onClose?: () => void;
 }
@@ -78,6 +79,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onFitToCanvas,
   onUngroupLayer,
   onSaveToMyDesigns,
+  onSetPreset,
+  onClearCanvas,
   onUpdateBackground,
   onClose,
 }) => {
@@ -87,8 +90,15 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     { name: 'Carlos', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop' },
   ];
 
-  // 1. ESTADO VACÍO: PROPIEDADES DEL LIENZO
+  // 1. ESTADO VACÍO: PROPIEDADES DEL LIENZO (CENTRO DE CONTROL CENTRALIZADO)
   if (!selectedLayer) {
+    const keyPresets = [
+      { id: 'instagram-portrait', name: 'Post 4:5', ratio: '4:5', dims: '1080×1350' },
+      { id: 'instagram-story', name: 'Story / Reel', ratio: '9:16', dims: '1080×1920' },
+      { id: 'instagram-square', name: 'Cuadrado 1:1', ratio: '1:1', dims: '1080×1080' },
+      { id: 'youtube-thumb', name: 'Banner 16:9', ratio: '16:9', dims: '1920×1080' },
+    ];
+
     return (
       <ModuleContextPanel
         label="Propiedades del Lienzo"
@@ -97,52 +107,163 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         onClose={onClose}
       >
         <div className="space-y-4">
-          <div className="border-b border-slate-800 pb-3">
-            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-              <Palette className="size-4 text-brand-cyan" />
-              <span>{project.preset.name}</span>
-            </span>
-            <span className="text-[11px] text-slate-400 font-mono mt-0.5 block">
-              {project.preset.width} × {project.preset.height} px ({project.preset.aspectRatio})
-            </span>
+          {/* FORMATO Y ASPECT RATIO */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Formato & Tamaño
+              </label>
+              <span className="text-[10px] font-mono text-brand-cyan">
+                {project.preset.width} × {project.preset.height} px
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5">
+              {keyPresets.map((kp) => {
+                const isSelected = project.preset.aspectRatio === kp.ratio;
+                const fullPreset = IMAGE_FORMAT_PRESETS.find((p) => p.aspectRatio === kp.ratio) ?? IMAGE_FORMAT_PRESETS[0];
+
+                return (
+                  <button
+                    key={kp.id}
+                    type="button"
+                    onClick={() => onSetPreset?.(fullPreset)}
+                    className={`flex flex-col p-2.5 rounded-xl border text-left transition-all ${
+                      isSelected
+                        ? 'border-brand-cyan bg-primary/20 text-white shadow-xs ring-1 ring-brand-cyan/30'
+                        : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className="text-xs font-bold truncate">{kp.name}</span>
+                      <span className="text-[10px] font-mono font-black text-brand-cyan">{kp.ratio}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono">{kp.dims} px</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
-              Fondo del Lienzo
+          {/* COLORES PLANOS DEL LIENZO */}
+          <div className="space-y-2 pt-2 border-t border-slate-900">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Color Plano de Fondo
             </label>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => onUpdateBackground({ gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)' })}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary transition-all text-xs font-bold text-slate-200"
-              >
-                <div className="size-6 rounded-lg bg-[#005F73]" />
-                <span>Ocean Mesh (Oficial)</span>
-              </button>
+            <div className="grid grid-cols-6 gap-1.5">
+              {[
+                { name: 'Blanco', color: '#FFFFFF' },
+                { name: 'Oscuro', color: '#001219' },
+                { name: 'Teal', color: '#005F73' },
+                { name: 'Oro', color: '#EE9B00' },
+                { name: 'Menta', color: '#94D2BD' },
+                { name: 'Gris', color: '#F1F5F9' },
+              ].map((c) => {
+                const isActive = project.background.color === c.color && !project.background.gradient;
+                return (
+                  <button
+                    key={c.color}
+                    type="button"
+                    title={c.name}
+                    onClick={() => onUpdateBackground({ gradient: undefined, color: c.color })}
+                    className={`size-8 rounded-xl border transition-all flex items-center justify-center ${
+                      isActive
+                        ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-105'
+                        : 'border-slate-700 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: c.color }}
+                  >
+                    {isActive && <div className="size-2 rounded-full bg-primary" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-              <button
-                type="button"
-                onClick={() => onUpdateBackground({ gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)' })}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary transition-all text-xs font-bold text-slate-200"
-              >
-                <div className="size-6 rounded-lg bg-[#EE9B00]" />
-                <span>Amber Trust Mesh</span>
-              </button>
+          {/* GRADIENTES MESH OFICIALES */}
+          <div className="space-y-2 pt-2 border-t border-slate-900">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Gradientes VitaBlue
+            </label>
+            <div className="space-y-1.5">
+              {[
+                {
+                  name: 'Ocean Mesh (Oficial)',
+                  gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)',
+                  color: '#005F73',
+                },
+                {
+                  name: 'Amber Trust Mesh',
+                  gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)',
+                  color: '#EE9B00',
+                },
+                {
+                  name: 'Mint Glow Mesh',
+                  gradient: 'radial-gradient(circle at 50% 25%, rgba(148, 210, 189, 0.45) 0%, #001219 80%)',
+                  color: '#94D2BD',
+                },
+                {
+                  name: 'Midnight Deep',
+                  gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)',
+                  color: '#001219',
+                },
+              ].map((g) => {
+                const isActive = project.background.gradient === g.gradient;
+                return (
+                  <button
+                    key={g.name}
+                    type="button"
+                    onClick={() => onUpdateBackground({ gradient: g.gradient, color: g.color })}
+                    className={`flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all text-xs font-bold ${
+                      isActive
+                        ? 'border-brand-cyan bg-primary/20 text-white shadow-xs'
+                        : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                    }`}
+                  >
+                    <div className="size-6 rounded-lg shrink-0 border border-white/20 shadow-xs" style={{ background: g.gradient }} />
+                    <span className="truncate">{g.name}</span>
+                  </button>
+                );
+              })}
 
+              {/* FONDO TRANSPARENTE */}
               <button
                 type="button"
-                onClick={() => onUpdateBackground({ gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)' })}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary transition-all text-xs font-bold text-slate-200"
+                onClick={() => onUpdateBackground({ gradient: undefined, color: 'transparent' })}
+                className={`flex w-full items-center gap-2.5 rounded-xl border p-2 text-left transition-all text-xs font-bold ${
+                  project.background.color === 'transparent' && !project.background.gradient
+                    ? 'border-brand-cyan bg-primary/20 text-white'
+                    : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                }`}
               >
-                <div className="size-6 rounded-lg bg-[#001219]" />
-                <span>Midnight Minimal</span>
+                <div className="size-6 rounded-lg shrink-0 border border-slate-700 bg-[linear-gradient(45deg,#1e293b_25%,transparent_25%),linear-gradient(-45deg,#1e293b_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#1e293b_75%),linear-gradient(-45deg,transparent_75%,#1e293b_75%)] bg-[size:8px_8px]" />
+                <span>Transparente (PNG sin fondo)</span>
               </button>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-3.5 text-xs text-slate-400 leading-relaxed">
-            💡 <strong>Tip:</strong> Haz clic en cualquier elemento en el lienzo para editar sus textos, fotos y estilo visual.
+          {/* ACCIONES RÁPIDAS DEL LIENZO */}
+          <div className="space-y-2 pt-2 border-t border-slate-900">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Acciones de Lienzo
+            </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('¿Seguro que deseas vaciar el lienzo en blanco? Se eliminarán todas las capas actuales.')) {
+                  onClearCanvas?.();
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-900/60 bg-rose-950/30 p-2.5 text-xs font-bold text-rose-300 hover:bg-rose-900/50 hover:text-white transition-all shadow-xs"
+            >
+              <span>Vaciar Lienzo en Blanco</span>
+              <span className="text-[10px] text-rose-400/80 font-mono">({project.layers.length} capas)</span>
+            </button>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-3 text-xs text-slate-400 leading-relaxed">
+            💡 <strong>Tip:</strong> Haz clic en cualquier texto o tarjeta en el lienzo para editar sus propiedades específicas.
           </div>
         </div>
       </ModuleContextPanel>

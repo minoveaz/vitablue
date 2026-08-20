@@ -940,6 +940,16 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [project.layers.length, pushHistory]);
 
+  const clearCanvas = useCallback(() => {
+    setProject((prev) => {
+      const next = { ...prev, layers: [], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(null);
+      setSelectedLayerIds([]);
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const updateBackground = useCallback((patch: Partial<CanvasBackground>) => {
     setProject((prev) => {
       const next = {
@@ -1446,6 +1456,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     addTextLayer,
     saveLayerToMyDesigns,
     insertSavedLayer,
+    clearCanvas,
     updateBackground,
     alignSelectedLayers,
     distributeSelectedLayers,
