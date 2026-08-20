@@ -2,12 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Image as ImageIcon,
-  Smartphone,
-  Square,
-  Tv,
   ShieldAlert,
   SlidersHorizontal,
-  Sparkles,
   Download,
   LoaderCircle,
   CheckCircle2,
@@ -15,8 +11,6 @@ import {
   Redo2,
   Video,
   ChevronDown,
-  Facebook,
-  Linkedin,
   Layers,
   ArrowLeft,
   Copy,
@@ -24,7 +18,7 @@ import {
   Pencil,
   MoreHorizontal,
 } from 'lucide-react';
-import { ImageFormatPreset, IMAGE_FORMAT_PRESETS, ImageProject } from '../../types/imageStudio';
+import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -40,7 +34,7 @@ export interface ImageEditorToolbarProps {
   onUndo: () => void;
   onRedo: () => void;
   onUpdateTitle: (title: string) => void;
-  onSetPreset: (preset: ImageFormatPreset) => void;
+  onSetPreset?: (preset: ImageFormatPreset) => void;
   onCopyToClipboard?: () => void;
   onExport: (format: 'png' | 'jpeg' | 'svg') => void;
   onSaveToDam: () => void;
@@ -60,26 +54,20 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   onUndo,
   onRedo,
   onUpdateTitle,
-  onSetPreset,
   onCopyToClipboard,
   onExport,
   onSaveToDam,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [isResizeOpen, setIsResizeOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [damSaved, setDamSaved] = useState(false);
 
-  const resizeRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (resizeRef.current && !resizeRef.current.contains(e.target as Node)) {
-        setIsResizeOpen(false);
-      }
       if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
         setIsExportMenuOpen(false);
       }
@@ -95,14 +83,6 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
     onSaveToDam();
     setDamSaved(true);
     setTimeout(() => setDamSaved(false), 2500);
-  };
-
-  const getPresetIcon = (presetId: string) => {
-    if (presetId.includes('square')) return <Square className="size-3.5" />;
-    if (presetId.includes('story') || presetId.includes('portrait')) return <Smartphone className="size-3.5" />;
-    if (presetId.includes('landscape')) return <Tv className="size-3.5" />;
-    if (presetId.includes('facebook')) return <Facebook className="size-3.5" />;
-    return <Linkedin className="size-3.5" />;
   };
 
   return (
@@ -148,66 +128,9 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         </div>
       </div>
 
-      {/* 2. SECCIÓN CENTRAL: SELECTOR UNIFICADO DE FORMATO + DESHACER / REHACER */}
+      {/* 2. SECCIÓN CENTRAL: DESHACER / REHACER COMPACTO */}
       <div className="flex items-center gap-1.5 shrink-0">
-        {/* SELECTOR DESPLEGABLE ÚNICO DE FORMATOS */}
-        <div className="relative" ref={resizeRef}>
-          <button
-            type="button"
-            onClick={() => setIsResizeOpen(!isResizeOpen)}
-            className="flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/15 hover:bg-primary/25 px-2.5 py-1 text-xs font-bold text-brand-cyan transition-all shadow-xs"
-            title="Cambiar formato o resolución del lienzo"
-          >
-            {getPresetIcon(project.preset.id)}
-            <span>{project.preset.aspectRatio}</span>
-            <span className="hidden md:inline font-normal text-slate-400">· {project.preset.name}</span>
-            <ChevronDown className="size-3 text-slate-400" />
-          </button>
-
-          {isResizeOpen && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-72 rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl z-50 animate-fadeIn">
-              <div className="px-2.5 py-1.5 border-b border-slate-800">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Sparkles className="size-3 text-accent" />
-                  <span>Formatos y Resoluciones</span>
-                </span>
-              </div>
-              <div className="mt-1 space-y-1 max-h-72 overflow-y-auto custom-scrollbar">
-                {IMAGE_FORMAT_PRESETS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => {
-                      onSetPreset(p);
-                      setIsResizeOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs transition-colors ${
-                      p.id === project.preset.id
-                        ? 'bg-primary/25 text-brand-cyan font-bold border border-primary/40'
-                        : 'text-slate-300 hover:bg-slate-900'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      {getPresetIcon(p.id)}
-                      <div className="flex flex-col min-w-0">
-                        <strong className="truncate text-xs">{p.name}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono">
-                          {p.width} × {p.height} px
-                        </span>
-                      </div>
-                    </div>
-                    <span className="rounded bg-slate-900 border border-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 font-bold">
-                      {p.aspectRatio}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* DESHACER / REHACER COMPACTO */}
-        <div className="flex items-center rounded-lg border border-slate-800 bg-slate-950 p-0.5">
+        <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-0.5 shadow-xs">
           <button
             type="button"
             onClick={onUndo}

@@ -1102,6 +1102,30 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           </div>
         )}
 
+        {/* FIGMA-STYLE CANVAS FRAME HEADER LABEL */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectCanvas();
+          }}
+          className={`absolute -top-7 left-0 flex items-center gap-2 px-2.5 py-1 rounded-t-lg text-xs transition-all cursor-pointer select-none ${
+            isCanvasSelected
+              ? 'bg-primary text-white font-bold shadow-md ring-1 ring-brand-cyan/40'
+              : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800/90 font-medium border-t border-x border-slate-800/80'
+          }`}
+          title="Hacer clic para seleccionar y configurar el lienzo"
+        >
+          <span className="flex items-center gap-1.5">
+            <span className={isCanvasSelected ? 'text-brand-cyan' : 'text-slate-400'}>
+              {project.preset.aspectRatio === '9:16' ? '📱' : project.preset.aspectRatio === '4:5' ? '📸' : project.preset.aspectRatio === '1:1' ? '🟦' : '🖥️'}
+            </span>
+            <span className="font-semibold">{project.preset.name}</span>
+            <span className={`text-[10px] font-mono ${isCanvasSelected ? 'text-brand-cyan/90' : 'text-slate-500'}`}>
+              · {project.preset.width} × {project.preset.height} px ({project.preset.aspectRatio})
+            </span>
+          </span>
+        </div>
+
         {/* ARTBOARD (STAGE) */}
         <div
           ref={canvasRef}
