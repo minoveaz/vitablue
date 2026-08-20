@@ -873,6 +873,20 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       };
     }
 
+    const width = typeof defaultProps?.width === 'number' ? defaultProps.width : (blockType === 'GeometricShape' ? 200 : undefined);
+    const isLineShape = defaultProps?.shapeType === 'line' || defaultProps?.shapeType === 'line-dashed' || defaultProps?.shapeType === 'line-dotted';
+    const isArrowLineShape = defaultProps?.shapeType === 'line-arrow-right' || defaultProps?.shapeType === 'line-arrow-both';
+    const height = typeof defaultProps?.height === 'number' 
+      ? defaultProps.height 
+      : (blockType === 'GeometricShape' 
+          ? (isLineShape ? 12 : isArrowLineShape ? 24 : 200) 
+          : undefined);
+
+    const fill = (defaultProps?.fill as string) || (blockType === 'GeometricShape' ? '#005F73' : undefined);
+    const borderColor = (defaultProps?.stroke as string) || (defaultProps?.borderColor as string);
+    const borderWidth = typeof defaultProps?.strokeWidth === 'number' ? defaultProps.strokeWidth : (typeof defaultProps?.borderWidth === 'number' ? defaultProps.borderWidth : undefined);
+    const borderRadius = typeof defaultProps?.borderRadius === 'number' ? defaultProps.borderRadius : undefined;
+
     const newLayer: ImageLayer = {
       id: `layer-${Date.now()}`,
       type: 'block',
@@ -882,6 +896,12 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       position: { x: 50, y: 50 },
       zIndex: project.layers.length + 10,
       scale: 1,
+      width,
+      height,
+      fill,
+      borderColor,
+      borderWidth,
+      borderRadius,
     };
 
     setProject((prev) => {

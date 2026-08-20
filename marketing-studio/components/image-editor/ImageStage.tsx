@@ -1288,15 +1288,23 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   width: getBlockWidth(layer.blockType, layer.width),
                   minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
                   maxWidth: 'none',
-                  height: layer.height ? `${layer.height}px` : 'auto',
-                  minHeight: layer.height ? `${layer.height}px` : 'auto',
+                  height: layer.height
+                    ? `${layer.height}px`
+                    : layer.blockType === 'GeometricShape'
+                    ? '200px'
+                    : 'auto',
+                  minHeight: layer.height
+                    ? `${layer.height}px`
+                    : layer.blockType === 'GeometricShape'
+                    ? '20px'
+                    : 'auto',
                   flexShrink: 0,
                   opacity: layer.opacity !== undefined ? layer.opacity : 1,
                   boxShadow: getShadowStyle(layer.shadowPreset, layer),
-                  borderWidth: layer.borderWidth ? `${layer.borderWidth}px` : undefined,
-                  borderColor: layer.borderColor || undefined,
-                  borderStyle: layer.borderWidth ? 'solid' : undefined,
-                  borderRadius: layer.borderRadius ? `${layer.borderRadius}px` : undefined,
+                  borderWidth: layer.blockType === 'GeometricShape' ? undefined : (layer.borderWidth ? `${layer.borderWidth}px` : undefined),
+                  borderColor: layer.blockType === 'GeometricShape' ? undefined : (layer.borderColor || undefined),
+                  borderStyle: layer.blockType === 'GeometricShape' ? undefined : (layer.borderWidth ? 'solid' : undefined),
+                  borderRadius: layer.blockType === 'GeometricShape' ? undefined : (layer.borderRadius ? `${layer.borderRadius}px` : undefined),
                   filter: getFilterStyle(layer.filter, layer.brightness, layer.contrast, layer.blur),
                 }}
               >
