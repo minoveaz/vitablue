@@ -2,13 +2,23 @@ import React, { useState, useMemo } from 'react';
 import {
   Search,
   X,
-  ChevronRight,
+  Sparkles,
+  Shapes,
+  ShieldCheck,
+  MousePointerClick,
+  Layers,
   FolderHeart,
   Plus,
+  CheckCircle2,
+  ChevronRight,
 } from 'lucide-react';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { TraditionalShapeType } from '../blocks/ShapeBlocks';
 import { getSavedCustomElements, SavedCustomElement } from '../../../utils/savedElementsStorage';
+import {
+  ELEMENT_PRESETS,
+  ElementPresetItem,
+} from '../../../data/elementsPresets';
 
 export interface ImageStudioElementsDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
@@ -309,6 +319,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
   onAddBlock,
   onInsertSavedLayer,
 }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeSectionView, setActiveSectionView] = useState<string | null>(null);
   const [recentlyUsed, setRecentlyUsed] = useState<ShapeItemConfig[]>([
@@ -316,6 +327,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     CANVA_SHAPE_SECTIONS[1].items[0], // square
     CANVA_SHAPE_SECTIONS[0].items[0], // line
     CANVA_SHAPE_SECTIONS[3].items[1], // star-5
+    CANVA_SHAPE_SECTIONS[5].items[1], // heart
   ]);
 
   const savedElements = useMemo<SavedCustomElement[]>(() => {
@@ -324,8 +336,21 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     );
   }, []);
 
+  const categories = useMemo(() => {
+    const base = [
+      { id: 'all', name: '✨ Todos', icon: <Sparkles className="size-3.5" /> },
+      { id: 'shapes', name: '📐 Formas & Geometría', icon: <Shapes className="size-3.5" /> },
+      { id: 'trust_stamps', name: '🛡️ Sellos Consulares', icon: <ShieldCheck className="size-3.5" /> },
+      { id: 'ctas', name: '💬 Botones & CTAs', icon: <MousePointerClick className="size-3.5" /> },
+      { id: 'surfaces', name: '🪟 Superficies Glass', icon: <Layers className="size-3.5" /> },
+    ];
+    if (savedElements.length > 0) {
+      base.push({ id: 'saved', name: `⭐ Mis Elementos (${savedElements.length})`, icon: <FolderHeart className="size-3.5 text-amber-400" /> });
+    }
+    return base;
+  }, [savedElements]);
+
   const handleInsertShape = (item: ShapeItemConfig) => {
-    // Actualizar historial de usados recientemente
     setRecentlyUsed((prev) => {
       const filtered = prev.filter((p) => p.id !== item.id);
       return [item, ...filtered].slice(0, 5);
@@ -342,7 +367,11 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     });
   };
 
-  // Renderizador vectorial de siluetas de alta fidelidad estética (Canva Flat Icon Silhouette)
+  const handleInsertPreset = (preset: ElementPresetItem) => {
+    onAddBlock(preset.blockType, preset.defaultProps);
+  };
+
+  // Renderizador vectorial iconográfico limpio (Canva-Style silhouette)
   const renderShapeIcon = (shapeType: TraditionalShapeType) => {
     switch (shapeType) {
       // Líneas
@@ -523,6 +552,18 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     }
   };
 
+  const trustPresets = useMemo(() => {
+    return ELEMENT_PRESETS.filter((p) => p.category === 'trust_stamps');
+  }, []);
+
+  const ctaPresets = useMemo(() => {
+    return ELEMENT_PRESETS.filter((p) => p.category === 'ctas');
+  }, []);
+
+  const surfacePresets = useMemo(() => {
+    return ELEMENT_PRESETS.filter((p) => p.category === 'surfaces');
+  }, []);
+
   // Filtrado por búsqueda
   const matchingShapes = useMemo(() => {
     if (!searchQuery.trim()) return null;
@@ -538,9 +579,20 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     return result;
   }, [searchQuery]);
 
+  const matchingPresets = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const query = searchQuery.toLowerCase();
+    return ELEMENT_PRESETS.filter(
+      (p) =>
+        p.title.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query) ||
+        (p.badge && p.badge.toLowerCase().includes(query))
+    );
+  }, [searchQuery]);
+
   return (
     <div className="flex h-full flex-col bg-[#070e17] text-slate-100 select-none">
-      {/* 1. BUSCADOR SUPERIOR AL ESTILO EXACTO DE CANVA */}
+      {/* 1. BUSCADOR SUPERIOR */}
       <div className="p-3 border-b border-slate-800/80 shrink-0 bg-[#050b12]">
         <div className="relative flex items-center">
           <Search className="absolute left-3.5 size-3.5 text-slate-400 pointer-events-none" />
@@ -548,7 +600,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Describe o busca tu elemento..."
+            placeholder="Describe o busca tu elemento (ej: círculo, WhatsApp, sello...)"
             className="w-full rounded-2xl border border-slate-800 bg-[#0d1624] pl-9 pr-8 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-brand-cyan focus:bg-[#111c2e] focus:outline-none focus:ring-1 focus:ring-brand-cyan/40 transition-colors shadow-inner"
           />
           {searchQuery && (
@@ -563,38 +615,86 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
         </div>
       </div>
 
-      {/* 2. CONTENIDO PRINCIPAL: CATEGORÍAS & FORMAS COMPACTAS (CANVA-STYLE GRID) */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-5">
+      {/* 2. CHIPS DE NAVEGACIÓN POR CATEGORÍAS (TODOS, FORMAS, SELLOS, CTAS, SUPERFICIES, MIS ELEMENTOS) */}
+      <div className="flex items-center gap-1.5 p-2.5 border-b border-slate-800/80 bg-[#070e17] overflow-x-auto no-scrollbar shrink-0">
+        {categories.map((cat) => {
+          const isActive = selectedCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setActiveSectionView(null);
+              }}
+              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold transition-all ${
+                isActive
+                  ? 'bg-primary/40 text-brand-cyan border border-brand-cyan/50 shadow-xs'
+                  : 'bg-slate-900/90 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              {cat.icon}
+              <span className="truncate">{cat.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. CONTENIDO PRINCIPAL SEGÚN PESTAÑA */}
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-6">
         {/* CASO A: RESULTADOS DE BÚSQUEDA */}
-        {matchingShapes !== null ? (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300">
-                Resultados ({matchingShapes.length})
-              </span>
-            </div>
-            {matchingShapes.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-xs">
-                No se encontraron formas con "{searchQuery}"
+        {searchQuery.trim() !== '' ? (
+          <div className="space-y-4">
+            <span className="text-xs font-semibold text-slate-300">
+              Resultados para "{searchQuery}"
+            </span>
+
+            {/* FORMAS COINCIDENTES */}
+            {matchingShapes && matchingShapes.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold text-slate-400">Formas ({matchingShapes.length})</span>
+                <div className="grid grid-cols-5 gap-1">
+                  {matchingShapes.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleInsertShape(item)}
+                      title={item.name}
+                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
+                    >
+                      {renderShapeIcon(item.shapeType)}
+                    </button>
+                  ))}
+                </div>
               </div>
-            ) : (
-              <div className="grid grid-cols-5 gap-1">
-                {matchingShapes.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleInsertShape(item)}
-                    title={item.name}
-                    className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                  >
-                    {renderShapeIcon(item.shapeType)}
-                  </button>
-                ))}
+            )}
+
+            {/* PRESETS COINCIDENTES (SELLOS / CTAS / GLASS) */}
+            {matchingPresets && matchingPresets.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold text-slate-400">Componentes de Marca ({matchingPresets.length})</span>
+                <div className="space-y-2">
+                  {matchingPresets.map((preset) => (
+                    <div
+                      key={preset.id}
+                      onClick={() => handleInsertPreset(preset)}
+                      className="flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer group"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
+                          {preset.title}
+                        </strong>
+                        <span className="text-[10px] text-slate-400 truncate block">{preset.description}</span>
+                      </div>
+                      <span className="text-[11px] font-bold text-brand-cyan shrink-0">+ Añadir</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         ) : activeSectionView ? (
-          /* VISTA EXTENDIDA "VER TODO" DE UNA SECCIÓN */
+          /* VISTA EXTENDIDA "VER TODO" DE UNA SUB-SECCIÓN DE FORMAS */
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <button
@@ -623,10 +723,241 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               ))}
             </div>
           </div>
-        ) : (
-          /* VISTA PRINCIPAL POR SECCIONES (CANVA-STYLE GRID SIN CAJAS PESADAS) */
+        ) : selectedCategory === 'shapes' ? (
+          /* PESTAÑA DEDICADA: 📐 FORMAS & GEOMETRÍA (CANVA GRID COMPLETO) */
           <>
-            {/* SECCIÓN 1: UTILIZADO RECIENTEMENTE */}
+            {CANVA_SHAPE_SECTIONS.map((section) => (
+              <div key={section.id} className="space-y-1.5">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-bold text-slate-300">
+                    {section.title}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSectionView(section.id)}
+                    className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                  >
+                    <span>Ver todo</span>
+                    <ChevronRight className="size-3" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-5 gap-1">
+                  {section.items.slice(0, 5).map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleInsertShape(item)}
+                      title={item.name}
+                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
+                    >
+                      {renderShapeIcon(item.shapeType)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </>
+        ) : selectedCategory === 'trust_stamps' ? (
+          /* PESTAÑA DEDICADA: 🛡️ SELLOS CONSULARES & INSIGNIAS */
+          <div className="space-y-2.5">
+            <span className="text-xs font-bold text-slate-300 block px-1">
+              Insignias Oficiales de Homologación
+            </span>
+            {trustPresets.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleInsertPreset(item)}
+                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan transition-colors">
+                      {item.title}
+                    </strong>
+                    <span className="text-[11px] text-slate-400">{item.description}</span>
+                  </div>
+                  {item.badge && (
+                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-slate-400 shrink-0">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* PREVIEW INTERACTIVO */}
+                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden">
+                  {item.blockType === 'TrustVerifiedPill' && (
+                    <div className="flex items-center gap-1 rounded-xl border border-emerald-500/40 bg-emerald-950/60 px-2.5 py-1 text-[10px] font-bold text-emerald-400">
+                      <CheckCircle2 className="size-3" />
+                      <span>{String(item.defaultProps.verifiedLabel)}</span>
+                    </div>
+                  )}
+
+                  {item.blockType === 'TrustHighlightPill' && (
+                    <div className="rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-0.5 text-[10px] font-black tracking-wider text-amber-300">
+                      {String(item.defaultProps.highlight)}
+                    </div>
+                  )}
+
+                  {item.blockType === 'HookAlertBadge' && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-3 py-0.5 text-[10px] font-black uppercase text-brand-cyan">
+                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{String(item.defaultProps.badge)}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-brand-cyan transition-colors">
+                    <Plus className="size-3.5" />
+                    <span>Añadir al Lienzo</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : selectedCategory === 'ctas' ? (
+          /* PESTAÑA DEDICADA: 💬 BOTONES & LLAMADAS A LA ACCIÓN */
+          <div className="space-y-2.5">
+            <span className="text-xs font-bold text-slate-300 block px-1">
+              Botones de Conversión y Contacto
+            </span>
+            {ctaPresets.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleInsertPreset(item)}
+                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-accent hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-accent transition-colors">
+                      {item.title}
+                    </strong>
+                    <span className="text-[11px] text-slate-400">{item.description}</span>
+                  </div>
+                  {item.badge && (
+                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-amber-300 shrink-0">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* PREVIEW BOTÓN */}
+                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden">
+                  <div
+                    className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[11px] font-bold shadow-xs"
+                    style={{
+                      backgroundColor: String(item.defaultProps.primaryColor ?? '#005F73'),
+                      color: String(item.defaultProps.textColor ?? '#FFFFFF'),
+                      border: `1px solid ${String(item.defaultProps.accentColor ?? '#EE9B00')}`,
+                    }}
+                  >
+                    <span>{String(item.defaultProps.ctaText)}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-accent transition-colors">
+                    <Plus className="size-3.5" />
+                    <span>Añadir al Lienzo</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : selectedCategory === 'surfaces' ? (
+          /* PESTAÑA DEDICADA: 🪟 SUPERFICIES GLASS */
+          <div className="space-y-2.5">
+            <span className="text-xs font-bold text-slate-300 block px-1">
+              Contenedores Translúcidos Glassmorphism
+            </span>
+            {surfacePresets.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleInsertPreset(item)}
+                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan transition-colors">
+                      {item.title}
+                    </strong>
+                    <span className="text-[11px] text-slate-400">{item.description}</span>
+                  </div>
+                  {item.badge && (
+                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-brand-cyan shrink-0">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+
+                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-3 overflow-hidden">
+                  <div
+                    className={`h-12 w-full rounded-2xl border ${
+                      item.defaultProps.variant === 'amber'
+                        ? 'border-amber-500/40 bg-amber-500/10'
+                        : 'border-teal-500/40 bg-teal-950/40'
+                    }`}
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-brand-cyan transition-colors">
+                    <Plus className="size-3.5" />
+                    <span>Añadir al Lienzo</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : selectedCategory === 'saved' ? (
+          /* PESTAÑA DEDICADA: ⭐ MIS ELEMENTOS */
+          <div className="space-y-2.5">
+            <span className="text-xs font-bold text-amber-300 block px-1">
+              Mis Elementos Personalizados ({savedElements.length})
+            </span>
+            {savedElements.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 space-y-2">
+                <FolderHeart className="size-8 mx-auto text-slate-600" />
+                <p className="text-xs font-bold text-slate-400">No hay elementos guardados</p>
+                <p className="text-[11px] text-slate-500">
+                  Selecciona cualquier elemento en el lienzo y pulsa "⭐ Guardar en Mis Diseños".
+                </p>
+              </div>
+            ) : (
+              savedElements.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onInsertSavedLayer?.(item.layer)}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl border border-amber-500/30 bg-[#0d1624] hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300">
+                      <FolderHeart className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-slate-100 group-hover:text-amber-300 truncate block">
+                        {item.title}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        ⭐ Elemento Personalizado
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-amber-300/80 group-hover:text-amber-300 shrink-0">
+                    <Plus className="size-3.5" />
+                    <span>Añadir</span>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        ) : (
+          /* PESTAÑA: ✨ TODOS (VISTA GLOBAL UNIFICADA) */
+          <>
+            {/* 1. UTILIZADO RECIENTEMENTE */}
             {recentlyUsed.length > 0 && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
@@ -650,64 +981,139 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               </div>
             )}
 
-            {/* SECCIONES: LÍNEAS, FORMAS BÁSICAS, POLÍGONOS, ESTRELLAS, FLECHAS, SÍMBOLOS */}
-            {CANVA_SHAPE_SECTIONS.map((section) => (
-              <div key={section.id} className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-bold text-slate-300">
-                    {section.title}
-                  </span>
+            {/* 2. FORMAS BÁSICAS (PREVIEW DE FILA) */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-300">
+                  Formas básicas
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('shapes')}
+                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                >
+                  <span>Ver todo</span>
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+              <div className="grid grid-cols-5 gap-1">
+                {CANVA_SHAPE_SECTIONS[1].items.map((item) => (
                   <button
+                    key={item.id}
                     type="button"
-                    onClick={() => setActiveSectionView(section.id)}
-                    className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                    onClick={() => handleInsertShape(item)}
+                    title={item.name}
+                    className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
                   >
-                    <span>Ver todo</span>
-                    <ChevronRight className="size-3" />
+                    {renderShapeIcon(item.shapeType)}
                   </button>
-                </div>
-
-                {/* GRID COMPACTO DE SILUETAS VECTORIALES LIMPIAS */}
-                <div className="grid grid-cols-5 gap-1">
-                  {section.items.slice(0, 5).map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleInsertShape(item)}
-                      title={item.name}
-                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                    >
-                      {renderShapeIcon(item.shapeType)}
-                    </button>
-                  ))}
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
 
-            {/* SECCIÓN ADICIONAL: MIS ELEMENTOS GUARDADOS (SI EXISTEN) */}
-            {savedElements.length > 0 && (
-              <div className="space-y-2 pt-3 border-t border-slate-800/80">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                    <FolderHeart className="size-3.5" />
-                    <span>Mis Elementos Guardados ({savedElements.length})</span>
-                  </span>
-                </div>
-                <div className="space-y-1.5">
-                  {savedElements.slice(0, 4).map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => onInsertSavedLayer?.(item.layer)}
-                      className="w-full flex items-center justify-between p-2 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-amber-400 hover:bg-slate-800 transition-all text-left text-xs text-slate-300 hover:text-white"
-                    >
-                      <span className="truncate">{item.title}</span>
-                      <Plus className="size-3.5 text-amber-400 shrink-0" />
-                    </button>
-                  ))}
-                </div>
+            {/* 3. SELLOS CONSULARES (PREVIEW) */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-300">
+                  🛡️ Sellos Consulares & Insignias
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('trust_stamps')}
+                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                >
+                  <span>Ver todo ({trustPresets.length})</span>
+                  <ChevronRight className="size-3" />
+                </button>
               </div>
-            )}
+              <div className="space-y-1.5">
+                {trustPresets.slice(0, 2).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleInsertPreset(item)}
+                    className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-800/60 transition-all text-left group"
+                  >
+                    <div className="min-w-0 pr-2">
+                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
+                        {item.title}
+                      </strong>
+                      <span className="text-[10px] text-slate-400 truncate block">{item.description}</span>
+                    </div>
+                    <Plus className="size-3.5 text-brand-cyan shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. BOTONES & CTAs (PREVIEW) */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-300">
+                  💬 Botones & CTAs
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('ctas')}
+                  className="text-[11px] font-medium text-slate-400 hover:text-accent flex items-center gap-0.5 transition-colors"
+                >
+                  <span>Ver todo ({ctaPresets.length})</span>
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {ctaPresets.slice(0, 2).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleInsertPreset(item)}
+                    className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-accent hover:bg-slate-800/60 transition-all text-left group"
+                  >
+                    <div className="min-w-0 pr-2">
+                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-accent truncate">
+                        {item.title}
+                      </strong>
+                      <span className="text-[10px] text-slate-400 truncate block">{item.description}</span>
+                    </div>
+                    <Plus className="size-3.5 text-accent shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 5. SUPERFICIES GLASS (PREVIEW) */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-300">
+                  🪟 Superficies Glass
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('surfaces')}
+                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                >
+                  <span>Ver todo ({surfacePresets.length})</span>
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {surfacePresets.slice(0, 2).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleInsertPreset(item)}
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all ${
+                      item.defaultProps.variant === 'amber'
+                        ? 'border-amber-500/30 bg-amber-500/10 hover:border-amber-400'
+                        : 'border-teal-500/30 bg-teal-950/40 hover:border-teal-400'
+                    }`}
+                  >
+                    <span className="text-xs font-bold text-slate-200">{item.title}</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">+ Añadir</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </>
         )}
       </div>
