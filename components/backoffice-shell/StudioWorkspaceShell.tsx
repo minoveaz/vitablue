@@ -103,10 +103,10 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
           })}
         </aside>
 
-        {/* B. CREATIVE FLYOUT DRAWER (360px - 384px) */}
+        {/* B. CREATIVE FLYOUT DRAWER (380px - 410px) */}
         {isDrawerOpen && (
           <aside
-            className="w-80 sm:w-96 min-w-[320px] shrink-0 border-r border-slate-800 bg-slate-900/98 flex flex-col min-h-0 overflow-hidden shadow-2xl z-10 animate-fadeIn"
+            className="w-[360px] sm:w-[390px] md:w-[410px] min-w-[340px] shrink-0 border-r border-slate-800 bg-slate-900/98 flex flex-col min-h-0 overflow-hidden shadow-2xl z-10 animate-fadeIn"
             aria-label="Panel lateral de herramientas"
           >
             {/* CABECERA DEL DRAWER */}
@@ -136,7 +136,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
           type="button"
           onClick={() => onSelectTool(isDrawerOpen ? null : tools[0]?.id ?? null)}
           className="absolute top-1/2 -translate-y-1/2 z-30 flex size-6 items-center justify-center rounded-r-lg border border-l-0 border-slate-700/60 bg-slate-900/90 text-slate-400 hover:text-white hover:bg-slate-800 shadow-md backdrop-blur-md transition-all"
-          style={{ left: isDrawerOpen ? 'calc(4rem + 24rem)' : '4rem' }}
+          style={{ left: isDrawerOpen ? 'calc(4rem + 390px)' : '4rem' }}
           title={isDrawerOpen ? 'Ocultar panel lateral (❮)' : 'Mostrar panel lateral (❯)'}
         >
           {isDrawerOpen ? <ChevronLeft className="size-3.5" /> : <ChevronRight className="size-3.5" />}
