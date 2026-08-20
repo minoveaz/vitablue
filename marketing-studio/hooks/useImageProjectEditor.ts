@@ -953,12 +953,308 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
       let subLayers: ImageLayer[] = [];
       const props = layer.props as Record<string, unknown>;
+      const canvasHeight = prev.preset.height || 1080;
+      const groupScale = layer.scale ?? 1;
+      const groupRotation = layer.rotation ?? 0;
 
-      if (layer.blockType === 'CustomGroup' && Array.isArray(props.childrenLayers)) {
+      // 1. DESAGRUPADO DE SELLO DE GARANTÍA (MOTIONTRUSTBADGE)
+      if (layer.blockType === 'MotionTrustBadge') {
+        const cardHeight = 260;
+        subLayers = [
+          {
+            id: `layer-trust-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Sello de Garantía',
+            width: 420,
+            height: cardHeight,
+            props: { variant: 'amber', ...props },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: layer.zIndex,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-trust-icon-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'TrustShieldIcon',
+            title: 'Escudo de Garantía',
+            width: 56,
+            height: 56,
+            props: {},
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-78 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 1,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-trust-highlight-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'TrustHighlightPill',
+            title: 'Etiqueta Garantía',
+            props: { highlight: props.highlight ?? 'GARANTÍA CONSULAR' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-24 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 2,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-trust-title-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'TrustBadgeTitle',
+            title: 'Título de Garantía',
+            width: 370,
+            props: { title: props.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (12 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 3,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-trust-sub-${Date.now() + 4}`,
+            type: 'block',
+            blockType: 'TrustBadgeSubtitle',
+            title: 'Subtítulo de Garantía',
+            width: 370,
+            props: { subtitle: props.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (43 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 4,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-trust-verified-${Date.now() + 5}`,
+            type: 'block',
+            blockType: 'TrustVerifiedPill',
+            title: 'Badge Verificado',
+            props: { verifiedLabel: props.verifiedLabel ?? 'VERIFICADO PARA EXTRANJERÍA' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (93 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 5,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+        ];
+      } else if (layer.blockType === 'MotionAdvisorCard') {
+        // 2. DESAGRUPADO DE TARJETA DE ASESORA (MOTIONADVISORCARD)
+        const cardHeight = 390;
+        subLayers = [
+          {
+            id: `layer-card-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Tarjeta Asesora',
+            width: 380,
+            height: cardHeight,
+            props: { variant: 'teal', ...props },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: layer.zIndex,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-badge-${Date.now() + 1}`,
+            type: 'badge',
+            blockType: 'HookAlertBadge',
+            title: 'Badge de Estado',
+            props: { badge: props.badge ?? 'ASESORA ASIGNADA · EN DIRECTO' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-159 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 1,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-avatar-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'AdvisorAvatarBadge',
+            title: 'Avatar con Verificación',
+            width: 340,
+            props: {
+              avatarUrl: props.avatarUrl ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+              name: props.name ?? 'Sofía',
+              role: props.role ?? 'Asesora Especialista en Visados',
+            },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-55 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 2,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-quote-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'AdvisorQuoteBox',
+            title: 'Caja de Mensaje',
+            width: 340,
+            props: { message: props.message ?? 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (35 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 3,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-cta-${Date.now() + 4}`,
+            type: 'block',
+            blockType: 'WhatsAppCtaButton',
+            title: 'Botón WhatsApp',
+            width: 340,
+            height: 48,
+            props: { whatsAppText: props.whatsAppText ?? 'Pregúntanos por WhatsApp' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (135 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 4,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+        ];
+      } else if (layer.blockType === 'MotionComparisonCard') {
+        // 3. DESAGRUPADO DE COMPARATIVA (MOTIONCOMPARISONCARD)
+        const cardHeight = 280;
+        subLayers = [
+          {
+            id: `layer-comp-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Comparativa',
+            width: 420,
+            height: cardHeight,
+            props: { variant: 'teal', ...props },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: layer.zIndex,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-comp-header-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'ComparisonHeader',
+            title: 'Título Comparativo',
+            width: 380,
+            props: { title: props.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?' },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-100 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 1,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-comp-wrong-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'ComparisonWrongBox',
+            title: 'Opción Rechazada',
+            width: 380,
+            height: 80,
+            props: {
+              wrongOptionTitle: props.wrongOptionTitle ?? 'Seguro de Viaje Común',
+              wrongOptionDesc: props.wrongOptionDesc ?? 'Denegación de visado: no cumple requisitos consulares ni incluye red médica completa.',
+            },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-25 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 2,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-comp-correct-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'ComparisonCorrectBox',
+            title: 'Opción Aprobada',
+            width: 380,
+            height: 80,
+            props: {
+              correctOptionTitle: props.correctOptionTitle ?? 'Seguro VitaBlue Extranjería',
+              correctOptionDesc: props.correctOptionDesc ?? 'Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.',
+            },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (65 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 3,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+        ];
+      } else if (layer.blockType === 'MotionProviderGrid') {
+        // 4. DESAGRUPADO DE PARRILLA DE ASEGURADORAS (MOTIONPROVIDERGRID)
+        const cardHeight = 310;
+        subLayers = [
+          {
+            id: `layer-grid-frame-${Date.now()}`,
+            type: 'block',
+            blockType: 'GlassCardSurface',
+            title: 'Fondo de Parrilla',
+            width: 420,
+            height: cardHeight,
+            props: { variant: 'teal', ...props },
+            position: { x: layer.position.x, y: layer.position.y },
+            zIndex: layer.zIndex,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-grid-header-${Date.now() + 1}`,
+            type: 'block',
+            blockType: 'ProviderGridHeader',
+            title: 'Título de Aseguradoras',
+            width: 380,
+            props: {
+              title: props.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS',
+              subtitle: props.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados',
+            },
+            position: { x: layer.position.x, y: Math.round((layer.position.y + (-85 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 1,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-grid-sanitas-${Date.now() + 2}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Sanitas',
+            width: 180,
+            height: 64,
+            props: { name: 'SANITAS', badge: 'Sin Copagos', color: '#EE9B00', highlight: true },
+            position: { x: layer.position.x - 9.5, y: Math.round((layer.position.y + (5 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 2,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-grid-adeslas-${Date.now() + 3}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Adeslas',
+            width: 180,
+            height: 64,
+            props: { name: 'ADESLAS', badge: 'Visa Ready', color: '#94D2BD' },
+            position: { x: layer.position.x + 9.5, y: Math.round((layer.position.y + (5 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 3,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-grid-asisa-${Date.now() + 4}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta Asisa',
+            width: 180,
+            height: 64,
+            props: { name: 'ASISA', badge: '100% Válido', color: '#94D2BD' },
+            position: { x: layer.position.x - 9.5, y: Math.round((layer.position.y + (85 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 4,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+          {
+            id: `layer-grid-dkv-${Date.now() + 5}`,
+            type: 'block',
+            blockType: 'ProviderBadge',
+            title: 'Tarjeta DKV',
+            width: 180,
+            height: 64,
+            props: { name: 'DKV', badge: 'Repatriación', color: '#94D2BD' },
+            position: { x: layer.position.x + 9.5, y: Math.round((layer.position.y + (85 / canvasHeight) * 100) * 10) / 10 },
+            zIndex: layer.zIndex + 5,
+            scale: groupScale,
+            rotation: groupRotation,
+          },
+        ];
+      } else if (layer.blockType === 'CustomGroup' && Array.isArray(props.childrenLayers)) {
+        // 5. DESAGRUPADO DE GRUPOS PERSONALIZADOS (CUSTOMGROUP)
         const children = props.childrenLayers as (ImageLayer & { relX?: number; relY?: number })[];
         const initialCentroid = (props.initialCentroid as { x: number; y: number } | undefined) ?? { x: layer.position.x, y: layer.position.y };
-        const groupScale = layer.scale ?? 1;
-        const groupRotation = layer.rotation ?? 0;
 
         subLayers = children.map((child) => {
           const offsetX = child.relX !== undefined ? child.relX : (child.position.x - initialCentroid.x);

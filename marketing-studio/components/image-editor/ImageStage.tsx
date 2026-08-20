@@ -774,7 +774,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           </div>
 
           {/* SECCIÓN 2: AGRUPACIÓN / DESAGRUPACIÓN */}
-          {(selectedLayerIds.length >= 2 || contextMenu.layer.blockType === 'CustomGroup') && (
+          {(selectedLayerIds.length >= 2 || ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(contextMenu.layer.blockType ?? '')) && (
             <div className="py-1">
               {selectedLayerIds.length >= 2 && onGroupSelectedLayers && (
                 <button
@@ -793,7 +793,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 </button>
               )}
 
-              {onUngroupLayer && contextMenu.layer.blockType === 'CustomGroup' && (
+              {onUngroupLayer && ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(contextMenu.layer.blockType ?? '') && (
                 <button
                   type="button"
                   onClick={() => {

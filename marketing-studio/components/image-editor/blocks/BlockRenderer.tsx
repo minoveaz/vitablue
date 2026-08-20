@@ -18,8 +18,10 @@ import {
 } from './ProviderBlocks';
 import {
   TrustShieldIconBlock,
+  TrustHighlightPillBlock,
   TrustBadgeTitleBlock,
   TrustBadgeSubtitleBlock,
+  TrustVerifiedPillBlock,
 } from './TrustBlocks';
 import {
   ComparisonHeaderBlock,
@@ -41,13 +43,15 @@ export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, b
     case 'MotionAdvisorCard':
       return '380px';
     case 'GlassCardSurface':
-      return blockProps?.width ? `${blockProps.width}px` : '440px';
+      return blockProps?.width ? `${blockProps.width}px` : '420px';
     case 'MotionTrustBadge':
       return '420px';
     case 'MotionComparisonCard':
     case 'MotionProviderGrid':
-      return '440px';
+      return '420px';
     case 'HookAlertBadge':
+    case 'TrustHighlightPill':
+    case 'TrustVerifiedPill':
       return 'auto';
     case 'AdvisorAvatarBadge':
       return '340px';
@@ -194,10 +198,14 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     // 4. SUB-BLOQUES DE GARANTÍA
     case 'TrustShieldIcon':
       return <TrustShieldIconBlock />;
+    case 'TrustHighlightPill':
+      return <TrustHighlightPillBlock layerId={layer.id} props={blockProps} onUpdateProps={onUpdateLayerProps} />;
     case 'TrustBadgeTitle':
       return <TrustBadgeTitleBlock layerId={layer.id} props={blockProps} onUpdateProps={onUpdateLayerProps} />;
     case 'TrustBadgeSubtitle':
       return <TrustBadgeSubtitleBlock layerId={layer.id} props={blockProps} onUpdateProps={onUpdateLayerProps} />;
+    case 'TrustVerifiedPill':
+      return <TrustVerifiedPillBlock layerId={layer.id} props={blockProps} onUpdateProps={onUpdateLayerProps} />;
 
     // 5. SUB-BLOQUES DE COMPARATIVA
     case 'ComparisonHeader':

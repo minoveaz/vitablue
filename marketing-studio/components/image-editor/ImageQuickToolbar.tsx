@@ -46,7 +46,7 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
   onToggleFlipHorizontal,
 }) => {
   const isMultiple = selectedCount > 1;
-  const isGroup = layer.blockType === 'CustomGroup';
+  const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(layer.blockType ?? '');
 
   return (
     <div className="flex items-center gap-1 rounded-2xl border border-slate-800 bg-slate-950/95 px-2 py-1.5 shadow-2xl backdrop-blur-xl select-none z-40 animate-fadeIn text-xs text-white">
@@ -146,7 +146,7 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
       )}
 
       {/* DESAGRUPAR EN ELEMENTOS LIBRES */}
-      {isGroup && onUngroup && (
+      {canUngroup && onUngroup && (
         <button
           type="button"
           onClick={() => onUngroup(layer.id)}
