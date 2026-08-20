@@ -292,7 +292,7 @@ export const ImageStudio: React.FC = () => {
         />
       }
       aside={
-        isInspectorOpen && editor.selectedLayerId ? (
+        isInspectorOpen ? (
           <ImageStudioInspector
             project={editor.project}
             selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
