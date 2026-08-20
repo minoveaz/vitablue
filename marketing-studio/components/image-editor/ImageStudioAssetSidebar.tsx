@@ -7,8 +7,6 @@ import {
   UploadCloud,
   Shield,
   CheckCircle2,
-  PenTool,
-  Star,
   Download,
   Film,
   Sparkles,
@@ -363,56 +361,125 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 7. DIBUJO Y TRAZOS */}
-      {activeTab === 'draw' && (
+      {/* 8. COPYS CON IA & HOOKS DE CONVERSIÓN */}
+      {activeTab === 'ai-copy' && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-center">
-            <PenTool className="size-8 text-brand-cyan mx-auto mb-2" />
-            <strong className="block text-xs font-bold text-slate-200">Herramientas de Dibujo y Trazos</strong>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Añade flechas, anotaciones y resaltados vectoriales directos sobre el arte.
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Sparkles className="size-4 text-amber-400" />
+              <strong className="text-xs font-bold text-amber-200">Asistente IA de Copywriting</strong>
+            </div>
+            <p className="text-[11px] text-amber-200/80 leading-relaxed">
+              Titulares de alto impacto optimizados para conversión de seguros de visado y extranjería.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => onAddBlock('CustomText', { text: '👉 ¡Haz clic aquí!', tag: 'p', fill: '#EE9B00' })}
-              className="p-3 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left"
-            >
-              <span className="text-base mb-1 block">👉</span>
-              <strong className="block text-xs font-bold text-slate-200">Flecha Llamada</strong>
-              <span className="text-[10px] text-slate-500">Anotación directa</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onAddBlock('CustomText', { text: '⭐ ⭐ ⭐ ⭐ ⭐ 4.9/5', tag: 'p', fill: '#EE9B00' })}
-              className="p-3 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left"
-            >
-              <div className="flex gap-0.5 text-amber-400 mb-1">
-                <Star className="size-3 fill-amber-400" />
-                <Star className="size-3 fill-amber-400" />
-                <Star className="size-3 fill-amber-400" />
-                <Star className="size-3 fill-amber-400" />
-                <Star className="size-3 fill-amber-400" />
-              </div>
-              <strong className="block text-xs font-bold text-slate-200">Estrellas Reviews</strong>
-              <span className="text-[10px] text-slate-500">Social proof</span>
-            </button>
+
+          <div className="space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
+              Ganchos (Hooks) de Entrada
+            </span>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => onAddTextLayer?.({
+                  id: 'hook-1',
+                  title: 'Hook Visado',
+                  category: 'hooks',
+                  previewText: '¿Te mudas a España? 🇪🇸 Evita denegaciones de visado.',
+                  defaultText: '¿Te mudas a España? 🇪🇸 Evita denegaciones de visado.',
+                  tag: 'h2',
+                  fontSize: 22,
+                  fontWeight: '800',
+                  color: '#FFFFFF',
+                  fill: '#FFFFFF',
+                  align: 'center',
+                  fontFamily: 'Poppins, sans-serif',
+                } as unknown as TextPresetItem)}
+                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
+              >
+                <span className="text-[11px] font-bold text-slate-200 group-hover:text-amber-300 block">
+                  "¿Te mudas a España? 🇪🇸 Evita denegaciones..."
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Gancho Estudiantes & Nómadas</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddTextLayer?.({
+                  id: 'hook-2',
+                  title: 'Hook Sin Copagos',
+                  category: 'hooks',
+                  previewText: 'Póliza 100% válida para Extranjería: Sin Copagos ni Carencias.',
+                  defaultText: 'Póliza 100% válida para Extranjería: Sin Copagos ni Carencias.',
+                  tag: 'h2',
+                  fontSize: 20,
+                  fontWeight: '800',
+                  color: '#94D2BD',
+                  fill: '#94D2BD',
+                  align: 'center',
+                  fontFamily: 'Poppins, sans-serif',
+                } as unknown as TextPresetItem)}
+                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-teal-400 hover:bg-slate-900 transition-all text-left group"
+              >
+                <span className="text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan block">
+                  "Póliza 100% válida: Sin Copagos ni Carencias"
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Derribar Objeción Legal</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onAddTextLayer?.({
+                  id: 'hook-3',
+                  title: 'Hook WhatsApp Directo',
+                  category: 'ctas',
+                  previewText: '👉 Chatea con una asesora y recibe tu certificado hoy mismo.',
+                  defaultText: '👉 Chatea con una asesora y recibe tu certificado hoy mismo.',
+                  tag: 'p',
+                  fontSize: 14,
+                  fontWeight: '600',
+                  color: '#EE9B00',
+                  fill: '#EE9B00',
+                  align: 'center',
+                  fontFamily: 'Inter, sans-serif',
+                } as unknown as TextPresetItem)}
+                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
+              >
+                <span className="text-[11px] font-bold text-slate-200 group-hover:text-amber-300 block">
+                  "👉 Chatea con una asesora y recibe tu certificado hoy"
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Llamada a la Acción (CTA)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* 8. EXPORTACIÓN Y PUENTE CON VIDEO STUDIO */}
-      {activeTab === 'export' && (
+      {/* 9. AUDIO & VIDEO (REMOTION BRIDGE) */}
+      {activeTab === 'video-bridge' && (
         <div className="space-y-4">
+          <div className="rounded-2xl border border-teal-500/30 bg-teal-950/20 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Film className="size-4 text-teal-400" />
+              <strong className="text-xs font-bold text-teal-200">Puente Remotion Video Studio</strong>
+            </div>
+            <p className="text-[11px] text-teal-300/80 leading-relaxed mb-3">
+              Convierte este arte gráfico estático en una escena de vídeo animada con voz en off y música para reels / stories.
+            </p>
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2.5 text-xs font-black transition-transform active:scale-95 shadow-md"
+            >
+              <Sparkles className="size-3.5" />
+              <span>Convertir a Escena de Vídeo</span>
+            </button>
+          </div>
+
           <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
             <div className="flex items-center gap-2 mb-2">
               <Download className="size-4 text-brand-cyan" />
               <strong className="text-xs font-bold text-slate-200">Exportación de Imagen en Alta Definición</strong>
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-              Genera archivos listos para campañas publicitarias en Meta, Google Display o redes sociales.
-            </p>
             <div className="space-y-2">
               <button
                 type="button"
@@ -429,23 +496,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
                 <Download className="size-3.5" />
               </button>
             </div>
-          </div>
-
-          <div className="rounded-2xl border border-teal-500/30 bg-teal-950/20 p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Film className="size-4 text-teal-400" />
-              <strong className="text-xs font-bold text-teal-200">Puente Remotion Video Studio</strong>
-            </div>
-            <p className="text-[11px] text-teal-300/80 leading-relaxed mb-3">
-              Convierte este arte gráfico en una escena animada para el generador de vídeos de marketing.
-            </p>
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 text-xs font-black transition-transform active:scale-95 shadow-md"
-            >
-              <Sparkles className="size-3.5" />
-              <span>Convertir a Escena de Vídeo</span>
-            </button>
           </div>
         </div>
       )}

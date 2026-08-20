@@ -17,7 +17,7 @@ import {
   Sparkles,
   Palette,
   Layers,
-  PenTool,
+  Wand2,
   Film,
 } from 'lucide-react';
 
@@ -217,15 +217,22 @@ export const ImageStudio: React.FC = () => {
   }
 
   const studioTools: StudioToolItem[] = [
-    { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" /> },
+    // 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
     { id: 'text', label: 'Texto', icon: <Type className="size-4" /> },
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
-    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
-    { id: 'brand', label: 'Marca', icon: <Palette className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
-    { id: 'draw', label: 'Dibujo', icon: <PenTool className="size-4" /> },
-    { id: 'export', label: 'Exportar', icon: <Film className="size-4" /> },
+
+    // 🔵 Zona 2: Identidad y Marca (5)
+    { id: 'brand', label: 'Kit de Marca', icon: <Palette className="size-4" /> },
+
+    // 🟣 Zona 3: Aceleración y Composición Rápida (6 - 7)
+    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
+    { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" /> },
+
+    // 🟡 Zona 4: Inteligencia y Multimedia (8 - 9)
+    { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
+    { id: 'video-bridge', label: 'Audio & Vídeo', icon: <Film className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
