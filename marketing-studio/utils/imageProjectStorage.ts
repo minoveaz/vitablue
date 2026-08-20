@@ -37,6 +37,14 @@ export function getStoredImageProjects(): ImageProject[] {
 }
 
 /**
+ * Retrieves only user-created, user-modified or duplicated projects (excludes system initial templates).
+ */
+export function getUserSavedImageProjects(): ImageProject[] {
+  const all = getStoredImageProjects();
+  return all.filter((p) => !INITIAL_IMAGE_TEMPLATES.some((t) => t.id === p.id && t.updatedAt === p.updatedAt));
+}
+
+/**
  * Saves or updates a project in localStorage.
  */
 export function saveStoredImageProject(project: ImageProject): void {

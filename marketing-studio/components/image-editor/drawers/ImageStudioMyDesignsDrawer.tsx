@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import {
-  getStoredImageProjects,
+  getUserSavedImageProjects,
   duplicateStoredImageProject,
   deleteStoredImageProject,
 } from '../../../utils/imageProjectStorage';
@@ -49,12 +49,12 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
     };
   }, []);
 
-  // Proyectos guardados
+  // Proyectos guardados exclusivamente por el usuario
   const storedProjects = useMemo(() => {
-    return getStoredImageProjects();
+    return getUserSavedImageProjects();
   }, [refreshTick]);
 
-  // Elementos / bloques guardados
+  // Elementos / bloques guardados exclusivamente por el usuario
   const savedElements = useMemo(() => {
     return getSavedCustomElements();
   }, [refreshTick]);
