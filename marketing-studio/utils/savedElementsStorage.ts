@@ -24,8 +24,9 @@ export function getSavedCustomElements(): SavedCustomElement[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      inMemoryCustomElements = parsed;
-      return parsed;
+      const userOnly = parsed.filter((e) => !e.id?.startsWith('default-'));
+      inMemoryCustomElements = userOnly;
+      return userOnly;
     }
     return [];
   } catch (error) {

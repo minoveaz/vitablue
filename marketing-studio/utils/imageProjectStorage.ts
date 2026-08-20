@@ -41,7 +41,8 @@ export function getStoredImageProjects(): ImageProject[] {
  */
 export function getUserSavedImageProjects(): ImageProject[] {
   const all = getStoredImageProjects();
-  return all.filter((p) => !INITIAL_IMAGE_TEMPLATES.some((t) => t.id === p.id && t.updatedAt === p.updatedAt));
+  const systemTemplateIds = new Set(INITIAL_IMAGE_TEMPLATES.map((t) => t.id));
+  return all.filter((p) => !systemTemplateIds.has(p.id));
 }
 
 /**
