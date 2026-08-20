@@ -199,6 +199,7 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
 
     const categories = ELEMENT_PRESETS.map((e) => e.category);
     expect(categories).toContain('shapes');
+    expect(categories).toContain('illustrations');
     expect(categories).toContain('trust_stamps');
     expect(categories).toContain('ctas');
     expect(categories).toContain('surfaces');
@@ -210,6 +211,12 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
       expect(preset.blockType).toBeTruthy();
       expect(typeof preset.defaultProps).toBe('object');
     });
+
+    const { WEB_ILLUSTRATION_COMPONENTS } = await import('../components/image-editor/blocks/WebIllustrationBlock');
+    expect(Object.keys(WEB_ILLUSTRATION_COMPONENTS).length).toBeGreaterThanOrEqual(20);
+    expect(WEB_ILLUSTRATION_COMPONENTS['medical-attention']).toBeDefined();
+    expect(WEB_ILLUSTRATION_COMPONENTS['student']).toBeDefined();
+    expect(WEB_ILLUSTRATION_COMPONENTS['passport']).toBeDefined();
   });
 
   it('validates that all geometric shapes and marketing elements can be created as layers with positive dimensions', async () => {

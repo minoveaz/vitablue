@@ -949,6 +949,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       width = width ?? 320;
       height = height ?? 40;
       initialTitle = 'Badge: Asesora en Directo';
+    } else if (blockType === 'WebIllustration') {
+      width = width ?? 280;
+      height = height ?? 210;
+      initialTitle = typeof defaultProps?.title === 'string' ? String(defaultProps.title) : 'Ilustración Web';
     }
 
     const fill = (defaultProps?.fill as string) || (blockType === 'GeometricShape' ? '#005F73' : undefined);

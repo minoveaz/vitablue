@@ -28,6 +28,7 @@ import {
   FolderHeart,
   BookmarkCheck,
   Check,
+  Palette,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '../../types/imageStudio';
@@ -665,7 +666,114 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* B. TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
+        {/* B. ILUSTRACIÓN VECTORIAL WEB */}
+        {selectedLayer.blockType === 'WebIllustration' && (
+          <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
+                <Palette className="size-3.5" />
+                <span>Ilustración Web Vectorial</span>
+              </span>
+            </div>
+
+            {/* SELECTOR DE ILUSTRACIÓN */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Ilustración Seleccionada
+              </label>
+              <select
+                value={String(props.illustrationId ?? 'medical-attention')}
+                onChange={(e) => {
+                  onUpdateLayerProps(selectedLayer.id, { illustrationId: e.target.value });
+                }}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
+              >
+                <optgroup label="Salud & Visados">
+                  <option value="medical-attention">🩺 Atención Médica & Reembolso</option>
+                  <option value="student">🎓 Estudiantes & Visados</option>
+                  <option value="prevention">🩺 Prevención & Chequeos</option>
+                  <option value="dental">🦷 Salud Dental</option>
+                  <option value="health-consultation">📱 Consulta Médica Online</option>
+                  <option value="mental-health">🧠 Salud Mental & Bienestar</option>
+                </optgroup>
+                <optgroup label="Viajes & Extranjería">
+                  <option value="passport">🛂 Pasaporte & Visado</option>
+                  <option value="assistance">🌍 Asistencia en Viaje</option>
+                  <option value="destination">📍 Destino España</option>
+                  <option value="boarding-pass">🎫 Tarjeta de Embarque</option>
+                  <option value="adventure">⛰️ Aventura & Deportes</option>
+                </optgroup>
+                <optgroup label="Finanzas & Pólizas">
+                  <option value="piggy-bank">🐷 Hucha & Ahorro</option>
+                  <option value="policy">📄 Póliza & Contrato</option>
+                  <option value="vault">🔒 Caja Fuerte & Seguridad</option>
+                  <option value="wallet">👛 Billetera & Reembolsos</option>
+                  <option value="life">🌱 Seguro de Vida</option>
+                  <option value="market">📈 Mercado & Comparativa</option>
+                </optgroup>
+                <optgroup label="Hogar & Familia">
+                  <option value="family">👨‍👩‍👧 Familia Protegida</option>
+                  <option value="home-cover">🏠 Cobertura de Hogar</option>
+                  <option value="pet">🐾 Seguro para Mascotas</option>
+                  <option value="moving">📦 Mudanza & Traslados</option>
+                  <option value="smart-home">💡 Hogar Conectado</option>
+                </optgroup>
+                <optgroup label="Confianza & Alianzas">
+                  <option value="deal">🤝 Aprobación de Visado</option>
+                  <option value="accompaniment">👥 Acompañamiento Experto</option>
+                  <option value="support">🎧 Soporte 24/7</option>
+                  <option value="target">🎯 Objetivo & Metas</option>
+                  <option value="coverage">🛡️ Cobertura Completa</option>
+                  <option value="partners">🏢 Aseguradoras Aliadas</option>
+                </optgroup>
+                <optgroup label="Auto & Movilidad">
+                  <option value="car">🚗 Seguro de Coche</option>
+                  <option value="bike">🚲 Bicicleta & Movilidad</option>
+                  <option value="accident">⚠️ Asistencia en Carretera</option>
+                  <option value="tow-truck">🚛 Grúa</option>
+                  <option value="keys">🔑 Llaves de Coche</option>
+                </optgroup>
+                <optgroup label="Siniestros">
+                  <option value="theft">🚨 Protección contra Robo</option>
+                  <option value="water-leak">💧 Fugas de Agua</option>
+                  <option value="broken-glass">🔨 Rotura de Cristales</option>
+                  <option value="storm">⛈️ Fenómenos Meteorológicos</option>
+                </optgroup>
+              </select>
+            </div>
+
+            {/* COLOR PRINCIPAL */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Color Principal de la Ilustración
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={String(props.colorPrimary || selectedLayer.fill || '#005F73')}
+                  onChange={(e) => {
+                    onUpdateLayerProps(selectedLayer.id, { colorPrimary: e.target.value, fill: e.target.value });
+                  }}
+                  className="size-8 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
+                />
+                <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
+                  {['#005F73', '#001219', '#EE9B00', '#94D2BD', '#E63946', '#FFFFFF'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => onUpdateLayerProps(selectedLayer.id, { colorPrimary: c, fill: c })}
+                      className="size-6 rounded-md border border-slate-700 hover:scale-110 transition-transform shrink-0"
+                      style={{ backgroundColor: c }}
+                      title={c}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* C. TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
         {isTextType && (
           <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
             <div className="flex items-center justify-between text-xs font-bold text-slate-300">

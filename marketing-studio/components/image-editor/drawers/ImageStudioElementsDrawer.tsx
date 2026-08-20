@@ -11,9 +11,11 @@ import {
   Plus,
   CheckCircle2,
   ChevronRight,
+  Palette,
 } from 'lucide-react';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { TraditionalShapeType } from '../blocks/ShapeBlocks';
+import { WEB_ILLUSTRATION_COMPONENTS } from '../blocks/WebIllustrationBlock';
 import { getSavedCustomElements, SavedCustomElement } from '../../../utils/savedElementsStorage';
 import {
   ELEMENT_PRESETS,
@@ -320,6 +322,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
   onInsertSavedLayer,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedIllustSubCategory, setSelectedIllustSubCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeSectionView, setActiveSectionView] = useState<string | null>(null);
   const [recentlyUsed, setRecentlyUsed] = useState<ShapeItemConfig[]>([
@@ -339,6 +342,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
   const categories = useMemo(() => {
     const base = [
       { id: 'all', name: '✨ Todos', icon: <Sparkles className="size-3.5" /> },
+      { id: 'illustrations', name: '🎨 Ilustraciones', icon: <Palette className="size-3.5 text-brand-cyan" /> },
       { id: 'shapes', name: '📐 Formas & Geometría', icon: <Shapes className="size-3.5" /> },
       { id: 'trust_stamps', name: '🛡️ Sellos Consulares', icon: <ShieldCheck className="size-3.5" /> },
       { id: 'ctas', name: '💬 Botones & CTAs', icon: <MousePointerClick className="size-3.5" /> },
@@ -552,6 +556,15 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     }
   };
 
+  const illustrationPresets = useMemo(() => {
+    return ELEMENT_PRESETS.filter((p) => p.category === 'illustrations');
+  }, []);
+
+  const filteredIllustrations = useMemo(() => {
+    if (selectedIllustSubCategory === 'all') return illustrationPresets;
+    return illustrationPresets.filter((p) => p.subCategory === selectedIllustSubCategory);
+  }, [illustrationPresets, selectedIllustSubCategory]);
+
   const trustPresets = useMemo(() => {
     return ELEMENT_PRESETS.filter((p) => p.category === 'trust_stamps');
   }, []);
@@ -586,7 +599,8 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
       (p) =>
         p.title.toLowerCase().includes(query) ||
         p.description.toLowerCase().includes(query) ||
-        (p.badge && p.badge.toLowerCase().includes(query))
+        (p.badge && p.badge.toLowerCase().includes(query)) ||
+        (p.subCategory && p.subCategory.toLowerCase().includes(query))
     );
   }, [searchQuery]);
 
@@ -600,7 +614,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Describe o busca tu elemento (ej: círculo, WhatsApp, sello...)"
+            placeholder="Buscar elementos (médico, pasaporte, círculo, WhatsApp...)"
             className="w-full rounded-2xl border border-slate-800 bg-[#0d1624] pl-9 pr-8 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-brand-cyan focus:bg-[#111c2e] focus:outline-none focus:ring-1 focus:ring-brand-cyan/40 transition-colors shadow-inner"
           />
           {searchQuery && (
@@ -615,7 +629,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
         </div>
       </div>
 
-      {/* 2. CHIPS DE NAVEGACIÓN POR CATEGORÍAS (TODOS, FORMAS, SELLOS, CTAS, SUPERFICIES, MIS ELEMENTOS) */}
+      {/* 2. CHIPS DE NAVEGACIÓN POR CATEGORÍAS */}
       <div className="flex items-center gap-1.5 p-2.5 border-b border-slate-800/80 bg-[#070e17] overflow-x-auto no-scrollbar shrink-0">
         {categories.map((cat) => {
           const isActive = selectedCategory === cat.id;
@@ -649,9 +663,47 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               Resultados para "{searchQuery}"
             </span>
 
+            {/* ILUSTRACIONES COINCIDENTES */}
+            {matchingPresets && matchingPresets.some((p) => p.category === 'illustrations') && (
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold text-brand-cyan flex items-center gap-1">
+                  <Palette className="size-3" />
+                  <span>Ilustraciones ({matchingPresets.filter((p) => p.category === 'illustrations').length})</span>
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  {matchingPresets.filter((p) => p.category === 'illustrations').map((preset) => {
+                    const illustrationId = String(preset.defaultProps.illustrationId);
+                    const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
+                    return (
+                      <div
+                        key={preset.id}
+                        onClick={() => handleInsertPreset(preset)}
+                        className="group flex flex-col items-center justify-between p-2.5 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
+                      >
+                        <div
+                          className="size-16 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
+                          style={{
+                            '--color-pastel': '#94D2BD33',
+                            '--color-primary': '#005F73',
+                            '--color-secondary': '#001219',
+                          } as React.CSSProperties}
+                        >
+                          {IllustComp && <IllustComp />}
+                        </div>
+                        <strong className="block text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan truncate w-full">
+                          {preset.title}
+                        </strong>
+                        <span className="text-[9px] font-bold text-brand-cyan mt-1">+ Añadir</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* FORMAS COINCIDENTES */}
             {matchingShapes && matchingShapes.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-slate-800">
                 <span className="text-[11px] font-bold text-slate-400">Formas ({matchingShapes.length})</span>
                 <div className="grid grid-cols-5 gap-1">
                   {matchingShapes.map((item) => (
@@ -670,11 +722,11 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             )}
 
             {/* PRESETS COINCIDENTES (SELLOS / CTAS / GLASS) */}
-            {matchingPresets && matchingPresets.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-[11px] font-bold text-slate-400">Componentes de Marca ({matchingPresets.length})</span>
+            {matchingPresets && matchingPresets.some((p) => p.category !== 'illustrations') && (
+              <div className="space-y-2 pt-2 border-t border-slate-800">
+                <span className="text-[11px] font-bold text-slate-400">Componentes de Marca ({matchingPresets.filter((p) => p.category !== 'illustrations').length})</span>
                 <div className="space-y-2">
-                  {matchingPresets.map((preset) => (
+                  {matchingPresets.filter((p) => p.category !== 'illustrations').map((preset) => (
                     <div
                       key={preset.id}
                       onClick={() => handleInsertPreset(preset)}
@@ -721,6 +773,70 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                   {renderShapeIcon(item.shapeType)}
                 </button>
               ))}
+            </div>
+          </div>
+        ) : selectedCategory === 'illustrations' ? (
+          /* PESTAÑA DEDICADA: 🎨 ILUSTRACIONES WEB VECTORIALES */
+          <div className="space-y-3.5">
+            {/* SUB-FILTROS DE ILUSTRACIONES */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
+              {['all', 'Salud', 'Viajes', 'Finanzas', 'Hogar', 'Confianza', 'Auto'].map((sub) => {
+                const isSelected = selectedIllustSubCategory === sub;
+                return (
+                  <button
+                    key={sub}
+                    type="button"
+                    onClick={() => setSelectedIllustSubCategory(sub)}
+                    className={`shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                      isSelected
+                        ? 'bg-brand-cyan text-[#001219] shadow-xs'
+                        : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    {sub === 'all' ? 'Todas' : sub}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* GRID DE ILUSTRACIONES */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {filteredIllustrations.map((preset) => {
+                const illustrationId = String(preset.defaultProps.illustrationId);
+                const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
+                return (
+                  <div
+                    key={preset.id}
+                    onClick={() => handleInsertPreset(preset)}
+                    className="group flex flex-col items-center justify-between p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
+                  >
+                    <div
+                      className="size-20 flex items-center justify-center p-1.5 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
+                      style={{
+                        '--color-pastel': '#94D2BD33',
+                        '--color-primary': '#005F73',
+                        '--color-secondary': '#001219',
+                      } as React.CSSProperties}
+                    >
+                      {IllustComp && <IllustComp />}
+                    </div>
+                    <div className="w-full min-w-0">
+                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
+                        {preset.title}
+                      </strong>
+                      <span className="text-[9px] text-slate-400 line-clamp-1 mt-0.5">
+                        {preset.description}
+                      </span>
+                    </div>
+                    <div className="pt-2 mt-1 border-t border-slate-800/80 w-full flex items-center justify-center">
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-brand-cyan">
+                        <Plus className="size-3" />
+                        <span>Añadir</span>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : selectedCategory === 'shapes' ? (
@@ -981,8 +1097,54 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               </div>
             )}
 
-            {/* 2. FORMAS BÁSICAS (PREVIEW DE FILA) */}
-            <div className="space-y-1.5">
+            {/* 2. ILUSTRACIONES WEB DESTACADAS */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <Palette className="size-3.5 text-brand-cyan" />
+                  <span>Ilustraciones Web</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('illustrations')}
+                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
+                >
+                  <span>Ver todas ({illustrationPresets.length})</span>
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {illustrationPresets.slice(0, 4).map((preset) => {
+                  const illustrationId = String(preset.defaultProps.illustrationId);
+                  const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
+                  return (
+                    <div
+                      key={preset.id}
+                      onClick={() => handleInsertPreset(preset)}
+                      className="group flex flex-col items-center justify-between p-2.5 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
+                    >
+                      <div
+                        className="size-14 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-1.5 group-hover:scale-105 transition-transform"
+                        style={{
+                          '--color-pastel': '#94D2BD33',
+                          '--color-primary': '#005F73',
+                          '--color-secondary': '#001219',
+                        } as React.CSSProperties}
+                      >
+                        {IllustComp && <IllustComp />}
+                      </div>
+                      <strong className="block text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan truncate w-full">
+                        {preset.title}
+                      </strong>
+                      <span className="text-[9px] font-bold text-brand-cyan mt-1">+ Añadir</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 3. FORMAS BÁSICAS (PREVIEW DE FILA) */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-bold text-slate-300">
                   Formas básicas
@@ -1011,7 +1173,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               </div>
             </div>
 
-            {/* 3. SELLOS CONSULARES (PREVIEW) */}
+            {/* 4. SELLOS CONSULARES (PREVIEW) */}
             <div className="space-y-2 pt-2 border-t border-slate-800/80">
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-bold text-slate-300">
@@ -1046,7 +1208,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               </div>
             </div>
 
-            {/* 4. BOTONES & CTAs (PREVIEW) */}
+            {/* 5. BOTONES & CTAs (PREVIEW) */}
             <div className="space-y-2 pt-2 border-t border-slate-800/80">
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-bold text-slate-300">
@@ -1081,7 +1243,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               </div>
             </div>
 
-            {/* 5. SUPERFICIES GLASS (PREVIEW) */}
+            {/* 6. SUPERFICIES GLASS (PREVIEW) */}
             <div className="space-y-2 pt-2 border-t border-slate-800/80">
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-bold text-slate-300">

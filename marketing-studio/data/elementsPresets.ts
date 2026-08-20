@@ -8,18 +8,20 @@ export interface ElementPresetCategory {
 
 export interface ElementPresetItem {
   id: string;
-  category: 'shapes' | 'trust_stamps' | 'ctas' | 'surfaces';
+  category: 'shapes' | 'trust_stamps' | 'ctas' | 'surfaces' | 'illustrations';
   title: string;
   description: string;
   blockType: ImageBlockType;
   defaultProps: Record<string, unknown>;
   previewColor?: string;
   badge?: string;
+  subCategory?: string;
 }
 
 export const ELEMENT_PRESET_CATEGORIES: ElementPresetCategory[] = [
   { id: 'all', name: '✨ Todos', iconName: 'Sparkles' },
   { id: 'shapes', name: '📐 Formas Tradicionales', iconName: 'Shapes' },
+  { id: 'illustrations', name: '🎨 Ilustraciones Web', iconName: 'Palette' },
   { id: 'trust_stamps', name: '🛡️ Sellos Consulares', iconName: 'ShieldCheck' },
   { id: 'ctas', name: '💬 Botones & CTAs', iconName: 'MousePointerClick' },
   { id: 'surfaces', name: '🪟 Superficies Glass', iconName: 'Layers' },
@@ -148,24 +150,25 @@ export const ELEMENT_PRESETS: ElementPresetItem[] = [
     blockType: 'GeometricShape',
     defaultProps: {
       shapeType: 'line',
-      fill: '#EE9B00',
+      fill: '#94D2BD',
+      stroke: 'transparent',
       strokeWidth: 4,
       width: 400,
       height: 12,
     },
-    badge: 'Separador',
+    badge: 'Estructura',
   },
   {
     id: 'shape-arrow',
     category: 'shapes',
     title: 'Flecha Indicadora',
-    description: 'Flecha direccional horizontal para guiar la atención y CTAs',
+    description: 'Guía visual para dirigir la atención hacia botones y CTAs',
     blockType: 'GeometricShape',
     defaultProps: {
       shapeType: 'arrow',
       fill: '#EE9B00',
       stroke: '#001219',
-      strokeWidth: 1,
+      strokeWidth: 2,
       width: 200,
       height: 100,
     },
@@ -204,7 +207,364 @@ export const ELEMENT_PRESETS: ElementPresetItem[] = [
     badge: 'Salud',
   },
 
-  // 2. SELLOS CONSULARES & INSIGNIAS
+  // 2. ILUSTRACIONES WEB VECTORIALES DE VITABLUE (SALUD, VIAJES, FINANZAS, HOGAR, ASESORÍA)
+  {
+    id: 'elem-illust-medical-attention',
+    category: 'illustrations',
+    title: 'Atención Médica & Reembolso',
+    description: 'Escudo de cobertura médica y reembolso de gastos sanitarios',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'medical-attention',
+      title: 'Atención Médica & Reembolso',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Salud & Visados',
+    subCategory: 'Salud',
+  },
+  {
+    id: 'elem-illust-student',
+    category: 'illustrations',
+    title: 'Estudiantes & Visados',
+    description: 'Estudiante con birrete y maleta para seguros de estudios en España',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'student',
+      title: 'Estudiantes & Visados',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Extranjería',
+    subCategory: 'Salud',
+  },
+  {
+    id: 'elem-illust-prevention',
+    category: 'illustrations',
+    title: 'Prevención & Chequeos',
+    description: 'Doctor con estetoscopio y analíticas preventivas',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'prevention',
+      title: 'Prevención & Chequeos',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Sanidad',
+    subCategory: 'Salud',
+  },
+  {
+    id: 'elem-illust-dental',
+    category: 'illustrations',
+    title: 'Salud Dental',
+    description: 'Diente protegido con coberturas odontológicas completas',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'dental',
+      title: 'Salud Dental',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Dental',
+    subCategory: 'Salud',
+  },
+  {
+    id: 'elem-illust-health-consultation',
+    category: 'illustrations',
+    title: 'Consulta Médica Online',
+    description: 'Videoconsulta y telemedicina 24/7 sin esperas',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'health-consultation',
+      title: 'Consulta Médica Online',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Telemedicina',
+    subCategory: 'Salud',
+  },
+  {
+    id: 'elem-illust-mental-health',
+    category: 'illustrations',
+    title: 'Salud Mental & Bienestar',
+    description: 'Cuidado psicológico y bienestar emocional',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'mental-health',
+      title: 'Salud Mental & Bienestar',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Bienestar',
+    subCategory: 'Salud',
+  },
+
+  // Viajes & Extranjería
+  {
+    id: 'elem-illust-passport',
+    category: 'illustrations',
+    title: 'Pasaporte & Visado',
+    description: 'Pasaporte internacional con sello de aprobación consular',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'passport',
+      title: 'Pasaporte & Visado',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Consulado 100%',
+    subCategory: 'Viajes',
+  },
+  {
+    id: 'elem-illust-assistance',
+    category: 'illustrations',
+    title: 'Asistencia en Viaje',
+    description: 'Repatriación y cobertura médica internacional 24h',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'assistance',
+      title: 'Asistencia en Viaje',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Mundial',
+    subCategory: 'Viajes',
+  },
+  {
+    id: 'elem-illust-destination',
+    category: 'illustrations',
+    title: 'Destino España',
+    description: 'Mapa de destino con chincheta de llegada segura',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'destination',
+      title: 'Destino España',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Expat',
+    subCategory: 'Viajes',
+  },
+  {
+    id: 'elem-illust-boarding-pass',
+    category: 'illustrations',
+    title: 'Tarjeta de Embarque',
+    description: 'Billete de avión y preparativos de viaje internacional',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'boarding-pass',
+      title: 'Tarjeta de Embarque',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Vuelos',
+    subCategory: 'Viajes',
+  },
+  {
+    id: 'elem-illust-adventure',
+    category: 'illustrations',
+    title: 'Aventura & Deportes',
+    description: 'Deportes de aventura y actividades al aire libre aseguradas',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'adventure',
+      title: 'Aventura & Deportes',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Deportes',
+    subCategory: 'Viajes',
+  },
+
+  // Finanzas & Ahorro
+  {
+    id: 'elem-illust-piggy-bank',
+    category: 'illustrations',
+    title: 'Hucha & Ahorro',
+    description: 'Ahorro inteligente comparando las mejores primas del mercado',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'piggy-bank',
+      title: 'Hucha & Ahorro',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Mejor Precio',
+    subCategory: 'Finanzas',
+  },
+  {
+    id: 'elem-illust-policy',
+    category: 'illustrations',
+    title: 'Póliza & Contrato',
+    description: 'Póliza oficial firmada y lista para presentar en Extranjería',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'policy',
+      title: 'Póliza & Contrato',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Certificado',
+    subCategory: 'Finanzas',
+  },
+  {
+    id: 'elem-illust-vault',
+    category: 'illustrations',
+    title: 'Caja Fuerte & Seguridad',
+    description: 'Máxima solidez y respaldo financiero de grandes aseguradoras',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'vault',
+      title: 'Caja Fuerte & Seguridad',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Garantía',
+    subCategory: 'Finanzas',
+  },
+  {
+    id: 'elem-illust-wallet',
+    category: 'illustrations',
+    title: 'Billetera & Reembolsos',
+    description: 'Reembolsos rápidos directos a tu cuenta bancaria',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'wallet',
+      title: 'Billetera & Reembolsos',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Sin Copagos',
+    subCategory: 'Finanzas',
+  },
+
+  // Hogar & Familia
+  {
+    id: 'elem-illust-family',
+    category: 'illustrations',
+    title: 'Familia Protegida',
+    description: 'Seguro médico para familias y reagrupación familiar',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'family',
+      title: 'Familia Protegida',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Familiar',
+    subCategory: 'Hogar',
+  },
+  {
+    id: 'elem-illust-home-cover',
+    category: 'illustrations',
+    title: 'Cobertura de Hogar',
+    description: 'Protección para tu piso o vivienda de alquiler en España',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'home-cover',
+      title: 'Cobertura de Hogar',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Hogar',
+    subCategory: 'Hogar',
+  },
+  {
+    id: 'elem-illust-pet',
+    category: 'illustrations',
+    title: 'Seguro para Mascotas',
+    description: 'Veterinario y responsabilidad civil para perros y gatos',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'pet',
+      title: 'Seguro para Mascotas',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Mascotas',
+    subCategory: 'Hogar',
+  },
+
+  // Confianza & Alianzas
+  {
+    id: 'elem-illust-deal',
+    category: 'illustrations',
+    title: 'Aprobación de Visado',
+    description: 'Apretón de manos y conformidad legal 100% garantizada',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'deal',
+      title: 'Aprobación de Visado',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Éxito',
+    subCategory: 'Confianza',
+  },
+  {
+    id: 'elem-illust-accompaniment',
+    category: 'illustrations',
+    title: 'Acompañamiento Experto',
+    description: 'Asesores reales que te guían en cada paso del trámite',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'accompaniment',
+      title: 'Acompañamiento Experto',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Humano',
+    subCategory: 'Confianza',
+  },
+  {
+    id: 'elem-illust-support',
+    category: 'illustrations',
+    title: 'Soporte 24/7',
+    description: 'Atención al cliente multilingüe por chat, teléfono y email',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'support',
+      title: 'Soporte 24/7',
+      width: 280,
+      height: 210,
+    },
+    badge: '24 Horas',
+    subCategory: 'Confianza',
+  },
+
+  // Auto & Movilidad
+  {
+    id: 'elem-illust-car',
+    category: 'illustrations',
+    title: 'Seguro de Coche',
+    description: 'Póliza a todo riesgo y a terceros con asistencia en carretera',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'car',
+      title: 'Seguro de Coche',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Vehículos',
+    subCategory: 'Auto',
+  },
+  {
+    id: 'elem-illust-bike',
+    category: 'illustrations',
+    title: 'Bicicleta & Movilidad Urbana',
+    description: 'Patinetes eléctricos y bicicletas aseguradas en ciudad',
+    blockType: 'WebIllustration',
+    defaultProps: {
+      illustrationId: 'bike',
+      title: 'Bicicleta & Movilidad',
+      width: 280,
+      height: 210,
+    },
+    badge: 'Movilidad',
+    subCategory: 'Auto',
+  },
+
+  // 3. SELLOS CONSULARES & INSIGNIAS
   {
     id: 'elem-verified-extranjeria',
     category: 'trust_stamps',
@@ -250,18 +610,18 @@ export const ELEMENT_PRESETS: ElementPresetItem[] = [
     badge: 'Beneficio Clave',
   },
   {
-    id: 'elem-reembolso-badge',
+    id: 'elem-devolucion-garantizada',
     category: 'trust_stamps',
-    title: 'Garantía de Devolución Total',
-    description: 'Reembolso del 100% si el visado no es aprobado',
+    title: 'Devolución Total Garantizada',
+    description: 'Reembolso del 100% de la prima si tu visado es denegado',
     blockType: 'TrustHighlightPill',
     defaultProps: {
-      highlight: 'DEVOLUCIÓN GARANTIZADA 100%',
+      highlight: 'DEVOLUCIÓN 100% SI SE DENIEGA EL VISADO',
     },
-    badge: 'Seguridad',
+    badge: 'Garantía Total',
   },
 
-  // 3. BOTONES & LLAMADAS A LA ACCIÓN (CTAs)
+  // 4. BOTONES & LLAMADAS A LA ACCIÓN (CTAs DE CONVERSIÓN)
   {
     id: 'elem-cta-whatsapp',
     category: 'ctas',
@@ -271,11 +631,11 @@ export const ELEMENT_PRESETS: ElementPresetItem[] = [
     defaultProps: {
       ctaText: '💬 Chatear con Asesora por WhatsApp',
       phoneNumber: '+34600000000',
-      primaryColor: '#005F73',
-      accentColor: '#EE9B00',
+      primaryColor: '#25D366',
+      accentColor: '#FFFFFF',
       textColor: '#FFFFFF',
     },
-    badge: 'Alta Conversión',
+    badge: 'WhatsApp',
   },
   {
     id: 'elem-cta-quote',
@@ -308,7 +668,7 @@ export const ELEMENT_PRESETS: ElementPresetItem[] = [
     badge: 'Asesoría',
   },
 
-  // 4. SUPERFICIES GLASS & CONTENEDORES
+  // 5. SUPERFICIES GLASS & CONTENEDORES
   {
     id: 'elem-glass-teal',
     category: 'surfaces',
