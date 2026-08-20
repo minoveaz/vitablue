@@ -540,35 +540,40 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       // Si arrastramos una sola capa, calculamos snapping
       if (dragStartRef.current.layers.length <= 1) {
         const primary = dragStartRef.current.layers[0] ?? { id: draggingLayerId, startX: 50, startY: 50 };
-        let nextX = Math.max(5, Math.min(95, primary.startX + deltaX));
-        let nextY = Math.max(5, Math.min(95, primary.startY + deltaY));
+        let nextX = primary.startX + deltaX;
+        let nextY = primary.startY + deltaY;
 
         const activeLayer = project.layers.find((l) => l.id === primary.id);
         if (activeLayer) {
           const pixelX = (nextX / 100) * project.preset.width;
           const pixelY = (nextY / 100) * project.preset.height;
-          const snap = calculateSnapping(
-            primary.id,
-            pixelX,
-            pixelY,
-            activeLayer.width ?? 380,
-            activeLayer.height ?? 200,
-            project.preset.width,
-            project.preset.height,
-            project.layers
-          );
-          nextX = (snap.x / project.preset.width) * 100;
-          nextY = (snap.y / project.preset.height) * 100;
-          setGuides(snap.guides);
+          // Solo calculamos snapping si está cerca o dentro del lienzo
+          if (nextX >= -10 && nextX <= 110 && nextY >= -10 && nextY <= 110) {
+            const snap = calculateSnapping(
+              primary.id,
+              pixelX,
+              pixelY,
+              activeLayer.width ?? 380,
+              activeLayer.height ?? 200,
+              project.preset.width,
+              project.preset.height,
+              project.layers
+            );
+            nextX = (snap.x / project.preset.width) * 100;
+            nextY = (snap.y / project.preset.height) * 100;
+            setGuides(snap.guides);
+          } else {
+            setGuides([]);
+          }
         }
 
         onUpdatePosition(primary.id, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
       } else {
-        // Arrastrar múltiples capas en bloque
+        // Arrastrar múltiples capas en bloque libremente
         setGuides([]);
         dragStartRef.current.layers.forEach((item) => {
-          const nextX = Math.max(2, Math.min(98, item.startX + deltaX));
-          const nextY = Math.max(2, Math.min(98, item.startY + deltaY));
+          const nextX = item.startX + deltaX;
+          const nextY = item.startY + deltaY;
           onUpdatePosition(item.id, { x: Math.round(nextX * 10) / 10, y: Math.round(nextY * 10) / 10 });
         });
       }
@@ -1147,7 +1152,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             e.stopPropagation();
             onSelectCanvas();
           }}
-          className={`artboard-bg relative overflow-hidden transition-all ${
+          className={`artboard-bg relative overflow-visible transition-all ${
             isCanvasSelected
               ? 'ring-2 ring-primary ring-offset-4 ring-offset-[#001219]'
               : 'shadow-[0_20px_50px_rgba(0,0,0,0.6)]'

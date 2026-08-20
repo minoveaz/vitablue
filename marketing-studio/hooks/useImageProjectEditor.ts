@@ -378,7 +378,13 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const copyToClipboard = useCallback(async (node: HTMLElement | null): Promise<boolean> => {
     if (!node) return false;
     try {
-      const blob = await toBlob(node, { pixelRatio: 2 });
+      const exportOptions = {
+        pixelRatio: 2,
+        width: project.preset.width,
+        height: project.preset.height,
+        style: { overflow: 'hidden' },
+      };
+      const blob = await toBlob(node, exportOptions);
       if (!blob) return false;
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': blob }),
@@ -387,7 +393,13 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     } catch (err) {
       console.warn('Clipboard write failed, fallback to dataURL:', err);
       try {
-        const dataUrl = await toPng(node, { pixelRatio: 2 });
+        const exportOptions = {
+          pixelRatio: 2,
+          width: project.preset.width,
+          height: project.preset.height,
+          style: { overflow: 'hidden' },
+        };
+        const dataUrl = await toPng(node, exportOptions);
         const res = await fetch(dataUrl);
         const blob = await res.blob();
         await navigator.clipboard.write([
@@ -399,7 +411,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         return false;
       }
     }
-  }, []);
+  }, [project.preset.width, project.preset.height]);
 
   const updateLayerFilter = useCallback((layerId: string, filter: ImageLayer['filter']) => {
     setProject((prev) => {
@@ -720,8 +732,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         return {
           ...l,
           position: {
-            x: Math.round(Math.max(0, Math.min(100, l.position.x + dx)) * 10) / 10,
-            y: Math.round(Math.max(0, Math.min(100, l.position.y + dy)) * 10) / 10,
+            x: Math.round((l.position.x + dx) * 10) / 10,
+            y: Math.round((l.position.y + dy) * 10) / 10,
           },
         };
       });
@@ -1093,12 +1105,21 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     try {
       let dataUrl: string;
       const pixelRatio = 2; // High-res 2x export
+      const exportOptions = {
+        pixelRatio,
+        width: project.preset.width,
+        height: project.preset.height,
+        style: {
+          overflow: 'hidden',
+        },
+      };
+
       if (format === 'jpeg') {
-        dataUrl = await toJpeg(node, { quality: 0.95, pixelRatio });
+        dataUrl = await toJpeg(node, { ...exportOptions, quality: 0.95 });
       } else if (format === 'svg') {
-        dataUrl = await toSvg(node);
+        dataUrl = await toSvg(node, exportOptions);
       } else {
-        dataUrl = await toPng(node, { pixelRatio });
+        dataUrl = await toPng(node, exportOptions);
       }
 
       const link = document.createElement('a');
