@@ -826,6 +826,40 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, [project.layers.length, pushHistory]);
 
   const addTextLayer = useCallback((preset?: Partial<TextPresetItem>) => {
+    const canvasWidth = project.preset.width || 1080;
+    const scaleFactor = Math.max(0.8, canvasWidth / 1080);
+
+    // Calcular tamaño de fuente legible para el tamaño real del lienzo
+    const calculateFontSize = () => {
+      if (preset?.fontSize) {
+        // Escalar armónicamente para lienzos de alta resolución (1080px)
+        if (preset.fontSize < 30) {
+          if (preset?.tag === 'p') return Math.round(24 * scaleFactor);
+          if (preset?.tag === 'badge') return Math.round(18 * scaleFactor);
+          return Math.round(preset.fontSize * 1.5 * scaleFactor);
+        }
+        return Math.round(preset.fontSize * scaleFactor);
+      }
+      switch (preset?.tag) {
+        case 'h1': return Math.round(56 * scaleFactor);
+        case 'h2': return Math.round(42 * scaleFactor);
+        case 'h3': return Math.round(32 * scaleFactor);
+        case 'badge': return Math.round(18 * scaleFactor);
+        case 'p':
+        default:
+          return Math.round(24 * scaleFactor);
+      }
+    };
+
+    // Calcular ancho óptimo de la caja de texto (65% a 80% del lienzo)
+    const calculateWidth = () => {
+      if (preset?.tag === 'badge') return Math.round(400 * scaleFactor);
+      if (preset?.tag === 'h1') return Math.round(860 * scaleFactor);
+      if (preset?.tag === 'h2') return Math.round(780 * scaleFactor);
+      if (preset?.tag === 'h3') return Math.round(680 * scaleFactor);
+      return Math.round(720 * scaleFactor);
+    };
+
     const newLayer: ImageLayer = {
       id: `text-${Date.now()}`,
       type: 'text',
@@ -839,14 +873,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       position: { x: 50, y: 50 },
       zIndex: project.layers.length + 10,
       scale: 1,
-      fontSize: preset?.fontSize ?? 26,
+      fontSize: calculateFontSize(),
       fontWeight: preset?.fontWeight ?? '700',
       fontFamily: preset?.fontFamily ?? 'Poppins, sans-serif',
       fill: preset?.fill ?? '#FFFFFF',
       align: preset?.align ?? 'center',
       letterSpacing: preset?.letterSpacing ?? 0,
       lineHeight: preset?.lineHeight ?? 1.2,
-      width: preset?.tag === 'badge' ? 280 : 420,
+      width: calculateWidth(),
     };
 
     setProject((prev) => {
@@ -856,7 +890,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       pushHistory(next);
       return next;
     });
-  }, [project.layers.length, pushHistory]);
+  }, [project.preset.width, project.layers.length, pushHistory]);
 
   const updateBackground = useCallback((patch: Partial<CanvasBackground>) => {
     setProject((prev) => {

@@ -65,11 +65,11 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
     const textToAdd = text ?? (customInputText.trim() || (tag === 'h1' ? 'Añadir un título' : tag === 'h2' ? 'Añadir un subtítulo' : tag === 'badge' ? 'ETIQUETA' : 'Añadir texto de cuerpo'));
     
     const sizeMap = {
-      h1: 36,
-      h2: 24,
-      h3: 18,
-      p: 15,
-      badge: 12,
+      h1: 56,
+      h2: 42,
+      h3: 32,
+      p: 24,
+      badge: 18,
     };
 
     const weightMap: Record<string, '400' | '500' | '600' | '700' | '800'> = {
@@ -131,7 +131,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
             <span className="text-xs font-black text-slate-100 group-hover:text-brand-cyan truncate font-display">
               Título
             </span>
-            <span className="text-[9px] text-slate-500 font-mono">H1 · 36px</span>
+            <span className="text-[9px] text-slate-500 font-mono">H1 · 56px</span>
           </button>
 
           <button
@@ -142,7 +142,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
             <span className="text-xs font-bold text-brand-cyan truncate font-display">
               Subtítulo
             </span>
-            <span className="text-[9px] text-slate-500 font-mono">H2 · 24px</span>
+            <span className="text-[9px] text-slate-500 font-mono">H2 · 42px</span>
           </button>
 
           <button
@@ -153,7 +153,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
             <span className="text-xs font-normal text-slate-300 group-hover:text-white truncate">
               Cuerpo
             </span>
-            <span className="text-[9px] text-slate-500 font-mono">P · 15px</span>
+            <span className="text-[9px] text-slate-500 font-mono">P · 24px</span>
           </button>
         </div>
 
