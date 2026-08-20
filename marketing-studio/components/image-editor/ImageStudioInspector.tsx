@@ -471,21 +471,25 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <span className="text-slate-500 mr-1">Y</span>
               <span className="text-brand-cyan">{Math.round(selectedLayer.position.y)}%</span>
             </div>
-            <div
-              className="rounded bg-slate-900/90 py-1 px-1 border border-slate-800 text-slate-300 truncate cursor-pointer hover:border-brand-cyan"
-              title="Haz clic para alternar ancho predeterminado o auto"
-              onClick={() => onUpdateLayerWidth?.(selectedLayer.id, selectedLayer.width ? undefined : 380)}
-            >
-              <span className="text-slate-500 mr-1">W</span>
-              <span className="text-slate-200">{selectedLayer.width ? `${selectedLayer.width}px` : 'Auto'}</span>
+            <div className="flex items-center rounded bg-slate-900/90 py-0.5 px-1 border border-slate-800 focus-within:border-brand-cyan" title="Ancho en px">
+              <span className="text-slate-500 mr-0.5 text-[9px]">W</span>
+              <input
+                type="number"
+                value={selectedLayer.width ?? ''}
+                placeholder="Auto"
+                onChange={(e) => onUpdateLayerWidth?.(selectedLayer.id, e.target.value ? Math.max(10, parseInt(e.target.value, 10)) : undefined)}
+                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
             </div>
-            <div
-              className="rounded bg-slate-900/90 py-1 px-1 border border-slate-800 text-slate-300 truncate cursor-pointer hover:border-brand-cyan"
-              title="Haz clic para alternar alto predeterminado o auto"
-              onClick={() => onUpdateLayerHeight?.(selectedLayer.id, selectedLayer.height ? undefined : 240)}
-            >
-              <span className="text-slate-500 mr-1">H</span>
-              <span className="text-slate-200">{selectedLayer.height ? `${selectedLayer.height}px` : 'Auto'}</span>
+            <div className="flex items-center rounded bg-slate-900/90 py-0.5 px-1 border border-slate-800 focus-within:border-brand-cyan" title="Alto en px">
+              <span className="text-slate-500 mr-0.5 text-[9px]">H</span>
+              <input
+                type="number"
+                value={selectedLayer.height ?? ''}
+                placeholder="Auto"
+                onChange={(e) => onUpdateLayerHeight?.(selectedLayer.id, e.target.value ? Math.max(10, parseInt(e.target.value, 10)) : undefined)}
+                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
             </div>
             <div
               className="rounded bg-slate-900/90 py-1 px-1 border border-slate-800 text-slate-300 cursor-pointer hover:border-amber-400"

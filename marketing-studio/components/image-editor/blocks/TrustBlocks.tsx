@@ -4,14 +4,14 @@ import { InlineEditableText } from '../InlineEditableText';
 import { BlockPropsHandler } from './AdvisorBlocks';
 
 export const TrustShieldIconBlock: React.FC = () => (
-  <div className="flex size-14 min-h-[56px] min-w-[56px] items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400 shadow-inner">
-    <Shield className="size-7" />
+  <div className="flex w-full h-full items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400 shadow-inner p-2">
+    <Shield className="size-full max-h-full max-w-full" />
   </div>
 );
 
 export const TrustHighlightPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <div className="flex items-center justify-center">
-    <span className="inline-block rounded-full bg-amber-500/20 px-3 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
+  <div className="flex w-full h-full items-center justify-center">
+    <span className="flex w-full h-full min-h-[32px] items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/40 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-amber-300 shadow-md">
       <InlineEditableText
         text={String(props.highlight ?? 'GARANTÍA CONSULAR')}
         onSave={(newVal) => onUpdateProps?.(layerId, { highlight: newVal })}
@@ -44,9 +44,9 @@ export const TrustBadgeSubtitleBlock: React.FC<BlockPropsHandler> = ({ layerId, 
 );
 
 export const TrustVerifiedPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <div className="flex items-center justify-center">
-    <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3.5 py-1.5 text-xs font-bold text-emerald-400">
-      <CheckCircle2 className="size-4" />
+  <div className="flex w-full h-full items-center justify-center">
+    <div className="flex w-full h-full min-h-[36px] items-center justify-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-2 text-xs font-bold text-emerald-400 shadow-md">
+      <CheckCircle2 className="size-4 shrink-0" />
       <InlineEditableText
         text={String(props.verifiedLabel ?? 'VERIFICADO PARA EXTRANJERÍA')}
         onSave={(newVal) => onUpdateProps?.(layerId, { verifiedLabel: newVal })}
