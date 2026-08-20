@@ -238,7 +238,11 @@ export const ImageCanvasFormatsModal: React.FC<ImageCanvasFormatsModalProps> = (
             /* LISTADO DE TARJETAS DE FORMATO */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filteredPresets.map((preset) => {
-                const isCurrent = currentPreset.id === preset.id || (currentPreset.width === preset.width && currentPreset.height === preset.height);
+                const isCurrent = Boolean(
+                  currentPreset &&
+                    (currentPreset.id === preset.id ||
+                      (currentPreset.width === preset.width && currentPreset.height === preset.height))
+                );
                 const ratioValue = preset.width / preset.height;
                 const isVertical = ratioValue < 0.9;
                 const isHorizontal = ratioValue > 1.2;
