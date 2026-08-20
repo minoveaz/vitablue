@@ -9,6 +9,8 @@ import {
   ShieldCheck,
   Layers,
   CheckSquare,
+  ChevronLeft,
+  ChevronRight,
   Plus,
   X,
 } from 'lucide-react';
@@ -184,29 +186,68 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
           )}
         </div>
 
-        {/* SELECTOR HORIZONTAL DE CHIPS / PASTILLAS DE CATEGORÍAS */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar scroll-smooth">
-          {TEXT_PRESET_CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.id;
-            return (
+        {/* SELECTOR HORIZONTAL DE CHIPS / PASTILLAS DE CATEGORÍAS CON NAVEGACIÓN Y PESO VISUAL */}
+        <div className="space-y-1.5 pt-0.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+              Colecciones & Estilos ({TEXT_PRESET_CATEGORIES.length})
+            </span>
+            <div className="flex items-center gap-1 text-slate-500">
               <button
-                key={cat.id}
                 type="button"
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-all ${
-                  isActive
-                    ? 'bg-primary/20 text-brand-cyan border border-brand-cyan/50 shadow-xs'
-                    : 'bg-slate-900/90 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800'
-                }`}
+                onClick={() => {
+                  const container = document.getElementById('text-categories-scroll-track');
+                  if (container) container.scrollBy({ left: -140, behavior: 'smooth' });
+                }}
+                className="size-5 rounded flex items-center justify-center hover:bg-slate-800 hover:text-white transition-colors"
+                title="Desplazar a la izquierda"
               >
-                {getCategoryIcon(cat.icon)}
-                <span>{cat.name}</span>
-                <span className={`text-[10px] font-mono ${isActive ? 'text-brand-cyan/80' : 'text-slate-500'}`}>
-                  {cat.count}
-                </span>
+                <ChevronLeft className="size-3.5" />
               </button>
-            );
-          })}
+              <button
+                type="button"
+                onClick={() => {
+                  const container = document.getElementById('text-categories-scroll-track');
+                  if (container) container.scrollBy({ left: 140, behavior: 'smooth' });
+                }}
+                className="size-5 rounded flex items-center justify-center hover:bg-slate-800 hover:text-white transition-colors"
+                title="Desplazar a la derecha"
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="text-categories-scroll-track"
+            className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 no-scrollbar scroll-smooth shadow-inner"
+          >
+            {TEXT_PRESET_CATEGORIES.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all select-none ${
+                    isActive
+                      ? 'bg-gradient-to-r from-primary/40 to-teal-900/60 text-brand-cyan border border-brand-cyan shadow-sm ring-1 ring-brand-cyan/30'
+                      : 'bg-slate-950/80 text-slate-200 hover:bg-slate-800 hover:text-white border border-slate-800/90'
+                  }`}
+                >
+                  <span className={isActive ? 'text-brand-cyan' : 'text-slate-400'}>
+                    {getCategoryIcon(cat.icon)}
+                  </span>
+                  <span>{cat.name}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                    isActive ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
