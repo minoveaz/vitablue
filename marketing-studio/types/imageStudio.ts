@@ -273,6 +273,10 @@ export interface ImageLayer {
   borderRadius?: number;
   flipHorizontal?: boolean;
   flipVertical?: boolean;
+  textEffect?: 'none' | 'box' | 'stroke' | 'glow';
+  boxColor?: string;
+  boxPadding?: number;
+  boxBorderRadius?: number;
   src?: string; // Image source URL
   filter?: 'none' | 'grayscale' | 'sepia' | 'contrast' | 'blur' | 'teal_tint' | 'gold_tint';
   brightness?: number; // 50 to 150

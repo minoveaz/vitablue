@@ -7,6 +7,8 @@ import {
   BadgePercent,
   MessageSquare,
   ShieldCheck,
+  Layers,
+  CheckSquare,
   Plus,
   X,
 } from 'lucide-react';
@@ -30,6 +32,10 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
     switch (iconName) {
       case 'Type':
         return <Type className="size-3.5" />;
+      case 'Layers':
+        return <Layers className="size-3.5" />;
+      case 'CheckSquare':
+        return <CheckSquare className="size-3.5" />;
       case 'Flame':
         return <Flame className="size-3.5" />;
       case 'BadgePercent':
@@ -311,15 +317,19 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
                     <div
                       style={{
                         fontFamily: preset.fontFamily,
-                        fontSize: `${Math.min(22, preset.fontSize)}px`,
+                        fontSize: `${Math.min(18, preset.fontSize)}px`,
                         fontWeight: preset.fontWeight,
                         color: preset.fill,
                         textAlign: preset.align,
                         letterSpacing: `${preset.letterSpacing ?? 0}px`,
-                        lineHeight: preset.lineHeight ?? 1.2,
+                        lineHeight: preset.lineHeight ?? 1.25,
                         textTransform: preset.textTransform ?? 'none',
+                        backgroundColor: preset.textEffect === 'box' ? (preset.boxColor ?? '#EE9B00') : undefined,
+                        padding: preset.textEffect === 'box' ? '4px 8px' : undefined,
+                        borderRadius: preset.textEffect === 'box' ? '8px' : undefined,
+                        textShadow: preset.textEffect === 'glow' ? '0 0 12px rgba(148, 210, 189, 0.9)' : undefined,
                       }}
-                      className="break-words"
+                      className="break-words whitespace-pre-line inline-block"
                     >
                       {preset.previewText}
                     </div>

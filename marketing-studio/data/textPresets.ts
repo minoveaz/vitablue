@@ -1,6 +1,6 @@
 export interface TextPresetItem {
   id: string;
-  category: 'basics' | 'hooks' | 'pricing' | 'ctas' | 'badges';
+  category: 'basics' | 'pairs' | 'capcut' | 'bullets' | 'hooks' | 'pricing' | 'ctas' | 'badges';
   title: string;
   previewText: string;
   subText?: string;
@@ -14,12 +14,17 @@ export interface TextPresetItem {
   letterSpacing?: number;
   lineHeight?: number;
   textTransform?: 'uppercase' | 'none' | 'capitalize';
+  textEffect?: 'none' | 'box' | 'stroke' | 'glow';
+  boxColor?: string;
   customProps?: Record<string, unknown>;
 }
 
 export const TEXT_PRESET_CATEGORIES = [
-  { id: 'all', name: 'Todos', icon: 'Sparkles', count: 18 },
+  { id: 'all', name: 'Todos', icon: 'Sparkles', count: 28 },
   { id: 'basics', name: 'Básicos', icon: 'Type', count: 4 },
+  { id: 'pairs', name: 'Duos de Fuentes', icon: 'Layers', count: 3 },
+  { id: 'capcut', name: 'Subtítulos CapCut', icon: 'Flame', count: 3 },
+  { id: 'bullets', name: 'Listas de Checks', icon: 'CheckSquare', count: 2 },
   { id: 'hooks', name: 'Ganchos CTR', icon: 'Flame', count: 4 },
   { id: 'pricing', name: 'Precios & Ofertas', icon: 'BadgePercent', count: 4 },
   { id: 'ctas', name: 'Llamadas (CTAs)', icon: 'MessageSquare', count: 3 },
@@ -27,6 +32,136 @@ export const TEXT_PRESET_CATEGORIES = [
 ] as const;
 
 export const TEXT_PRESETS: TextPresetItem[] = [
+  // 1. COMBINACIONES DUOS (FONT PAIRS)
+  {
+    id: 'pair-modern-hero',
+    category: 'pairs',
+    title: 'Duo Hero: Impacto + Bajada',
+    previewText: 'TODO INCLUIDO EN TU SEGURO',
+    subText: 'Poppins 800 + Inter 400 · Jerarquía editorial',
+    defaultText: 'TODO INCLUIDO\nTu póliza médica para visado sin complicaciones',
+    tag: 'h1',
+    fontSize: 48,
+    fontWeight: '800',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#FFFFFF',
+    align: 'center',
+    lineHeight: 1.2,
+  },
+  {
+    id: 'pair-warning-duo',
+    category: 'pairs',
+    title: 'Duo Alerta Extranjería',
+    previewText: '⚠️ REQUISITOS CONSULARES 2026',
+    subText: 'Alerta amarilla + texto explicativo',
+    defaultText: '⚠️ REQUISITOS CONSULARES 2026\nEvita denegaciones por seguro con copagos',
+    tag: 'h2',
+    fontSize: 38,
+    fontWeight: '800',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#EE9B00',
+    align: 'center',
+    lineHeight: 1.25,
+  },
+  {
+    id: 'pair-price-big',
+    category: 'pairs',
+    title: 'Duo Precio Destacado',
+    previewText: 'DESDE 39€ / MES',
+    subText: 'Precio gigante + aseguradoras',
+    defaultText: 'DESDE 39€ / MES\nSanitas · Adeslas · DKV · Asisa',
+    tag: 'h1',
+    fontSize: 52,
+    fontWeight: '900',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#94D2BD',
+    align: 'center',
+    lineHeight: 1.15,
+  },
+
+  // 2. SUBTÍTULOS CAPCUT & VIRALES
+  {
+    id: 'capcut-viral-yellow',
+    category: 'capcut',
+    title: 'CapCut Viral Yellow',
+    previewText: 'SIN COPAGOS · 100% VÁLIDO',
+    subText: 'Estilo Hormozi con caja dorada',
+    defaultText: 'PÓLIZA DE EXTRANJERÍA SIN COPAGOS',
+    tag: 'h2',
+    fontSize: 42,
+    fontWeight: '900',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#001219',
+    align: 'center',
+    textEffect: 'box',
+    boxColor: '#EE9B00',
+    textTransform: 'uppercase',
+  },
+  {
+    id: 'capcut-glow-cyan',
+    category: 'capcut',
+    title: 'CapCut Glow Turquesa',
+    previewText: 'APROBADO POR EXTRANJERÍA',
+    subText: 'Resplandor neón sobre fondo oscuro',
+    defaultText: 'APROBADO POR EXTRANJERÍA',
+    tag: 'h2',
+    fontSize: 40,
+    fontWeight: '900',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#FFFFFF',
+    align: 'center',
+    textEffect: 'glow',
+    textTransform: 'uppercase',
+  },
+  {
+    id: 'capcut-marker-pill',
+    category: 'capcut',
+    title: 'CapCut Marcador Menta',
+    previewText: 'CERTIFICADO EN 24 HORAS',
+    subText: 'Caja marcadora verde menta',
+    defaultText: 'CERTIFICADO EMITIDO EN 24H',
+    tag: 'h3',
+    fontSize: 32,
+    fontWeight: '800',
+    fontFamily: 'Poppins, sans-serif',
+    fill: '#001219',
+    align: 'center',
+    textEffect: 'box',
+    boxColor: '#94D2BD',
+    textTransform: 'uppercase',
+  },
+
+  // 3. LISTAS DE BENEFICIOS CON CHECKS (BULLETS)
+  {
+    id: 'bullets-consular',
+    category: 'bullets',
+    title: 'Lista de Coberturas Visado',
+    previewText: '✅ Sin Copagos\n✅ Repatriación 100%\n✅ Red Médica',
+    subText: '3 viñetas alineadas a la izquierda',
+    defaultText: '✅ Sin copagos ni carencias\n✅ Repatriación médica 100% incluida\n✅ Cuadro médico completo en España',
+    tag: 'p',
+    fontSize: 26,
+    fontWeight: '600',
+    fontFamily: 'Inter, sans-serif',
+    fill: '#FFFFFF',
+    align: 'left',
+    lineHeight: 1.6,
+  },
+  {
+    id: 'bullets-process',
+    category: 'bullets',
+    title: 'Lista Proceso Rápido',
+    previewText: '⚡ Asesora dedicada\n⚡ Certificado al instante\n⚡ Cero trámites',
+    subText: 'Viñetas de rapidez de contratación',
+    defaultText: '⚡ Asesora asignada en directo\n⚡ Certificado oficial para consulado\n⚡ Tramitación 100% online y segura',
+    tag: 'p',
+    fontSize: 24,
+    fontWeight: '600',
+    fontFamily: 'Inter, sans-serif',
+    fill: '#94D2BD',
+    align: 'left',
+    lineHeight: 1.6,
+  },
   // 1. BÁSICOS
   {
     id: 'basic-h1',

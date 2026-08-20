@@ -284,7 +284,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Fuente
+                  Fuente Google
                 </label>
                 <select
                   value={selectedLayer.fontFamily ?? 'Poppins, sans-serif'}
@@ -293,9 +293,11 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 >
                   <option value="Poppins, sans-serif">Poppins (Display)</option>
                   <option value="Inter, sans-serif">Inter (Sans)</option>
-                  <option value="Outfit, sans-serif">Outfit</option>
-                  <option value="Montserrat, sans-serif">Montserrat</option>
-                  <option value="system-ui, sans-serif">System UI</option>
+                  <option value="Montserrat, sans-serif">Montserrat (Black/Bold)</option>
+                  <option value="Oswald, sans-serif">Oswald (Condensada)</option>
+                  <option value="Playfair Display, serif">Playfair (Serif)</option>
+                  <option value="Plus Jakarta Sans, sans-serif">Plus Jakarta Sans</option>
+                  <option value="Outfit, sans-serif">Outfit (Geométrica)</option>
                 </select>
               </div>
 
@@ -326,8 +328,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 </div>
                 <input
                   type="range"
-                  min={12}
-                  max={64}
+                  min={14}
+                  max={120}
                   step={1}
                   value={selectedLayer.fontSize ?? 24}
                   onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontSize: parseInt(e.target.value, 10) })}
@@ -350,7 +352,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                         type="button"
                         onClick={() => onUpdateLayerProps(selectedLayer.id, { textAlign: al.id })}
                         className={`flex h-7 items-center justify-center rounded-lg border text-xs transition-colors ${
-                          (String(props.textAlign ?? 'center')) === al.id
+                          (selectedLayer.align ?? String(props.textAlign ?? 'center')) === al.id
                             ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
                             : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
                         }`}
@@ -360,6 +362,96 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     );
                   })}
                 </div>
+              </div>
+            </div>
+
+            {/* EFECTOS DE TEXTO CANVA-STYLE */}
+            <div className="pt-2 border-t border-slate-900 space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Efectos de Texto
+              </label>
+              <div className="grid grid-cols-4 gap-1">
+                {[
+                  { id: 'none', label: 'Ninguno' },
+                  { id: 'box', label: 'Caja' },
+                  { id: 'stroke', label: 'Contorno' },
+                  { id: 'glow', label: 'Glow' },
+                ].map((ef) => (
+                  <button
+                    key={ef.id}
+                    type="button"
+                    onClick={() => onUpdateLayerProps(selectedLayer.id, { textEffect: ef.id })}
+                    className={`py-1 px-1.5 rounded-lg border text-[10px] font-bold transition-all text-center ${
+                      (selectedLayer.textEffect ?? 'none') === ef.id
+                        ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
+                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {ef.label}
+                  </button>
+                ))}
+              </div>
+
+              {selectedLayer.textEffect === 'box' && (
+                <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <span className="text-[10px] text-slate-400 font-bold">Fondo Caja</span>
+                  <div className="flex items-center gap-1.5">
+                    {[
+                      { label: 'Oro', color: '#EE9B00' },
+                      { label: 'Menta', color: '#94D2BD' },
+                      { label: 'Teal', color: '#005F73' },
+                      { label: 'Oscuro', color: '#001219' },
+                      { label: 'Blanco', color: '#FFFFFF' },
+                      { label: 'Rosa', color: '#F43F5E' },
+                    ].map((bc) => (
+                      <button
+                        key={bc.color}
+                        type="button"
+                        title={bc.label}
+                        onClick={() => onUpdateLayerProps(selectedLayer.id, { boxColor: bc.color })}
+                        className={`size-4 rounded-full border ${
+                          (selectedLayer.boxColor ?? '#EE9B00') === bc.color ? 'ring-2 ring-brand-cyan border-white' : 'border-slate-700'
+                        }`}
+                        style={{ backgroundColor: bc.color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ESPACIADO & INTERLINEADO */}
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-900">
+              <div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
+                  <span>Espaciado</span>
+                  <span className="font-mono text-slate-300">{selectedLayer.letterSpacing ?? 0}px</span>
+                </div>
+                <input
+                  type="range"
+                  min={-2}
+                  max={8}
+                  step={0.5}
+                  value={selectedLayer.letterSpacing ?? 0}
+                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { letterSpacing: parseFloat(e.target.value) })}
+                  className="w-full accent-teal-400"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
+                  <span>Interlineado</span>
+                  <span className="font-mono text-slate-300">{selectedLayer.lineHeight ?? 1.25}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0.9}
+                  max={2.0}
+                  step={0.05}
+                  value={selectedLayer.lineHeight ?? 1.25}
+                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { lineHeight: parseFloat(e.target.value) })}
+                  className="w-full accent-teal-400"
+                />
               </div>
             </div>
 
@@ -381,7 +473,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     key={c.color}
                     type="button"
                     title={c.label}
-                    onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c.color })}
+                    onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c.color, color: c.color })}
                     className={`size-6 rounded-full border transition-all ${
                       (selectedLayer.fill ?? '#FFFFFF') === c.color
                         ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-110'

@@ -402,9 +402,30 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, props: { ...l.props, ...patch } } : l
-      );
+      const nextLayers = prev.layers.map((l) => {
+        if (l.id !== layerId) return l;
+
+        const updated: ImageLayer = {
+          ...l,
+          props: { ...l.props, ...patch },
+        };
+
+        // Sincronizar propiedades estándar de capa si vienen en el patch
+        if ('fill' in patch) updated.fill = patch.fill as string;
+        if ('color' in patch) updated.fill = patch.color as string;
+        if ('fontSize' in patch) updated.fontSize = patch.fontSize as number;
+        if ('fontWeight' in patch) updated.fontWeight = patch.fontWeight as string;
+        if ('fontFamily' in patch) updated.fontFamily = patch.fontFamily as string;
+        if ('align' in patch) updated.align = patch.align as 'left' | 'center' | 'right';
+        if ('textAlign' in patch) updated.align = patch.textAlign as 'left' | 'center' | 'right';
+        if ('letterSpacing' in patch) updated.letterSpacing = patch.letterSpacing as number;
+        if ('lineHeight' in patch) updated.lineHeight = patch.lineHeight as number;
+        if ('textEffect' in patch) updated.textEffect = patch.textEffect as 'none' | 'box' | 'stroke' | 'glow';
+        if ('boxColor' in patch) updated.boxColor = patch.boxColor as string;
+        if ('shadowPreset' in patch) updated.shadowPreset = patch.shadowPreset as ImageLayer['shadowPreset'];
+
+        return updated;
+      });
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
       return next;
@@ -880,6 +901,9 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       align: preset?.align ?? 'center',
       letterSpacing: preset?.letterSpacing ?? 0,
       lineHeight: preset?.lineHeight ?? 1.2,
+      textEffect: preset?.textEffect,
+      boxColor: preset?.boxColor,
+      shadowPreset: preset?.textEffect === 'glow' ? 'glow_teal' : undefined,
       width: calculateWidth(),
     };
 
