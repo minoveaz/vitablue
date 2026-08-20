@@ -169,9 +169,12 @@ export const ImageStudio: React.FC = () => {
     showToast('Plantilla cargada con éxito');
   };
 
-  const handleAddBlock = (blockType: Parameters<typeof editor.addBlockLayer>[0]) => {
-    editor.addBlockLayer(blockType);
-    showToast('Bloque añadido al lienzo');
+  const handleAddBlock = (
+    blockType: Parameters<typeof editor.addBlockLayer>[0],
+    defaultProps?: Parameters<typeof editor.addBlockLayer>[1]
+  ) => {
+    editor.addBlockLayer(blockType, defaultProps);
+    showToast('Elemento añadido al lienzo');
   };
 
   const handleExport = (format: 'png' | 'jpeg' | 'svg') => {

@@ -871,6 +871,42 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         correctOptionDesc: 'Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.',
         ...defaultProps,
       };
+    } else if (blockType === 'GeometricShape') {
+      const type = String(defaultProps?.shapeType ?? 'Forma');
+      const shapeNames: Record<string, string> = {
+        heart: 'Corazón',
+        star: 'Estrella',
+        'star-4': 'Estrella (4 puntas)',
+        'star-5': 'Estrella (5 puntas)',
+        'star-6': 'Estrella (6 puntas)',
+        'star-8': 'Estrella (8 puntas)',
+        'burst-12': 'Sello / Burst',
+        circle: 'Círculo',
+        square: 'Cuadrado',
+        rectangle: 'Rectángulo',
+        rounded_rect: 'Rectángulo Redondeado',
+        triangle: 'Triángulo',
+        'triangle-up': 'Triángulo Arriba',
+        'triangle-down': 'Triángulo Abajo',
+        diamond: 'Rombo',
+        pentagon: 'Pentágono',
+        hexagon: 'Hexágono',
+        octagon: 'Octágono',
+        line: 'Línea Sólida',
+        'line-dashed': 'Línea Discontinua',
+        'line-dotted': 'Línea Punteada',
+        'line-arrow-right': 'Línea con Flecha',
+        'line-arrow-both': 'Línea con Flecha Doble',
+        arrow: 'Flecha',
+        'arrow-right': 'Flecha Derecha',
+        'arrow-left': 'Flecha Izquierda',
+        'arrow-up': 'Flecha Arriba',
+        'arrow-down': 'Flecha Abajo',
+        'arrow-both': 'Flecha Bidireccional',
+        speech_bubble: 'Bocadillo de Diálogo',
+        shield: 'Escudo Protector',
+      };
+      initialTitle = shapeNames[type] ? `Forma: ${shapeNames[type]}` : `Forma: ${type}`;
     }
 
     const width = typeof defaultProps?.width === 'number' ? defaultProps.width : (blockType === 'GeometricShape' ? 200 : undefined);
