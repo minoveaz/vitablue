@@ -373,9 +373,19 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 ```
 
 ##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
-- [x] **1. 🔤 Texto (`Text & Typography`):**
-  - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Ganchos CTR, Ofertas/Precios, CTAs, Testimonios*) + Columna derecha (*Previsualización tipográfica en vivo con 1-clic insert*).
-  - Jerarquías Poppins Bold 700 / Semibold 600 / Inter Regular 400 y combinaciones prediseñadas de alto CTR.
+- [ ] **1. 🔤 Suite de Texto Avanzada (`Text & Typography Suite - Canva & CapCut Style`):**
+  - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Combinaciones Duos, Ganchos CTR, Subtítulos CapCut, Ofertas/Precios, CTAs, Listas de Beneficios*) + Columna derecha (*Previsualización interactiva en vivo con 1-clic insert*).
+  - **Jerarquías Rápidas & Botón Libre:** `[ + Añadir cuadro de texto ]` y botones rápidos `H1 (56px)`, `H2 (42px)`, `Cuerpo (24px)`, `Badge (18px)` con escalado dinámico proporcional a 1080px.
+  - **Combinaciones Tipográficas Duos (Font Pairs):** Bloques prediseñados de Título + Subtítulo con contraste de marca (ej: Montserrat Black + Inter Regular, Poppins Bold + Cursiva).
+  - **Listas de Beneficios con Checks (Bullets):** Inserción rápida de 3 viñetas con checks verdes/dorados para pólizas y coberturas de extranjería.
+  - **Estilos Virales & Subtítulos Dinámicos (CapCut / Hormozi Style):**
+    - En **Image Studio:** Cajas de texto con palabras clave resaltadas (*Boxed Marker*, *Viral Yellow*, *Glow Cyan*).
+    - En **Video Studio:** Sincronización temporal palabra por palabra (*Karaoke effect con spring animado*) sincronizado con el audio de voz en off.
+  - **Efectos de Texto en Inspector:**
+    - *Background Box (Marcador / Caja redondeada de color detrás del texto)*.
+    - *Contorno / Trazo de texto (Hollow / Stroke)*.
+    - *Selector visual de Google Fonts* (Poppins, Inter, Montserrat, Oswald, Playfair Display, Plus Jakarta Sans).
+    - *Espaciado Fino (Letter-spacing y Line-height interactivos)*.
 - [ ] **2. 🔷 Elementos (`Elements & Shapes`):**
   - **Estructura Split 2 Zonas:** Columna izquierda (*Formas, Badges Extranjería, Mockups iPhone, Iconos Salud/Legal, Flechas*) + Columna derecha (*Preview de badges con glow y formas SVG*).
 - [ ] **3. 📁 Medios y Fotos (`Media & Uploads`):**
@@ -396,16 +406,16 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 ##### 🟡 Zona 4: Inteligencia y Multimedia (8 - 9)
 - [ ] **8. ✨ Copys con IA (`AI Copywriter & Hooks`):**
   - Subcategorías: *Ganchos de Entrada (Hooks)*, *Derribar Objeciones (Copagos/Carencias)*, *Por País (Colombia/México/Perú)*, *Urgencia*.
-- [ ] **9. 🎵 Audio & Video Bridge (`Remotion Video Generator`):**
-  - Pistas de sonido, SFX y botón 1-clic "Convertir a Video animado en Remotion".
+- [ ] **9. 🎵 Audio & Video Bridge (`Remotion Video Generator & Subtitle Engine`):**
+  - Pistas de sonido, SFX, motor de subtítulos automáticos y botón 1-clic "Convertir a Video animado en Remotion".
 - [ ] **Carrusel Multi-Página (Instagram / LinkedIn):** Paginador inferior `[ Slide 1 ] [ Slide 2 ] [ + ]` y exportador multi-slide ZIP/PDF.
 
 ##### 🎛️ Inspector Contextual Inteligente (Panel Derecho):
 - Panel lateral no intrusivo con botón colapsador `❯` y switch `[ ⚙️ Propiedades ]` en toolbar.
-- Actualización reactiva de propiedades según la capa seleccionada (tipografía, colores, avatar, WhatsApp, opacidad, filtros, sombras).
+- Actualización reactiva de propiedades según la capa seleccionada (tipografía, colores, avatar, WhatsApp, opacidad, filtros, sombras, efectos de texto).
 - Quick Toolbar flotante sobre el lienzo para acciones instantáneas (Duplicar, Eliminar, Auto-Ajustar, Desagrupar).
 
-**Salida:** Suite creativa estructurada con ergonomía profesional Canva-style para producción de creatividades estáticas y vídeo en segundos.
+**Salida:** Suite creativa estructurada con ergonomía profesional Canva-style y capacidades dinámicas CapCut para producción de creatividades estáticas y vídeo en segundos.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 
