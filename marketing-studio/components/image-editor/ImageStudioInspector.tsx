@@ -25,9 +25,11 @@ import {
   AlignRight,
   FolderHeart,
   BookmarkCheck,
+  Check,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
-import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset, IMAGE_FORMAT_PRESETS } from '../../types/imageStudio';
+import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '../../types/imageStudio';
+import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 
 export interface ImageStudioInspectorProps {
   project: ImageProject;
@@ -90,63 +92,69 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     { name: 'Carlos', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop' },
   ];
 
+  const [isFormatsModalOpen, setIsFormatsModalOpen] = useState(false);
+
   // 1. ESTADO VACÍO: PROPIEDADES DEL LIENZO (CENTRO DE CONTROL CENTRALIZADO)
   if (!selectedLayer) {
-    const keyPresets = [
-      { id: 'instagram-portrait', name: 'Post de Instagram (4:5)', ratio: '4:5', dims: '1080 × 1350' },
-      { id: 'story-vertical', name: 'Historia & Reel (9:16)', ratio: '9:16', dims: '1080 × 1920' },
-      { id: 'instagram-square', name: 'Post Cuadrado (1:1)', ratio: '1:1', dims: '1080 × 1080' },
-      { id: 'youtube-thumb', name: 'Banner Horizontal (16:9)', ratio: '16:9', dims: '1920 × 1080' },
-    ];
-
     return (
-      <ModuleContextPanel
-        label="Propiedades del Lienzo"
-        width="standard"
-        variant="dark"
-        onClose={onClose}
-      >
-        <div className="space-y-4">
-          {/* FORMATO Y ASPECT RATIO */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Formato & Tamaño
-              </label>
-              <span className="text-[10px] font-mono text-brand-cyan">
-                {project.preset.width} × {project.preset.height} px
-              </span>
+      <>
+        <ModuleContextPanel
+          label="Propiedades del Lienzo"
+          width="standard"
+          variant="dark"
+          onClose={onClose}
+        >
+          <div className="space-y-4">
+            {/* FORMATO ACTUAL Y BOTÓN VER MÁS */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  Formato del Lienzo
+                </label>
+                <span className="text-[10px] font-mono font-bold text-brand-cyan">
+                  {project.preset.aspectRatio}
+                </span>
+              </div>
+
+              {/* TARJETA DEL FORMATO ELEGIDO ACTUAL */}
+              <div
+                onClick={() => setIsFormatsModalOpen(true)}
+                className="flex items-center justify-between p-3 rounded-2xl border border-primary/50 bg-primary/20 text-white shadow-md cursor-pointer hover:border-brand-cyan hover:bg-primary/30 transition-all group"
+                title="Hacer clic para cambiar formato"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-xl">
+                    {project.preset.aspectRatio === '9:16' ? '📱' : project.preset.aspectRatio === '4:5' ? '📸' : project.preset.aspectRatio === '1:1' ? '🟦' : '🖥️'}
+                  </span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-bold text-slate-100 group-hover:text-brand-cyan transition-colors truncate">
+                      {project.preset.name}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {project.preset.width} × {project.preset.height} px ({project.preset.aspectRatio})
+                    </span>
+                  </div>
+                </div>
+
+                <span className="flex items-center gap-1 text-[10px] font-bold bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan px-2 py-0.5 rounded-full shrink-0">
+                  <Check className="size-3" />
+                  <span>Activo</span>
+                </span>
+              </div>
+
+              {/* BOTÓN VER MÁS / EXPLORAR CATÁLOGO */}
+              <button
+                type="button"
+                onClick={() => setIsFormatsModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-950/90 hover:border-brand-cyan hover:bg-slate-900 p-2.5 text-xs font-bold text-slate-300 hover:text-white transition-all shadow-xs"
+              >
+                <Sliders className="size-3.5 text-brand-cyan" />
+                <span>Cambiar Formato / Ver Catálogo...</span>
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-1.5">
-              {keyPresets.map((kp) => {
-                const isSelected = project.preset.aspectRatio === kp.ratio;
-                const fullPreset = IMAGE_FORMAT_PRESETS.find((p) => p.aspectRatio === kp.ratio) ?? IMAGE_FORMAT_PRESETS[0];
-
-                return (
-                  <button
-                    key={kp.id}
-                    type="button"
-                    onClick={() => onSetPreset?.(fullPreset)}
-                    className={`flex flex-col p-2.5 rounded-xl border text-left transition-all ${
-                      isSelected
-                        ? 'border-brand-cyan bg-primary/20 text-white shadow-xs ring-1 ring-brand-cyan/30'
-                        : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className="text-xs font-bold truncate">{kp.name}</span>
-                      <span className="text-[10px] font-mono font-black text-brand-cyan">{kp.ratio}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-mono">{kp.dims} px</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* COLORES PLANOS DEL LIENZO */}
-          <div className="space-y-2 pt-2 border-t border-slate-900">
+            {/* COLORES PLANOS DEL LIENZO */}
+            <div className="space-y-2 pt-2 border-t border-slate-900">
             <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Color Plano de Fondo
             </label>
@@ -267,8 +275,16 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
       </ModuleContextPanel>
-    );
-  }
+
+      <ImageCanvasFormatsModal
+        isOpen={isFormatsModalOpen}
+        currentPreset={project.preset}
+        onSelectPreset={(preset) => onSetPreset?.(preset)}
+        onClose={() => setIsFormatsModalOpen(false)}
+      />
+    </>
+  );
+}
 
   const props = selectedLayer.props as Record<string, unknown>;
   const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
