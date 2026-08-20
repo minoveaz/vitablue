@@ -683,9 +683,11 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                         <div
                           className="size-16 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
                           style={{
-                            '--color-pastel': '#94D2BD33',
+                            '--color-pastel': '#94D2BD',
                             '--color-primary': '#005F73',
-                            '--color-secondary': '#001219',
+                            '--color-secondary': '#FFFFFF',
+                            '--color-neutral': '#1e293b',
+                            '--color-accent': '#EE9B00',
                           } as React.CSSProperties}
                         >
                           {IllustComp && <IllustComp />}
@@ -813,9 +815,11 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                     <div
                       className="size-20 flex items-center justify-center p-1.5 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
                       style={{
-                        '--color-pastel': '#94D2BD33',
+                        '--color-pastel': '#94D2BD',
                         '--color-primary': '#005F73',
-                        '--color-secondary': '#001219',
+                        '--color-secondary': '#FFFFFF',
+                        '--color-neutral': '#1e293b',
+                        '--color-accent': '#EE9B00',
                       } as React.CSSProperties}
                     >
                       {IllustComp && <IllustComp />}
@@ -1126,9 +1130,11 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                       <div
                         className="size-14 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-1.5 group-hover:scale-105 transition-transform"
                         style={{
-                          '--color-pastel': '#94D2BD33',
+                          '--color-pastel': '#94D2BD',
                           '--color-primary': '#005F73',
-                          '--color-secondary': '#001219',
+                          '--color-secondary': '#FFFFFF',
+                          '--color-neutral': '#1e293b',
+                          '--color-accent': '#EE9B00',
                         } as React.CSSProperties}
                       >
                         {IllustComp && <IllustComp />}

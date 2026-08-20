@@ -72,9 +72,10 @@ export const WebIllustrationBlock: React.FC<WebIllustrationBlockProps> = ({ laye
   const illustrationId = String(blockProps.illustrationId ?? 'medical-attention');
   const Component = WEB_ILLUSTRATION_COMPONENTS[illustrationId] || Illustrations.MedicalAttentionIllustration;
 
-  const colorPastel = String(blockProps.colorPastel ?? '#94D2BD33');
+  const colorPastel = String(blockProps.colorPastel ?? '#94D2BD');
   const colorPrimary = String(blockProps.colorPrimary ?? (layer.fill || '#005F73'));
-  const colorSecondary = String(blockProps.colorSecondary ?? '#001219');
+  const colorSecondary = String(blockProps.colorSecondary ?? '#FFFFFF');
+  const colorNeutral = String(blockProps.colorNeutral ?? '#1e293b');
   const colorAccent = String(blockProps.colorAccent ?? '#EE9B00');
 
   return (
@@ -85,6 +86,7 @@ export const WebIllustrationBlock: React.FC<WebIllustrationBlockProps> = ({ laye
           '--color-pastel': colorPastel,
           '--color-primary': colorPrimary,
           '--color-secondary': colorSecondary,
+          '--color-neutral': colorNeutral,
           '--color-accent': colorAccent,
         } as React.CSSProperties
       }
