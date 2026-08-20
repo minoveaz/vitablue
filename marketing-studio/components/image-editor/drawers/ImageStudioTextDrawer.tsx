@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   Sparkles,
@@ -11,6 +11,7 @@ import {
   CheckSquare,
   ChevronLeft,
   ChevronRight,
+  FolderHeart,
   Plus,
   X,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import {
   TEXT_PRESET_CATEGORIES,
   TextPresetItem,
 } from '../../../data/textPresets';
+import { getSavedCustomElements } from '../../../utils/savedElementsStorage';
 
 export interface ImageStudioTextDrawerProps {
   onAddTextLayer: (preset: TextPresetItem) => void;
@@ -29,6 +31,43 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [refreshTick, setRefreshTick] = useState<number>(0);
+
+  useEffect(() => {
+    const handleStorageUpdate = () => setRefreshTick((prev) => prev + 1);
+    window.addEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
+    window.addEventListener('storage', handleStorageUpdate);
+    return () => {
+      window.removeEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
+      window.removeEventListener('storage', handleStorageUpdate);
+    };
+  }, []);
+
+  const savedTextPresets = useMemo<TextPresetItem[]>(() => {
+    const saved = getSavedCustomElements().filter((e) => e.category === 'text');
+    return saved.map((s) => ({
+      id: s.id,
+      category: 'basics',
+      title: s.title,
+      previewText: String(s.layer.props?.text ?? s.layer.title),
+      subText: '⭐ Guardado en tu kit de diseños',
+      defaultText: String(s.layer.props?.text ?? s.layer.title),
+      tag: (s.layer.props?.tag as TextPresetItem['tag']) ?? 'h2',
+      fontSize: s.layer.fontSize ?? 36,
+      fontWeight: (s.layer.fontWeight as TextPresetItem['fontWeight']) ?? '700',
+      fontFamily: s.layer.fontFamily ?? 'Poppins, sans-serif',
+      fill: s.layer.fill ?? '#FFFFFF',
+      align: s.layer.align ?? 'center',
+      letterSpacing: s.layer.letterSpacing,
+      lineHeight: s.layer.lineHeight,
+      textEffect: s.layer.textEffect,
+      boxColor: s.layer.boxColor,
+    }));
+  }, [refreshTick]);
+
+  const allPresets = useMemo(() => {
+    return [...savedTextPresets, ...TEXT_PRESETS];
+  }, [savedTextPresets]);
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -46,13 +85,25 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
         return <MessageSquare className="size-3.5 shrink-0" />;
       case 'ShieldCheck':
         return <ShieldCheck className="size-3.5 shrink-0" />;
+      case 'FolderHeart':
+        return <FolderHeart className="size-3.5 shrink-0" />;
       default:
         return <Sparkles className="size-3.5 shrink-0" />;
     }
   };
 
   const filteredPresets = useMemo(() => {
-    return TEXT_PRESETS.filter((preset) => {
+    if (selectedCategory === 'saved') {
+      return savedTextPresets.filter((preset) => {
+        return (
+          searchQuery.trim() === '' ||
+          preset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          preset.previewText.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
+    }
+
+    return allPresets.filter((preset) => {
       const matchesCategory =
         selectedCategory === 'all' || preset.category === selectedCategory;
       const matchesSearch =
@@ -62,7 +113,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
         preset.defaultText.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, allPresets, savedTextPresets]);
 
   const handleAddQuickText = (tag: 'h1' | 'h2' | 'p' | 'badge') => {
     const sizeMap = {
@@ -222,6 +273,26 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
             id="text-categories-scroll-track"
             className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 no-scrollbar scroll-smooth shadow-inner"
           >
+            {savedTextPresets.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('saved')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all select-none ${
+                  selectedCategory === 'saved'
+                    ? 'bg-gradient-to-r from-amber-500/30 to-amber-600/40 text-amber-300 border border-amber-400 shadow-sm ring-1 ring-amber-400/30'
+                    : 'bg-slate-950/80 text-amber-300/90 hover:bg-slate-800 hover:text-amber-200 border border-amber-500/30'
+                }`}
+              >
+                <FolderHeart className="size-3.5 text-amber-400" />
+                <span>Mis Textos</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  selectedCategory === 'saved' ? 'bg-amber-400/20 text-amber-300' : 'bg-slate-800 text-amber-400'
+                }`}>
+                  {savedTextPresets.length}
+                </span>
+              </button>
+            )}
+
             {TEXT_PRESET_CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat.id;
               return (

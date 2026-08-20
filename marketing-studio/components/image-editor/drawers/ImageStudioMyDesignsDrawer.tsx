@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   FolderHeart,
@@ -37,6 +37,17 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
   const [refreshTick, setRefreshTick] = useState<number>(0);
 
   const triggerRefresh = () => setRefreshTick((prev) => prev + 1);
+
+  // Escuchar cambios reactivos cross-project
+  useEffect(() => {
+    const handleStorageUpdate = () => triggerRefresh();
+    window.addEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
+    window.addEventListener('storage', handleStorageUpdate);
+    return () => {
+      window.removeEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
+      window.removeEventListener('storage', handleStorageUpdate);
+    };
+  }, []);
 
   // Proyectos guardados
   const storedProjects = useMemo(() => {
