@@ -30,6 +30,7 @@ import {
   FlipVertical,
   Paintbrush,
   Clipboard,
+  FolderHeart,
 } from 'lucide-react';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
@@ -67,6 +68,7 @@ interface ImageStageProps {
   onCommitPositionChange?: () => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
+  onSaveToMyDesigns?: (id: string) => void;
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
   onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
@@ -107,6 +109,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onCommitPositionChange,
   onFitToCanvas,
   onUngroupLayer,
+  onSaveToMyDesigns,
   onDuplicateLayer,
   onRemoveLayer,
   onUpdateLayerProps,
@@ -752,6 +755,23 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               </div>
               <kbd className="text-[10px] text-slate-500 font-mono">⌘D</kbd>
             </button>
+
+            {onSaveToMyDesigns && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSaveToMyDesigns(contextMenu.layer.id);
+                  setContextMenu(null);
+                }}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left text-amber-300 hover:bg-amber-950/40 hover:text-amber-200 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <FolderHeart className="size-3.5 text-amber-400" />
+                  <span>Guardar en Mis Diseños</span>
+                </div>
+                <span className="text-[10px] text-amber-400/70 font-mono">⭐ Guardar</span>
+              </button>
+            )}
 
             <button
               type="button"

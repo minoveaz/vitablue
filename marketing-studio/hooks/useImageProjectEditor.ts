@@ -9,6 +9,7 @@ import {
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
 import { saveStoredImageProject } from '../utils/imageProjectStorage';
+import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
@@ -916,6 +917,29 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [project.preset.width, project.layers.length, pushHistory]);
 
+  const saveLayerToMyDesigns = useCallback((layerId: string, customTitle?: string) => {
+    const target = project.layers.find((l) => l.id === layerId);
+    if (!target) return;
+    saveCustomElement(target, customTitle);
+  }, [project.layers]);
+
+  const insertSavedLayer = useCallback((savedLayer: ImageLayer) => {
+    const newLayer: ImageLayer = {
+      ...JSON.parse(JSON.stringify(savedLayer)),
+      id: `layer-${Date.now()}`,
+      position: { x: 50, y: 50 },
+      zIndex: project.layers.length + 10,
+    };
+
+    setProject((prev) => {
+      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(newLayer.id);
+      setSelectedLayerIds([newLayer.id]);
+      pushHistory(next);
+      return next;
+    });
+  }, [project.layers.length, pushHistory]);
+
   const updateBackground = useCallback((patch: Partial<CanvasBackground>) => {
     setProject((prev) => {
       const next = {
@@ -1420,6 +1444,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     reorderLayers,
     addBlockLayer,
     addTextLayer,
+    saveLayerToMyDesigns,
+    insertSavedLayer,
     updateBackground,
     alignSelectedLayers,
     distributeSelectedLayers,

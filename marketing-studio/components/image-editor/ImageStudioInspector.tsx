@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Palette,
   Sliders,
@@ -24,6 +24,8 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  FolderHeart,
+  BookmarkCheck,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject } from '../../types/imageStudio';
@@ -49,6 +51,7 @@ export interface ImageStudioInspectorProps {
   onPasteStyle?: (id: string) => void;
   onFitToCanvas?: (id: string) => void;
   onUngroupLayer?: (id: string) => void;
+  onSaveToMyDesigns?: (id: string, customTitle?: string) => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
   onClose?: () => void;
 }
@@ -74,6 +77,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onPasteStyle,
   onFitToCanvas,
   onUngroupLayer,
+  onSaveToMyDesigns,
   onUpdateBackground,
   onClose,
 }) => {
@@ -146,8 +150,15 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   }
 
   const props = selectedLayer.props as Record<string, unknown>;
+  const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
   const isTextType = selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText';
+
+  const handleSaveCurrentLayer = () => {
+    onSaveToMyDesigns?.(selectedLayer.id);
+    setIsSavedToDesigns(true);
+    setTimeout(() => setIsSavedToDesigns(false), 2500);
+  };
 
   return (
     <ModuleContextPanel
@@ -157,7 +168,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
       onClose={onClose}
     >
       <div className="space-y-4">
-        {/* 1. HEADER LIMPIO + Z-INDEX */}
+        {/* 1. HEADER LIMPIO + Z-INDEX + GUARDAR EN MIS DISEÑOS */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div className="flex items-center gap-2 truncate">
             <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/20 text-brand-cyan text-xs font-bold">
@@ -165,7 +176,29 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </span>
             <strong className="text-xs text-slate-200 truncate">{selectedLayer.title}</strong>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleSaveCurrentLayer}
+              className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold border transition-all ${
+                isSavedToDesigns
+                  ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
+                  : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-amber-400/60 hover:text-amber-300 hover:bg-slate-800'
+              }`}
+              title="Guardar este elemento en Mis Diseños para reutilizarlo"
+            >
+              {isSavedToDesigns ? (
+                <>
+                  <BookmarkCheck className="size-3 text-emerald-400" />
+                  <span>¡Guardado!</span>
+                </>
+              ) : (
+                <>
+                  <FolderHeart className="size-3 text-amber-400" />
+                  <span>Guardar</span>
+                </>
+              )}
+            </button>
             <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
               Z: {selectedLayer.zIndex}
             </span>

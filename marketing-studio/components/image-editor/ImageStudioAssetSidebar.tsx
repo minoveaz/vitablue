@@ -15,7 +15,9 @@ import { ImageBlockType, ImageProject } from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
+import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
 import { TextPresetItem } from '../../data/textPresets';
+import { ImageLayer } from '../../types/imageStudio';
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -26,6 +28,7 @@ export interface ImageStudioAssetDrawerContentProps {
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onAddTextLayer?: (preset: TextPresetItem) => void;
+  onInsertSavedLayer?: (layer: ImageLayer) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
   onToggleLock: (id: string) => void;
   onToggleVisibility: (id: string) => void;
@@ -48,6 +51,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onLoadTemplate,
   onAddBlock,
   onAddTextLayer,
+  onInsertSavedLayer,
   onUpdateBackground,
   onToggleLock,
   onToggleVisibility,
@@ -75,7 +79,23 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
   return (
     <div className="space-y-4 select-none">
-      {/* 0. TEXTO & TIPOGRAFÍAS EN SPLIT 2-ZONAS */}
+      {/* 0. MIS DISEÑOS & BIBLIOTECA PERSONAL (POSICIÓN 1) */}
+      {activeTab === 'my-designs' && (
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioMyDesignsDrawer
+            onLoadProject={onLoadTemplate}
+            onInsertSavedLayer={(layer) => {
+              if (onInsertSavedLayer) {
+                onInsertSavedLayer(layer);
+              } else {
+                onAddBlock(layer.blockType as ImageBlockType, layer.props as Record<string, unknown>);
+              }
+            }}
+          />
+        </div>
+      )}
+
+      {/* 1. TEXTO & TIPOGRAFÍAS */}
       {activeTab === 'text' && onAddTextLayer && (
         <div className="-m-4 h-[calc(100vh-140px)]">
           <ImageStudioTextDrawer onAddTextLayer={onAddTextLayer} />

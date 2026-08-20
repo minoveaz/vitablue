@@ -19,6 +19,7 @@ import {
   Layers,
   Wand2,
   Film,
+  FolderHeart,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -217,20 +218,23 @@ export const ImageStudio: React.FC = () => {
   }
 
   const studioTools: StudioToolItem[] = [
-    // 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
+    // 🌟 Posición 1: Biblioteca Personal Unificada
+    { id: 'my-designs', label: 'Mis Diseños', icon: <FolderHeart className="size-4" /> },
+
+    // 🟢 Zona 1: Creación Atómica y Frecuente (2 - 5)
     { id: 'text', label: 'Texto', icon: <Type className="size-4" /> },
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
 
-    // 🔵 Zona 2: Identidad y Marca (5)
+    // 🔵 Zona 2: Identidad y Marca (6)
     { id: 'brand', label: 'Kit de Marca', icon: <Palette className="size-4" /> },
 
-    // 🟣 Zona 3: Aceleración y Composición Rápida (6 - 7)
+    // 🟣 Zona 3: Aceleración y Composición Rápida (7 - 8)
     { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
     { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" /> },
 
-    // 🟡 Zona 4: Inteligencia y Multimedia (8 - 9)
+    // 🟡 Zona 4: Inteligencia y Multimedia (9 - 10)
     { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
     { id: 'video-bridge', label: 'Audio & Vídeo', icon: <Film className="size-4" /> },
   ];
@@ -252,6 +256,7 @@ export const ImageStudio: React.FC = () => {
           onLoadTemplate={handleLoadTemplate}
           onAddBlock={handleAddBlock}
           onAddTextLayer={editor.addTextLayer}
+          onInsertSavedLayer={editor.insertSavedLayer}
           onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
           onToggleLock={editor.toggleLayerLock}
           onToggleVisibility={editor.toggleLayerVisibility}
@@ -287,10 +292,10 @@ export const ImageStudio: React.FC = () => {
         />
       }
       aside={
-        isInspectorOpen ? (
+        isInspectorOpen && editor.selectedLayerId ? (
           <ImageStudioInspector
             project={editor.project}
-            selectedLayer={editor.selectedLayer}
+            selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
             onUpdateLayerProps={editor.updateLayerProps}
             onUpdateLayerScale={editor.updateLayerScale}
             onUpdateLayerWidth={editor.updateLayerWidth}
@@ -309,6 +314,7 @@ export const ImageStudio: React.FC = () => {
             onPasteStyle={editor.pasteLayerStyle}
             onFitToCanvas={editor.fitLayerToCanvas}
             onUngroupLayer={editor.ungroupLayer}
+            onSaveToMyDesigns={editor.saveLayerToMyDesigns}
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />
@@ -352,6 +358,7 @@ export const ImageStudio: React.FC = () => {
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}
+          onSaveToMyDesigns={editor.saveLayerToMyDesigns}
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
