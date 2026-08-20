@@ -19,6 +19,7 @@ import {
 } from '../../../data/elementsPresets';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { getSavedCustomElements, SavedCustomElement } from '../../../utils/savedElementsStorage';
+import { GeometricShapeBlock } from '../blocks/ShapeBlocks';
 
 export interface ImageStudioElementsDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
@@ -227,7 +228,24 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                 </div>
 
                 {/* PREVISUALIZACIÓN VISUAL REAL DEL ELEMENTO */}
-                <div className="my-1.5 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden">
+                <div className="my-1.5 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden min-h-[52px]">
+                  {item.blockType === 'GeometricShape' && (
+                    <div className="size-9 flex items-center justify-center">
+                      <GeometricShapeBlock
+                        layer={{
+                          id: `preview-${item.id}`,
+                          type: 'block',
+                          blockType: 'GeometricShape',
+                          title: item.title,
+                          props: item.defaultProps,
+                          position: { x: 50, y: 50 },
+                          zIndex: 1,
+                          scale: 1,
+                        }}
+                      />
+                    </div>
+                  )}
+
                   {item.blockType === 'WhatsAppCtaButton' && (
                     <div className="flex items-center gap-1.5 rounded-xl bg-[#005F73] border border-[#EE9B00] px-3 py-1.5 text-[11px] font-bold text-white shadow-xs">
                       <span>💬</span>

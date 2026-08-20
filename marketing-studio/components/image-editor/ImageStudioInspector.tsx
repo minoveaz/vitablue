@@ -18,6 +18,7 @@ import {
   Eye,
   BoxSelect,
   MessageSquare,
+  Shapes,
   UserCheck,
   Award,
   Layers,
@@ -538,7 +539,129 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
         {/* 3. CONTENIDO ESPECÍFICO DEL ELEMENTO (EL PROTAGONISTA EN PRIMER PLANO) */}
         
-        {/* A. TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
+        {/* A. FORMA GEOMÉTRICA TRADICIONAL */}
+        {selectedLayer.blockType === 'GeometricShape' && (
+          <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
+                <Shapes className="size-3.5" />
+                <span>Propiedades de Forma Geométrica</span>
+              </span>
+            </div>
+
+            {/* TIPO DE FORMA */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Tipo de Geometría
+              </label>
+              <select
+                value={String(props.shapeType ?? 'rectangle')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { shapeType: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
+              >
+                <option value="rounded_rect">🔲 Rectángulo Redondeado</option>
+                <option value="rectangle">⬛ Rectángulo / Cuadrado</option>
+                <option value="circle">⚪ Círculo / Elipse</option>
+                <option value="star">⭐ Estrella (5 Puntas)</option>
+                <option value="triangle">🔺 Triángulo</option>
+                <option value="diamond">💎 Rombo / Diamante</option>
+                <option value="hexagon">⬡ Hexágono</option>
+                <option value="line">➖ Línea Divisoria</option>
+                <option value="arrow">➡️ Flecha Indicadora</option>
+                <option value="speech_bubble">💬 Bocadillo de Diálogo</option>
+                <option value="heart">❤️ Corazón</option>
+              </select>
+            </div>
+
+            {/* COLOR DE RELLENO */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                Color de Relleno (Fill)
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={String(selectedLayer.fill || props.fill || '#005F73')}
+                  onChange={(e) => {
+                    onUpdateLayerProps(selectedLayer.id, { fill: e.target.value });
+                  }}
+                  className="size-8 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
+                />
+                <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
+                  {['#005F73', '#001219', '#EE9B00', '#94D2BD', '#E63946', '#FFFFFF', 'transparent'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c })}
+                      className="size-6 rounded-md border border-slate-700 hover:scale-110 transition-transform shrink-0"
+                      style={{ backgroundColor: c === 'transparent' ? '#1E293B' : c }}
+                      title={c}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* BORDE / STROKE */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Color Borde
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="color"
+                    value={String(selectedLayer.borderColor || props.stroke || '#94D2BD')}
+                    onChange={(e) => onUpdateLayerProps(selectedLayer.id, { stroke: e.target.value, borderColor: e.target.value })}
+                    className="size-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
+                  />
+                  <span className="text-[10px] font-mono text-slate-400 truncate">
+                    {String(selectedLayer.borderColor || props.stroke || '#94D2BD')}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Grosor Borde ({String(selectedLayer.borderWidth ?? props.strokeWidth ?? 0)}px)
+                </label>
+                <input
+                  type="range"
+                  min={0}
+                  max={20}
+                  value={Number(selectedLayer.borderWidth ?? props.strokeWidth ?? 0)}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    onUpdateLayerProps(selectedLayer.id, { strokeWidth: val, borderWidth: val });
+                  }}
+                  className="w-full accent-brand-cyan"
+                />
+              </div>
+            </div>
+
+            {/* RADIO DE ESQUINAS (PARA RECTÁNGULOS) */}
+            {(props.shapeType === 'rounded_rect' || props.shapeType === 'rectangle' || !props.shapeType) && (
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Radio de Esquinas ({String(selectedLayer.borderRadius ?? props.borderRadius ?? 16)}px)
+                </label>
+                <input
+                  type="range"
+                  min={0}
+                  max={60}
+                  value={Number(selectedLayer.borderRadius ?? props.borderRadius ?? 16)}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    onUpdateLayerProps(selectedLayer.id, { borderRadius: val });
+                  }}
+                  className="w-full accent-brand-cyan"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* B. TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
         {isTextType && (
           <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
             <div className="flex items-center justify-between text-xs font-bold text-slate-300">

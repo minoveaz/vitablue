@@ -29,6 +29,7 @@ import {
   ComparisonCorrectBoxBlock,
 } from './ComparisonBlocks';
 import { GlassCardSurfaceBlock } from './SurfaceBlocks';
+import { GeometricShapeBlock } from './ShapeBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 
 export interface ImageLayerBlockRendererProps {
@@ -44,6 +45,8 @@ export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, b
       return '380px';
     case 'GlassCardSurface':
       return blockProps?.width ? `${blockProps.width}px` : '420px';
+    case 'GeometricShape':
+      return blockProps?.width ? `${blockProps.width}px` : '180px';
     case 'MotionTrustBadge':
       return '420px';
     case 'MotionComparisonCard':
@@ -215,9 +218,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'ComparisonCorrectBox':
       return <ComparisonCorrectBoxBlock layerId={layer.id} props={blockProps} onUpdateProps={onUpdateLayerProps} />;
 
-    // 6. SUPERFICIES Y FONDOS
+    // 6. SUPERFICIES Y FORMAS GEOMÉTRICAS TRADICIONALES
     case 'GlassCardSurface':
       return <GlassCardSurfaceBlock layer={layer} />;
+    case 'GeometricShape':
+      return <GeometricShapeBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
 
     // 7. CAPAS DE TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES)
     case 'CustomText':

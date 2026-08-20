@@ -264,6 +264,7 @@ export type ImageBlockType =
   | 'ComparisonHeader'
   | 'ComparisonWrongBox'
   | 'ComparisonCorrectBox'
+  | 'GeometricShape'
   | 'CustomText'
   | 'CustomGroup';
 
