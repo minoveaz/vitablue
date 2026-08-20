@@ -93,6 +93,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   ];
 
   const [isFormatsModalOpen, setIsFormatsModalOpen] = useState(false);
+  const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
 
   const currentPreset = project?.preset ?? {
     id: 'instagram-portrait',
@@ -295,7 +296,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
       <ImageCanvasFormatsModal
         isOpen={isFormatsModalOpen}
-        currentPreset={project.preset}
+        currentPreset={currentPreset}
         onSelectPreset={(preset) => onSetPreset?.(preset)}
         onClose={() => setIsFormatsModalOpen(false)}
       />
@@ -304,7 +305,6 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 }
 
   const props = selectedLayer.props as Record<string, unknown>;
-  const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
   const isTextType = selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText';
 
