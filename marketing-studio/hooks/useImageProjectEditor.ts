@@ -11,6 +11,7 @@ import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
 import { saveStoredImageProject } from '../utils/imageProjectStorage';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
+import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
@@ -116,12 +117,56 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
-  const setPreset = useCallback((preset: ImageFormatPreset) => {
+  const setPreset = useCallback((preset: ImageFormatPreset, options?: { smartResize?: boolean }) => {
+    const shouldSmartResize = options?.smartResize ?? true;
     setProject((prev) => {
-      const next = { ...prev, preset, updatedAt: new Date().toISOString() };
+      const oldW = prev.preset.width;
+      const oldH = prev.preset.height;
+      const newW = preset.width;
+      const newH = preset.height;
+
+      if (!shouldSmartResize || prev.layers.length === 0 || (oldW === newW && oldH === newH)) {
+        const next = { ...prev, preset, updatedAt: new Date().toISOString() };
+        pushHistory(next);
+        return next;
+      }
+
+      const scaleX = newW / oldW;
+      const scaleY = newH / oldH;
+      const scaleUniform = Math.min(scaleX, scaleY);
+
+      const nextLayers = prev.layers.map((layer) => {
+        const posX = Math.round(layer.position.x * scaleX);
+        const posY = Math.round(layer.position.y * scaleY);
+        const width = layer.width ? Math.round(layer.width * scaleX) : undefined;
+        const height = layer.height ? Math.round(layer.height * scaleY) : undefined;
+        const fontSize = layer.fontSize ? Math.round(layer.fontSize * scaleUniform) : undefined;
+
+        return {
+          ...layer,
+          position: { x: posX, y: posY },
+          ...(width !== undefined ? { width } : {}),
+          ...(height !== undefined ? { height } : {}),
+          ...(fontSize !== undefined ? { fontSize } : {}),
+        };
+      });
+
+      const next: ImageProject = {
+        ...prev,
+        preset,
+        layers: nextLayers,
+        updatedAt: new Date().toISOString(),
+      };
       pushHistory(next);
       return next;
     });
+  }, [pushHistory]);
+
+  const composeSmartCanvas = useCallback((options: SmartComposerOptions) => {
+    const smartProject = generateSmartCanvasProject(options);
+    setProject(smartProject);
+    setSelectedLayerIds(smartProject.layers[0]?.id ? [smartProject.layers[0].id] : []);
+    pushHistory(smartProject);
   }, [pushHistory]);
 
   const loadTemplate = useCallback((template: ImageProject) => {
@@ -1457,6 +1502,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     saveLayerToMyDesigns,
     insertSavedLayer,
     clearCanvas,
+    composeSmartCanvas,
     updateBackground,
     alignSelectedLayers,
     distributeSelectedLayers,

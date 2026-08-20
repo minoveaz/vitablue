@@ -31,6 +31,8 @@ import {
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '../../types/imageStudio';
 import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
+import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
+import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 
 export interface ImageStudioInspectorProps {
   project: ImageProject;
@@ -55,6 +57,7 @@ export interface ImageStudioInspectorProps {
   onUngroupLayer?: (id: string) => void;
   onSaveToMyDesigns?: (id: string, customTitle?: string) => void;
   onSetPreset?: (preset: ImageFormatPreset) => void;
+  onComposeSmartCanvas?: (options: SmartComposerOptions) => void;
   onClearCanvas?: () => void;
   onUpdateBackground: (patch: Partial<CanvasBackground>) => void;
   onClose?: () => void;
@@ -83,6 +86,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUngroupLayer,
   onSaveToMyDesigns,
   onSetPreset,
+  onComposeSmartCanvas,
   onClearCanvas,
   onUpdateBackground,
   onClose,
@@ -94,6 +98,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   ];
 
   const [isFormatsModalOpen, setIsFormatsModalOpen] = useState(false);
+  const [isComposerModalOpen, setIsComposerModalOpen] = useState(false);
   const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
   const [gradientTheme, setGradientTheme] = useState<'light' | 'dark'>('light');
 
@@ -331,6 +336,23 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
             </div>
 
+            {/* GENERADOR MÁGICO DE LIENZO POR OBJETIVO */}
+            <div className="space-y-2 pt-2 border-t border-slate-900">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-amber-400" />
+                <span>Generador Automático de Lienzo</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setIsComposerModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-accent text-slate-950 p-3 text-xs font-black shadow-md hover:brightness-110 active:scale-95 transition-all"
+              >
+                <Sparkles className="size-4" />
+                <span>✨ Asistente Generador Mágico...</span>
+              </button>
+            </div>
+
             {/* ACCIONES RÁPIDAS DEL LIENZO */}
             <div className="space-y-2 pt-2 border-t border-slate-900">
               <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -362,6 +384,13 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         currentPreset={currentPreset}
         onSelectPreset={(preset) => onSetPreset?.(preset)}
         onClose={() => setIsFormatsModalOpen(false)}
+      />
+
+      <SmartCanvasComposerModal
+        isOpen={isComposerModalOpen}
+        currentPreset={currentPreset}
+        onCompose={(options) => onComposeSmartCanvas?.(options)}
+        onClose={() => setIsComposerModalOpen(false)}
       />
     </>
   );

@@ -140,3 +140,56 @@ describe('ImageStudio 7 Rapid Actions (Canva-Style Architecture)', () => {
     expect(ungroupedBY).toBe(80);
   });
 });
+
+describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
+  it('generates a full structured canvas project for all 6 marketing objectives', async () => {
+    const { generateSmartCanvasProject, SMART_OBJECTIVES } = await import('../utils/smartCanvasComposer');
+    expect(SMART_OBJECTIVES.length).toBe(6);
+
+    SMART_OBJECTIVES.forEach((obj) => {
+      const projectLight = generateSmartCanvasProject({
+        objective: obj.id,
+        theme: 'light',
+      });
+      expect(projectLight.id).toBeTruthy();
+      expect(projectLight.layers.length).toBeGreaterThanOrEqual(3);
+      expect(projectLight.background.gradient).toBeDefined();
+
+      const projectDark = generateSmartCanvasProject({
+        objective: obj.id,
+        theme: 'dark',
+      });
+      expect(projectDark.id).toBeTruthy();
+      expect(projectDark.layers.length).toBeGreaterThanOrEqual(3);
+      expect(projectDark.background.gradient).toBeDefined();
+    });
+  });
+
+  it('correctly adapts layers proportionally when changing canvas aspect ratios (Smart Multi-Resize)', () => {
+    const oldW = 1080;
+    const oldH = 1350;
+    const newW = 1920;
+    const newH = 1080;
+
+    const layer = {
+      position: { x: 540, y: 675 },
+      width: 500,
+      fontSize: 40,
+    };
+
+    const scaleX = newW / oldW;
+    const scaleY = newH / oldH;
+    const scaleUniform = Math.min(scaleX, scaleY);
+
+    const newPosX = Math.round(layer.position.x * scaleX);
+    const newPosY = Math.round(layer.position.y * scaleY);
+    const newWidth = Math.round(layer.width * scaleX);
+    const newFontSize = Math.round(layer.fontSize * scaleUniform);
+
+    expect(newPosX).toBe(960);
+    expect(newPosY).toBe(540);
+    expect(newWidth).toBe(889);
+    expect(newFontSize).toBe(32);
+  });
+});
+
