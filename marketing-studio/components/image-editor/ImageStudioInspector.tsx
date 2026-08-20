@@ -6,6 +6,7 @@ import {
   Ungroup,
   Sparkles,
   Sun,
+  Moon,
   Crop,
   Shield,
   Smartphone,
@@ -94,6 +95,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   const [isFormatsModalOpen, setIsFormatsModalOpen] = useState(false);
   const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
+  const [gradientTheme, setGradientTheme] = useState<'light' | 'dark'>('light');
 
   const currentPreset = project?.preset ?? {
     id: 'instagram-portrait',
@@ -112,8 +114,56 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)',
   };
 
+  const lightGradients = [
+    {
+      name: 'Ocean Breeze (Oficial Claro)',
+      gradient: 'radial-gradient(circle at 50% 15%, rgba(148, 210, 189, 0.45) 0%, rgba(240, 249, 250, 0.95) 55%, #FFFFFF 100%)',
+      color: '#F0F9FA',
+    },
+    {
+      name: 'Amber Sunrise (Cálido Trust)',
+      gradient: 'radial-gradient(circle at 50% 20%, rgba(238, 155, 0, 0.22) 0%, rgba(255, 251, 242, 0.95) 55%, #FFFFFF 100%)',
+      color: '#FFFBF2',
+    },
+    {
+      name: 'Mint Clean (Extranjería & Salud)',
+      gradient: 'radial-gradient(circle at 50% 15%, rgba(148, 210, 189, 0.35) 0%, #F0FDF4 50%, #FFFFFF 100%)',
+      color: '#F0FDF4',
+    },
+    {
+      name: 'Studio Soft Gray (Editorial)',
+      gradient: 'radial-gradient(circle at 50% 25%, #FFFFFF 0%, #F1F5F9 70%, #E2E8F0 100%)',
+      color: '#F8FAFC',
+    },
+  ];
+
+  const darkGradients = [
+    {
+      name: 'Ocean Mesh (Oficial Oscuro)',
+      gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)',
+      color: '#005F73',
+    },
+    {
+      name: 'Amber Trust Mesh',
+      gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)',
+      color: '#EE9B00',
+    },
+    {
+      name: 'Mint Glow Mesh',
+      gradient: 'radial-gradient(circle at 50% 25%, rgba(148, 210, 189, 0.45) 0%, #001219 80%)',
+      color: '#94D2BD',
+    },
+    {
+      name: 'Midnight Deep',
+      gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)',
+      color: '#001219',
+    },
+  ];
+
   // 1. ESTADO VACÍO: PROPIEDADES DEL LIENZO (CENTRO DE CONTROL CENTRALIZADO)
   if (!selectedLayer) {
+    const activeGradientList = gradientTheme === 'light' ? lightGradients : darkGradients;
+
     return (
       <>
         <ModuleContextPanel
@@ -206,34 +256,44 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
             </div>
 
-            {/* GRADIENTES MESH OFICIALES */}
-            <div className="space-y-2 pt-2 border-t border-slate-900">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Gradientes VitaBlue
-              </label>
+            {/* GRADIENTES MESH OFICIALES CON SELECTOR CLARO / OSCURO */}
+            <div className="space-y-2.5 pt-2 border-t border-slate-900">
+              <div className="flex items-center justify-between">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  Gradientes VitaBlue
+                </label>
+
+                {/* SELECTOR MODO CLARO / OSCURO */}
+                <div className="flex items-center rounded-lg bg-slate-950 border border-slate-800 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setGradientTheme('light')}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                      gradientTheme === 'light'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Sun className="size-3" />
+                    <span>Claro</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGradientTheme('dark')}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                      gradientTheme === 'dark'
+                        ? 'bg-primary/30 text-brand-cyan border border-brand-cyan/40 shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Moon className="size-3" />
+                    <span>Oscuro</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-1.5">
-                {[
-                  {
-                    name: 'Ocean Mesh (Oficial)',
-                    gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)',
-                    color: '#005F73',
-                  },
-                  {
-                    name: 'Amber Trust Mesh',
-                    gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)',
-                    color: '#EE9B00',
-                  },
-                  {
-                    name: 'Mint Glow Mesh',
-                    gradient: 'radial-gradient(circle at 50% 25%, rgba(148, 210, 189, 0.45) 0%, #001219 80%)',
-                    color: '#94D2BD',
-                  },
-                  {
-                    name: 'Midnight Deep',
-                    gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)',
-                    color: '#001219',
-                  },
-                ].map((g) => {
+                {activeGradientList.map((g) => {
                   const isActive = currentBackground.gradient === g.gradient;
                   return (
                     <button
@@ -246,7 +306,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                           : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
                       }`}
                     >
-                      <div className="size-6 rounded-lg shrink-0 border border-white/20 shadow-xs" style={{ background: g.gradient }} />
+                      <div
+                        className="size-6 rounded-lg shrink-0 border border-slate-700/60 shadow-xs"
+                        style={{ background: g.gradient }}
+                      />
                       <span className="truncate">{g.name}</span>
                     </button>
                   );
