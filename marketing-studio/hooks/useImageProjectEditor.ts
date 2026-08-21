@@ -14,6 +14,7 @@ import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
 import { createCustomGroup, expandCustomGroup } from '../utils/imageEditorCore';
+import { appendImageProjectHistory } from '../utils/imageEditorHistory';
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
@@ -35,6 +36,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'recovery'>('saved');
 
   const lastLoadedProjectRef = useRef<string>('');
+  const historyRef = useRef<ImageProject[]>([JSON.parse(JSON.stringify(project))]);
+  const historyIndexRef = useRef<number>(0);
+  const [historyLength, setHistoryLength] = useState<number>(1);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
 
   useEffect(() => {
     if (!initialProject) return;
@@ -74,12 +79,6 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     }
   }, [initialProject]);
 
-  // History stack for Undo / Redo con deep-clone y ref síncrono
-  const historyRef = useRef<ImageProject[]>([JSON.parse(JSON.stringify(project))]);
-  const historyIndexRef = useRef<number>(0);
-  const [historyLength, setHistoryLength] = useState<number>(1);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
-
   // Clipboard refs para Copiar/Pegar capas y Copiar/Pegar estilos (Canva-style)
   const clipboardLayersRef = useRef<ImageLayer[]>([]);
   const clipboardStyleRef = useRef<Partial<ImageLayer>>({});
@@ -87,32 +86,16 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const transientCommitTimerRef = useRef<number | null>(null);
 
   const pushHistory = useCallback((nextProject: ImageProject) => {
-    const clone: ImageProject = JSON.parse(JSON.stringify(nextProject));
     const currentIdx = historyIndexRef.current;
-    const currentList = historyRef.current.slice(0, currentIdx + 1);
-
-    // Evitar estados idénticos consecutivos en la pila
-    const lastItem = currentList[currentList.length - 1];
-    if (
-      lastItem &&
-      JSON.stringify(lastItem.layers) === JSON.stringify(clone.layers) &&
-      lastItem.preset.id === clone.preset.id &&
-      JSON.stringify(lastItem.background) === JSON.stringify(clone.background) &&
-      lastItem.title === clone.title
-    ) {
+    const result = appendImageProjectHistory(historyRef.current, currentIdx, nextProject);
+    if (result.history === historyRef.current) {
       return;
     }
-
-    const updatedList = [...currentList, clone];
-    const cappedList = updatedList.length > 50 ? updatedList.slice(updatedList.length - 50) : updatedList;
-    const newIndex = cappedList.length - 1;
-
-    historyRef.current = cappedList;
-    historyIndexRef.current = newIndex;
-    setHistoryLength(cappedList.length);
-    setHistoryIndex(newIndex);
-
-    saveStoredImageProject(clone);
+    historyRef.current = result.history;
+    historyIndexRef.current = result.index;
+    setHistoryLength(result.history.length);
+    setHistoryIndex(result.index);
+    saveStoredImageProject(result.history[result.index]);
     setLastSavedAt(new Date().toISOString());
   }, []);
 
@@ -1222,7 +1205,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     format: 'png' | 'jpeg' | 'webp' = 'png',
     pixelRatio: number = 2
   ): Promise<void> => {
-    if (!stage || typeof (stage as { toDataURL?: Function }).toDataURL !== 'function') return;
+    if (!stage || typeof (stage as { toDataURL?: (options: Record<string, unknown>) => string }).toDataURL !== 'function') return;
     setIsExporting(true);
     try {
       const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';

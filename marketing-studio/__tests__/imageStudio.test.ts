@@ -97,6 +97,18 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
       const { createCustomGroup } = await import('../utils/imageEditorCore');
       expect(() => createCustomGroup([], 'group')).toThrow();
     });
+
+    it('deduplicates consecutive history snapshots and truncates redo branches', async () => {
+      const { appendImageProjectHistory } = await import('../utils/imageEditorHistory');
+      const base = INITIAL_IMAGE_TEMPLATES[0];
+      const first = appendImageProjectHistory([base], 0, base);
+      expect(first.index).toBe(0);
+      const changed = { ...base, title: 'Cambio' };
+      const second = appendImageProjectHistory([base], 0, changed);
+      const branched = appendImageProjectHistory(second.history, 0, { ...base, title: 'Rama' });
+      expect(branched.history).toHaveLength(2);
+      expect(branched.history[1].title).toBe('Rama');
+    });
   });
 });
 

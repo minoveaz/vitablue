@@ -139,12 +139,12 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 
 #### Fase 1 — Estabilizar el núcleo del editor
 - [x] Asegurar que las operaciones de edición persistentes (posición múltiple, escala, tamaño, rotación y opacidad) entren en el historial de undo/redo.
-- [ ] Consolidar el modelo runtime de capas y grupos a partir de contratos explícitos para geometría, estilos y contenido. Ya existen los contratos tipados base (`ImageLayerGeometry`, `ImageLayerStyle` e `ImageLayerContent`), pero el editor todavía opera principalmente sobre `ImageLayer` plano.
-- [ ] Auditar los drawers y el inspector de Image Studio para detectar complejidad, lógica o UI repetida, y definir una consolidación antes de ampliar sus capacidades.
+- [x] Consolidar el modelo runtime de capas y grupos a partir de contratos explícitos para geometría, estilos y contenido mediante utilidades compartidas de modelo, agrupación y expansión.
+- [x] Auditar los drawers y el inspector de Image Studio: se ha extraído el chrome común de secciones a `EditorPanelSection` y se han eliminado cabeceras repetidas en los paneles revisados.
 - [x] Separar cambios transitorios de interacción (drag/resize) de cambios confirmados para evitar historiales ruidosos.
 - [x] Añadir autosave recuperable, estado de guardado y recuperación ante errores mediante snapshot de recuperación en `localStorage`.
 - [x] Validar límites, solapamientos, capas fuera del canvas y datos incompletos.
-- [ ] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia.
+- [x] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia; la suite de Image Studio cubre 20 casos.
 
 #### Fase 2 — Sistema de diseño profesional
 - [ ] Reglas, guías, columnas, márgenes y safe zones por plataforma.

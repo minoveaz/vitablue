@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Palette,
 } from 'lucide-react';
+import { EditorPanelSection } from '../EditorPanelSection';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { TraditionalShapeType } from '../blocks/ShapeBlocks';
 import { WEB_ILLUSTRATION_COMPONENTS } from '../blocks/WebIllustrationBlock';
@@ -706,7 +707,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             {/* FORMAS COINCIDENTES */}
             {matchingShapes && matchingShapes.length > 0 && (
               <div className="space-y-2 pt-2 border-t border-slate-800">
-                <span className="text-[11px] font-bold text-slate-400">Formas ({matchingShapes.length})</span>
+                <EditorPanelSection title={`Formas (${matchingShapes.length})`} />
                 <div className="grid grid-cols-5 gap-1">
                   {matchingShapes.map((item) => (
                     <button
@@ -726,7 +727,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             {/* PRESETS COINCIDENTES (SELLOS / CTAS / GLASS) */}
             {matchingPresets && matchingPresets.some((p) => p.category !== 'illustrations') && (
               <div className="space-y-2 pt-2 border-t border-slate-800">
-                <span className="text-[11px] font-bold text-slate-400">Componentes de Marca ({matchingPresets.filter((p) => p.category !== 'illustrations').length})</span>
+                <EditorPanelSection title={`Componentes de Marca (${matchingPresets.filter((p) => p.category !== 'illustrations').length})`} />
                 <div className="space-y-2">
                   {matchingPresets.filter((p) => p.category !== 'illustrations').map((preset) => (
                     <div
