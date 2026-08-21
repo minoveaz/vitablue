@@ -216,7 +216,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </button>
 
           {isMoreMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-50 animate-fadeIn text-white text-xs">
+            <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white text-xs">
               <button
                 type="button"
                 onClick={() => {
@@ -255,7 +255,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </button>
 
           {isExportMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-50 animate-fadeIn text-white">
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white">
               <button
                 type="button"
                 onClick={() => {

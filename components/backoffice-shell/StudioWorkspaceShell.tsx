@@ -145,7 +145,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
         {/* C. MAIN WORKSPACE / CANVAS VIEWPORT */}
         <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#050B14]">
           {toolbar && (
-            <div className="shrink-0 border-b border-slate-800/90 bg-slate-900/90 px-4 py-1.5 text-white z-20 backdrop-blur-md">
+            <div className="shrink-0 border-b border-slate-800/90 bg-slate-900/90 px-4 py-1.5 text-white relative z-40 backdrop-blur-md">
               {toolbar}
             </div>
           )}
