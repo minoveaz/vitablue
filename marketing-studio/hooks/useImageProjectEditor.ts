@@ -82,6 +82,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   // Clipboard refs para Copiar/Pegar capas y Copiar/Pegar estilos (Canva-style)
   const clipboardLayersRef = useRef<ImageLayer[]>([]);
   const clipboardStyleRef = useRef<Partial<ImageLayer>>({});
+  const transientProjectRef = useRef<ImageProject | null>(null);
+  const transientCommitTimerRef = useRef<number | null>(null);
 
   const pushHistory = useCallback((nextProject: ImageProject) => {
     const clone: ImageProject = JSON.parse(JSON.stringify(nextProject));
@@ -112,6 +114,18 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     saveStoredImageProject(clone);
     setLastSavedAt(new Date().toISOString());
   }, []);
+
+  const scheduleTransientCommit = useCallback((nextProject: ImageProject) => {
+    transientProjectRef.current = nextProject;
+    if (transientCommitTimerRef.current !== null) {
+      window.clearTimeout(transientCommitTimerRef.current);
+    }
+    transientCommitTimerRef.current = window.setTimeout(() => {
+      if (transientProjectRef.current) pushHistory(transientProjectRef.current);
+      transientProjectRef.current = null;
+      transientCommitTimerRef.current = null;
+    }, 250);
+  }, [pushHistory]);
 
   const undo = useCallback(() => {
     const currentIdx = historyIndexRef.current;
@@ -537,10 +551,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         l.id === layerId ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
+      scheduleTransientCommit(next);
       return next;
     });
-  }, [pushHistory]);
+  }, [scheduleTransientCommit]);
 
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
@@ -548,10 +562,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         l.id === layerId ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
+      scheduleTransientCommit(next);
       return next;
     });
-  }, [pushHistory]);
+  }, [scheduleTransientCommit]);
 
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
@@ -559,10 +573,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         l.id === layerId ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
+      scheduleTransientCommit(next);
       return next;
     });
-  }, [pushHistory]);
+  }, [scheduleTransientCommit]);
 
   const updateLayerRotation = useCallback((layerId: string, rotation: number) => {
     setProject((prev) => {
@@ -570,10 +584,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         l.id === layerId ? { ...l, rotation: Math.round(rotation) } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
-      pushHistory(next);
+      scheduleTransientCommit(next);
       return next;
     });
-  }, [pushHistory]);
+  }, [scheduleTransientCommit]);
 
   const duplicateLayer = useCallback((layerId: string) => {
     setProject((prev) => {
@@ -1696,8 +1710,13 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, [pushHistory]);
 
   const commitPositionChange = useCallback(() => {
+    if (transientCommitTimerRef.current !== null) {
+      window.clearTimeout(transientCommitTimerRef.current);
+      transientCommitTimerRef.current = null;
+    }
     setProject((prev) => {
-      pushHistory(prev);
+      pushHistory(transientProjectRef.current ?? prev);
+      transientProjectRef.current = null;
       return prev;
     });
   }, [pushHistory]);

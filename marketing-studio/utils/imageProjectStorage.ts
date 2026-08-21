@@ -74,33 +74,6 @@ export function saveStoredImageProject(project: ImageProject): void {
     nextProjects = [updated, ...projects];
   }
 
-  export function saveRecoveryImageProject(project: ImageProject): void {
-    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
-    try {
-      localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project, savedAt: new Date().toISOString() }));
-    } catch (error) {
-      console.error('Error saving image studio recovery snapshot:', error);
-    }
-  }
-
-  export function getRecoveryImageProject(): { project: ImageProject; savedAt: string } | null {
-    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
-    try {
-      const raw = localStorage.getItem(IMAGE_STUDIO_RECOVERY_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed?.project && parsed?.savedAt ? parsed : null;
-    } catch {
-      return null;
-    }
-  }
-
-  export function clearRecoveryImageProject(): void {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      localStorage.removeItem(IMAGE_STUDIO_RECOVERY_KEY);
-    }
-  }
-
   inMemoryCache = nextProjects;
 
   if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -109,6 +82,33 @@ export function saveStoredImageProject(project: ImageProject): void {
     } catch (error) {
       console.error('Error saving image studio project to localStorage:', error);
     }
+  }
+}
+
+export function saveRecoveryImageProject(project: ImageProject): void {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project, savedAt: new Date().toISOString() }));
+  } catch (error) {
+    console.error('Error saving image studio recovery snapshot:', error);
+  }
+}
+
+export function getRecoveryImageProject(): { project: ImageProject; savedAt: string } | null {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(IMAGE_STUDIO_RECOVERY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.project && parsed?.savedAt ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearRecoveryImageProject(): void {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    localStorage.removeItem(IMAGE_STUDIO_RECOVERY_KEY);
   }
 }
 
