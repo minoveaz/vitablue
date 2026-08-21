@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
     --color-primary: #005F73;
@@ -51,6 +49,33 @@
   section, footer {
     @apply max-w-full overflow-hidden;
   }
+
+  /* GLOBAL SLEEK AUTO-HIDING SCROLLBAR (VITABLUE OCEAN TEAL & MINT) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 95, 115, 0.25) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 95, 115, 0.2);
+    border-radius: 9999px;
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.25s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #005F73;
+  }
 }
 
 @layer utilities {
@@ -58,24 +83,71 @@
   .text-slate-500 { color: #475569; }
   .text-emerald-600 { color: #047857; }
 
-  /* Custom sleek scrollbar for dark panels */
+  /* Floating auto-hide scrollbar that is invisible when idle and appears on hover/scroll */
+  .hover-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+  }
+
+  .hover-scrollbar:hover,
+  .hover-scrollbar:focus-within {
+    scrollbar-color: rgba(0, 95, 115, 0.35) transparent;
+  }
+
+  .hover-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .hover-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .hover-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 9999px;
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.25s ease;
+  }
+
+  .hover-scrollbar:hover::-webkit-scrollbar-thumb,
+  .hover-scrollbar:active::-webkit-scrollbar-thumb,
+  .hover-scrollbar:focus::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 95, 115, 0.3);
+  }
+
+  .hover-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #005F73 !important;
+  }
+
+  /* Custom Dark Scrollbar for Studio Drawers & Panels */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 210, 189, 0.3) transparent;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
     height: 5px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(51, 65, 85, 0.5);
+    background: rgba(148, 210, 189, 0.25);
     border-radius: 9999px;
+    transition: background 0.2s ease;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(148, 210, 189, 0.6);
   }
 
-  /* Shared social CTA tokens; kept explicit so Vite HMR cannot drop them when
-     the Tailwind config changes during local development. */
+  /* Shared social CTA tokens */
   .bg-whatsapp { background-color: var(--color-whatsapp-dark); }
   .hover\:bg-whatsapp-dark:hover { background-color: var(--color-whatsapp-dark); }
   .text-whatsapp { color: var(--color-whatsapp); }
@@ -101,35 +173,9 @@
   .text-caption {
     @apply font-sans font-medium text-[12px] leading-[1.4] tracking-[0.02em];
   }
-
-  /* Custom Dark Scrollbar for Studio & Backoffice */
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(148, 210, 189, 0.3) transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(148, 210, 189, 0.25);
-    border-radius: 9999px;
-    transition: background 0.2s ease;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 210, 189, 0.5);
-  }
 }
 
 /* Ocultar botón flotante de WhatsApp cuando el menú móvil está abierto */
 body.mobile-menu-open .whatsapp-float-widget {
   display: none !important;
 }
-/* End of CSS file */
