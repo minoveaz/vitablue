@@ -35,6 +35,7 @@ import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '.
 import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
+import { TextHighlightRule } from '../../utils/textFormatter';
 
 interface NumberInputProps {
   value?: number;
@@ -1128,11 +1129,118 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             {/* PALETA DE COLOR SEMÁNTICA */}
             <div className="pt-2 border-t border-slate-900">
               <HexColorPickerField
-                label="Color de Letra"
+                label="Color de Letra Principal"
                 value={String(selectedLayer.fill ?? props.color ?? '#FFFFFF')}
                 allowTransparent={false}
                 onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex })}
               />
+            </div>
+
+            {/* RESALTAR PALABRAS / COLOR INDIVIDUAL POR PALABRA */}
+            <div className="pt-3 border-t border-slate-900 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan flex items-center gap-1">
+                  <Sparkles className="size-3 text-amber-400" />
+                  <span>Colores por Palabra / Resaltado</span>
+                </label>
+                <span className="text-[9px] text-slate-500 font-mono">
+                  {((props.highlightWords as TextHighlightRule[]) ?? []).length} activas
+                </span>
+              </div>
+
+              {/* PALABRAS DETECTADAS EN EL TEXTO PARA SELECCIONAR CON UN CLIC */}
+              <div className="space-y-1">
+                <span className="text-[9px] text-slate-400 block font-medium">
+                  Haz clic en una palabra para cambiar su color:
+                </span>
+                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto no-scrollbar p-1 rounded-xl bg-slate-900/60 border border-slate-800/80">
+                  {String(props.text ?? selectedLayer.title ?? '')
+                    .split(/\s+/)
+                    .map((rawWord) => rawWord.replace(/^[¿¡"'(]+|[.,;:!?"')]+$/g, ''))
+                    .filter((w) => w.length > 0)
+                    .filter((w, idx, arr) => arr.indexOf(w) === idx)
+                    .map((word) => {
+                      const currentHighlights = (props.highlightWords as TextHighlightRule[]) ?? [];
+                      const existing = currentHighlights.find((h) => h.word.toLowerCase() === word.toLowerCase());
+                      return (
+                        <button
+                          key={word}
+                          type="button"
+                          onClick={() => {
+                            if (existing) {
+                              const next = currentHighlights.filter((h) => h.word.toLowerCase() !== word.toLowerCase());
+                              onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
+                            } else {
+                              const next = [...currentHighlights, { word, color: '#EE9B00', bgColor: 'transparent' }];
+                              onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
+                            }
+                          }}
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${
+                            existing
+                              ? 'border-amber-400 bg-amber-500/20 text-amber-300 shadow-xs'
+                              : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white'
+                          }`}
+                        >
+                          {existing ? '✓ ' : '+ '}
+                          {word}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+
+              {/* LISTA DE PALABRAS RESALTADAS CON SELECTOR DE COLOR Y FONDO */}
+              {((props.highlightWords as TextHighlightRule[]) ?? []).length > 0 && (
+                <div className="space-y-2">
+                  {((props.highlightWords as TextHighlightRule[]) ?? []).map((rule, idx) => (
+                    <div
+                      key={rule.word + idx}
+                      className="p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-amber-300 font-mono truncate">
+                          "{rule.word}"
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = (props.highlightWords as TextHighlightRule[]) ?? [];
+                            const next = current.filter((_, i) => i !== idx);
+                            onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
+                          }}
+                          className="text-[10px] text-rose-400 hover:text-rose-300 font-bold"
+                        >
+                          Quitar ✕
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <HexColorPickerField
+                          label="Color de Texto"
+                          value={rule.color || '#EE9B00'}
+                          allowTransparent={false}
+                          onChange={(hex) => {
+                            const current = [...((props.highlightWords as TextHighlightRule[]) ?? [])];
+                            current[idx] = { ...current[idx], color: hex };
+                            onUpdateLayerProps(selectedLayer.id, { highlightWords: current });
+                          }}
+                        />
+
+                        <HexColorPickerField
+                          label="Color de Fondo (Caja)"
+                          value={rule.bgColor || 'transparent'}
+                          allowTransparent={true}
+                          onChange={(hex) => {
+                            const current = [...((props.highlightWords as TextHighlightRule[]) ?? [])];
+                            current[idx] = { ...current[idx], bgColor: hex };
+                            onUpdateLayerProps(selectedLayer.id, { highlightWords: current });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

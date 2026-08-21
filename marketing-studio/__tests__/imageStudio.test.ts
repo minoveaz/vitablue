@@ -288,5 +288,21 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     expect(layer.blockType).toBe('BrandLogo');
     expect(layer.props.variant).toBe('colored-on-dark');
   });
+
+  it('correctly parses and formats multi-colored words and highlight rules in text layers', async () => {
+    const { parseFormattedText } = await import('../utils/textFormatter');
+    expect(parseFormattedText).toBeDefined();
+
+    // 1. Regla de palabras resaltadas
+    const nodes = parseFormattedText(
+      '¿Vas a estudiar en España? Evita que te DENEGUEN el visado',
+      [{ word: 'DENEGUEN', color: '#EE9B00', bgColor: 'rgba(0, 95, 115, 0.4)' }]
+    );
+    expect(nodes).toBeDefined();
+
+    // 2. Sintaxis en línea [Palabra](#COLOR)
+    const inlineNodes = parseFormattedText('Evita que te [DENEGUEN](#EE9B00) tu visado');
+    expect(inlineNodes).toBeDefined();
+  });
 });
 

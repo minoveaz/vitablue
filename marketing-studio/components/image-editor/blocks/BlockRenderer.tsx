@@ -33,6 +33,7 @@ import { GeometricShapeBlock } from './ShapeBlocks';
 import { WebIllustrationBlock } from './WebIllustrationBlock';
 import { BrandLogoBlock } from './BrandLogoBlock';
 import { InlineEditableText } from '../InlineEditableText';
+import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 
 export interface ImageLayerBlockRendererProps {
   layer: ImageLayer;
@@ -327,7 +328,13 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
               className={`w-full block ${isNoWrap ? 'whitespace-nowrap' : 'whitespace-pre-line'}`}
               as={textTag}
-            />
+            >
+              {parseFormattedText(
+                String(blockProps.text ?? layer.title ?? 'Texto'),
+                (blockProps.highlightWords as TextHighlightRule[]) ?? [],
+                String(layer.fill ?? blockProps.color ?? '#FFFFFF')
+              )}
+            </InlineEditableText>
           </div>
         );
       }

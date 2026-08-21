@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 interface InlineEditableTextProps {
   text: string;
+  children?: React.ReactNode;
   onSave: (newText: string) => void;
   className?: string;
   as?: 'span' | 'h1' | 'h2' | 'h3' | 'p' | 'strong' | 'div';
@@ -9,6 +10,7 @@ interface InlineEditableTextProps {
 
 export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   text,
+  children,
   onSave,
   className = '',
   as: Component = 'span',
@@ -79,7 +81,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       className={`${className} cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       title="Doble clic para editar texto directamente"
     >
-      {text}
+      {children ?? text}
     </Component>
   );
 };
