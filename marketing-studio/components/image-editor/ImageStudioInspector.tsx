@@ -294,6 +294,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   const [isComposerModalOpen, setIsComposerModalOpen] = useState(false);
   const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
   const [gradientTheme, setGradientTheme] = useState<'light' | 'dark'>('light');
+  const [spellingFeedback, setSpellingFeedback] = useState<string | null>(null);
 
   const currentPreset = project?.preset ?? {
     id: 'instagram-portrait',
@@ -580,8 +581,6 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     'ComparisonCorrectBox',
   ];
   const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '');
-
-  const [spellingFeedback, setSpellingFeedback] = useState<string | null>(null);
 
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
