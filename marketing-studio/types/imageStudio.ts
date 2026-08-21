@@ -320,6 +320,33 @@ export interface ImageLayer {
   visible?: boolean;
 }
 
+/** Stable contracts used by the editor engine and persistence adapters. */
+export interface ImageLayerGeometry {
+  position: { x: number; y: number };
+  width?: number;
+  height?: number;
+  scale: number;
+  rotation?: number;
+}
+
+export interface ImageLayerStyle {
+  opacity?: number;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  shadowPreset?: ImageLayer['shadowPreset'];
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
+}
+
+export interface ImageLayerContent {
+  type: ImageLayer['type'];
+  blockType?: ImageBlockType;
+  title: string;
+  props: Record<string, unknown>;
+}
+
 export interface CanvasBackground {
   type: 'solid' | 'gradient' | 'image' | 'mesh';
   color?: string;

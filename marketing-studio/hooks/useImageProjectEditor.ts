@@ -8,7 +8,8 @@ import {
   CanvasBackground,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
-import { saveStoredImageProject } from '../utils/imageProjectStorage';
+import { saveStoredImageProject, saveRecoveryImageProject, getRecoveryImageProject } from '../utils/imageProjectStorage';
+import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
@@ -29,8 +30,30 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [showSafeZones, setShowSafeZones] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
+  const [validationIssues, setValidationIssues] = useState<ImageProjectValidationIssue[]>([]);
+  const [saveState, setSaveState] = useState<'saved' | 'saving' | 'recovery'>('saved');
 
   const lastLoadedProjectRef = useRef<string>('');
+
+  useEffect(() => {
+    if (!initialProject) return;
+    const recovery = getRecoveryImageProject();
+    if (recovery && recovery.project.id === initialProject.id && recovery.savedAt > initialProject.updatedAt) {
+      setProject(recovery.project);
+      setSaveState('recovery');
+      setValidationIssues(validateImageProject(recovery.project));
+    }
+  }, [initialProject]);
+
+  useEffect(() => {
+    setValidationIssues(validateImageProject(project));
+    setSaveState('saving');
+    const timer = window.setTimeout(() => {
+      saveRecoveryImageProject(project);
+      setSaveState('saved');
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [project]);
 
   // Re-sync whenever initialProject is supplied (e.g. mounting, routing from Hub, or URL param change)
   useEffect(() => {
@@ -502,7 +525,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerPosition = useCallback((layerId: string, position: { x: number; y: number }) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, position } : l
+        l.id === layerId ? { ...l, position: clampLayerPosition(position) } : l
       );
       return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
@@ -1692,6 +1715,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setShowSafeZones,
     isExporting,
     lastSavedAt,
+    saveState,
+    validationIssues,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < historyLength - 1,
     undo,

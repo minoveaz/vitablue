@@ -62,6 +62,18 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
     expect(copy).toBeDefined();
     expect(copy?.title).toContain('(Copia)');
   });
+
+  describe('ImageStudio core validation contracts', () => {
+    it('clamps positions and reports incomplete or out-of-bounds layers', async () => {
+      const { clampLayerPosition, validateImageProject } = await import('../utils/imageProjectValidation');
+      expect(clampLayerPosition({ x: -10, y: 120 })).toEqual({ x: 0, y: 100 });
+      const project = {
+        ...INITIAL_IMAGE_TEMPLATES[0],
+        layers: [{ ...INITIAL_IMAGE_TEMPLATES[0].layers[0], position: { x: 140, y: 50 } }],
+      };
+      expect(validateImageProject(project).some((issue) => issue.code === 'out-of-bounds')).toBe(true);
+    });
+  });
 });
 
 describe('ImageStudio 7 Rapid Actions (Canva-Style Architecture)', () => {
@@ -341,5 +353,4 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     expect(highlightTemplates.length).toBe(5);
   });
 });
-
 

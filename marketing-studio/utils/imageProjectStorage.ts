@@ -3,6 +3,7 @@ import { INITIAL_IMAGE_TEMPLATES } from './imageTemplates';
 import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 
 export const IMAGE_STUDIO_STORAGE_KEY = 'vitablue_image_studio_projects';
+export const IMAGE_STUDIO_RECOVERY_KEY = 'vitablue_image_studio_recovery';
 
 let inMemoryCache: ImageProject[] = [...INITIAL_IMAGE_TEMPLATES];
 
@@ -71,6 +72,33 @@ export function saveStoredImageProject(project: ImageProject): void {
     nextProjects[existingIndex] = updated;
   } else {
     nextProjects = [updated, ...projects];
+  }
+
+  export function saveRecoveryImageProject(project: ImageProject): void {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project, savedAt: new Date().toISOString() }));
+    } catch (error) {
+      console.error('Error saving image studio recovery snapshot:', error);
+    }
+  }
+
+  export function getRecoveryImageProject(): { project: ImageProject; savedAt: string } | null {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem(IMAGE_STUDIO_RECOVERY_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed?.project && parsed?.savedAt ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  export function clearRecoveryImageProject(): void {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.removeItem(IMAGE_STUDIO_RECOVERY_KEY);
+    }
   }
 
   inMemoryCache = nextProjects;
