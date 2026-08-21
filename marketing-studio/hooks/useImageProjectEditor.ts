@@ -539,6 +539,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
       if (!layer) return prev;
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
       const newLayer: ImageLayer = {
         ...layer,
         id: `layer-${Date.now()}`,
@@ -546,10 +547,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
           x: Math.min(85, layer.position.x + 4),
           y: Math.min(85, layer.position.y + 4),
         },
-        zIndex: prev.layers.length + 1,
+        zIndex: maxZ + 1,
       };
       const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
       setSelectedLayerId(newLayer.id);
+      setSelectedLayerIds([newLayer.id]);
       pushHistory(next);
       return next;
     });
@@ -561,6 +563,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const layersToDuplicate = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
       if (layersToDuplicate.length === 0) return prev;
 
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
       const newLayers: ImageLayer[] = layersToDuplicate.map((layer, i) => ({
         ...layer,
         id: `layer-${Date.now()}-${i}`,
@@ -568,7 +571,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
           x: Math.min(92, layer.position.x + 3),
           y: Math.min(92, layer.position.y + 3),
         },
-        zIndex: prev.layers.length + 1 + i,
+        zIndex: maxZ + 1 + i,
       }));
 
       const next = {
@@ -577,6 +580,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         updatedAt: new Date().toISOString(),
       };
       setSelectedLayerIds(newLayers.map((l) => l.id));
+      setSelectedLayerId(newLayers[0]?.id ?? null);
       pushHistory(next);
       return next;
     });
@@ -635,6 +639,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const pasteLayers = useCallback(() => {
     if (!clipboardLayersRef.current || clipboardLayersRef.current.length === 0) return;
     setProject((prev) => {
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
       const newLayers: ImageLayer[] = clipboardLayersRef.current.map((layer, i) => ({
         ...JSON.parse(JSON.stringify(layer)),
         id: `layer-${Date.now()}-${i}`,
@@ -642,7 +647,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
           x: Math.min(92, layer.position.x + 3),
           y: Math.min(92, layer.position.y + 3),
         },
-        zIndex: prev.layers.length + 1 + i,
+        zIndex: maxZ + 1 + i,
       }));
 
       const next = {
@@ -651,6 +656,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         updatedAt: new Date().toISOString(),
       };
       setSelectedLayerIds(newLayers.map((l) => l.id));
+      setSelectedLayerId(newLayers[0]?.id ?? null);
       pushHistory(next);
       return next;
     });
@@ -967,7 +973,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       title: initialTitle,
       props: initialProps,
       position: { x: 50, y: 50 },
-      zIndex: project.layers.length + 10,
+      zIndex: 999,
       scale: 1,
       width,
       height,
@@ -978,12 +984,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     };
 
     setProject((prev) => {
-      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
-      setSelectedLayerId(newLayer.id);
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
+      const layerWithTopZ = { ...newLayer, zIndex: maxZ + 1 };
+      const next = { ...prev, layers: [...prev.layers, layerWithTopZ], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(layerWithTopZ.id);
+      setSelectedLayerIds([layerWithTopZ.id]);
       pushHistory(next);
       return next;
     });
-  }, [project.layers.length, pushHistory]);
+  }, [pushHistory]);
 
   const addTextLayer = useCallback((preset?: Partial<TextPresetItem>) => {
     const canvasWidth = project.preset.width || 1080;
@@ -1031,7 +1040,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         ...preset?.customProps,
       },
       position: { x: 50, y: 50 },
-      zIndex: project.layers.length + 10,
+      zIndex: 999,
       scale: 1,
       fontSize: calculateFontSize(),
       fontWeight: preset?.fontWeight ?? '700',
@@ -1047,13 +1056,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     };
 
     setProject((prev) => {
-      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
-      setSelectedLayerId(newLayer.id);
-      setSelectedLayerIds([newLayer.id]);
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
+      const layerWithTopZ = { ...newLayer, zIndex: maxZ + 1 };
+      const next = { ...prev, layers: [...prev.layers, layerWithTopZ], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(layerWithTopZ.id);
+      setSelectedLayerIds([layerWithTopZ.id]);
       pushHistory(next);
       return next;
     });
-  }, [project.preset.width, project.layers.length, pushHistory]);
+  }, [project.preset.width, pushHistory]);
 
   const addImageLayer = useCallback((imageUrl: string, options?: { title?: string; width?: number; height?: number; clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon' }) => {
     const canvasWidth = project.preset.width || 1080;
@@ -1070,7 +1081,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         objectFit: 'cover',
       },
       position: { x: 50, y: 50 },
-      zIndex: project.layers.length + 10,
+      zIndex: 999,
       scale: 1,
       width: defaultW,
       height: defaultH,
@@ -1079,13 +1090,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     };
 
     setProject((prev) => {
-      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
-      setSelectedLayerId(newLayer.id);
-      setSelectedLayerIds([newLayer.id]);
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
+      const layerWithTopZ = { ...newLayer, zIndex: maxZ + 1 };
+      const next = { ...prev, layers: [...prev.layers, layerWithTopZ], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(layerWithTopZ.id);
+      setSelectedLayerIds([layerWithTopZ.id]);
       pushHistory(next);
       return next;
     });
-  }, [project.preset.width, project.layers.length, pushHistory]);
+  }, [project.preset.width, pushHistory]);
 
   const saveLayerToMyDesigns = useCallback((layerId: string, customTitle?: string) => {
     const target = project.layers.find((l) => l.id === layerId);
@@ -1098,17 +1111,19 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       ...JSON.parse(JSON.stringify(savedLayer)),
       id: `layer-${Date.now()}`,
       position: { x: 50, y: 50 },
-      zIndex: project.layers.length + 10,
+      zIndex: 999,
     };
 
     setProject((prev) => {
-      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
-      setSelectedLayerId(newLayer.id);
-      setSelectedLayerIds([newLayer.id]);
+      const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
+      const layerWithTopZ = { ...newLayer, zIndex: maxZ + 1 };
+      const next = { ...prev, layers: [...prev.layers, layerWithTopZ], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(layerWithTopZ.id);
+      setSelectedLayerIds([layerWithTopZ.id]);
       pushHistory(next);
       return next;
     });
-  }, [project.layers.length, pushHistory]);
+  }, [pushHistory]);
 
   const clearCanvas = useCallback(() => {
     setProject((prev) => {
