@@ -140,6 +140,7 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 #### Fase 1 — Estabilizar el núcleo del editor
 - [x] Asegurar que las operaciones de edición persistentes (posición múltiple, escala, tamaño, rotación y opacidad) entren en el historial de undo/redo.
 - [ ] Consolidar el modelo de capas y grupos con contratos explícitos para geometría, estilos y contenido.
+- [ ] Auditar los drawers y el inspector de Image Studio para detectar complejidad, lógica o UI repetida, y definir una consolidación antes de ampliar sus capacidades.
 - [ ] Separar cambios transitorios de interacción (drag/resize) de cambios confirmados para evitar historiales ruidosos.
 - [ ] Añadir autosave recuperable, estado de guardado y recuperación ante errores.
 - [ ] Validar límites, solapamientos, capas fuera del canvas y datos incompletos.
