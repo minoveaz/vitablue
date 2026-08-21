@@ -327,3 +327,165 @@ export const InstagramHighlightBadge: React.FC<InstagramHighlightBadgeProps> = (
     </div>
   );
 };
+
+/**
+ * Genera el SVG completo a 1080x1080 px para la portada de Instagram Story Highlights.
+ */
+export function generateHighlightCoverSvg(
+  iconKey: HighlightIconKey,
+  options?: {
+    ringColor?: string;
+    accentColor?: string;
+    strokeColor?: string;
+    width?: number;
+    height?: number;
+  }
+): string {
+  const width = options?.width ?? 1080;
+  const height = options?.height ?? 1080;
+  const ringColor = options?.ringColor ?? '#94D2BD';
+  const accentColor = options?.accentColor ?? '#94D2BD';
+  const strokeColor = options?.strokeColor ?? '#FFFFFF';
+
+  let iconInnerSvg = '';
+  switch (iconKey) {
+    case 'approved':
+      iconInnerSvg = `
+        <path d="M50 20L86 36L50 52L14 36L50 20Z" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M26 42.5V59C26 67 36 73 50 73C64 73 74 67 74 59V42.5" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M80 39V56C80 58 78 60 76 60C74 60 72 58 72 56" stroke="${accentColor}" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="80" cy="38" r="2.5" fill="${accentColor}"/>
+        <circle cx="50" cy="54" r="14" fill="#001219" stroke="${accentColor}" stroke-width="3"/>
+        <path d="M44 54L48 58L57 49" stroke="${accentColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      `;
+      break;
+    case 'visa':
+      iconInnerSvg = `
+        <rect x="24" y="16" width="52" height="68" rx="7" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="32" y1="16" x2="32" y2="84" stroke="${strokeColor}" stroke-width="2.5" stroke-opacity="0.4"/>
+        <path d="M52 35C52 35 63 33 66 38C66 52 56 62 52 65C48 62 38 52 38 38C41 33 52 35 52 35Z" stroke="${accentColor}" stroke-width="3" stroke-linejoin="round" fill="#001219"/>
+        <path d="M52 42V54M46 48H58" stroke="${accentColor}" stroke-width="2.8" stroke-linecap="round"/>
+        <line x1="40" y1="72" x2="64" y2="72" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round"/>
+      `;
+      break;
+    case 'process':
+      iconInnerSvg = `
+        <path d="M32 30H68C72 30 76 34 76 38V46C76 50 72 54 68 54H32C28 54 24 58 24 62V70C24 74 28 78 32 78H68" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="32" cy="30" r="7" fill="#001219" stroke="${accentColor}" stroke-width="3.5"/>
+        <circle cx="32" cy="30" r="2.5" fill="${accentColor}"/>
+        <circle cx="50" cy="54" r="7" fill="#001219" stroke="${strokeColor}" stroke-width="3"/>
+        <circle cx="50" cy="54" r="2.5" fill="${strokeColor}"/>
+        <circle cx="68" cy="78" r="7" fill="#001219" stroke="${accentColor}" stroke-width="3.5"/>
+        <circle cx="68" cy="78" r="2.5" fill="${accentColor}"/>
+      `;
+      break;
+    case 'faq':
+      iconInnerSvg = `
+        <path d="M50 18C31.5 18 16.5 31.5 16.5 48C16.5 56.5 20.5 64 27 69.5L24 82L37.5 76C41.5 77.5 45.5 78 50 78C68.5 78 83.5 64.5 83.5 48C83.5 31.5 68.5 18 50 18Z" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M44 38C44 34.5 46.5 32 50 32C53.5 32 56 34.5 56 38C56 42 51.5 43.5 50 48" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="50" cy="59" r="2.5" fill="${accentColor}"/>
+      `;
+      break;
+    case 'contact':
+    default:
+      iconInnerSvg = `
+        <rect x="22" y="14" width="42" height="72" rx="8" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="38" y1="22" x2="48" y2="22" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="43" cy="77" r="2" fill="${strokeColor}" fill-opacity="0.6"/>
+        <path d="M44 32H74C78.5 32 82 35.5 82 40V54C82 58.5 78.5 62 74 62H60L50 68V62H44C39.5 62 36 58.5 36 54V40C36 35.5 39.5 32 44 32Z" fill="#001219" stroke="${accentColor}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="46" y1="42" x2="68" y2="42" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="46" y1="49" x2="60" y2="49" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="76" cy="36" r="3.5" fill="${accentColor}"/>
+      `;
+      break;
+  }
+
+  return `
+    <svg width="${width}" height="${height}" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bgGrad_${iconKey}" cx="50%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="#005F73" stop-opacity="0.85"/>
+          <stop offset="80%" stop-color="#001219"/>
+          <stop offset="100%" stop-color="#00080C"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Fondo Completo -->
+      <rect width="1080" height="1080" fill="#001219"/>
+
+      <!-- Disco Central con Mesh -->
+      <circle cx="540" cy="540" r="420" fill="url(#bgGrad_${iconKey})"/>
+
+      <!-- Resplandor Glow Neón -->
+      <circle cx="540" cy="540" r="420" stroke="${ringColor}" stroke-width="16" opacity="0.4"/>
+
+      <!-- Aro Principal Nítido -->
+      <circle cx="540" cy="540" r="420" stroke="${ringColor}" stroke-width="8"/>
+
+      <!-- Aro Interior Sutil -->
+      <circle cx="540" cy="540" r="390" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.2"/>
+
+      <!-- Icono Vectorial Centrado -->
+      <g transform="translate(290, 290) scale(5)">
+        ${iconInnerSvg}
+      </g>
+    </svg>
+  `;
+}
+
+/**
+ * Descarga directa en 1-clic de la portada en formato PNG a resolución nativa 1080x1080 px.
+ */
+export async function downloadHighlightCoverPng(
+  iconKey: HighlightIconKey,
+  filename?: string
+): Promise<void> {
+  if (typeof window === 'undefined') return;
+
+  const svgString = generateHighlightCoverSvg(iconKey);
+  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          URL.revokeObjectURL(url);
+          resolve();
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((pngBlob) => {
+          if (pngBlob) {
+            const downloadUrl = URL.createObjectURL(pngBlob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename || `vitablue-destacado-${iconKey}-1080p.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
+          }
+          URL.revokeObjectURL(url);
+          resolve();
+        }, 'image/png');
+      } catch (err) {
+        URL.revokeObjectURL(url);
+        reject(err);
+      }
+    };
+    img.onerror = (err) => {
+      URL.revokeObjectURL(url);
+      reject(err);
+    };
+    img.src = url;
+  });
+}
+

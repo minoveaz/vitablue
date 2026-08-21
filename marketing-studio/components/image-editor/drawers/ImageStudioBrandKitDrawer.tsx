@@ -3,18 +3,21 @@ import {
   Palette,
   Sparkles,
   Check,
-  ExternalLink,
+  Download,
   Layers,
+  Loader2,
 } from 'lucide-react';
 import Logo from '../../../../components/atoms/Logo';
-import { ImageBlockType, ImageProject } from '../../../types/imageStudio';
-import { HIGHLIGHT_PRESETS, HighlightVectorIcon } from '../blocks/HighlightCoverBlocks';
-import { INITIAL_IMAGE_TEMPLATES } from '../../../utils/imageTemplates';
+import { ImageBlockType } from '../../../types/imageStudio';
+import {
+  HIGHLIGHT_PRESETS,
+  HighlightVectorIcon,
+  downloadHighlightCoverPng,
+} from '../blocks/HighlightCoverBlocks';
 
 export interface ImageStudioBrandKitDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
-  onLoadTemplate?: (template: ImageProject) => void;
 }
 
 interface LogoVariantPreset {
@@ -208,10 +211,11 @@ const BRAND_BACKGROUNDS = [
 export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps> = ({
   onAddBlock,
   onUpdateBackground,
-  onLoadTemplate,
 }) => {
   const [logoTab, setLogoTab] = useState<'all' | 'highlights' | 'isotype' | 'horizontal' | 'vertical'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
 
   const handleCopyHex = (hex: string) => {
     navigator.clipboard.writeText(hex);
@@ -243,11 +247,33 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
     });
   };
 
-  const handleOpenHighlightCover = (iconKey: string) => {
-    const templateId = `template-highlight-${iconKey}`;
-    const targetTemplate = INITIAL_IMAGE_TEMPLATES.find((t) => t.id === templateId);
-    if (targetTemplate && onLoadTemplate) {
-      onLoadTemplate(targetTemplate);
+  const handleDownloadHighlight = async (iconKey: typeof HIGHLIGHT_PRESETS[0]['id']) => {
+    try {
+      setDownloadingId(iconKey);
+      await downloadHighlightCoverPng(iconKey, `vitablue-destacado-${iconKey}-1080p.png`);
+      setDownloadSuccessId(iconKey);
+      setTimeout(() => setDownloadSuccessId(null), 2500);
+    } catch (e) {
+      console.error('Error al descargar portada de destacado:', e);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  const handleDownloadAllHighlights = async () => {
+    try {
+      setDownloadingId('all');
+      for (const item of HIGHLIGHT_PRESETS) {
+        await downloadHighlightCoverPng(item.id, `vitablue-destacado-${item.id}-1080p.png`);
+        // Pequeño retardo entre descargas para el navegador
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+      setDownloadSuccessId('all');
+      setTimeout(() => setDownloadSuccessId(null), 3000);
+    } catch (e) {
+      console.error('Error al descargar pack de destacados:', e);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -313,73 +339,120 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
                 <Sparkles className="size-3 text-amber-400" />
                 <span>Portadas de Destacados Instagram ({HIGHLIGHT_PRESETS.length})</span>
               </span>
-              <span className="text-[10px] text-amber-200/80 font-mono">1080×1080 · IG Official</span>
+
+              {/* BOTÓN DESCARGAR PACK COMPLETO */}
+              <button
+                type="button"
+                onClick={handleDownloadAllHighlights}
+                disabled={downloadingId === 'all'}
+                className="flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/40 hover:bg-amber-500/30 px-2 py-0.5 rounded-md transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                title="Descargar las 5 portadas en formato PNG de alta definición"
+              >
+                {downloadingId === 'all' ? (
+                  <>
+                    <Loader2 className="size-3 animate-spin" />
+                    <span>Descargando...</span>
+                  </>
+                ) : downloadSuccessId === 'all' ? (
+                  <>
+                    <Check className="size-3 text-emerald-400" />
+                    <span className="text-emerald-300">¡Pack Descargado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="size-3" />
+                    <span>Descargar Todo (5 PNGs)</span>
+                  </>
+                )}
+              </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {HIGHLIGHT_PRESETS.map((item) => (
-                <div
-                  key={item.id}
-                  className="group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0d1624] p-3 hover:border-amber-500/60 hover:shadow-xl transition-all"
-                >
-                  {/* PREVIEW DISCO CIRCULAR CON GLOW NEÓN */}
+              {HIGHLIGHT_PRESETS.map((item) => {
+                const isDownloading = downloadingId === item.id;
+                const isSuccess = downloadSuccessId === item.id;
+
+                return (
                   <div
-                    className="w-full h-28 rounded-xl border border-slate-800/80 flex items-center justify-center p-3 mb-2.5 relative overflow-hidden bg-gradient-to-b from-[#001219] to-[#00080C] shadow-inner"
+                    key={item.id}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0d1624] p-3 hover:border-amber-500/60 hover:shadow-xl transition-all"
                   >
+                    {/* PREVIEW DISCO CIRCULAR CON GLOW NEÓN */}
                     <div
-                      className="size-20 rounded-full flex items-center justify-center relative shadow-lg group-hover:scale-105 transition-transform"
-                      style={{
-                        background: 'radial-gradient(circle at 50% 35%, rgba(0, 95, 115, 0.85) 0%, #001219 85%)',
-                        border: `3px solid ${item.defaultRingColor}`,
-                        boxShadow: `0 0 20px ${item.defaultGlowColor}`,
-                      }}
+                      className="w-full h-28 rounded-xl border border-slate-800/80 flex items-center justify-center p-3 mb-2.5 relative overflow-hidden bg-gradient-to-b from-[#001219] to-[#00080C] shadow-inner"
                     >
-                      <div className="size-11 flex items-center justify-center">
-                        <HighlightVectorIcon
-                          iconKey={item.id}
-                          strokeColor="#FFFFFF"
-                          accentColor={item.defaultAccentColor}
-                        />
+                      <div
+                        className="size-20 rounded-full flex items-center justify-center relative shadow-lg group-hover:scale-105 transition-transform"
+                        style={{
+                          background: 'radial-gradient(circle at 50% 35%, rgba(0, 95, 115, 0.85) 0%, #001219 85%)',
+                          border: `3px solid ${item.defaultRingColor}`,
+                          boxShadow: `0 0 20px ${item.defaultGlowColor}`,
+                        }}
+                      >
+                        <div className="size-11 flex items-center justify-center">
+                          <HighlightVectorIcon
+                            iconKey={item.id}
+                            strokeColor="#FFFFFF"
+                            accentColor={item.defaultAccentColor}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* TÍTULO Y DESCRIPCIÓN */}
-                  <div className="mb-2.5">
-                    <strong className="block text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
-                      {item.label}
-                    </strong>
-                    <span className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">
-                      {item.sublabel}
-                    </span>
-                  </div>
+                    {/* TÍTULO Y DESCRIPCIÓN */}
+                    <div className="mb-2.5">
+                      <strong className="block text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                        {item.label}
+                      </strong>
+                      <span className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">
+                        {item.sublabel}
+                      </span>
+                    </div>
 
-                  {/* ACCIONES: INSERTAR SELLO O ABRIR PORTADA COMPLETA */}
-                  <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
-                    <button
-                      type="button"
-                      onClick={() => handleInsertHighlight(item)}
-                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-brand-cyan text-[10px] font-bold border border-brand-cyan/30 transition-colors"
-                      title="Insertar este sello en el lienzo actual"
-                    >
-                      <Layers className="size-3" />
-                      <span>+ Sello</span>
-                    </button>
-
-                    {onLoadTemplate && (
+                    {/* ACCIONES: INSERTAR SELLO O DESCARGAR PNG DIRECTO */}
+                    <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
                       <button
                         type="button"
-                        onClick={() => handleOpenHighlightCover(item.id)}
-                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] font-bold border border-amber-500/40 transition-colors"
-                        title="Cargar lienzo completo 1080x1080 para descargar portada"
+                        onClick={() => handleInsertHighlight(item)}
+                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-brand-cyan text-[10px] font-bold border border-brand-cyan/30 transition-colors"
+                        title="Insertar este sello en el lienzo actual"
                       >
-                        <ExternalLink className="size-3" />
-                        <span>Abrir 1080p</span>
+                        <Layers className="size-3" />
+                        <span>+ Sello</span>
                       </button>
-                    )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadHighlight(item.id)}
+                        disabled={isDownloading}
+                        className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-[10px] font-bold border transition-all active:scale-95 ${
+                          isSuccess
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40'
+                        }`}
+                        title="Descargar archivo PNG a resolución nativa 1080x1080 px para Instagram"
+                      >
+                        {isDownloading ? (
+                          <>
+                            <Loader2 className="size-3 animate-spin text-amber-400" />
+                            <span>Descargando...</span>
+                          </>
+                        ) : isSuccess ? (
+                          <>
+                            <Check className="size-3 text-emerald-400" />
+                            <span>¡Descargado!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download className="size-3" />
+                            <span>Descargar PNG</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

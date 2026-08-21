@@ -235,7 +235,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           <ImageStudioBrandKitDrawer
             onAddBlock={onAddBlock}
             onUpdateBackground={onUpdateBackground}
-            onLoadTemplate={onLoadTemplate}
           />
         </div>
       )}
