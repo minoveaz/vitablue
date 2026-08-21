@@ -24,6 +24,15 @@ export function getStoredImageProjects(): ImageProject[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
+      // Si hay nuevas plantillas oficiales que no existen en el almacenamiento local, las agregamos al inicio
+      const existingIds = new Set(parsed.map((p: ImageProject) => p.id));
+      const missingInitialTemplates = INITIAL_IMAGE_TEMPLATES.filter((t) => !existingIds.has(t.id));
+      if (missingInitialTemplates.length > 0) {
+        const merged = [...missingInitialTemplates, ...parsed];
+        localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(merged));
+        inMemoryCache = merged;
+        return merged;
+      }
       inMemoryCache = parsed;
       return parsed;
     }
