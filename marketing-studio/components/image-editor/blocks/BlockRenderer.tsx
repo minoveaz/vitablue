@@ -241,6 +241,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
       if (layer.type === 'image' || blockProps.imageUrl) {
         const imageUrl = String(blockProps.imageUrl ?? '');
         const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
+        const focalPoint = blockProps.focalPoint as { x?: number; y?: number } | undefined;
         const clipShape = layer.clipShape ?? 'rounded-2xl';
 
         let clipStyle: React.CSSProperties = {};
@@ -269,7 +270,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               src={imageUrl}
               alt={String(blockProps.alt ?? layer.title ?? 'Image')}
               className="w-full h-full pointer-events-none"
-              style={{ objectFit }}
+              style={{
+                objectFit,
+                objectPosition: `${focalPoint?.x ?? 50}% ${focalPoint?.y ?? 50}%`,
+              }}
               loading="lazy"
             />
           </div>
@@ -307,6 +311,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const hasStrokeEffect = layer.textEffect === 'stroke';
         const hasGlowEffect = layer.textEffect === 'glow';
         const isNoWrap = Boolean(blockProps.nowrap ?? blockProps.singleLine ?? false);
+        const baseFontSize = layer.fontSize ?? (blockProps.fontSize as number) ?? 24;
 
         return (
           <div
@@ -314,14 +319,16 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               hasBoxEffect ? 'p-3 rounded-2xl shadow-xl' : ''
             }`}
             style={{
+              containerType: 'inline-size',
               fontFamily: layer.fontFamily ?? (blockProps.fontFamily as string) ?? 'Poppins, sans-serif',
-              fontSize: layer.fontSize ? `${layer.fontSize}px` : (blockProps.fontSize ? `${blockProps.fontSize}px` : '24px'),
+              fontSize: `min(${baseFontSize}px, 12cqw)`,
               fontWeight: layer.fontWeight ?? (blockProps.fontWeight as any) ?? '700',
               color: hasStrokeEffect ? 'transparent' : (layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'),
               backgroundColor: hasBoxEffect ? (layer.boxColor ?? '#EE9B00') : undefined,
               textAlign: layer.align ?? (blockProps.textAlign as any) ?? 'center',
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
               lineHeight: layer.lineHeight ?? 1.25,
+              overflowWrap: 'anywhere',
               textShadow: hasGlowEffect ? '0 0 20px rgba(148, 210, 189, 0.9), 0 0 40px rgba(0, 95, 115, 0.8)' : undefined,
               WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'}` : undefined,
             }}

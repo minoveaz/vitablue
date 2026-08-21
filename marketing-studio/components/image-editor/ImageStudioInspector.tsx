@@ -1810,6 +1810,67 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
 
+        {selectedLayer.type === 'image' && (
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
+              <Crop className="size-3.5 text-brand-cyan" />
+              <span>Encuadre inteligente</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1">
+              {(['cover', 'contain', 'fill'] as const).map((fit) => (
+                <button
+                  key={fit}
+                  type="button"
+                  onClick={() => onUpdateLayerProps(selectedLayer.id, { objectFit: fit })}
+                  className={`rounded-lg border py-1 text-[10px] font-bold ${
+                    ((props.objectFit as string) ?? 'cover') === fit
+                      ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {fit === 'cover' ? 'Rellenar' : fit === 'contain' ? 'Contener' : 'Estirar'}
+                </button>
+              ))}
+            </div>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Punto focal horizontal
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={Number((props.focalPoint as { x?: number } | undefined)?.x ?? 50)}
+                onChange={(e) =>
+                  onUpdateLayerProps(selectedLayer.id, {
+                    focalPoint: {
+                      x: Number(e.target.value),
+                      y: Number((props.focalPoint as { y?: number } | undefined)?.y ?? 50),
+                    },
+                  })
+                }
+                className="mt-1 w-full accent-brand-cyan"
+              />
+            </label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Punto focal vertical
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={Number((props.focalPoint as { y?: number } | undefined)?.y ?? 50)}
+                onChange={(e) =>
+                  onUpdateLayerProps(selectedLayer.id, {
+                    focalPoint: {
+                      x: Number((props.focalPoint as { x?: number } | undefined)?.x ?? 50),
+                      y: Number(e.target.value),
+                    },
+                  })
+                }
+                className="mt-1 w-full accent-brand-cyan"
+              />
+            </label>
+          </div>
+        )}
+
         {/* D. MÁSCARA Y SILUETA (CLIPPING SHAPES) */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2">
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
