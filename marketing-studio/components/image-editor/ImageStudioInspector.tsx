@@ -17,7 +17,6 @@ import {
   Paintbrush,
   Eye,
   BoxSelect,
-  MessageSquare,
   Shapes,
   UserCheck,
   Award,
@@ -35,7 +34,6 @@ import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '.
 import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
-import { TextHighlightRule } from '../../utils/textFormatter';
 
 interface NumberInputProps {
   value?: number;
@@ -567,7 +565,20 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   const props = selectedLayer.props as Record<string, unknown>;
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
-  const isTextType = selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText';
+  const textBearingBlockTypes = [
+    'CustomText',
+    'WhatsAppCtaButton',
+    'TrustVerifiedPill',
+    'TrustHighlightPill',
+    'HookAlertBadge',
+    'TrustBadgeTitle',
+    'TrustBadgeSubtitle',
+    'AdvisorTitleBadge',
+    'AdvisorSubline',
+    'ComparisonWrongBox',
+    'ComparisonCorrectBox',
+  ];
+  const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '');
 
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
@@ -890,32 +901,50 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* C. TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES) */}
+        {/* 2. TEXTO Y TIPOGRAFÍA (PANEL UNIVERSAL PARA TODOS LOS TEXTOS, BOTONES Y BADGES) */}
         {isTextType && (
           <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
             <div className="flex items-center justify-between text-xs font-bold text-slate-300">
               <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
                 <Type className="size-3.5" />
-                <span>Contenido y Tipografía</span>
+                <span>Texto y Tipografía</span>
+              </span>
+              <span className="text-[10px] font-mono text-slate-400 font-bold">
+                {selectedLayer.fontSize ?? 24}px
               </span>
             </div>
 
             {/* CONTENIDO DEL TEXTO */}
             <div>
               <textarea
-                value={String(props.text ?? selectedLayer.title ?? '')}
-                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { text: e.target.value })}
+                value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  onUpdateLayerProps(selectedLayer.id, {
+                    text: val,
+                    ctaText: val,
+                    whatsAppText: val,
+                    verifiedLabel: val,
+                    highlight: val,
+                    badge: val,
+                    title: val,
+                    buttonText: val,
+                  });
+                }}
                 rows={2}
                 placeholder="Escribe el texto aquí..."
-                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none"
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed"
               />
+              <span className="text-[9px] text-slate-500 mt-1 block">
+                💡 Tip: Escribe <code className="text-amber-400 font-mono">[Palabra](#COLOR)</code> o <code className="text-amber-400 font-mono">**Palabra**</code> para colorear términos individuales.
+              </span>
             </div>
 
             {/* FUENTE Y PESO */}
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Fuente Google
+                  Fuente
                 </label>
                 <select
                   value={selectedLayer.fontFamily ?? 'Poppins, sans-serif'}
@@ -924,7 +953,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 >
                   <option value="Poppins, sans-serif">Poppins (Display)</option>
                   <option value="Inter, sans-serif">Inter (Sans)</option>
-                  <option value="Montserrat, sans-serif">Montserrat (Black/Bold)</option>
+                  <option value="Montserrat, sans-serif">Montserrat (Bold)</option>
                   <option value="Oswald, sans-serif">Oswald (Condensada)</option>
                   <option value="Playfair Display, serif">Playfair (Serif)</option>
                   <option value="Plus Jakarta Sans, sans-serif">Plus Jakarta Sans</option>
@@ -951,7 +980,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </div>
 
             {/* TAMAÑO Y ALINEACIÓN */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900">
               <div>
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
                   <span>Tamaño</span>
@@ -969,7 +998,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 </div>
                 <input
                   type="range"
-                  min={14}
+                  min={12}
                   max={120}
                   step={1}
                   value={selectedLayer.fontSize ?? 24}
@@ -1010,7 +1039,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             <div className="pt-2 border-t border-slate-900 space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Disposición de Texto
+                  Disposición
                 </label>
                 <span className="text-[9px] font-mono text-brand-cyan">
                   {props.nowrap || props.singleLine ? '1 Sola Línea' : 'Multilínea'}
@@ -1052,43 +1081,14 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
             </div>
 
-            {/* EFECTOS DE TEXTO CANVA-STYLE */}
-            <div className="pt-2 border-t border-slate-900 space-y-2">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Efectos de Texto
-              </label>
-              <div className="grid grid-cols-4 gap-1">
-                {[
-                  { id: 'none', label: 'Ninguno' },
-                  { id: 'box', label: 'Caja' },
-                  { id: 'stroke', label: 'Contorno' },
-                  { id: 'glow', label: 'Glow' },
-                ].map((ef) => (
-                  <button
-                    key={ef.id}
-                    type="button"
-                    onClick={() => onUpdateLayerProps(selectedLayer.id, { textEffect: ef.id })}
-                    className={`py-1 px-1.5 rounded-lg border text-[10px] font-bold transition-all text-center ${
-                      (selectedLayer.textEffect ?? 'none') === ef.id
-                        ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
-                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {ef.label}
-                  </button>
-                ))}
-              </div>
-
-              {selectedLayer.textEffect === 'box' && (
-                <div className="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <HexColorPickerField
-                    label="Color Fondo Caja"
-                    value={String(selectedLayer.boxColor ?? '#EE9B00')}
-                    allowTransparent={false}
-                    onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { boxColor: hex })}
-                  />
-                </div>
-              )}
+            {/* COLOR DE LETRA PRINCIPAL */}
+            <div className="pt-2 border-t border-slate-900">
+              <HexColorPickerField
+                label="Color de Letra"
+                value={String(selectedLayer.fill ?? props.color ?? props.textColor ?? '#FFFFFF')}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex })}
+              />
             </div>
 
             {/* ESPACIADO & INTERLINEADO */}
@@ -1125,127 +1125,139 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 />
               </div>
             </div>
-
-            {/* PALETA DE COLOR SEMÁNTICA */}
-            <div className="pt-2 border-t border-slate-900">
-              <HexColorPickerField
-                label="Color de Letra Principal"
-                value={String(selectedLayer.fill ?? props.color ?? '#FFFFFF')}
-                allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex })}
-              />
-            </div>
-
-            {/* RESALTAR PALABRAS / COLOR INDIVIDUAL POR PALABRA */}
-            <div className="pt-3 border-t border-slate-900 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan flex items-center gap-1">
-                  <Sparkles className="size-3 text-amber-400" />
-                  <span>Colores por Palabra / Resaltado</span>
-                </label>
-                <span className="text-[9px] text-slate-500 font-mono">
-                  {((props.highlightWords as TextHighlightRule[]) ?? []).length} activas
-                </span>
-              </div>
-
-              {/* PALABRAS DETECTADAS EN EL TEXTO PARA SELECCIONAR CON UN CLIC */}
-              <div className="space-y-1">
-                <span className="text-[9px] text-slate-400 block font-medium">
-                  Haz clic en una palabra para cambiar su color:
-                </span>
-                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto no-scrollbar p-1 rounded-xl bg-slate-900/60 border border-slate-800/80">
-                  {String(props.text ?? selectedLayer.title ?? '')
-                    .split(/\s+/)
-                    .map((rawWord) => rawWord.replace(/^[¿¡"'(]+|[.,;:!?"')]+$/g, ''))
-                    .filter((w) => w.length > 0)
-                    .filter((w, idx, arr) => arr.indexOf(w) === idx)
-                    .map((word) => {
-                      const currentHighlights = (props.highlightWords as TextHighlightRule[]) ?? [];
-                      const existing = currentHighlights.find((h) => h.word.toLowerCase() === word.toLowerCase());
-                      return (
-                        <button
-                          key={word}
-                          type="button"
-                          onClick={() => {
-                            if (existing) {
-                              const next = currentHighlights.filter((h) => h.word.toLowerCase() !== word.toLowerCase());
-                              onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
-                            } else {
-                              const next = [...currentHighlights, { word, color: '#EE9B00', bgColor: 'transparent' }];
-                              onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
-                            }
-                          }}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${
-                            existing
-                              ? 'border-amber-400 bg-amber-500/20 text-amber-300 shadow-xs'
-                              : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white'
-                          }`}
-                        >
-                          {existing ? '✓ ' : '+ '}
-                          {word}
-                        </button>
-                      );
-                    })}
-                </div>
-              </div>
-
-              {/* LISTA DE PALABRAS RESALTADAS CON SELECTOR DE COLOR Y FONDO */}
-              {((props.highlightWords as TextHighlightRule[]) ?? []).length > 0 && (
-                <div className="space-y-2">
-                  {((props.highlightWords as TextHighlightRule[]) ?? []).map((rule, idx) => (
-                    <div
-                      key={rule.word + idx}
-                      className="p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-amber-300 font-mono truncate">
-                          "{rule.word}"
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const current = (props.highlightWords as TextHighlightRule[]) ?? [];
-                            const next = current.filter((_, i) => i !== idx);
-                            onUpdateLayerProps(selectedLayer.id, { highlightWords: next });
-                          }}
-                          className="text-[10px] text-rose-400 hover:text-rose-300 font-bold"
-                        >
-                          Quitar ✕
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <HexColorPickerField
-                          label="Color de Texto"
-                          value={rule.color || '#EE9B00'}
-                          allowTransparent={false}
-                          onChange={(hex) => {
-                            const current = [...((props.highlightWords as TextHighlightRule[]) ?? [])];
-                            current[idx] = { ...current[idx], color: hex };
-                            onUpdateLayerProps(selectedLayer.id, { highlightWords: current });
-                          }}
-                        />
-
-                        <HexColorPickerField
-                          label="Color de Fondo (Caja)"
-                          value={rule.bgColor || 'transparent'}
-                          allowTransparent={true}
-                          onChange={(hex) => {
-                            const current = [...((props.highlightWords as TextHighlightRule[]) ?? [])];
-                            current[idx] = { ...current[idx], bgColor: hex };
-                            onUpdateLayerProps(selectedLayer.id, { highlightWords: current });
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
         )}
 
-        {/* B. ASESOR / TARJETA ASESORA (MOTIONADVISORCARD O ADVISOR SUBLAYERS) */}
+        {/* 3. CAJA, FONDO Y FORMA (CONTENEDOR UNIFICADO) */}
+        {isTextType && (
+          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 shadow-xs">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-accent font-black">
+                <BoxSelect className="size-3.5" />
+                <span>Fondo y Caja del Elemento</span>
+              </span>
+            </div>
+
+            {/* COLOR DE FONDO DE LA CAJA / BOTÓN */}
+            <HexColorPickerField
+              label="Color de Fondo"
+              value={String(selectedLayer.boxColor ?? props.primaryColor ?? props.backgroundColor ?? (selectedLayer.textEffect === 'box' ? '#EE9B00' : 'transparent'))}
+              allowTransparent={true}
+              onChange={(hex) => {
+                onUpdateLayerProps(selectedLayer.id, {
+                  boxColor: hex,
+                  primaryColor: hex,
+                  backgroundColor: hex,
+                  textEffect: hex === 'transparent' ? 'none' : 'box',
+                });
+              }}
+            />
+
+            {/* RADIO DE ESQUINA */}
+            <div className="flex items-center justify-between gap-1 text-[10px] pt-1 border-t border-slate-900">
+              <span className="text-slate-400 font-bold uppercase shrink-0">Esquinas</span>
+              <div className="grid grid-cols-5 gap-1 flex-1">
+                {[0, 8, 16, 24, 9999].map((rad) => {
+                  const currentRad = Number(selectedLayer.borderRadius ?? props.borderRadius ?? 0);
+                  return (
+                    <button
+                      key={rad}
+                      type="button"
+                      onClick={() => {
+                        onUpdateLayerBorder?.(selectedLayer.id, { borderRadius: rad });
+                        onUpdateLayerProps(selectedLayer.id, { borderRadius: rad });
+                      }}
+                      className={`rounded-md py-0.5 text-[9px] font-bold border transition-colors ${
+                        currentRad === rad
+                          ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {rad === 9999 ? 'Pill' : `${rad}px`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* GROSOR Y COLOR DE BORDE */}
+            <div className="space-y-2 pt-1 border-t border-slate-900">
+              <div className="flex items-center justify-between gap-1 text-[10px]">
+                <span className="text-slate-400 font-bold uppercase shrink-0">Borde</span>
+                <div className="grid grid-cols-4 gap-1 flex-1">
+                  {[0, 1, 2, 4].map((bw) => {
+                    const currentBw = Number(selectedLayer.borderWidth ?? props.borderWidth ?? props.strokeWidth ?? 0);
+                    return (
+                      <button
+                        key={bw}
+                        type="button"
+                        onClick={() => {
+                          const borderClr = selectedLayer.borderColor ?? (typeof props.borderColor === 'string' ? props.borderColor : '#94D2BD');
+                          onUpdateLayerBorder?.(selectedLayer.id, { borderWidth: bw, borderColor: borderClr });
+                          onUpdateLayerProps(selectedLayer.id, { borderWidth: bw, strokeWidth: bw });
+                        }}
+                        className={`rounded-md py-0.5 text-[9px] font-bold border transition-colors ${
+                          currentBw === bw
+                            ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                            : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        {bw === 0 ? '0px' : `${bw}px`}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {(Number(selectedLayer.borderWidth ?? props.borderWidth ?? props.strokeWidth ?? 0)) > 0 && (
+                <HexColorPickerField
+                  label="Color de Borde"
+                  value={String(selectedLayer.borderColor ?? props.borderColor ?? props.accentColor ?? '#94D2BD')}
+                  allowTransparent={false}
+                  onChange={(hex) => {
+                    onUpdateLayerBorder?.(selectedLayer.id, { borderColor: hex, borderWidth: selectedLayer.borderWidth || 1 });
+                    onUpdateLayerProps(selectedLayer.id, { borderColor: hex, accentColor: hex });
+                  }}
+                />
+              )}
+            </div>
+
+            {/* OPCIÓN DE ICONO SOLO SI ES UN BOTÓN CTA */}
+            {selectedLayer.blockType === 'WhatsAppCtaButton' && (
+              <div className="pt-2 border-t border-slate-900 space-y-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Icono del Botón
+                </label>
+                <div className="grid grid-cols-5 gap-1">
+                  {[
+                    { id: 'arrow', label: '👉 Flecha' },
+                    { id: 'whatsapp', label: '💬 WhatsApp' },
+                    { id: 'bolt', label: '⚡ Rayo' },
+                    { id: 'check', label: '✓ Check' },
+                    { id: 'none', label: 'Ninguno' },
+                  ].map((ic) => (
+                    <button
+                      key={ic.id}
+                      type="button"
+                      onClick={() => onUpdateLayerProps(selectedLayer.id, { icon: ic.id })}
+                      className={`py-1 px-1 rounded-lg border text-[9px] font-bold transition-all text-center ${
+                        (props.icon ?? (String(props.ctaText ?? '').toLowerCase().includes('whatsapp') ? 'whatsapp' : 'arrow')) === ic.id
+                          ? 'border-accent bg-accent/20 text-amber-300'
+                          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {ic.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 4. BLOQUES COMPUESTOS ESPECIALES */}
+        
+        {/* A. ASESOR / TARJETA ASESORA (MOTIONADVISORCARD O ADVISOR SUBLAYERS) */}
         {(selectedLayer.blockType === 'MotionAdvisorCard' || selectedLayer.blockType === 'AdvisorAvatarBadge') && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
@@ -1310,7 +1322,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* C. SELLO DE GARANTÍA (MOTIONTRUSTBADGE) */}
+        {/* B. SELLO DE GARANTÍA (MOTIONTRUSTBADGE) */}
         {(selectedLayer.blockType === 'MotionTrustBadge' || selectedLayer.blockType === 'TrustBadgeTitle') && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-400 font-black">
@@ -1339,7 +1351,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* D. COMPARATIVA (MOTIONCOMPARISONCARD) */}
+        {/* C. COMPARATIVA (MOTIONCOMPARISONCARD) */}
         {(selectedLayer.blockType === 'MotionComparisonCard' || selectedLayer.blockType === 'ComparisonWrongBox' || selectedLayer.blockType === 'ComparisonCorrectBox') && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
@@ -1367,22 +1379,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 />
               </div>
             </div>
-
-            {/* COLOR DE BORDE SI TIENE GROSOR */}
-            {(selectedLayer.borderWidth ?? 0) > 0 && (
-              <div className="pt-1.5 border-t border-slate-900">
-                <HexColorPickerField
-                  label="Color de Borde"
-                  value={selectedLayer.borderColor ?? '#94D2BD'}
-                  allowTransparent={false}
-                  onChange={(hex) => onUpdateLayerBorder?.(selectedLayer.id, { borderColor: hex, borderWidth: selectedLayer.borderWidth || 1 })}
-                />
-              </div>
-            )}
           </div>
         )}
 
-        {/* E. PARRILLA DE ASEGURADORAS (MOTIONPROVIDERGRID) */}
+        {/* D. PARRILLA DE ASEGURADORAS (MOTIONPROVIDERGRID) */}
         {(selectedLayer.blockType === 'MotionProviderGrid' || selectedLayer.blockType === 'ProviderGridHeader') && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
@@ -1396,149 +1396,6 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 value={String(props.title ?? '')}
                 onChange={(e) => onUpdateLayerProps(selectedLayer.id, { title: e.target.value })}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* F. BOTÓN CTA & LLAMADAS A LA ACCIÓN */}
-        {selectedLayer.blockType === 'WhatsAppCtaButton' && (
-          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-accent font-black">
-                <MessageSquare className="size-3.5" />
-                <span>Botón CTA / Llamada a la Acción</span>
-              </div>
-              <span className="text-[10px] font-mono text-brand-cyan">
-                {String(props.fontSize ?? 15)}px
-              </span>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 block mb-1">Texto del Botón</label>
-              <input
-                type="text"
-                value={String(props.ctaText ?? props.whatsAppText ?? props.text ?? props.buttonText ?? props.title ?? '')}
-                onChange={(e) =>
-                  onUpdateLayerProps(selectedLayer.id, {
-                    ctaText: e.target.value,
-                    whatsAppText: e.target.value,
-                    text: e.target.value,
-                    buttonText: e.target.value,
-                  })
-                }
-                placeholder="Ej: Lee nuestra Guía de Requisitos"
-                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-accent focus:outline-none"
-              />
-            </div>
-
-            {/* TAMAÑO DE LETRA */}
-            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-900">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Tamaño de Fuente
-              </label>
-              <div className="flex items-center gap-1">
-                <NumberInput
-                  min={10}
-                  max={48}
-                  value={Number(props.fontSize ?? 15)}
-                  placeholder="15"
-                  onChange={(val) => onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 15 })}
-                  className="w-12 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-1 py-0.5 focus:outline-none focus:border-brand-cyan"
-                />
-                <span className="text-[9px] text-slate-500">px</span>
-              </div>
-            </div>
-
-            {/* COLORES DE TEXTO Y FONDO */}
-            <div className="space-y-2 pt-1 border-t border-slate-900">
-              <HexColorPickerField
-                label="Color de Letra del Botón"
-                value={String(props.textColor ?? props.color ?? '#001219')}
-                allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { textColor: hex, color: hex })}
-              />
-
-              <HexColorPickerField
-                label="Color de Fondo del Botón"
-                value={String(props.primaryColor ?? props.backgroundColor ?? props.bg ?? '#EE9B00')}
-                allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex, backgroundColor: hex })}
-              />
-
-              <HexColorPickerField
-                label="Color de Borde / Resalte"
-                value={String(props.accentColor ?? props.borderColor ?? 'transparent')}
-                allowTransparent={true}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { accentColor: hex, borderColor: hex })}
-              />
-            </div>
-
-            {/* SELECTOR DE ICONO */}
-            <div className="pt-1 border-t border-slate-900 space-y-1.5">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Icono del Botón
-              </label>
-              <div className="grid grid-cols-5 gap-1">
-                {[
-                  { id: 'arrow', label: '👉 Flecha' },
-                  { id: 'whatsapp', label: '💬 WhatsApp' },
-                  { id: 'bolt', label: '⚡ Rayo' },
-                  { id: 'check', label: '✓ Check' },
-                  { id: 'none', label: 'Ninguno' },
-                ].map((ic) => (
-                  <button
-                    key={ic.id}
-                    type="button"
-                    onClick={() => onUpdateLayerProps(selectedLayer.id, { icon: ic.id })}
-                    className={`py-1 px-1 rounded-lg border text-[9px] font-bold transition-all text-center ${
-                      (props.icon ?? (String(props.ctaText ?? '').toLowerCase().includes('whatsapp') ? 'whatsapp' : 'arrow')) === ic.id
-                        ? 'border-accent bg-accent/20 text-amber-300'
-                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {ic.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* G. PÍLDORAS Y SELLOS DE CONFIANZA */}
-        {(selectedLayer.blockType === 'TrustVerifiedPill' || selectedLayer.blockType === 'TrustHighlightPill') && (
-          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-emerald-400 font-black">
-              <Shield className="size-3.5" />
-              <span>Sello / Píldora de Confianza</span>
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 block mb-1">Texto del Sello</label>
-              <input
-                type="text"
-                value={String(props.verifiedLabel ?? props.highlight ?? props.text ?? props.title ?? '')}
-                onChange={(e) =>
-                  onUpdateLayerProps(selectedLayer.id, {
-                    verifiedLabel: e.target.value,
-                    highlight: e.target.value,
-                    text: e.target.value,
-                  })
-                }
-                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
-              />
-            </div>
-            <div className="space-y-2 pt-1 border-t border-slate-900">
-              <HexColorPickerField
-                label="Color de Letra"
-                value={String(props.textColor ?? props.color ?? '#34D399')}
-                allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { textColor: hex, color: hex })}
-              />
-              <HexColorPickerField
-                label="Color de Fondo"
-                value={String(props.primaryColor ?? props.backgroundColor ?? 'rgba(6, 78, 59, 0.6)')}
-                allowTransparent={true}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex, backgroundColor: hex })}
               />
             </div>
           </div>
