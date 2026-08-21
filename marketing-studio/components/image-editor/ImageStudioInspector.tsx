@@ -36,6 +36,197 @@ import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 
+interface NumberInputProps {
+  value?: number;
+  min?: number;
+  max?: number;
+  placeholder?: string;
+  className?: string;
+  onChange: (val: number | undefined) => void;
+}
+
+const NumberInput: React.FC<NumberInputProps> = ({
+  value,
+  min = 0,
+  max = 9999,
+  placeholder = 'Auto',
+  className = '',
+  onChange,
+}) => {
+  const [textVal, setTextVal] = useState<string>(value !== undefined ? String(value) : '');
+
+  React.useEffect(() => {
+    setTextVal(value !== undefined ? String(value) : '');
+  }, [value]);
+
+  const handleBlur = () => {
+    if (textVal.trim() === '') {
+      onChange(undefined);
+      return;
+    }
+    const num = parseInt(textVal, 10);
+    if (!isNaN(num)) {
+      const clamped = Math.max(min, Math.min(max, num));
+      setTextVal(String(clamped));
+      onChange(clamped);
+    } else {
+      setTextVal(value !== undefined ? String(value) : '');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleBlur();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      value={textVal}
+      placeholder={placeholder}
+      onChange={(e) => {
+        const raw = e.target.value;
+        setTextVal(raw);
+        if (raw.trim() !== '') {
+          const parsed = parseInt(raw, 10);
+          if (!isNaN(parsed)) {
+            onChange(parsed);
+          }
+        }
+      }}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={className}
+    />
+  );
+};
+
+interface HexColorPickerFieldProps {
+  label: string;
+  value?: string;
+  allowTransparent?: boolean;
+  onChange: (hex: string) => void;
+}
+
+const HexColorPickerField: React.FC<HexColorPickerFieldProps> = ({
+  label,
+  value = '#FFFFFF',
+  allowTransparent = true,
+  onChange,
+}) => {
+  const [localHex, setLocalHex] = useState(value);
+
+  React.useEffect(() => {
+    setLocalHex(value);
+  }, [value]);
+
+  const safeHexForInput =
+    value.startsWith('#') && (value.length === 7 || value.length === 4)
+      ? value
+      : '#005F73';
+
+  const brandSwatches = [
+    { label: 'Ocean Teal', hex: '#005F73' },
+    { label: 'Midnight Blue', hex: '#001219' },
+    { label: 'Amber Gold', hex: '#EE9B00' },
+    { label: 'Mint Green', hex: '#94D2BD' },
+    { label: 'Clean White', hex: '#FFFFFF' },
+    { label: 'Coral Red', hex: '#F43F5E' },
+    { label: 'Slate Muted', hex: '#94A3B8' },
+    ...(allowTransparent ? [{ label: 'Transparente', hex: 'transparent' }] : []),
+  ];
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let raw = e.target.value;
+    setLocalHex(raw);
+    if (!raw.startsWith('#') && raw !== 'transparent') {
+      raw = '#' + raw;
+    }
+    if (/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(raw) || raw === 'transparent') {
+      onChange(raw);
+    }
+  };
+
+  const handleBlur = () => {
+    let clean = localHex.trim();
+    if (!clean.startsWith('#') && clean !== 'transparent') {
+      clean = '#' + clean;
+    }
+    if (/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(clean) || clean === 'transparent') {
+      setLocalHex(clean.toUpperCase());
+      onChange(clean);
+    } else {
+      setLocalHex(value);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {label}
+        </label>
+        <span className="font-mono text-[10px] text-brand-cyan uppercase">
+          {value === 'transparent' ? 'Transparente' : value}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="relative size-7 rounded-lg border border-slate-700 overflow-hidden shrink-0 shadow-xs cursor-pointer hover:border-brand-cyan transition-colors">
+          <input
+            type="color"
+            value={safeHexForInput}
+            onChange={(e) => {
+              setLocalHex(e.target.value.toUpperCase());
+              onChange(e.target.value);
+            }}
+            className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer border-0 p-0"
+          />
+        </div>
+
+        <div className="flex-1 flex items-center bg-slate-900 border border-slate-800 focus-within:border-brand-cyan rounded-xl px-2 py-1">
+          <span className="text-[11px] font-mono text-slate-500 mr-1 select-none">#</span>
+          <input
+            type="text"
+            value={localHex.replace(/^#/, '')}
+            onChange={handleTextChange}
+            onBlur={handleBlur}
+            placeholder="005F73"
+            maxLength={7}
+            className="w-full bg-transparent font-mono text-xs text-white uppercase focus:outline-none placeholder:text-slate-600"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5">
+        {brandSwatches.map((swatch) => (
+          <button
+            key={swatch.hex}
+            type="button"
+            title={swatch.label}
+            onClick={() => {
+              setLocalHex(swatch.hex.toUpperCase());
+              onChange(swatch.hex);
+            }}
+            className={`size-5 rounded-md border transition-transform shrink-0 ${
+              value.toLowerCase() === swatch.hex.toLowerCase()
+                ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-110'
+                : 'border-slate-700 hover:scale-110'
+            }`}
+            style={{
+              backgroundColor: swatch.hex === 'transparent' ? '#1E293B' : swatch.hex,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export interface ImageStudioInspectorProps {
   project: ImageProject;
   selectedLayer: ImageLayer | null;
@@ -230,37 +421,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
             {/* COLORES PLANOS DEL LIENZO */}
             <div className="space-y-2 pt-2 border-t border-slate-900">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Color Plano de Fondo
-              </label>
-              <div className="grid grid-cols-6 gap-1.5">
-                {[
-                  { name: 'Blanco', color: '#FFFFFF' },
-                  { name: 'Oscuro', color: '#001219' },
-                  { name: 'Teal', color: '#005F73' },
-                  { name: 'Oro', color: '#EE9B00' },
-                  { name: 'Menta', color: '#94D2BD' },
-                  { name: 'Gris', color: '#F1F5F9' },
-                ].map((c) => {
-                  const isActive = currentBackground.color === c.color && !currentBackground.gradient;
-                  return (
-                    <button
-                      key={c.color}
-                      type="button"
-                      title={c.name}
-                      onClick={() => onUpdateBackground({ gradient: undefined, color: c.color })}
-                      className={`size-8 rounded-xl border transition-all flex items-center justify-center ${
-                        isActive
-                          ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-105'
-                          : 'border-slate-700 hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: c.color }}
-                    >
-                      {isActive && <div className="size-2 rounded-full bg-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
+              <HexColorPickerField
+                label="Color Sólido de Fondo"
+                value={currentBackground.color || '#001219'}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateBackground({ gradient: undefined, color: hex })}
+              />
             </div>
 
             {/* GRADIENTES MESH OFICIALES CON SELECTOR CLARO / OSCURO */}
@@ -474,22 +640,24 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </div>
             <div className="flex items-center rounded bg-slate-900/90 py-0.5 px-1 border border-slate-800 focus-within:border-brand-cyan" title="Ancho en px">
               <span className="text-slate-500 mr-0.5 text-[9px]">W</span>
-              <input
-                type="number"
-                value={selectedLayer.width ?? ''}
+              <NumberInput
+                value={selectedLayer.width}
+                min={40}
+                max={2400}
                 placeholder="Auto"
-                onChange={(e) => onUpdateLayerWidth?.(selectedLayer.id, e.target.value ? Math.max(10, parseInt(e.target.value, 10)) : undefined)}
-                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onChange={(val) => onUpdateLayerWidth?.(selectedLayer.id, val)}
+                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0"
               />
             </div>
             <div className="flex items-center rounded bg-slate-900/90 py-0.5 px-1 border border-slate-800 focus-within:border-brand-cyan" title="Alto en px">
               <span className="text-slate-500 mr-0.5 text-[9px]">H</span>
-              <input
-                type="number"
-                value={selectedLayer.height ?? ''}
+              <NumberInput
+                value={selectedLayer.height}
+                min={20}
+                max={2400}
                 placeholder="Auto"
-                onChange={(e) => onUpdateLayerHeight?.(selectedLayer.id, e.target.value ? Math.max(10, parseInt(e.target.value, 10)) : undefined)}
-                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onChange={(val) => onUpdateLayerHeight?.(selectedLayer.id, val)}
+                className="w-full bg-transparent text-slate-200 text-[10px] font-mono outline-none text-center p-0"
               />
             </div>
             <div
@@ -579,51 +747,20 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </div>
 
             {/* COLOR DE RELLENO */}
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Color de Relleno (Fill)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={String(selectedLayer.fill || props.fill || '#005F73')}
-                  onChange={(e) => {
-                    onUpdateLayerProps(selectedLayer.id, { fill: e.target.value });
-                  }}
-                  className="size-8 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
-                />
-                <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
-                  {['#005F73', '#001219', '#EE9B00', '#94D2BD', '#E63946', '#FFFFFF', 'transparent'].map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c })}
-                      className="size-6 rounded-md border border-slate-700 hover:scale-110 transition-transform shrink-0"
-                      style={{ backgroundColor: c === 'transparent' ? '#1E293B' : c }}
-                      title={c}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HexColorPickerField
+              label="Color de Relleno (Fill)"
+              value={String(selectedLayer.fill || props.fill || '#005F73')}
+              onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex })}
+            />
 
             {/* BORDE / STROKE */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Color Borde
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="color"
-                    value={String(selectedLayer.borderColor || props.stroke || '#94D2BD')}
-                    onChange={(e) => onUpdateLayerProps(selectedLayer.id, { stroke: e.target.value, borderColor: e.target.value })}
-                    className="size-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
-                  />
-                  <span className="text-[10px] font-mono text-slate-400 truncate">
-                    {String(selectedLayer.borderColor || props.stroke || '#94D2BD')}
-                  </span>
-                </div>
+                <HexColorPickerField
+                  label="Color Borde"
+                  value={String(selectedLayer.borderColor || props.stroke || '#94D2BD')}
+                  onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { stroke: hex, borderColor: hex })}
+                />
               </div>
 
               <div>
@@ -743,33 +880,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </div>
 
             {/* COLOR PRINCIPAL */}
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Color Principal de la Ilustración
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={String(props.colorPrimary || selectedLayer.fill || '#005F73')}
-                  onChange={(e) => {
-                    onUpdateLayerProps(selectedLayer.id, { colorPrimary: e.target.value, fill: e.target.value });
-                  }}
-                  className="size-8 rounded-lg border border-slate-700 bg-transparent cursor-pointer shrink-0"
-                />
-                <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
-                  {['#005F73', '#001219', '#EE9B00', '#94D2BD', '#E63946', '#FFFFFF'].map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => onUpdateLayerProps(selectedLayer.id, { colorPrimary: c, fill: c })}
-                      className="size-6 rounded-md border border-slate-700 hover:scale-110 transition-transform shrink-0"
-                      style={{ backgroundColor: c }}
-                      title={c}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HexColorPickerField
+              label="Color Principal de la Ilustración"
+              value={String(props.colorPrimary || selectedLayer.fill || '#005F73')}
+              allowTransparent={false}
+              onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { colorPrimary: hex, fill: hex })}
+            />
           </div>
         )}
 
@@ -839,16 +955,13 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
                   <span>Tamaño</span>
                   <div className="flex items-center gap-1">
-                    <input
-                      type="number"
+                    <NumberInput
                       min={10}
-                      max={180}
+                      max={200}
                       value={selectedLayer.fontSize ?? 24}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        if (!isNaN(val)) onUpdateLayerProps(selectedLayer.id, { fontSize: Math.max(10, Math.min(200, val)) });
-                      }}
-                      className="w-10 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-0.5 py-0.2 focus:outline-none focus:border-brand-cyan"
+                      placeholder="24"
+                      onChange={(val) => onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 24 })}
+                      className="w-11 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-1 py-0.5 focus:outline-none focus:border-brand-cyan"
                     />
                     <span className="text-[9px] text-slate-500">px</span>
                   </div>
@@ -966,29 +1079,13 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
 
               {selectedLayer.textEffect === 'box' && (
-                <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-bold">Fondo Caja</span>
-                  <div className="flex items-center gap-1.5">
-                    {[
-                      { label: 'Oro', color: '#EE9B00' },
-                      { label: 'Menta', color: '#94D2BD' },
-                      { label: 'Teal', color: '#005F73' },
-                      { label: 'Oscuro', color: '#001219' },
-                      { label: 'Blanco', color: '#FFFFFF' },
-                      { label: 'Rosa', color: '#F43F5E' },
-                    ].map((bc) => (
-                      <button
-                        key={bc.color}
-                        type="button"
-                        title={bc.label}
-                        onClick={() => onUpdateLayerProps(selectedLayer.id, { boxColor: bc.color })}
-                        className={`size-4 rounded-full border ${
-                          (selectedLayer.boxColor ?? '#EE9B00') === bc.color ? 'ring-2 ring-brand-cyan border-white' : 'border-slate-700'
-                        }`}
-                        style={{ backgroundColor: bc.color }}
-                      />
-                    ))}
-                  </div>
+                <div className="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <HexColorPickerField
+                    label="Color Fondo Caja"
+                    value={String(selectedLayer.boxColor ?? '#EE9B00')}
+                    allowTransparent={false}
+                    onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { boxColor: hex })}
+                  />
                 </div>
               )}
             </div>
@@ -1030,32 +1127,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
             {/* PALETA DE COLOR SEMÁNTICA */}
             <div className="pt-2 border-t border-slate-900">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                Color de Letra
-              </label>
-              <div className="flex items-center gap-1.5">
-                {[
-                  { label: 'Blanco', color: '#FFFFFF' },
-                  { label: 'Mint', color: '#94D2BD' },
-                  { label: 'Gold', color: '#EE9B00' },
-                  { label: 'Teal', color: '#005F73' },
-                  { label: 'Rose', color: '#F43F5E' },
-                  { label: 'Slate', color: '#94A3B8' },
-                ].map((c) => (
-                  <button
-                    key={c.color}
-                    type="button"
-                    title={c.label}
-                    onClick={() => onUpdateLayerProps(selectedLayer.id, { fill: c.color, color: c.color })}
-                    className={`size-6 rounded-full border transition-all ${
-                      (selectedLayer.fill ?? '#FFFFFF') === c.color
-                        ? 'border-brand-cyan ring-2 ring-brand-cyan/40 scale-110'
-                        : 'border-slate-700 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: c.color }}
-                  />
-                ))}
-              </div>
+              <HexColorPickerField
+                label="Color de Letra"
+                value={String(selectedLayer.fill ?? props.color ?? '#FFFFFF')}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex })}
+              />
             </div>
           </div>
         )}
@@ -1182,6 +1259,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 />
               </div>
             </div>
+
+            {/* COLOR DE BORDE SI TIENE GROSOR */}
+            {(selectedLayer.borderWidth ?? 0) > 0 && (
+              <div className="pt-1.5 border-t border-slate-900">
+                <HexColorPickerField
+                  label="Color de Borde"
+                  value={selectedLayer.borderColor ?? '#94D2BD'}
+                  allowTransparent={false}
+                  onChange={(hex) => onUpdateLayerBorder?.(selectedLayer.id, { borderColor: hex, borderWidth: selectedLayer.borderWidth || 1 })}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -1220,18 +1309,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-accent focus:outline-none"
               />
             </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-400 block mb-1">Color de Fondo</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={String(props.primaryColor ?? '#005F73')}
-                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { primaryColor: e.target.value })}
-                  className="size-7 rounded-lg border border-slate-700 bg-transparent cursor-pointer"
-                />
-                <span className="text-xs font-mono text-slate-300">{String(props.primaryColor ?? '#005F73')}</span>
-              </div>
-            </div>
+            <HexColorPickerField
+              label="Color de Fondo Botón"
+              value={String(props.primaryColor ?? '#005F73')}
+              allowTransparent={false}
+              onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex })}
+            />
           </div>
         )}
 
