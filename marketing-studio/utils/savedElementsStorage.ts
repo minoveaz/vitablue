@@ -1,4 +1,5 @@
 import { ImageLayer } from '../types/imageStudio';
+import { ElementCatalogMetadata } from '../types/elementCatalog';
 
 export interface SavedCustomElement {
   id: string;
@@ -6,6 +7,8 @@ export interface SavedCustomElement {
   category: 'text' | 'card' | 'group' | 'shape';
   layer: ImageLayer;
   createdAt: string;
+  /** Optional to keep elements saved before the catalog migration readable. */
+  catalogMetadata?: Partial<ElementCatalogMetadata>;
 }
 
 export const SAVED_ELEMENTS_STORAGE_KEY = 'vitablue_saved_custom_elements';
@@ -53,6 +56,25 @@ export function saveCustomElement(layer: ImageLayer, customTitle?: string): Save
     category,
     layer: JSON.parse(JSON.stringify(layer)),
     createdAt: new Date().toISOString(),
+    catalogMetadata: {
+      kind: 'saved_element',
+      category: 'saved_elements',
+      scope: 'user',
+      tags: [category, 'guardado'],
+      license: {
+        id: 'user-created',
+        label: 'Creado por ti',
+        allowsCommercialUse: true,
+        requiresAttribution: false,
+      },
+      editableFields: ['*'],
+      lockedFields: [],
+      supportedFormats: ['image', 'video'],
+      version: 1,
+      approvalStatus: 'not_required',
+      locked: false,
+      sourcePackage: 'user',
+    },
   };
 
   const nextElements = [newElement, ...elements];

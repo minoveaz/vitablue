@@ -11,6 +11,60 @@
 > El siguiente roadmap prioriza primero un núcleo fiable y después las capacidades
 > profesionales de composición, DAM, IA e integración audiovisual.
 
+### Decisiones de producto — 2026-08-21
+
+- La navegación de Image Studio seguirá un patrón híbrido **Canva + Figma**:
+  rail vertical por áreas, drawer contextual para descubrir e insertar recursos e
+  inspector técnico para editar propiedades. Las chips serán únicamente filtros
+  secundarios.
+- El workspace mantendrá un modo oscuro profesional: canvas oscuro neutro, drawer
+  ligeramente más claro, inspector más profundo y rail con el tono más oscuro.
+  La coherencia de tokens, contraste, estados activos y accesibilidad se revisará
+  transversalmente en la fase de calidad.
+- Se adopta una taxonomía de 12 áreas: Mis diseños, Plantillas, Elementos, Texto,
+  Marca, Medios/Subidos, Capas, Diseño/Layout, Audio, Vídeo, Copys con IA y
+  Bloques empresariales/MotionKit.
+- Cada área debe documentar propósito, categorías, recursos, metadatos, acciones,
+  filtros, preview, integraciones, permisos y estado de implementación.
+- El inventario distingue entre áreas de navegación, recursos insertables, bloques
+  empresariales y herramientas técnicas del editor.
+- La implementación se prioriza como **P0** (Elementos, Texto, Medios, Plantillas
+  y Bloques), **P1** (Audio, Vídeo, Layout y Marca), **P2** (Proyectos, DAM,
+  permisos y multi-marca) y **P3** (IA, recomendaciones y variantes A/B).
+- La Fase 3 de DAM y multi-marca se deja deliberadamente para el final. El orden
+  operativo será Fase 4, Fase 5, Fase 6, Fase 7, Fase 8 y, finalmente, Fase 3.
+- Antes de implementar nuevas capacidades se hará una auditoría bloque a bloque,
+  incluyendo los bloques ya existentes, para separar lo hecho, parcial, demo y
+  pendiente. El inventario de referencia se mantiene como artefacto de sesión:
+  `image-studio-taxonomy-inventory.md`.
+- Image Studio se diseñará como plataforma **multi-organización** y agnóstica de
+  sector. El núcleo incluirá capacidades universales (formas, iconos, texto,
+  medios, capas, layout, plantillas, variantes, exportación y permisos), mientras
+  que cada organización aportará su Brand Hub, recursos, MotionKit, plantillas,
+  campañas y reglas legales.
+- Ningún contrato universal podrá asumir seguros, visados, aseguradoras u otra
+  terminología específica de VitaBlue. Esos elementos se registrarán como
+  paquetes de organización.
+- Todo recurso reutilizable deberá contemplar como mínimo `kind`, `category`,
+  `scope` (`system`, `organization`, `workspace` o `user`), `organizationId`,
+  `brandId`, `tags`, `license`, `editableFields`, `lockedFields`,
+  `supportedFormats` y `version`.
+- La Fase 4 definirá contratos configurables de bloques y recursos, separando
+  campos editables y bloqueados, variantes y reglas por organización. La Fase 3
+  aportará posteriormente la persistencia multi-organización, workspaces,
+  permisos, búsqueda y versionado en Supabase.
+- El drawer de Elementos tendrá búsqueda fija, recientes, recomendados, categorías
+  visuales y un selector de origen (`system`, `organization`, `workspace`, `user`).
+  Las chips serán filtros secundarios, nunca navegación principal.
+- El catálogo P0 universal de Elementos cubrirá formas/líneas, iconos/símbolos,
+  marcos/máscaras, ilustraciones, fondos/superficies, badges/etiquetas,
+  botones/CTAs, componentes reutilizables, elementos guardados y, como P1,
+  gráficos/datos.
+- Cada tarjeta del drawer mostrará preview, nombre, tipo, scope, licencia,
+  compatibilidad Image/Video y estado de aprobación o bloqueo. Las acciones
+  estándar serán insertar, editar, reemplazar, guardar y enviar a Video Studio
+  cuando corresponda.
+
 ---
 
 ## 1. Objetivo y Visión del Producto
@@ -151,6 +205,17 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Auto-layout, ajuste inteligente de texto, máscaras, recorte y focal point.
 - [x] Reemplazo de contenido sin romper la composición.
 - [x] Variantes de color, estilo y componentes bloqueables.
+
+#### P0 — Catálogo universal de Elementos (completado 2026-08-21)
+- [x] Contrato tipado y normalización retrocompatible para presets y elementos guardados: tipo, categoría, scope, licencia, formatos, aprobación, bloqueo y versionado.
+- [x] Separación explícita entre primitivas universales de sistema y recursos del paquete de organización VitaBlue, sin persistencia Supabase.
+- [x] Drawer híbrido Canva + Figma con búsqueda fija, recientes, recomendados, categorías visuales, selector de origen y chips únicamente como filtros secundarios.
+- [x] Catálogo real de marcos y máscaras vectoriales, con recursos insertables y previews resistentes a recursos desconocidos.
+- [x] Biblioteca universal ampliada a 58 iconos y símbolos agnósticos de sector, sin IDs de organización o marca.
+- [x] Formas y conectores completos: curvas, arcos, conectores angulares y curvos, polígonos y estrellas paramétricos, blobs, corchetes y separadores decorativos.
+- [x] Renderer gráfico compartido entre previews del drawer y capas geométricas del canvas, con fallback explícito.
+- [x] Taxonomía P0 completa y tarjetas con preview, nombre, tipo, scope, licencia, compatibilidad Image/Video, estado e inserción estándar.
+- [x] Pruebas focalizadas de metadatos y renderizado de cada recurso, taxonomía, normalización, filtros y aislamiento multi-organización; typecheck y lint validados.
 
 #### Fase 3 — DAM real y multi-marca
 - [ ] Persistir proyectos, plantillas, assets y elementos reutilizables en Supabase.

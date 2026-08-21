@@ -1,1289 +1,453 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
+  Badge,
+  CheckCircle2,
+  Clock3,
+  Component,
+  Frame,
+  FolderHeart,
+  Layers,
+  LockKeyhole,
+  MousePointerClick,
+  Palette,
+  Plus,
   Search,
-  X,
-  Sparkles,
   Shapes,
   ShieldCheck,
-  MousePointerClick,
-  Layers,
-  FolderHeart,
-  Plus,
-  CheckCircle2,
-  ChevronRight,
-  Palette,
+  Sparkles,
+  UserRound,
+  X,
 } from 'lucide-react';
-import { EditorPanelSection } from '../EditorPanelSection';
-import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
-import { TraditionalShapeType } from '../blocks/ShapeBlocks';
-import { WEB_ILLUSTRATION_COMPONENTS } from '../blocks/WebIllustrationBlock';
-import { getSavedCustomElements, SavedCustomElement } from '../../../utils/savedElementsStorage';
 import {
-  ELEMENT_PRESETS,
-  ElementPresetItem,
-} from '../../../data/elementsPresets';
+  ELEMENT_CATALOG_CATEGORIES,
+  ELEMENT_CATALOG_RESOURCES,
+  filterElementCatalog,
+  StaticElementCatalogPayload,
+} from '../../../data/elementCatalog';
+import {
+  ElementCatalogCategoryId,
+  ElementCatalogResource,
+  ElementResourceScope,
+  ElementStudioFormat,
+} from '../../../types/elementCatalog';
+import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
+import {
+  getSavedCustomElements,
+  SavedCustomElement,
+} from '../../../utils/savedElementsStorage';
+import { ElementResourcePreview } from '../blocks/ElementResourcePreview';
 
 export interface ImageStudioElementsDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onInsertSavedLayer?: (layer: ImageLayer) => void;
 }
 
-interface ShapeItemConfig {
-  id: string;
-  name: string;
-  shapeType: TraditionalShapeType;
-  defaultWidth: number;
-  defaultHeight: number;
-  defaultFill?: string;
-  defaultStroke?: string;
-  defaultStrokeWidth?: number;
-  defaultBorderRadius?: number;
-}
+type DrawerPayload =
+  | StaticElementCatalogPayload
+  | { source: 'saved'; saved: SavedCustomElement };
 
-interface ShapeSectionConfig {
-  id: string;
-  title: string;
-  items: ShapeItemConfig[];
-}
+type DrawerResource = ElementCatalogResource<DrawerPayload>;
+type CatalogSelection = ElementCatalogCategoryId | 'all';
+type FormatFilter = ElementStudioFormat | 'all';
+type StateFilter = 'all' | 'approved' | 'locked';
 
-const CANVA_SHAPE_SECTIONS: ShapeSectionConfig[] = [
-  // 1. LÍNEAS
-  {
-    id: 'lines',
-    title: 'Líneas',
-    items: [
-      {
-        id: 'line-solid',
-        name: 'Línea sólida',
-        shapeType: 'line',
-        defaultWidth: 400,
-        defaultHeight: 8,
-        defaultFill: '#FFFFFF',
-        defaultStrokeWidth: 4,
-      },
-      {
-        id: 'line-dashed',
-        name: 'Línea discontinua',
-        shapeType: 'line-dashed',
-        defaultWidth: 400,
-        defaultHeight: 8,
-        defaultFill: '#FFFFFF',
-        defaultStrokeWidth: 4,
-      },
-      {
-        id: 'line-dotted',
-        name: 'Línea punteada',
-        shapeType: 'line-dotted',
-        defaultWidth: 400,
-        defaultHeight: 8,
-        defaultFill: '#FFFFFF',
-        defaultStrokeWidth: 4,
-      },
-      {
-        id: 'line-arrow-right',
-        name: 'Línea con flecha derecha',
-        shapeType: 'line-arrow-right',
-        defaultWidth: 400,
-        defaultHeight: 24,
-        defaultFill: '#FFFFFF',
-        defaultStrokeWidth: 4,
-      },
-      {
-        id: 'line-arrow-both',
-        name: 'Línea con flecha doble',
-        shapeType: 'line-arrow-both',
-        defaultWidth: 400,
-        defaultHeight: 24,
-        defaultFill: '#FFFFFF',
-        defaultStrokeWidth: 4,
-      },
-    ],
-  },
+const CATEGORY_ICONS: Record<ElementCatalogCategoryId, React.ComponentType<{ className?: string }>> = {
+  forms_lines: Shapes,
+  icons_symbols: Sparkles,
+  frames_masks: Frame,
+  illustrations: Palette,
+  backgrounds_surfaces: Layers,
+  badges_labels: Badge,
+  buttons_ctas: MousePointerClick,
+  reusable_components: Component,
+  saved_elements: FolderHeart,
+};
 
-  // 2. FORMAS BÁSICAS
-  {
-    id: 'basic_shapes',
-    title: 'Formas básicas',
-    items: [
-      {
-        id: 'shape-square',
-        name: 'Cuadrado / Rectángulo',
-        shapeType: 'rectangle',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-rounded-rect',
-        name: 'Rectángulo redondeado',
-        shapeType: 'rounded_rect',
-        defaultWidth: 240,
-        defaultHeight: 160,
-        defaultFill: '#005F73',
-        defaultBorderRadius: 24,
-      },
-      {
-        id: 'shape-circle',
-        name: 'Círculo',
-        shapeType: 'circle',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-triangle-up',
-        name: 'Triángulo arriba',
-        shapeType: 'triangle-up',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-triangle-down',
-        name: 'Triángulo abajo',
-        shapeType: 'triangle-down',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-    ],
-  },
-
-  // 3. POLÍGONOS
-  {
-    id: 'polygons',
-    title: 'Polígonos',
-    items: [
-      {
-        id: 'shape-pentagon',
-        name: 'Pentágono',
-        shapeType: 'pentagon',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-hexagon',
-        name: 'Hexágono',
-        shapeType: 'hexagon',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-octagon',
-        name: 'Octágono',
-        shapeType: 'octagon',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-diamond',
-        name: 'Rombo / Diamante',
-        shapeType: 'diamond',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-    ],
-  },
-
-  // 4. ESTRELLAS
-  {
-    id: 'stars',
-    title: 'Estrellas',
-    items: [
-      {
-        id: 'shape-star-4',
-        name: 'Estrella de 4 puntas',
-        shapeType: 'star-4',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#EE9B00',
-      },
-      {
-        id: 'shape-star-5',
-        name: 'Estrella tradicional (5 puntas)',
-        shapeType: 'star-5',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#EE9B00',
-      },
-      {
-        id: 'shape-star-6',
-        name: 'Estrella de 6 puntas',
-        shapeType: 'star-6',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#EE9B00',
-      },
-      {
-        id: 'shape-star-8',
-        name: 'Estrella de 8 puntas',
-        shapeType: 'star-8',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#EE9B00',
-      },
-      {
-        id: 'shape-burst-12',
-        name: 'Sello / Burst de 12 puntas',
-        shapeType: 'burst-12',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#EE9B00',
-      },
-    ],
-  },
-
-  // 5. FLECHAS
-  {
-    id: 'arrows',
-    title: 'Flechas',
-    items: [
-      {
-        id: 'shape-arrow-right',
-        name: 'Flecha derecha',
-        shapeType: 'arrow-right',
-        defaultWidth: 220,
-        defaultHeight: 120,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-arrow-left',
-        name: 'Flecha izquierda',
-        shapeType: 'arrow-left',
-        defaultWidth: 220,
-        defaultHeight: 120,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-arrow-up',
-        name: 'Flecha arriba',
-        shapeType: 'arrow-up',
-        defaultWidth: 120,
-        defaultHeight: 220,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-arrow-down',
-        name: 'Flecha abajo',
-        shapeType: 'arrow-down',
-        defaultWidth: 120,
-        defaultHeight: 220,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-arrow-both',
-        name: 'Flecha bidireccional',
-        shapeType: 'arrow-both',
-        defaultWidth: 240,
-        defaultHeight: 120,
-        defaultFill: '#005F73',
-      },
-    ],
-  },
-
-  // 6. SÍMBOLOS & DIÁLOGO
-  {
-    id: 'symbols',
-    title: 'Símbolos & Diálogo',
-    items: [
-      {
-        id: 'shape-speech-bubble',
-        name: 'Bocadillo de diálogo',
-        shapeType: 'speech_bubble',
-        defaultWidth: 220,
-        defaultHeight: 180,
-        defaultFill: '#005F73',
-      },
-      {
-        id: 'shape-heart',
-        name: 'Corazón',
-        shapeType: 'heart',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#E63946',
-      },
-      {
-        id: 'shape-shield',
-        name: 'Escudo protector',
-        shapeType: 'shield',
-        defaultWidth: 200,
-        defaultHeight: 200,
-        defaultFill: '#005F73',
-      },
-    ],
-  },
+const SCOPE_OPTIONS: Array<{ id: ElementResourceScope | 'all'; label: string }> = [
+  { id: 'all', label: 'Todos los orígenes' },
+  { id: 'system', label: 'Sistema' },
+  { id: 'organization', label: 'Organización' },
+  { id: 'workspace', label: 'Workspace' },
+  { id: 'user', label: 'Usuario' },
 ];
+
+const SCOPE_LABELS: Record<ElementResourceScope, string> = {
+  system: 'Sistema',
+  organization: 'Organización',
+  workspace: 'Workspace',
+  user: 'Usuario',
+};
+
+function normalizeSavedElement(saved: SavedCustomElement): DrawerResource {
+  const metadata = saved.catalogMetadata;
+  return {
+    id: saved.id,
+    title: saved.title,
+    description: 'Elemento guardado en tu biblioteca personal',
+    resourceType: saved.category === 'group' ? 'Grupo' : saved.category === 'card' ? 'Componente' : 'Elemento',
+    kind: metadata?.kind ?? 'saved_element',
+    category: metadata?.category ?? 'saved_elements',
+    scope: metadata?.scope ?? 'user',
+    organizationId: metadata?.organizationId,
+    brandId: metadata?.brandId,
+    tags: metadata?.tags ?? [saved.category, 'guardado'],
+    license: metadata?.license ?? {
+      id: 'user-created',
+      label: 'Creado por ti',
+      allowsCommercialUse: true,
+      requiresAttribution: false,
+    },
+    editableFields: metadata?.editableFields ?? ['*'],
+    lockedFields: metadata?.lockedFields ?? [],
+    supportedFormats: metadata?.supportedFormats ?? ['image', 'video'],
+    version: metadata?.version ?? 1,
+    approvalStatus: metadata?.approvalStatus ?? 'not_required',
+    locked: metadata?.locked ?? false,
+    recommended: metadata?.recommended,
+    sourcePackage: metadata?.sourcePackage ?? 'user',
+    preview: { renderer: 'saved' },
+    payload: { source: 'saved', saved },
+  };
+}
+
+const ResourceCard: React.FC<{
+  resource: DrawerResource;
+  onInsert: (resource: DrawerResource) => void;
+}> = ({ resource, onInsert }) => {
+  const approvedLabel = resource.approvalStatus === 'approved'
+    ? 'Aprobado'
+    : resource.approvalStatus === 'not_required'
+      ? 'Sin revisión'
+      : resource.approvalStatus === 'pending'
+        ? 'Pendiente'
+        : 'Rechazado';
+
+  return (
+    <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900">
+      <div className="flex h-28 items-center justify-center overflow-hidden bg-primary-dark p-3">
+        <ElementResourcePreview resource={resource} />
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-xs font-semibold text-slate-100" title={resource.title}>{resource.title}</h3>
+          <p className="mt-0.5 truncate text-[10px] text-slate-400">{resource.resourceType}</p>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-300">
+            {SCOPE_LABELS[resource.scope]}
+          </span>
+          {resource.supportedFormats.map((format) => (
+            <span key={format} className="rounded-md bg-primary/30 px-1.5 py-0.5 text-[9px] font-medium text-brand-cyan">
+              {format === 'image' ? 'Image' : 'Video'}
+            </span>
+          ))}
+        </div>
+        <div className="space-y-1 text-[9px] text-slate-400">
+          <div className="flex items-center gap-1 truncate" title={resource.license.label}>
+            <ShieldCheck className="size-3 shrink-0" />
+            <span className="truncate">{resource.license.label}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {resource.locked ? <LockKeyhole className="size-3 text-amber-300" /> : <CheckCircle2 className="size-3 text-emerald-400" />}
+            <span>{resource.locked ? 'Bloqueado' : approvedLabel}</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => onInsert(resource)}
+          disabled={resource.locked}
+          className="mt-auto flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-[11px] font-semibold text-white transition-colors hover:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {resource.locked ? <LockKeyhole className="size-3.5" /> : <Plus className="size-3.5" />}
+          {resource.locked ? 'Bloqueado' : 'Insertar'}
+        </button>
+      </div>
+    </article>
+  );
+};
 
 export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps> = ({
   onAddBlock,
   onInsertSavedLayer,
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedIllustSubCategory, setSelectedIllustSubCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeSectionView, setActiveSectionView] = useState<string | null>(null);
-  const [recentlyUsed, setRecentlyUsed] = useState<ShapeItemConfig[]>([
-    CANVA_SHAPE_SECTIONS[1].items[2], // circle
-    CANVA_SHAPE_SECTIONS[1].items[0], // square
-    CANVA_SHAPE_SECTIONS[0].items[0], // line
-    CANVA_SHAPE_SECTIONS[3].items[1], // star-5
-    CANVA_SHAPE_SECTIONS[5].items[1], // heart
+  const [selectedCategory, setSelectedCategory] = useState<CatalogSelection>('all');
+  const [selectedScope, setSelectedScope] = useState<ElementResourceScope | 'all'>('all');
+  const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
+  const [stateFilter, setStateFilter] = useState<StateFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [recentIds, setRecentIds] = useState<string[]>([
+    'system-shape-circle',
+    'system-shape-rounded-rect',
+    'system-line-solid',
   ]);
 
-  const savedElements = useMemo<SavedCustomElement[]>(() => {
-    return getSavedCustomElements().filter(
-      (e) => e.category === 'shape' || e.category === 'card' || e.category === 'group'
-    );
-  }, []);
+  const savedElements = useMemo(
+    () => getSavedCustomElements().filter((element) => element.category !== 'text'),
+    [],
+  );
 
-  const categories = useMemo(() => {
-    const base = [
-      { id: 'all', name: '✨ Todos', icon: <Sparkles className="size-3.5" /> },
-      { id: 'illustrations', name: '🎨 Ilustraciones', icon: <Palette className="size-3.5 text-brand-cyan" /> },
-      { id: 'shapes', name: '📐 Formas & Geometría', icon: <Shapes className="size-3.5" /> },
-      { id: 'trust_stamps', name: '🛡️ Sellos Consulares', icon: <ShieldCheck className="size-3.5" /> },
-      { id: 'ctas', name: '💬 Botones & CTAs', icon: <MousePointerClick className="size-3.5" /> },
-      { id: 'surfaces', name: '🪟 Superficies Glass', icon: <Layers className="size-3.5" /> },
-    ];
-    if (savedElements.length > 0) {
-      base.push({ id: 'saved', name: `⭐ Mis Elementos (${savedElements.length})`, icon: <FolderHeart className="size-3.5 text-amber-400" /> });
-    }
-    return base;
-  }, [savedElements]);
+  const resources = useMemo<DrawerResource[]>(() => [
+    ...ELEMENT_CATALOG_RESOURCES,
+    ...savedElements.map(normalizeSavedElement),
+  ], [savedElements]);
 
-  const handleInsertShape = (item: ShapeItemConfig) => {
-    setRecentlyUsed((prev) => {
-      const filtered = prev.filter((p) => p.id !== item.id);
-      return [item, ...filtered].slice(0, 5);
-    });
+  const secondaryFilteredResources = useMemo(
+    () => filterElementCatalog(resources, {
+      scope: selectedScope,
+      format: formatFilter,
+      state: stateFilter,
+    }),
+    [resources, selectedScope, formatFilter, stateFilter],
+  );
 
-    onAddBlock('GeometricShape', {
-      shapeType: item.shapeType,
-      fill: item.defaultFill ?? '#005F73',
-      stroke: item.defaultStroke ?? 'transparent',
-      strokeWidth: item.defaultStrokeWidth ?? 0,
-      borderRadius: item.defaultBorderRadius ?? (item.shapeType === 'rounded_rect' ? 24 : 0),
-      width: item.defaultWidth,
-      height: item.defaultHeight,
-    });
-  };
+  const visibleResources = useMemo(
+    () => filterElementCatalog(secondaryFilteredResources, {
+      query: searchQuery,
+      category: searchQuery.trim() ? 'all' : selectedCategory,
+    }),
+    [secondaryFilteredResources, searchQuery, selectedCategory],
+  );
 
-  const handleInsertPreset = (preset: ElementPresetItem) => {
-    onAddBlock(preset.blockType, preset.defaultProps);
-  };
+  const categoryCounts = useMemo(() => new Map(
+    ELEMENT_CATALOG_CATEGORIES.map((category) => [
+      category.id,
+      secondaryFilteredResources.filter((resource) => resource.category === category.id).length,
+    ]),
+  ), [secondaryFilteredResources]);
 
-  // Renderizador vectorial iconográfico limpio (Canva-Style silhouette)
-  const renderShapeIcon = (shapeType: TraditionalShapeType) => {
-    switch (shapeType) {
-      // Líneas
-      case 'line':
-        return <div className="w-8 h-1 bg-white rounded-full" />;
-      case 'line-dashed':
-        return (
-          <div
-            className="w-8 h-1"
-            style={{
-              backgroundImage: 'linear-gradient(to right, #FFFFFF 60%, transparent 40%)',
-              backgroundSize: '8px 100%',
-            }}
-          />
-        );
-      case 'line-dotted':
-        return (
-          <div
-            className="w-8 h-1"
-            style={{
-              backgroundImage: 'radial-gradient(circle, #FFFFFF 40%, transparent 50%)',
-              backgroundSize: '6px 100%',
-            }}
-          />
-        );
-      case 'line-arrow-right':
-        return (
-          <svg viewBox="0 0 100 24" className="w-8 h-4" preserveAspectRatio="none">
-            <line x1="0" y1="12" x2="80" y2="12" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="round" />
-            <polygon points="76,3 100,12 76,21" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'line-arrow-both':
-        return (
-          <svg viewBox="0 0 100 24" className="w-8 h-4" preserveAspectRatio="none">
-            <polygon points="24,3 0,12 24,21" fill="#FFFFFF" />
-            <line x1="20" y1="12" x2="80" y2="12" stroke="#FFFFFF" strokeWidth="6" />
-            <polygon points="76,3 100,12 76,21" fill="#FFFFFF" />
-          </svg>
-        );
+  const recentResources = useMemo(
+    () => recentIds
+      .map((id) => secondaryFilteredResources.find((resource) => resource.id === id))
+      .filter((resource): resource is DrawerResource => Boolean(resource)),
+    [recentIds, secondaryFilteredResources],
+  );
 
-      // Formas básicas
-      case 'square':
-      case 'rectangle':
-        return <div className="size-7 bg-white rounded-xs" />;
-      case 'rounded_rect':
-        return <div className="size-7 bg-white rounded-lg" />;
-      case 'circle':
-        return <div className="size-7 bg-white rounded-full" />;
-      case 'triangle':
-      case 'triangle-up':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 95,95 5,95" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'triangle-down':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,95 95,5 5,5" fill="#FFFFFF" />
-          </svg>
-        );
+  const recommendedResources = useMemo(
+    () => secondaryFilteredResources.filter((resource) => resource.recommended && !resource.locked).slice(0, 4),
+    [secondaryFilteredResources],
+  );
 
-      // Polígonos
-      case 'diamond':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 95,50 50,95 5,50" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'pentagon':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 95,38 78,92 22,92 5,38" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'hexagon':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="25,5 75,5 95,50 75,95 25,95 5,50" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'octagon':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30" fill="#FFFFFF" />
-          </svg>
-        );
-
-      // Estrellas
-      case 'star-4':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 60,40 95,50 60,60 50,95 40,60 5,50 40,40" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'star':
-      case 'star-5':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 64,36 98,38 72,61 80,95 50,77 20,95 28,61 2,38 36,36" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'star-6':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 62,30 90,25 75,50 90,75 62,70 50,95 38,70 10,75 25,50 10,25 38,30" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'star-8':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 62,25 85,15 75,38 95,50 75,62 85,85 62,75 50,95 38,75 15,85 25,62 5,50 25,38 15,15 38,25" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'burst-12':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="50,5 58,18 73,12 77,27 92,27 88,42 98,50 88,58 92,73 77,73 73,88 58,82 50,95 42,82 27,88 23,73 8,73 12,58 2,50 12,42 8,27 23,27 27,12 42,18" fill="#FFFFFF" />
-          </svg>
-        );
-
-      // Flechas
-      case 'arrow':
-      case 'arrow-right':
-        return (
-          <svg viewBox="0 0 100 70" className="size-7" preserveAspectRatio="none">
-            <polygon points="0,22 55,22 55,5 100,35 55,65 55,48 0,48" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'arrow-left':
-        return (
-          <svg viewBox="0 0 100 70" className="size-7" preserveAspectRatio="none">
-            <polygon points="100,22 45,22 45,5 0,35 45,65 45,48 100,48" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'arrow-up':
-        return (
-          <svg viewBox="0 0 70 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="22,100 22,45 5,45 35,0 65,45 48,45 48,100" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'arrow-down':
-        return (
-          <svg viewBox="0 0 70 100" className="size-7" preserveAspectRatio="none">
-            <polygon points="22,0 22,55 5,55 35,100 65,55 48,55 48,0" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'arrow-both':
-        return (
-          <svg viewBox="0 0 100 60" className="size-7" preserveAspectRatio="none">
-            <polygon points="25,10 0,30 25,50 25,38 75,38 75,50 100,30 75,10 75,22 25,22" fill="#FFFFFF" />
-          </svg>
-        );
-
-      // Símbolos
-      case 'speech_bubble':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <path d="M 10 15 C 10 10 15 5 25 5 L 75 5 C 85 5 90 10 90 15 L 90 65 C 90 70 85 75 75 75 L 45 75 L 20 95 L 25 75 L 25 75 C 15 75 10 70 10 65 Z" fill="#FFFFFF" />
-          </svg>
-        );
-      case 'heart':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <path d="M 50 88 C 20 65 5 45 5 28 C 5 15 15 5 28 5 C 37 5 45 10 50 18 C 55 10 63 5 72 5 C 85 5 95 15 95 28 C 95 45 80 65 50 88 Z" fill="#E63946" />
-          </svg>
-        );
-      case 'shield':
-        return (
-          <svg viewBox="0 0 100 100" className="size-7" preserveAspectRatio="none">
-            <path d="M 50 5 L 90 20 L 90 55 C 90 78 50 95 50 95 C 50 95 10 78 10 55 L 10 20 Z" fill="#EE9B00" />
-          </svg>
-        );
-
-      default:
-        return <div className="size-7 bg-white rounded-xs" />;
-    }
-  };
-
-  const illustrationPresets = useMemo(() => {
-    return ELEMENT_PRESETS.filter((p) => p.category === 'illustrations');
-  }, []);
-
-  const filteredIllustrations = useMemo(() => {
-    if (selectedIllustSubCategory === 'all') return illustrationPresets;
-    return illustrationPresets.filter((p) => p.subCategory === selectedIllustSubCategory);
-  }, [illustrationPresets, selectedIllustSubCategory]);
-
-  const trustPresets = useMemo(() => {
-    return ELEMENT_PRESETS.filter((p) => p.category === 'trust_stamps');
-  }, []);
-
-  const ctaPresets = useMemo(() => {
-    return ELEMENT_PRESETS.filter((p) => p.category === 'ctas');
-  }, []);
-
-  const surfacePresets = useMemo(() => {
-    return ELEMENT_PRESETS.filter((p) => p.category === 'surfaces');
-  }, []);
-
-  // Filtrado por búsqueda
-  const matchingShapes = useMemo(() => {
-    if (!searchQuery.trim()) return null;
-    const query = searchQuery.toLowerCase();
-    const result: ShapeItemConfig[] = [];
-    CANVA_SHAPE_SECTIONS.forEach((sec) => {
-      sec.items.forEach((item) => {
-        if (item.name.toLowerCase().includes(query) || sec.title.toLowerCase().includes(query)) {
-          result.push(item);
-        }
+  const handleInsert = (resource: DrawerResource) => {
+    if (resource.locked) return;
+    const payload = resource.payload;
+    if (payload.source === 'shape') {
+      const item = payload.item;
+      onAddBlock('GeometricShape', {
+        shapeType: item.shapeType,
+        fill: item.defaultFill ?? '#005F73',
+        stroke: item.defaultStroke ?? 'transparent',
+        strokeWidth: item.defaultStrokeWidth ?? 0,
+        borderRadius: item.defaultBorderRadius ?? (item.shapeType === 'rounded_rect' ? 24 : 0),
+        sides: item.defaultSides,
+        points: item.defaultPoints,
+        innerRadius: item.defaultInnerRadius,
+        width: item.defaultWidth,
+        height: item.defaultHeight,
       });
-    });
-    return result;
-  }, [searchQuery]);
+    } else if (payload.source === 'icon') {
+      onAddBlock('GeometricShape', {
+        shapeType: `icon-${payload.item.iconId}`,
+        fill: 'transparent',
+        stroke: 'currentColor',
+        strokeWidth: 2,
+        width: 160,
+        height: 160,
+      });
+    } else if (payload.source === 'preset') {
+      onAddBlock(payload.preset.blockType, payload.preset.defaultProps);
+    } else {
+      onInsertSavedLayer?.(payload.saved.layer);
+    }
+    setRecentIds((current) => [resource.id, ...current.filter((id) => id !== resource.id)].slice(0, 6));
+  };
 
-  const matchingPresets = useMemo(() => {
-    if (!searchQuery.trim()) return null;
-    const query = searchQuery.toLowerCase();
-    return ELEMENT_PRESETS.filter(
-      (p) =>
-        p.title.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query) ||
-        (p.badge && p.badge.toLowerCase().includes(query)) ||
-        (p.subCategory && p.subCategory.toLowerCase().includes(query))
-    );
-  }, [searchQuery]);
+  const showDiscovery = !searchQuery.trim() && selectedCategory === 'all';
 
   return (
-    <div className="flex h-full flex-col bg-[#070e17] text-slate-100 select-none">
-      {/* 1. BUSCADOR SUPERIOR */}
-      <div className="p-3 border-b border-slate-800/80 shrink-0 bg-[#050b12]">
-        <div className="relative flex items-center">
-          <Search className="absolute left-3.5 size-3.5 text-slate-400 pointer-events-none" />
+    <div className="flex h-full flex-col bg-primary-dark text-slate-100">
+      <div className="shrink-0 space-y-3 border-b border-slate-800 bg-primary-dark p-3">
+        <label className="relative block">
+          <span className="sr-only">Buscar elementos</span>
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <input
-            type="text"
+            type="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar elementos (médico, pasaporte, círculo, WhatsApp...)"
-            className="w-full rounded-2xl border border-slate-800 bg-[#0d1624] pl-9 pr-8 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-brand-cyan focus:bg-[#111c2e] focus:outline-none focus:ring-1 focus:ring-brand-cyan/40 transition-colors shadow-inner"
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Buscar en todos los elementos"
+            className="min-h-10 w-full rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-9 text-xs text-slate-100 placeholder:text-slate-500 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/30"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 text-slate-400 hover:text-white"
+              aria-label="Limpiar búsqueda"
+              className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
             >
-              <X className="size-3.5" />
+              <X className="size-4" />
             </button>
           )}
+        </label>
+
+        <label className="flex items-center gap-2 text-[10px] font-medium text-slate-400">
+          <UserRound className="size-3.5 shrink-0" />
+          <span className="sr-only">Origen del recurso</span>
+          <select
+            value={selectedScope}
+            onChange={(event) => setSelectedScope(event.target.value as ElementResourceScope | 'all')}
+            className="min-h-9 w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-xs text-slate-200 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/30"
+          >
+            {SCOPE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+          </select>
+        </label>
+
+        <div className="flex flex-wrap gap-1.5" aria-label="Filtros secundarios">
+          {([
+            ['all', 'Todos'],
+            ['image', 'Image'],
+            ['video', 'Video'],
+          ] as Array<[FormatFilter, string]>).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setFormatFilter(id)}
+              aria-pressed={formatFilter === id}
+              className={`min-h-7 rounded-full border px-2.5 text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                formatFilter === id
+                  ? 'border-brand-cyan/60 bg-primary/50 text-brand-cyan'
+                  : 'border-slate-700 bg-slate-900 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+          {([
+            ['approved', 'Aprobados'],
+            ['locked', 'Bloqueados'],
+          ] as Array<[Exclude<StateFilter, 'all'>, string]>).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setStateFilter((current) => current === id ? 'all' : id)}
+              aria-pressed={stateFilter === id}
+              className={`min-h-7 rounded-full border px-2.5 text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                stateFilter === id
+                  ? 'border-accent/60 bg-accent/15 text-amber-200'
+                  : 'border-slate-700 bg-slate-900 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* 2. CHIPS DE NAVEGACIÓN POR CATEGORÍAS */}
-      <div className="flex items-center gap-1.5 p-2.5 border-b border-slate-800/80 bg-[#070e17] overflow-x-auto no-scrollbar shrink-0">
-        {categories.map((cat) => {
-          const isActive = selectedCategory === cat.id;
-          return (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                setActiveSectionView(null);
-              }}
-              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-primary/40 text-brand-cyan border border-brand-cyan/50 shadow-xs'
-                  : 'bg-slate-900/90 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
-              }`}
-            >
-              {cat.icon}
-              <span className="truncate">{cat.name}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 3. CONTENIDO PRINCIPAL SEGÚN PESTAÑA */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-6">
-        {/* CASO A: RESULTADOS DE BÚSQUEDA */}
-        {searchQuery.trim() !== '' ? (
-          <div className="space-y-4">
-            <span className="text-xs font-semibold text-slate-300">
-              Resultados para "{searchQuery}"
-            </span>
-
-            {/* ILUSTRACIONES COINCIDENTES */}
-            {matchingPresets && matchingPresets.some((p) => p.category === 'illustrations') && (
-              <div className="space-y-2">
-                <span className="text-[11px] font-bold text-brand-cyan flex items-center gap-1">
-                  <Palette className="size-3" />
-                  <span>Ilustraciones ({matchingPresets.filter((p) => p.category === 'illustrations').length})</span>
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  {matchingPresets.filter((p) => p.category === 'illustrations').map((preset) => {
-                    const illustrationId = String(preset.defaultProps.illustrationId);
-                    const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
-                    return (
-                      <div
-                        key={preset.id}
-                        onClick={() => handleInsertPreset(preset)}
-                        className="group flex flex-col items-center justify-between p-2.5 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
-                      >
-                        <div
-                          className="size-16 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
-                          style={{
-                            '--color-pastel': '#94D2BD',
-                            '--color-primary': '#005F73',
-                            '--color-secondary': '#FFFFFF',
-                            '--color-neutral': '#1e293b',
-                            '--color-accent': '#EE9B00',
-                          } as React.CSSProperties}
-                        >
-                          {IllustComp && <IllustComp />}
-                        </div>
-                        <strong className="block text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan truncate w-full">
-                          {preset.title}
-                        </strong>
-                        <span className="text-[9px] font-bold text-brand-cyan mt-1">+ Añadir</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* FORMAS COINCIDENTES */}
-            {matchingShapes && matchingShapes.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <EditorPanelSection title={`Formas (${matchingShapes.length})`} />
-                <div className="grid grid-cols-5 gap-1">
-                  {matchingShapes.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleInsertShape(item)}
-                      title={item.name}
-                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                    >
-                      {renderShapeIcon(item.shapeType)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* PRESETS COINCIDENTES (SELLOS / CTAS / GLASS) */}
-            {matchingPresets && matchingPresets.some((p) => p.category !== 'illustrations') && (
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <EditorPanelSection title={`Componentes de Marca (${matchingPresets.filter((p) => p.category !== 'illustrations').length})`} />
-                <div className="space-y-2">
-                  {matchingPresets.filter((p) => p.category !== 'illustrations').map((preset) => (
-                    <div
-                      key={preset.id}
-                      onClick={() => handleInsertPreset(preset)}
-                      className="flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer group"
-                    >
-                      <div className="min-w-0 pr-2">
-                        <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
-                          {preset.title}
-                        </strong>
-                        <span className="text-[10px] text-slate-400 truncate block">{preset.description}</span>
-                      </div>
-                      <span className="text-[11px] font-bold text-brand-cyan shrink-0">+ Añadir</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : activeSectionView ? (
-          /* VISTA EXTENDIDA "VER TODO" DE UNA SUB-SECCIÓN DE FORMAS */
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setActiveSectionView(null)}
-                className="text-xs font-semibold text-brand-cyan hover:underline flex items-center gap-1"
-              >
-                <span>← Volver a Formas</span>
-              </button>
-              <span className="text-xs font-semibold text-slate-300">
-                {CANVA_SHAPE_SECTIONS.find((s) => s.id === activeSectionView)?.title}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-5 gap-1.5 pt-1">
-              {CANVA_SHAPE_SECTIONS.find((s) => s.id === activeSectionView)?.items.map((item) => (
+      <div className="flex-1 space-y-5 overflow-y-auto p-3">
+        <nav aria-label="Categorías de elementos" className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('all')}
+            aria-current={selectedCategory === 'all' ? 'page' : undefined}
+            className={`flex min-h-10 w-full items-center justify-between rounded-lg border px-3 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+              selectedCategory === 'all'
+                ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-600'
+            }`}
+          >
+            <span className="flex items-center gap-2"><Sparkles className="size-4" /> Explorar todo</span>
+            <span className="text-[10px] text-slate-400">{secondaryFilteredResources.length}</span>
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            {ELEMENT_CATALOG_CATEGORIES.map((category) => {
+              const Icon = CATEGORY_ICONS[category.id];
+              const active = selectedCategory === category.id;
+              return (
                 <button
-                  key={item.id}
+                  key={category.id}
                   type="button"
-                  onClick={() => handleInsertShape(item)}
-                  title={item.name}
-                  className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
+                  onClick={() => setSelectedCategory(category.id)}
+                  aria-current={active ? 'page' : undefined}
+                  title={category.description}
+                  className={`flex min-h-16 min-w-0 flex-col justify-between rounded-lg border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                    active
+                      ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                      : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
+                  }`}
                 >
-                  {renderShapeIcon(item.shapeType)}
+                  <span className="flex w-full items-center justify-between gap-2">
+                    <Icon className="size-4 shrink-0" />
+                    <span className="text-[9px] text-slate-500">{categoryCounts.get(category.id) ?? 0}</span>
+                  </span>
+                  <span className="truncate text-[10px] font-semibold">{category.shortLabel}</span>
                 </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {showDiscovery && recentResources.length > 0 && (
+          <section className="space-y-2" aria-labelledby="recent-elements">
+            <h2 id="recent-elements" className="flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+              <Clock3 className="size-3.5 text-slate-400" /> Recientes
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
+              {recentResources.slice(0, 4).map((resource) => (
+                <ResourceCard key={`recent-${resource.id}`} resource={resource} onInsert={handleInsert} />
               ))}
             </div>
-          </div>
-        ) : selectedCategory === 'illustrations' ? (
-          /* PESTAÑA DEDICADA: 🎨 ILUSTRACIONES WEB VECTORIALES */
-          <div className="space-y-3.5">
-            {/* SUB-FILTROS DE ILUSTRACIONES */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
-              {['all', 'Salud', 'Viajes', 'Finanzas', 'Hogar', 'Confianza', 'Auto'].map((sub) => {
-                const isSelected = selectedIllustSubCategory === sub;
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() => setSelectedIllustSubCategory(sub)}
-                    className={`shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                      isSelected
-                        ? 'bg-brand-cyan text-[#001219] shadow-xs'
-                        : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    {sub === 'all' ? 'Todas' : sub}
-                  </button>
-                );
-              })}
+          </section>
+        )}
+
+        {showDiscovery && recommendedResources.length > 0 && (
+          <section className="space-y-2" aria-labelledby="recommended-elements">
+            <h2 id="recommended-elements" className="flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+              <Sparkles className="size-3.5 text-accent" /> Recomendados
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
+              {recommendedResources.map((resource) => (
+                <ResourceCard key={`recommended-${resource.id}`} resource={resource} onInsert={handleInsert} />
+              ))}
             </div>
+          </section>
+        )}
 
-            {/* GRID DE ILUSTRACIONES */}
-            <div className="grid grid-cols-2 gap-2.5">
-              {filteredIllustrations.map((preset) => {
-                const illustrationId = String(preset.defaultProps.illustrationId);
-                const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
-                return (
-                  <div
-                    key={preset.id}
-                    onClick={() => handleInsertPreset(preset)}
-                    className="group flex flex-col items-center justify-between p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
-                  >
-                    <div
-                      className="size-20 flex items-center justify-center p-1.5 rounded-xl bg-slate-950 border border-slate-800/80 mb-2 group-hover:scale-105 transition-transform"
-                      style={{
-                        '--color-pastel': '#94D2BD',
-                        '--color-primary': '#005F73',
-                        '--color-secondary': '#FFFFFF',
-                        '--color-neutral': '#1e293b',
-                        '--color-accent': '#EE9B00',
-                      } as React.CSSProperties}
-                    >
-                      {IllustComp && <IllustComp />}
-                    </div>
-                    <div className="w-full min-w-0">
-                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
-                        {preset.title}
-                      </strong>
-                      <span className="text-[9px] text-slate-400 line-clamp-1 mt-0.5">
-                        {preset.description}
-                      </span>
-                    </div>
-                    <div className="pt-2 mt-1 border-t border-slate-800/80 w-full flex items-center justify-center">
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-brand-cyan">
-                        <Plus className="size-3" />
-                        <span>Añadir</span>
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+        {!showDiscovery && (
+          <section className="space-y-2" aria-live="polite">
+            <div className="flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="truncate text-xs font-semibold text-slate-100">
+                  {searchQuery.trim()
+                    ? `Resultados para “${searchQuery.trim()}”`
+                    : ELEMENT_CATALOG_CATEGORIES.find((category) => category.id === selectedCategory)?.label}
+                </h2>
+                {!searchQuery.trim() && (
+                  <p className="mt-0.5 truncate text-[10px] text-slate-400">
+                    {ELEMENT_CATALOG_CATEGORIES.find((category) => category.id === selectedCategory)?.description}
+                  </p>
+                )}
+              </div>
+              <span className="shrink-0 text-[10px] text-slate-500">{visibleResources.length} recursos</span>
             </div>
-          </div>
-        ) : selectedCategory === 'shapes' ? (
-          /* PESTAÑA DEDICADA: 📐 FORMAS & GEOMETRÍA (CANVA GRID COMPLETO) */
-          <>
-            {CANVA_SHAPE_SECTIONS.map((section) => (
-              <div key={section.id} className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-bold text-slate-300">
-                    {section.title}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSectionView(section.id)}
-                    className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
-                  >
-                    <span>Ver todo</span>
-                    <ChevronRight className="size-3" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-5 gap-1">
-                  {section.items.slice(0, 5).map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleInsertShape(item)}
-                      title={item.name}
-                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                    >
-                      {renderShapeIcon(item.shapeType)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </>
-        ) : selectedCategory === 'trust_stamps' ? (
-          /* PESTAÑA DEDICADA: 🛡️ SELLOS CONSULARES & INSIGNIAS */
-          <div className="space-y-2.5">
-            <span className="text-xs font-bold text-slate-300 block px-1">
-              Insignias Oficiales de Homologación
-            </span>
-            {trustPresets.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInsertPreset(item)}
-                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
-                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan transition-colors">
-                      {item.title}
-                    </strong>
-                    <span className="text-[11px] text-slate-400">{item.description}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-slate-400 shrink-0">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-
-                {/* PREVIEW INTERACTIVO */}
-                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden">
-                  {item.blockType === 'TrustVerifiedPill' && (
-                    <div className="flex items-center gap-1 rounded-xl border border-emerald-500/40 bg-emerald-950/60 px-2.5 py-1 text-[10px] font-bold text-emerald-400">
-                      <CheckCircle2 className="size-3" />
-                      <span>{String(item.defaultProps.verifiedLabel)}</span>
-                    </div>
-                  )}
-
-                  {item.blockType === 'TrustHighlightPill' && (
-                    <div className="rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-0.5 text-[10px] font-black tracking-wider text-amber-300">
-                      {String(item.defaultProps.highlight)}
-                    </div>
-                  )}
-
-                  {item.blockType === 'HookAlertBadge' && (
-                    <div className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-3 py-0.5 text-[10px] font-black uppercase text-brand-cyan">
-                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>{String(item.defaultProps.badge)}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-brand-cyan transition-colors">
-                    <Plus className="size-3.5" />
-                    <span>Añadir al Lienzo</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : selectedCategory === 'ctas' ? (
-          /* PESTAÑA DEDICADA: 💬 BOTONES & LLAMADAS A LA ACCIÓN */
-          <div className="space-y-2.5">
-            <span className="text-xs font-bold text-slate-300 block px-1">
-              Botones de Conversión y Contacto
-            </span>
-            {ctaPresets.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInsertPreset(item)}
-                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-accent hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
-                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-accent transition-colors">
-                      {item.title}
-                    </strong>
-                    <span className="text-[11px] text-slate-400">{item.description}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-amber-300 shrink-0">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-
-                {/* PREVIEW BOTÓN */}
-                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-2.5 overflow-hidden">
-                  <div
-                    className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[11px] font-bold shadow-xs"
-                    style={{
-                      backgroundColor: String(item.defaultProps.primaryColor ?? '#005F73'),
-                      color: String(item.defaultProps.textColor ?? '#FFFFFF'),
-                      border: `1px solid ${String(item.defaultProps.accentColor ?? '#EE9B00')}`,
-                    }}
-                  >
-                    <span>{String(item.defaultProps.ctaText)}</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-accent transition-colors">
-                    <Plus className="size-3.5" />
-                    <span>Añadir al Lienzo</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : selectedCategory === 'surfaces' ? (
-          /* PESTAÑA DEDICADA: 🪟 SUPERFICIES GLASS */
-          <div className="space-y-2.5">
-            <span className="text-xs font-bold text-slate-300 block px-1">
-              Contenedores Translúcidos Glassmorphism
-            </span>
-            {surfacePresets.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleInsertPreset(item)}
-                className="group flex flex-col p-3 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
-                    <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan transition-colors">
-                      {item.title}
-                    </strong>
-                    <span className="text-[11px] text-slate-400">{item.description}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="rounded-md bg-slate-950 border border-slate-800 px-1.5 py-0.5 text-[9px] font-mono font-bold text-brand-cyan shrink-0">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-
-                <div className="my-1 flex items-center justify-center rounded-xl bg-slate-950 border border-slate-800/80 p-3 overflow-hidden">
-                  <div
-                    className={`h-12 w-full rounded-2xl border ${
-                      item.defaultProps.variant === 'amber'
-                        ? 'border-amber-500/40 bg-amber-500/10'
-                        : 'border-teal-500/40 bg-teal-950/40'
-                    }`}
-                  />
-                </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-end">
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 group-hover:text-brand-cyan transition-colors">
-                    <Plus className="size-3.5" />
-                    <span>Añadir al Lienzo</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : selectedCategory === 'saved' ? (
-          /* PESTAÑA DEDICADA: ⭐ MIS ELEMENTOS */
-          <div className="space-y-2.5">
-            <span className="text-xs font-bold text-amber-300 block px-1">
-              Mis Elementos Personalizados ({savedElements.length})
-            </span>
-            {savedElements.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 space-y-2">
-                <FolderHeart className="size-8 mx-auto text-slate-600" />
-                <p className="text-xs font-bold text-slate-400">No hay elementos guardados</p>
-                <p className="text-[11px] text-slate-500">
-                  Selecciona cualquier elemento en el lienzo y pulsa "⭐ Guardar en Mis Diseños".
-                </p>
+            {visibleResources.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {visibleResources.map((resource) => (
+                  <ResourceCard key={resource.id} resource={resource} onInsert={handleInsert} />
+                ))}
               </div>
             ) : (
-              savedElements.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onInsertSavedLayer?.(item.layer)}
-                  className="w-full flex items-center justify-between p-3 rounded-2xl border border-amber-500/30 bg-[#0d1624] hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300">
-                      <FolderHeart className="size-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-slate-100 group-hover:text-amber-300 truncate block">
-                        {item.title}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        ⭐ Elemento Personalizado
-                      </span>
-                    </div>
-                  </div>
-
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-amber-300/80 group-hover:text-amber-300 shrink-0">
-                    <Plus className="size-3.5" />
-                    <span>Añadir</span>
-                  </span>
-                </button>
-              ))
+              <div className="rounded-lg border border-dashed border-slate-700 px-4 py-8 text-center">
+                <Search className="mx-auto size-6 text-slate-500" />
+                <p className="mt-2 text-xs font-semibold text-slate-300">No hay recursos con estos filtros</p>
+                <p className="mt-1 text-[10px] text-slate-500">Cambia el origen, la compatibilidad o la categoría.</p>
+              </div>
             )}
+          </section>
+        )}
+
+        {showDiscovery && (
+          <div className="flex items-start gap-2 rounded-lg border border-slate-700 bg-slate-900 p-3 text-[10px] leading-relaxed text-slate-400">
+            <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-brand-cyan" />
+            <p>Los recursos de Sistema son universales. Los de Organización permanecen aislados en su paquete y conservan sus reglas de marca.</p>
           </div>
-        ) : (
-          /* PESTAÑA: ✨ TODOS (VISTA GLOBAL UNIFICADA) */
-          <>
-            {/* 1. UTILIZADO RECIENTEMENTE */}
-            {recentlyUsed.length > 0 && (
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-bold text-slate-300">
-                    Utilizado recientemente
-                  </span>
-                </div>
-                <div className="grid grid-cols-5 gap-1">
-                  {recentlyUsed.map((item) => (
-                    <button
-                      key={`recent-${item.id}`}
-                      type="button"
-                      onClick={() => handleInsertShape(item)}
-                      title={item.name}
-                      className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                    >
-                      {renderShapeIcon(item.shapeType)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 2. ILUSTRACIONES WEB DESTACADAS */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <Palette className="size-3.5 text-brand-cyan" />
-                  <span>Ilustraciones Web</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('illustrations')}
-                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
-                >
-                  <span>Ver todas ({illustrationPresets.length})</span>
-                  <ChevronRight className="size-3" />
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {illustrationPresets.slice(0, 4).map((preset) => {
-                  const illustrationId = String(preset.defaultProps.illustrationId);
-                  const IllustComp = WEB_ILLUSTRATION_COMPONENTS[illustrationId];
-                  return (
-                    <div
-                      key={preset.id}
-                      onClick={() => handleInsertPreset(preset)}
-                      className="group flex flex-col items-center justify-between p-2.5 rounded-2xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-900 transition-all cursor-pointer shadow-xs text-center"
-                    >
-                      <div
-                        className="size-14 flex items-center justify-center p-1 rounded-xl bg-slate-950 border border-slate-800/80 mb-1.5 group-hover:scale-105 transition-transform"
-                        style={{
-                          '--color-pastel': '#94D2BD',
-                          '--color-primary': '#005F73',
-                          '--color-secondary': '#FFFFFF',
-                          '--color-neutral': '#1e293b',
-                          '--color-accent': '#EE9B00',
-                        } as React.CSSProperties}
-                      >
-                        {IllustComp && <IllustComp />}
-                      </div>
-                      <strong className="block text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan truncate w-full">
-                        {preset.title}
-                      </strong>
-                      <span className="text-[9px] font-bold text-brand-cyan mt-1">+ Añadir</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 3. FORMAS BÁSICAS (PREVIEW DE FILA) */}
-            <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-300">
-                  Formas básicas
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('shapes')}
-                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
-                >
-                  <span>Ver todo</span>
-                  <ChevronRight className="size-3" />
-                </button>
-              </div>
-              <div className="grid grid-cols-5 gap-1">
-                {CANVA_SHAPE_SECTIONS[1].items.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleInsertShape(item)}
-                    title={item.name}
-                    className="flex size-12 items-center justify-center rounded-xl hover:bg-slate-800/80 active:bg-slate-700 active:scale-95 transition-all cursor-pointer"
-                  >
-                    {renderShapeIcon(item.shapeType)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 4. SELLOS CONSULARES (PREVIEW) */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-300">
-                  🛡️ Sellos Consulares & Insignias
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('trust_stamps')}
-                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
-                >
-                  <span>Ver todo ({trustPresets.length})</span>
-                  <ChevronRight className="size-3" />
-                </button>
-              </div>
-              <div className="space-y-1.5">
-                {trustPresets.slice(0, 2).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleInsertPreset(item)}
-                    className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-brand-cyan hover:bg-slate-800/60 transition-all text-left group"
-                  >
-                    <div className="min-w-0 pr-2">
-                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan truncate">
-                        {item.title}
-                      </strong>
-                      <span className="text-[10px] text-slate-400 truncate block">{item.description}</span>
-                    </div>
-                    <Plus className="size-3.5 text-brand-cyan shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 5. BOTONES & CTAs (PREVIEW) */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-300">
-                  💬 Botones & CTAs
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('ctas')}
-                  className="text-[11px] font-medium text-slate-400 hover:text-accent flex items-center gap-0.5 transition-colors"
-                >
-                  <span>Ver todo ({ctaPresets.length})</span>
-                  <ChevronRight className="size-3" />
-                </button>
-              </div>
-              <div className="space-y-1.5">
-                {ctaPresets.slice(0, 2).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleInsertPreset(item)}
-                    className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-[#0d1624] hover:border-accent hover:bg-slate-800/60 transition-all text-left group"
-                  >
-                    <div className="min-w-0 pr-2">
-                      <strong className="block text-xs font-bold text-slate-200 group-hover:text-accent truncate">
-                        {item.title}
-                      </strong>
-                      <span className="text-[10px] text-slate-400 truncate block">{item.description}</span>
-                    </div>
-                    <Plus className="size-3.5 text-accent shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 6. SUPERFICIES GLASS (PREVIEW) */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-300">
-                  🪟 Superficies Glass
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('surfaces')}
-                  className="text-[11px] font-medium text-slate-400 hover:text-brand-cyan flex items-center gap-0.5 transition-colors"
-                >
-                  <span>Ver todo ({surfacePresets.length})</span>
-                  <ChevronRight className="size-3" />
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {surfacePresets.slice(0, 2).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleInsertPreset(item)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all ${
-                      item.defaultProps.variant === 'amber'
-                        ? 'border-amber-500/30 bg-amber-500/10 hover:border-amber-400'
-                        : 'border-teal-500/30 bg-teal-950/40 hover:border-teal-400'
-                    }`}
-                  >
-                    <span className="text-xs font-bold text-slate-200">{item.title}</span>
-                    <span className="text-[10px] text-slate-400 mt-0.5">+ Añadir</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
         )}
       </div>
     </div>

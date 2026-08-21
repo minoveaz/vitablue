@@ -1,4 +1,5 @@
 import { ImageBlockType } from '../types/imageStudio';
+import { ElementCatalogMetadata } from '../types/elementCatalog';
 
 export interface ElementPresetCategory {
   id: string;
@@ -16,6 +17,11 @@ export interface ElementPresetItem {
   previewColor?: string;
   badge?: string;
   subCategory?: string;
+  /**
+   * Optional while legacy presets are migrated. Consumers must normalize the
+   * preset to receive the complete multi-organization catalog contract.
+   */
+  catalogMetadata?: Partial<ElementCatalogMetadata>;
 }
 
 export const ELEMENT_PRESET_CATEGORIES: ElementPresetCategory[] = [
