@@ -1199,15 +1199,84 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
       if (!layer) return prev;
-      const isPortrait = prev.preset.height > prev.preset.width;
-      const idealScale = isPortrait ? 1.15 : 0.95;
+
+      const canvasWidth = prev.preset.width || 1080;
+      const canvasHeight = prev.preset.height || 1080;
+
+      let updatedWidth = layer.width;
+      let updatedHeight = layer.height;
+      let updatedScale = 1;
+      const updatedPosition = { x: 50, y: 50 };
+      const updatedRotation = 0;
+
+      // 1. Capas de imagen (Fotos de stock / subidas locales) -> Cubrir o encajar el lienzo completo
+      if (layer.type === 'image' || layer.props?.imageUrl) {
+        updatedWidth = canvasWidth;
+        updatedHeight = canvasHeight;
+        updatedScale = 1;
+      }
+      // 2. Superficies Glass -> Expandir al 90% del ancho y 70% de altura
+      else if (layer.blockType === 'GlassCardSurface') {
+        updatedWidth = Math.round(canvasWidth * 0.90);
+        updatedHeight = Math.round(canvasHeight * 0.70);
+        updatedScale = 1;
+      }
+      // 3. Formas Geométricas -> Expandir al 85% de la dimensión mínima
+      else if (layer.blockType === 'GeometricShape') {
+        const minDim = Math.min(canvasWidth, canvasHeight);
+        updatedWidth = Math.round(minDim * 0.85);
+        updatedHeight = Math.round(minDim * 0.85);
+        updatedScale = 1;
+      }
+      // 4. Ilustraciones Web Vectoriales -> Ocupar el 65% del ancho de forma armónica
+      else if (layer.blockType === 'WebIllustration') {
+        const targetW = Math.round(canvasWidth * 0.65);
+        const targetH = Math.round(targetW * 0.75);
+        updatedWidth = targetW;
+        updatedHeight = targetH;
+        updatedScale = 1;
+      }
+      // 5. Bloques Compuestos (AdvisorCard, TrustBadge, ComparisonCard, ProviderGrid)
+      else if (
+        ['MotionAdvisorCard', 'MotionTrustBadge', 'MotionComparisonCard', 'MotionProviderGrid'].includes(
+          layer.blockType ?? ''
+        )
+      ) {
+        const isPortrait = canvasHeight > canvasWidth;
+        updatedWidth = Math.round(canvasWidth * 0.88);
+        updatedScale = isPortrait ? 1.1 : 0.95;
+      }
+      // 6. Capas de Texto -> Ajustar caja de texto al 85% del ancho del lienzo
+      else if (layer.type === 'text' || layer.blockType === 'CustomText') {
+        updatedWidth = Math.round(canvasWidth * 0.85);
+        updatedScale = 1;
+      }
+      // 7. Botones CTA y Sellos
+      else if (['WhatsAppCtaButton', 'TrustVerifiedPill', 'HookAlertBadge'].includes(layer.blockType ?? '')) {
+        updatedWidth = Math.min(Math.round(canvasWidth * 0.85), 520);
+        updatedScale = 1;
+      }
+      // 8. Cualquier otra capa con dimensiones definidas
+      else if (layer.width && layer.height) {
+        const scaleW = (canvasWidth * 0.9) / layer.width;
+        const scaleH = (canvasHeight * 0.9) / layer.height;
+        const fitScale = Math.min(scaleW, scaleH);
+        updatedWidth = Math.round(layer.width * fitScale);
+        updatedHeight = Math.round(layer.height * fitScale);
+        updatedScale = 1;
+      } else {
+        updatedScale = 1;
+      }
 
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId
           ? {
               ...l,
-              position: { x: 50, y: 50 },
-              scale: idealScale,
+              position: updatedPosition,
+              rotation: updatedRotation,
+              scale: updatedScale,
+              width: updatedWidth,
+              height: updatedHeight,
             }
           : l
       );
