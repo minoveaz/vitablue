@@ -30,18 +30,25 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
 
-  // Re-sync if initialProject changes (e.g. routing between assets)
+  const lastLoadedProjectRef = useRef<string>('');
+
+  // Re-sync whenever initialProject is supplied (e.g. mounting, routing from Hub, or URL param change)
   useEffect(() => {
-    if (initialProject && initialProject.id !== project.id) {
-      setProject(initialProject);
-      setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
-      const cloned = JSON.parse(JSON.stringify(initialProject));
-      historyRef.current = [cloned];
-      historyIndexRef.current = 0;
-      setHistoryLength(1);
-      setHistoryIndex(0);
+    if (initialProject) {
+      const projectFingerprint = `${initialProject.id}_${initialProject.updatedAt || ''}_${initialProject.layers.length}_${initialProject.title}`;
+      if (projectFingerprint !== lastLoadedProjectRef.current) {
+        lastLoadedProjectRef.current = projectFingerprint;
+        setProject(initialProject);
+        setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
+        const cloned = JSON.parse(JSON.stringify(initialProject));
+        historyRef.current = [cloned];
+        historyIndexRef.current = 0;
+        setHistoryLength(1);
+        setHistoryIndex(0);
+        setLastSavedAt(initialProject.updatedAt || new Date().toISOString());
+      }
     }
-  }, [initialProject?.id]);
+  }, [initialProject]);
 
   // History stack for Undo / Redo con deep-clone y ref síncrono
   const historyRef = useRef<ImageProject[]>([JSON.parse(JSON.stringify(project))]);
