@@ -22,41 +22,41 @@ export const HIGHLIGHT_PRESETS: HighlightPresetDef[] = [
     id: 'approved',
     label: 'Aprobados',
     sublabel: 'Prueba Social y Éxitos de Visado',
-    defaultRingColor: '#EE9B00',
-    defaultGlowColor: 'rgba(238, 155, 0, 0.45)',
-    defaultAccentColor: '#EE9B00',
+    defaultRingColor: '#94D2BD',
+    defaultGlowColor: 'rgba(148, 210, 189, 0.55)',
+    defaultAccentColor: '#94D2BD',
   },
   {
     id: 'visa',
     label: 'Visados',
     sublabel: 'Seguro Médico Consular 100%',
     defaultRingColor: '#94D2BD',
-    defaultGlowColor: 'rgba(148, 210, 189, 0.45)',
+    defaultGlowColor: 'rgba(148, 210, 189, 0.55)',
     defaultAccentColor: '#94D2BD',
   },
   {
     id: 'process',
     label: 'Paso a Paso',
     sublabel: 'Proceso de Emisión en 3 Pasos',
-    defaultRingColor: '#EE9B00',
-    defaultGlowColor: 'rgba(238, 155, 0, 0.45)',
-    defaultAccentColor: '#EE9B00',
+    defaultRingColor: '#94D2BD',
+    defaultGlowColor: 'rgba(148, 210, 189, 0.55)',
+    defaultAccentColor: '#94D2BD',
   },
   {
     id: 'faq',
     label: 'Dudas & FAQ',
     sublabel: 'Preguntas Frecuentes y Respuestas',
     defaultRingColor: '#94D2BD',
-    defaultGlowColor: 'rgba(148, 210, 189, 0.45)',
+    defaultGlowColor: 'rgba(148, 210, 189, 0.55)',
     defaultAccentColor: '#94D2BD',
   },
   {
     id: 'contact',
     label: 'Contacto',
     sublabel: 'WhatsApp Directo con Asesora',
-    defaultRingColor: '#EE9B00',
-    defaultGlowColor: 'rgba(238, 155, 0, 0.45)',
-    defaultAccentColor: '#EE9B00',
+    defaultRingColor: '#94D2BD',
+    defaultGlowColor: 'rgba(148, 210, 189, 0.55)',
+    defaultAccentColor: '#94D2BD',
   },
 ];
 
@@ -250,8 +250,8 @@ export const InstagramHighlightBadge: React.FC<InstagramHighlightBadgeProps> = (
   const iconKey = (props.iconKey as HighlightIconKey) || 'approved';
   const label = String(props.label ?? 'Aprobados');
   const showLabel = props.showLabel !== false;
-  const ringColor = String(props.ringColor ?? '#EE9B00');
-  const glowColor = String(props.glowColor ?? 'rgba(238, 155, 0, 0.45)');
+  const ringColor = String(props.ringColor ?? '#94D2BD');
+  const glowColor = String(props.glowColor ?? 'rgba(148, 210, 189, 0.55)');
   const strokeColor = String(props.strokeColor ?? '#FFFFFF');
   const accentColor = String(props.accentColor ?? ringColor);
   const bgColor = String(props.bgColor ?? '#001219');
