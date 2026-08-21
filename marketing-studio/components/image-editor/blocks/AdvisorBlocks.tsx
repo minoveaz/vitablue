@@ -67,28 +67,39 @@ export const AdvisorQuoteBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, pro
 );
 
 export const WhatsAppCtaButtonBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => {
-  const ctaText = String(props.ctaText ?? props.whatsAppText ?? 'Pregúntanos por WhatsApp');
-  const bg = String(props.primaryColor ?? '#005F73');
-  const textColor = String(props.textColor ?? '#FFFFFF');
-  const accentColor = props.accentColor ? String(props.accentColor) : undefined;
-  const isWhatsApp = ctaText.toLowerCase().includes('whatsapp') || bg === '#25D366';
+  const ctaText = String(props.ctaText ?? props.whatsAppText ?? props.text ?? props.buttonText ?? props.title ?? 'Pregúntanos por WhatsApp');
+  const bg = String(props.primaryColor ?? props.backgroundColor ?? props.bg ?? '#EE9B00');
+  const textColor = String(props.textColor ?? props.color ?? '#001219');
+  const accentColor = props.accentColor ? String(props.accentColor) : (props.borderColor ? String(props.borderColor) : undefined);
+  const fontSize = props.fontSize ? `${props.fontSize}px` : '15px';
+  const iconType = String(props.icon ?? (ctaText.toLowerCase().includes('whatsapp') || bg === '#25D366' ? 'whatsapp' : 'arrow'));
 
   return (
     <div
-      className="flex w-full h-full min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold shadow-xl select-none transition-all"
+      className="flex w-full h-full min-h-[44px] items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold shadow-xl select-none transition-all"
       style={{
         backgroundColor: bg,
         color: textColor,
-        border: accentColor ? `2px solid ${accentColor}` : undefined,
+        fontSize,
+        border: accentColor && accentColor !== 'transparent' ? `2px solid ${accentColor}` : undefined,
         boxShadow: `0 10px 25px -5px ${bg}80`,
       }}
     >
-      {isWhatsApp && (
+      {iconType === 'whatsapp' && (
         <MessageSquare className="size-4 fill-current shrink-0 pointer-events-none" />
+      )}
+      {iconType === 'arrow' && (
+        <span className="shrink-0 pointer-events-none font-black text-base leading-none">👉</span>
+      )}
+      {iconType === 'bolt' && (
+        <span className="shrink-0 pointer-events-none font-black text-base leading-none">⚡</span>
+      )}
+      {iconType === 'check' && (
+        <span className="shrink-0 pointer-events-none font-black text-base leading-none">✓</span>
       )}
       <InlineEditableText
         text={ctaText}
-        onSave={(newVal) => onUpdateProps?.(layerId, { ctaText: newVal, whatsAppText: newVal })}
+        onSave={(newVal) => onUpdateProps?.(layerId, { ctaText: newVal, whatsAppText: newVal, text: newVal, buttonText: newVal })}
       />
     </div>
   );

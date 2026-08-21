@@ -1401,32 +1401,150 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* F. BOTÓN CTA */}
+        {/* F. BOTÓN CTA & LLAMADAS A LA ACCIÓN */}
         {selectedLayer.blockType === 'WhatsAppCtaButton' && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-accent font-black">
-              <MessageSquare className="size-3.5" />
-              <span>Botón CTA / Llamada a la Acción</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-accent font-black">
+                <MessageSquare className="size-3.5" />
+                <span>Botón CTA / Llamada a la Acción</span>
+              </div>
+              <span className="text-[10px] font-mono text-brand-cyan">
+                {String(props.fontSize ?? 15)}px
+              </span>
             </div>
+
             <div>
               <label className="text-[10px] font-bold text-slate-400 block mb-1">Texto del Botón</label>
               <input
                 type="text"
-                value={String(props.ctaText ?? props.whatsAppText ?? '')}
-                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { ctaText: e.target.value, whatsAppText: e.target.value })}
+                value={String(props.ctaText ?? props.whatsAppText ?? props.text ?? props.buttonText ?? props.title ?? '')}
+                onChange={(e) =>
+                  onUpdateLayerProps(selectedLayer.id, {
+                    ctaText: e.target.value,
+                    whatsAppText: e.target.value,
+                    text: e.target.value,
+                    buttonText: e.target.value,
+                  })
+                }
+                placeholder="Ej: Lee nuestra Guía de Requisitos"
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-accent focus:outline-none"
               />
             </div>
-            <HexColorPickerField
-              label="Color de Fondo Botón"
-              value={String(props.primaryColor ?? '#005F73')}
-              allowTransparent={false}
-              onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex })}
-            />
+
+            {/* TAMAÑO DE LETRA */}
+            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-900">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Tamaño de Fuente
+              </label>
+              <div className="flex items-center gap-1">
+                <NumberInput
+                  min={10}
+                  max={48}
+                  value={Number(props.fontSize ?? 15)}
+                  placeholder="15"
+                  onChange={(val) => onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 15 })}
+                  className="w-12 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-1 py-0.5 focus:outline-none focus:border-brand-cyan"
+                />
+                <span className="text-[9px] text-slate-500">px</span>
+              </div>
+            </div>
+
+            {/* COLORES DE TEXTO Y FONDO */}
+            <div className="space-y-2 pt-1 border-t border-slate-900">
+              <HexColorPickerField
+                label="Color de Letra del Botón"
+                value={String(props.textColor ?? props.color ?? '#001219')}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { textColor: hex, color: hex })}
+              />
+
+              <HexColorPickerField
+                label="Color de Fondo del Botón"
+                value={String(props.primaryColor ?? props.backgroundColor ?? props.bg ?? '#EE9B00')}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex, backgroundColor: hex })}
+              />
+
+              <HexColorPickerField
+                label="Color de Borde / Resalte"
+                value={String(props.accentColor ?? props.borderColor ?? 'transparent')}
+                allowTransparent={true}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { accentColor: hex, borderColor: hex })}
+              />
+            </div>
+
+            {/* SELECTOR DE ICONO */}
+            <div className="pt-1 border-t border-slate-900 space-y-1.5">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Icono del Botón
+              </label>
+              <div className="grid grid-cols-5 gap-1">
+                {[
+                  { id: 'arrow', label: '👉 Flecha' },
+                  { id: 'whatsapp', label: '💬 WhatsApp' },
+                  { id: 'bolt', label: '⚡ Rayo' },
+                  { id: 'check', label: '✓ Check' },
+                  { id: 'none', label: 'Ninguno' },
+                ].map((ic) => (
+                  <button
+                    key={ic.id}
+                    type="button"
+                    onClick={() => onUpdateLayerProps(selectedLayer.id, { icon: ic.id })}
+                    className={`py-1 px-1 rounded-lg border text-[9px] font-bold transition-all text-center ${
+                      (props.icon ?? (String(props.ctaText ?? '').toLowerCase().includes('whatsapp') ? 'whatsapp' : 'arrow')) === ic.id
+                        ? 'border-accent bg-accent/20 text-amber-300'
+                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {ic.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* G. SUPERFICIE GLASS */}
+        {/* G. PÍLDORAS Y SELLOS DE CONFIANZA */}
+        {(selectedLayer.blockType === 'TrustVerifiedPill' || selectedLayer.blockType === 'TrustHighlightPill') && (
+          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-emerald-400 font-black">
+              <Shield className="size-3.5" />
+              <span>Sello / Píldora de Confianza</span>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 block mb-1">Texto del Sello</label>
+              <input
+                type="text"
+                value={String(props.verifiedLabel ?? props.highlight ?? props.text ?? props.title ?? '')}
+                onChange={(e) =>
+                  onUpdateLayerProps(selectedLayer.id, {
+                    verifiedLabel: e.target.value,
+                    highlight: e.target.value,
+                    text: e.target.value,
+                  })
+                }
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
+              />
+            </div>
+            <div className="space-y-2 pt-1 border-t border-slate-900">
+              <HexColorPickerField
+                label="Color de Letra"
+                value={String(props.textColor ?? props.color ?? '#34D399')}
+                allowTransparent={false}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { textColor: hex, color: hex })}
+              />
+              <HexColorPickerField
+                label="Color de Fondo"
+                value={String(props.primaryColor ?? props.backgroundColor ?? 'rgba(6, 78, 59, 0.6)')}
+                allowTransparent={true}
+                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { primaryColor: hex, backgroundColor: hex })}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* H. SUPERFICIE GLASS */}
         {selectedLayer.blockType === 'GlassCardSurface' && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
@@ -1460,7 +1578,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
-        {/* H. HOOK ALERT BADGE */}
+        {/* I. HOOK ALERT BADGE */}
         {selectedLayer.blockType === 'HookAlertBadge' && (
           <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
@@ -1470,8 +1588,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             <div>
               <input
                 type="text"
-                value={String(props.badge ?? '')}
-                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { badge: e.target.value })}
+                value={String(props.badge ?? props.text ?? '')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { badge: e.target.value, text: e.target.value })}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
               />
             </div>

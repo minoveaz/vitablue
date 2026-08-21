@@ -9,17 +9,26 @@ export const TrustShieldIconBlock: React.FC = () => (
   </div>
 );
 
-export const TrustHighlightPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <div className="flex w-full h-full items-center justify-center">
-    <span className="flex w-full h-full min-h-[32px] items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/40 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-amber-300 shadow-md">
-      <InlineEditableText
-        text={String(props.highlight ?? 'GARANTÍA CONSULAR')}
-        onSave={(newVal) => onUpdateProps?.(layerId, { highlight: newVal })}
-        as="span"
-      />
-    </span>
-  </div>
-);
+export const TrustHighlightPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => {
+  const text = String(props.highlight ?? props.verifiedLabel ?? props.text ?? props.title ?? 'GARANTÍA CONSULAR');
+  const bg = String(props.primaryColor ?? props.backgroundColor ?? 'rgba(238, 155, 0, 0.2)');
+  const textColor = String(props.textColor ?? props.color ?? '#FCD34D');
+
+  return (
+    <div className="flex w-full h-full items-center justify-center">
+      <span
+        className="flex w-full h-full min-h-[32px] items-center justify-center rounded-full border border-amber-500/40 px-4 py-1.5 text-xs font-black uppercase tracking-widest shadow-md select-none transition-all"
+        style={{ backgroundColor: bg, color: textColor }}
+      >
+        <InlineEditableText
+          text={text}
+          onSave={(newVal) => onUpdateProps?.(layerId, { highlight: newVal, text: newVal, verifiedLabel: newVal })}
+          as="span"
+        />
+      </span>
+    </div>
+  );
+};
 
 export const TrustBadgeTitleBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
   <div className="flex items-center justify-center w-full h-full">
@@ -43,15 +52,24 @@ export const TrustBadgeSubtitleBlock: React.FC<BlockPropsHandler> = ({ layerId, 
   </div>
 );
 
-export const TrustVerifiedPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
-  <div className="flex w-full h-full items-center justify-center">
-    <div className="flex w-full h-full min-h-[36px] items-center justify-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-2 text-xs font-bold text-emerald-400 shadow-md">
-      <CheckCircle2 className="size-4 shrink-0" />
-      <InlineEditableText
-        text={String(props.verifiedLabel ?? 'VERIFICADO PARA EXTRANJERÍA')}
-        onSave={(newVal) => onUpdateProps?.(layerId, { verifiedLabel: newVal })}
-        as="span"
-      />
+export const TrustVerifiedPillBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => {
+  const text = String(props.verifiedLabel ?? props.highlight ?? props.text ?? props.title ?? 'VERIFICADO PARA EXTRANJERÍA');
+  const bg = String(props.primaryColor ?? props.backgroundColor ?? 'rgba(6, 78, 59, 0.6)');
+  const textColor = String(props.textColor ?? props.color ?? '#34D399');
+
+  return (
+    <div className="flex w-full h-full items-center justify-center">
+      <div
+        className="flex w-full h-full min-h-[36px] items-center justify-center gap-2 rounded-2xl border border-emerald-500/40 px-4 py-2 text-xs font-bold shadow-md select-none transition-all"
+        style={{ backgroundColor: bg, color: textColor }}
+      >
+        <CheckCircle2 className="size-4 shrink-0" />
+        <InlineEditableText
+          text={text}
+          onSave={(newVal) => onUpdateProps?.(layerId, { verifiedLabel: newVal, text: newVal, highlight: newVal })}
+          as="span"
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
