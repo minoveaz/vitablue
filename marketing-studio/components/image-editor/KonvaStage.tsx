@@ -56,6 +56,15 @@ export const KonvaStage: React.FC<KonvaStageProps> = ({
 
   const canvasWidth = project.preset.width;
   const canvasHeight = project.preset.height;
+  const isVerticalFormat = canvasHeight > canvasWidth * 1.2;
+  const safeMarginX = isVerticalFormat ? 8 : 5;
+  const safeMarginY = isVerticalFormat ? 12 : 6;
+  const safeInset = {
+    left: `${safeMarginX}%`,
+    right: `${safeMarginX}%`,
+    top: `${safeMarginY}%`,
+    bottom: `${safeMarginY}%`,
+  };
 
   // Spacebar pan listener
   useEffect(() => {
@@ -396,13 +405,43 @@ export const KonvaStage: React.FC<KonvaStageProps> = ({
 
         {/* SAFE ZONES OVERLAY */}
         {showSafeZones && (
-          <div className="pointer-events-none absolute inset-0 z-30 border-2 border-dashed border-amber-400/60 p-8">
-            <div className="flex justify-between text-[10px] font-mono font-bold text-amber-400">
-              <span>Safe Margin Top</span>
-              <span>Instagram / TikTok Area</span>
+          <div className="pointer-events-none absolute inset-0 z-30 select-none">
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage:
+                  'linear-gradient(to right, rgba(148,210,189,0.6) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,210,189,0.6) 1px, transparent 1px)',
+                backgroundSize: '8.3333% 100%, 100% 12.5%',
+              }}
+            />
+            <div
+              className="absolute border border-dashed border-amber-300/80 bg-amber-300/5"
+              style={{
+                left: safeInset.left,
+                right: safeInset.right,
+                top: safeInset.top,
+                bottom: safeInset.bottom,
+              }}
+            />
+            <div className="absolute inset-x-0 top-0 flex h-5 items-end justify-between border-b border-brand-cyan/40 px-1 text-[8px] font-mono text-brand-cyan/80">
+              {Array.from({ length: 13 }, (_, index) => (
+                <span key={index} className="h-2 border-l border-brand-cyan/50 pl-0.5">
+                  {index * 10}%
+                </span>
+              ))}
             </div>
-            <div className="absolute bottom-4 left-8 text-[10px] font-mono font-bold text-amber-400">
-              Safe Margin Bottom
+            <div className="absolute inset-y-0 left-0 flex w-7 flex-col justify-between border-r border-brand-cyan/40 py-1 text-[8px] font-mono text-brand-cyan/80">
+              {Array.from({ length: 9 }, (_, index) => (
+                <span key={index} className="w-3 border-t border-brand-cyan/50 pt-0.5">
+                  {index * 12.5}%
+                </span>
+              ))}
+            </div>
+            <div className="absolute left-2 top-7 rounded bg-slate-950/70 px-1.5 py-1 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+              {project.preset.aspectRatio} · {isVerticalFormat ? 'Vertical' : 'Horizontal'}
+            </div>
+            <div className="absolute bottom-2 right-2 rounded bg-slate-950/70 px-1.5 py-1 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+              Safe zone · {safeMarginX}% / {safeMarginY}%
             </div>
           </div>
         )}
