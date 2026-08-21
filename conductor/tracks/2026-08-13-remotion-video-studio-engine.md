@@ -373,42 +373,67 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 ```
 
 ##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
-- [ ] **1. 🔤 Suite de Texto Avanzada (`Text & Typography Suite - Canva & CapCut Style`):**
+- [x] **1. 🔤 Suite de Texto Avanzada (`Text & Typography Suite - Canva & CapCut Style`):**
   - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Combinaciones Duos, Ganchos CTR, Subtítulos CapCut, Ofertas/Precios, CTAs, Listas de Beneficios*) + Columna derecha (*Previsualización interactiva en vivo con 1-clic insert*).
   - **Jerarquías Rápidas & Botón Libre:** `[ + Añadir cuadro de texto ]` y botones rápidos `H1 (56px)`, `H2 (42px)`, `Cuerpo (24px)`, `Badge (18px)` con escalado dinámico proporcional a 1080px.
   - **Combinaciones Tipográficas Duos (Font Pairs):** Bloques prediseñados de Título + Subtítulo con contraste de marca (ej: Montserrat Black + Inter Regular, Poppins Bold + Cursiva).
   - **Listas de Beneficios con Checks (Bullets):** Inserción rápida de 3 viñetas con checks verdes/dorados para pólizas y coberturas de extranjería.
-  - **Estilos Virales & Subtítulos Dinámicos (CapCut / Hormozi Style):**
-    - En **Image Studio:** Cajas de texto con palabras clave resaltadas (*Boxed Marker*, *Viral Yellow*, *Glow Cyan*).
-    - En **Video Studio:** Sincronización temporal palabra por palabra (*Karaoke effect con spring animado*) sincronizado con el audio de voz en off.
-  - **Efectos de Texto en Inspector:**
-    - *Background Box (Marcador / Caja redondeada de color detrás del texto)*.
-    - *Contorno / Trazo de texto (Hollow / Stroke)*.
-    - *Selector visual de Google Fonts* (Poppins, Inter, Montserrat, Oswald, Playfair Display, Plus Jakarta Sans).
-    - *Espaciado Fino (Letter-spacing y Line-height interactivos)*.
-- [ ] **2. 🔷 Elementos (`Elements & Shapes`):**
-  - **Estructura Split 2 Zonas:** Columna izquierda (*Formas, Badges Extranjería, Mockups iPhone, Iconos Salud/Legal, Flechas*) + Columna derecha (*Preview de badges con glow y formas SVG*).
-- [ ] **3. 📁 Medios y Fotos (`Media & Uploads`):**
-  - **Estructura Split 2 Zonas:** Columna izquierda (*Mis Subidos, Estudiantes, Pasaportes/Visados, Médicos, Nómadas*) + Columna derecha (*Dropzone + Galería con hover de inserción*).
+  - **Inspector Unificado & Motor Universal de Tipografía:**
+    - Input numérico libre (`NumberInput`) para tamaño de fuente.
+    - Selector Universal de Color HEX (`HexColorPickerField`) en texto, fondo y bordes.
+    - Resaltado de palabras individuales mediante sintaxis limpia `[DENEGUEN](#EE9B00)` y `**palabras**` (sin saturar el inspector de chips).
+    - Selector visual de Google Fonts (Poppins, Inter, Montserrat, Oswald, Playfair Display, Plus Jakarta Sans, Outfit).
+    - Espaciado Fino (*Letter-spacing* y *Line-height* interactivos).
+    - Disposición en 1 clic: `📏 1 Sola Línea` vs `📄 Multilínea`.
+  - **Asistente Inteligente de Ortografía y Gramática (RAE & Dominio Asegurador):**
+    - Corrección automática en 1-clic de tildes (*Extranjería, póliza, denegación, garantía*), signos `¿?` e `¡!`, interrogativos y marcas (*VitaBlue, WhatsApp*).
+    - Atributos nativos `spellCheck={true}` y `lang="es"` en tiempo real.
+- [x] **2. 🔷 Elementos (`Elements & Shapes`):**
+  - **Catálogo de 20+ Formas Geométricas SVG:** Círculos, rectángulos redondeados, rombos, flechas, bocadillos, sellos burst y estrellas.
+  - **Catálogo de 20+ Ilustraciones Web:** Símbolos médicos, pasaportes, estudiantes, maletas, asistencia en viaje, visados.
+  - **Controles de Estilo:** Grosor y color de trazo/borde con selector HEX y radio de esquina.
+- [x] **3. 📁 Medios y Fotos de Stock (`Media & Uploads`):**
+  - Galería curada con fotos profesionales para Extranjería (Estudiantes, Asesoras de confianza, Pasaportes, Parejas, Nómadas).
+  - Dropzone de subida local e inserción con 1-clic sobre el lienzo o como fondo.
+  - Formas de recorte (*Squircle, Círculo, Rectángulo Redondeado, Hexágono*).
 - [x] **4. 📑 Capas (`Layers Manager`):**
   - Árbol de capas con Drag & Drop, bloqueo, visibilidad y selección múltiple agrupable (`Cmd+G`).
+  - **Corrección de Prioridad Z-Index (`maxZ + 1`):** Nuevas capas, duplicados y pegados aparecen siempre al frente absoluto del lienzo.
 
 ##### 🔵 Zona 2: Identidad y Marca (5)
 - [x] **5. 🎨 Kit de Marca (`Brand Kit`):**
-  - Subcategorías: *Logos Oficiales (SVG)*, *Paleta VitaBlue Opción 3 (Ocean Teal, Amber Gold, Midnight, Mint)*, *Fuentes*, *Fondos & Gradientes*.
+  - Logos e isotipos oficiales vectoriales de VitaBlue (Horizontal principal, Blanco sobre fondos oscuros, Isotipo solo, Isotipo en caja turquesa y versión monocromática).
+  - Paleta semántica oficial VitaBlue (`vb-ocean`, `vb-gold`, `vb-midnight`, `vb-mint`).
+  - Paleta de gradientes mesh interactivos con selector Claro / Oscuro y fondo transparente.
 
 ##### 🟣 Zona 3: Aceleración y Composición Rápida (6 - 7)
 - [x] **6. 🧩 Bloques de Conversión (`Conversion Blocks`):**
-  - Subcategorías: *Asesoras Asignadas*, *Grids de Aseguradoras*, *Comparativas ❌ vs ✅*, *Sellos de Garantía Consular*.
+  - `MotionAdvisorCard`: Tarjeta de asesora con foto, badge live pulse y botón WhatsApp directo.
+  - `MotionTrustBadge`: Sello de garantía consular y 100% válido para visados.
+  - `MotionComparisonCard`: Comparativa visual clara (❌ *Seguro de viaje común* vs ✅ *Seguro VitaBlue Extranjería*).
+  - `MotionProviderGrid`: Grid de aseguradoras autorizadas (Sanitas, Adeslas, Asisa, DKV).
+  - `WhatsAppCtaButton`: Botón de llamada a la acción con selector de icono (`👉`, `💬`, `⚡`, `✓`, `ninguno`).
+  - `TrustVerifiedPill` & `TrustHighlightPill`: Píldoras y badges de confianza para visados.
+  - `GlassCardSurface`: Superficie de cristal translúcido glassmorphism con tinte turquesa/dorado.
 - [x] **7. 📑 Plantillas Completas (`Templates`):**
   - Subcategorías: *Visados Estudiantes*, *Nómadas Digitales*, *Comparativas*, *Historias & Reels*.
 
-##### 🟡 Zona 4: Inteligencia y Multimedia (8 - 9)
-- [ ] **8. ✨ Copys con IA (`AI Copywriter & Hooks`):**
-  - Subcategorías: *Ganchos de Entrada (Hooks)*, *Derribar Objeciones (Copagos/Carencias)*, *Por País (Colombia/México/Perú)*, *Urgencia*.
-- [ ] **9. 🎵 Audio & Video Bridge (`Remotion Video Generator & Subtitle Engine`):**
-  - Pistas de sonido, SFX, motor de subtítulos automáticos y botón 1-clic "Convertir a Video animado en Remotion".
-- [ ] **Carrusel Multi-Página (Instagram / LinkedIn):** Paginador inferior `[ Slide 1 ] [ Slide 2 ] [ + ]` y exportador multi-slide ZIP/PDF.
+##### 🟡 Zona 4: Pendientes Críticos a Implementar (8 - 11)
+- [ ] **8. 🧩 Bloques Complementarios de Conversión Pendientes:**
+  - `AdvisorQuoteBox`: Caja de cita textual / testimonio directo de la asesora con comillas grandes de marca.
+  - `ProviderBadge`: Badge individual aislado con logo oficial de aseguradora y sello de aprobación consular.
+  - `TrustShieldIcon`: Escudo heráldico de garantía consular aislado con borde dorado y resplandor.
+  - `ComparisonHeader`: Cabecera gráfica de comparativa con indicadores visuales ❌ vs ✅.
+- [ ] **9. ✨ Copys con IA Expandido (`AI Copywriter & Hooks Drawer`):**
+  - Drawer interactivo con selector de audiencia (*Estudiantes, Nómadas, Trabajo por cuenta propia, Reagrupación familiar*).
+  - Generador de ganchos por país de origen (*Colombia, México, Perú, Argentina, Chile, EE.UU.*).
+  - Variantes A/B de urgencia, derribar objeciones (copagos y carencias) y llamadas a la acción directas para WhatsApp.
+- [ ] **10. 📑 Carrusel Multi-Página (Instagram / LinkedIn Multi-Slide):**
+  - Barra inferior de páginas/slides (`[ Slide 1 ] [ Slide 2 ] [ + Añadir Slide ]`).
+  - Reordenación drag-and-drop de diapositivas del carrusel y duplicación de slide.
+  - Exportador multi-página: descarga en archivo comprimido ZIP con todos los PNGs numerados (`slide-1.png`, `slide-2.png`, etc.) y exportación a documento PDF.
+- [ ] **11. 🎵 1-Click Video Bridge (`Remotion Video Generator`):**
+  - Botón directo para convertir el diseño gráfico del lienzo en una escena animada en Remotion Video Studio con animación de entrada, música y locución.
 
 ##### 🎛️ Inspector Contextual Inteligente (Panel Derecho):
 - Panel lateral no intrusivo con botón colapsador `❯` y switch `[ ⚙️ Propiedades ]` en toolbar.
