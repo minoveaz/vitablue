@@ -632,13 +632,33 @@ export const generateSmartCanvasProject = (options: SmartComposerOptions): Image
     }
   }
 
+  const normalizedLayers = layers.map((layer) => {
+    const layerWidth = layer.width ?? 380;
+    const layerHeight =
+      layer.height ??
+      (layer.type === 'text'
+        ? Math.max(48, (layer.fontSize ?? 24) * (Number(layer.props.maxLines ?? 2) + 0.4))
+        : layer.blockType === 'MotionAdvisorCard'
+        ? 330
+        : layer.blockType === 'MotionComparisonCard' || layer.blockType === 'MotionProviderGrid'
+        ? 300
+        : 120);
+    return {
+      ...layer,
+      position: {
+        x: Math.max(0, Math.min(100, Math.round(((layer.position.x + layerWidth / 2) / w) * 1000) / 10)),
+        y: Math.max(0, Math.min(100, Math.round(((layer.position.y + layerHeight / 2) / h) * 1000) / 10)),
+      },
+    };
+  });
+
   return {
     id: `smart-canvas-${now}`,
     title: `Diseño: ${SMART_OBJECTIVES.find((o) => o.id === objective)?.name ?? 'Generado'} (${preset.name})`,
     preset,
     background,
     brandTokens: defaultMotionBrandTokens,
-    layers,
+    layers: normalizedLayers,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

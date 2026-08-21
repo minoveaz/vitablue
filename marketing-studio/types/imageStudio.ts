@@ -12,6 +12,41 @@ export interface ImageFormatPreset {
   recommendedFor: string;
 }
 
+export type ImagePlatformGuideId =
+  | 'meta-feed'
+  | 'meta-story'
+  | 'tiktok'
+  | 'linkedin'
+  | 'x'
+  | 'facebook-cover'
+  | 'youtube'
+  | 'email'
+  | 'document'
+  | 'web';
+
+export interface CanvasGuideSettings {
+  profileId?: ImagePlatformGuideId | 'auto';
+  showRulers: boolean;
+  showGrid: boolean;
+  showColumns: boolean;
+  showMargins: boolean;
+  showSafeZone: boolean;
+  snapToGuides: boolean;
+  columns: number;
+  columnGap: number;
+  customVerticalGuides: number[];
+  customHorizontalGuides: number[];
+}
+
+export type ImageStyleVariantId = 'ocean' | 'gold' | 'mint' | 'midnight';
+
+export interface ImageTextFit {
+  mode: 'auto' | 'fixed';
+  minFontSize: number;
+  maxFontSize: number;
+  maxLines: number;
+}
+
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
   // 1. REDES SOCIALES & ADS
   {
@@ -318,6 +353,7 @@ export interface ImageLayer {
   clipShape?: 'none' | 'circle' | 'squircle' | 'pill' | 'phone_mockup' | 'shield' | 'hexagon' | 'rounded-2xl';
   locked?: boolean;
   visible?: boolean;
+  styleVariant?: ImageStyleVariantId;
 }
 
 /** Stable contracts used by the editor engine and persistence adapters. */
@@ -362,6 +398,7 @@ export interface ImageProject {
   background: CanvasBackground;
   layers: ImageLayer[];
   brandTokens: MotionBrandTokens;
+  guideSettings?: CanvasGuideSettings;
   carouselPages?: number;
   currentSlide?: number;
   createdAt: string;

@@ -6,6 +6,8 @@ import {
   ImageFormatPreset,
   ImageBlockType,
   CanvasBackground,
+  CanvasGuideSettings,
+  ImageStyleVariantId,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
 import { saveStoredImageProject, saveRecoveryImageProject, getRecoveryImageProject } from '../utils/imageProjectStorage';
@@ -15,10 +17,27 @@ import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
 import { createCustomGroup, expandCustomGroup } from '../utils/imageEditorCore';
 import { appendImageProjectHistory } from '../utils/imageEditorHistory';
+import {
+  applyLayerStyleVariant,
+  autoLayoutLayers,
+  ContentReplacement,
+  createDefaultGuideSettings,
+  fitTextLayer,
+  getPlatformGuideProfile,
+  replaceLayerContent as replaceLayerContentPreservingComposition,
+} from '../utils/imageDesignSystem';
+
+const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
+  ...project,
+  guideSettings: {
+    ...createDefaultGuideSettings(project.preset),
+    ...(project.guideSettings ?? {}),
+  },
+});
 
 export function useImageProjectEditor(initialProject?: ImageProject) {
   const [project, setProject] = useState<ImageProject>(
-    initialProject ?? INITIAL_IMAGE_TEMPLATES[0]
+    withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0])
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>(
     project.layers[0]?.id ? [project.layers[0].id] : []
@@ -29,7 +48,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, []);
 
   const [zoom, setZoom] = useState<number>(0.55);
-  const [showSafeZones, setShowSafeZones] = useState<boolean>(false);
+  const [showSafeZones, setShowSafeZones] = useState<boolean>(true);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
   const [validationIssues, setValidationIssues] = useState<ImageProjectValidationIssue[]>([]);
@@ -45,7 +64,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (!initialProject) return;
     const recovery = getRecoveryImageProject();
     if (recovery && recovery.project.id === initialProject.id && recovery.savedAt > initialProject.updatedAt) {
-      setProject(recovery.project);
+      setProject(withProfessionalDesignDefaults(recovery.project));
       setSaveState('recovery');
       setValidationIssues(validateImageProject(recovery.project));
     }
@@ -67,9 +86,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const projectFingerprint = `${initialProject.id}_${initialProject.updatedAt || ''}_${initialProject.layers.length}_${initialProject.title}`;
       if (projectFingerprint !== lastLoadedProjectRef.current) {
         lastLoadedProjectRef.current = projectFingerprint;
-        setProject(initialProject);
+        const normalizedProject = withProfessionalDesignDefaults(initialProject);
+        setProject(normalizedProject);
         setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
-        const cloned = JSON.parse(JSON.stringify(initialProject));
+        const cloned = JSON.parse(JSON.stringify(normalizedProject));
         historyRef.current = [cloned];
         historyIndexRef.current = 0;
         setHistoryLength(1);
@@ -154,25 +174,33 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const newH = preset.height;
 
       if (!shouldSmartResize || prev.layers.length === 0 || (oldW === newW && oldH === newH)) {
-        const next = { ...prev, preset, updatedAt: new Date().toISOString() };
+        const defaults = createDefaultGuideSettings(preset);
+        const profile = getPlatformGuideProfile(preset, prev.guideSettings?.profileId);
+        const next = {
+          ...prev,
+          preset,
+          guideSettings: {
+            ...defaults,
+            ...(prev.guideSettings ?? {}),
+            columns: profile.columns,
+            columnGap: profile.columnGap,
+          },
+          updatedAt: new Date().toISOString(),
+        };
         pushHistory(next);
         return next;
       }
 
-      const scaleX = newW / oldW;
-      const scaleY = newH / oldH;
-      const scaleUniform = Math.min(scaleX, scaleY);
+      const scaleUniform = Math.min(newW / oldW, newH / oldH);
 
       const nextLayers = prev.layers.map((layer) => {
-        const posX = Math.round(layer.position.x * scaleX);
-        const posY = Math.round(layer.position.y * scaleY);
-        const width = layer.width ? Math.round(layer.width * scaleX) : undefined;
-        const height = layer.height ? Math.round(layer.height * scaleY) : undefined;
+        if (layer.locked) return layer;
+        const width = layer.width ? Math.round(layer.width * scaleUniform) : undefined;
+        const height = layer.height ? Math.round(layer.height * scaleUniform) : undefined;
         const fontSize = layer.fontSize ? Math.round(layer.fontSize * scaleUniform) : undefined;
 
         return {
           ...layer,
-          position: { x: posX, y: posY },
           ...(width !== undefined ? { width } : {}),
           ...(height !== undefined ? { height } : {}),
           ...(fontSize !== undefined ? { fontSize } : {}),
@@ -183,6 +211,12 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         ...prev,
         preset,
         layers: nextLayers,
+        guideSettings: {
+          ...createDefaultGuideSettings(preset),
+          ...(prev.guideSettings ?? {}),
+          columns: getPlatformGuideProfile(preset, prev.guideSettings?.profileId).columns,
+          columnGap: getPlatformGuideProfile(preset, prev.guideSettings?.profileId).columnGap,
+        },
         updatedAt: new Date().toISOString(),
       };
       pushHistory(next);
@@ -191,16 +225,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, [pushHistory]);
 
   const composeSmartCanvas = useCallback((options: SmartComposerOptions) => {
-    const smartProject = generateSmartCanvasProject(options);
+    const smartProject = withProfessionalDesignDefaults(generateSmartCanvasProject(options));
     setProject(smartProject);
     setSelectedLayerIds(smartProject.layers[0]?.id ? [smartProject.layers[0].id] : []);
     pushHistory(smartProject);
   }, [pushHistory]);
 
   const loadTemplate = useCallback((template: ImageProject) => {
-    setProject(template);
-    setSelectedLayerIds(template.layers[0]?.id ? [template.layers[0].id] : []);
-    pushHistory(template);
+    const normalizedTemplate = withProfessionalDesignDefaults(template);
+    setProject(normalizedTemplate);
+    setSelectedLayerIds(normalizedTemplate.layers[0]?.id ? [normalizedTemplate.layers[0].id] : []);
+    pushHistory(normalizedTemplate);
   }, [pushHistory]);
 
   const selectLayer = useCallback((id: string | null, isShift = false) => {
@@ -230,7 +265,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const deleteSelectedLayers = useCallback(() => {
     if (selectedLayerIds.length === 0) return;
     setProject((prev) => {
-      const nextLayers = prev.layers.filter((l) => !selectedLayerIds.includes(l.id));
+      const nextLayers = prev.layers.filter((l) => !selectedLayerIds.includes(l.id) || l.locked);
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       setSelectedLayerIds([]);
       pushHistory(next);
@@ -242,7 +277,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (selectedLayerIds.length === 0) return;
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) => {
-        if (!selectedLayerIds.includes(l.id)) return l;
+        if (!selectedLayerIds.includes(l.id) || l.locked) return l;
         return {
           ...l,
           position: {
@@ -259,14 +294,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const groupSelectedLayers = useCallback(() => {
     if (selectedLayerIds.length < 2) return;
-    const layersToGroup = project.layers.filter((l) => selectedLayerIds.includes(l.id));
+    const layersToGroup = project.layers.filter((l) => selectedLayerIds.includes(l.id) && !l.locked);
     if (layersToGroup.length < 2) return;
 
     const groupLayerId = `layer-group-${Date.now()}`;
     const newGroupLayer = createCustomGroup(layersToGroup, groupLayerId);
 
     setProject((prev) => {
-      const remainingLayers = prev.layers.filter((l) => !selectedLayerIds.includes(l.id));
+      const groupedIds = new Set(layersToGroup.map((layer) => layer.id));
+      const remainingLayers = prev.layers.filter((l) => !groupedIds.has(l.id));
       const next = {
         ...prev,
         layers: [...remainingLayers, newGroupLayer],
@@ -282,7 +318,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (selectedLayerIds.length === 0) return;
 
     setProject((prev) => {
-      const layersToAlign = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
+      const layersToAlign = prev.layers.filter((l) => selectedLayerIds.includes(l.id) && !l.locked);
       if (layersToAlign.length === 0) return prev;
 
       let nextLayers: ImageLayer[];
@@ -305,22 +341,22 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         // Alinear múltiples capas entre sí
         if (alignment === 'left') {
           const minX = Math.min(...layersToAlign.map((l) => l.position.x));
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: minX } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, x: minX } } : l));
         } else if (alignment === 'center') {
           const avgX = Math.round((layersToAlign.reduce((sum, l) => sum + l.position.x, 0) / layersToAlign.length) * 10) / 10;
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: avgX } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, x: avgX } } : l));
         } else if (alignment === 'right') {
           const maxX = Math.max(...layersToAlign.map((l) => l.position.x));
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, x: maxX } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, x: maxX } } : l));
         } else if (alignment === 'top') {
           const minY = Math.min(...layersToAlign.map((l) => l.position.y));
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: minY } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, y: minY } } : l));
         } else if (alignment === 'middle') {
           const avgY = Math.round((layersToAlign.reduce((sum, l) => sum + l.position.y, 0) / layersToAlign.length) * 10) / 10;
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: avgY } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, y: avgY } } : l));
         } else {
           const maxY = Math.max(...layersToAlign.map((l) => l.position.y));
-          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) ? { ...l, position: { ...l.position, y: maxY } } : l));
+          nextLayers = prev.layers.map((l) => (selectedLayerIds.includes(l.id) && !l.locked ? { ...l, position: { ...l.position, y: maxY } } : l));
         }
       }
 
@@ -334,7 +370,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (selectedLayerIds.length < 3) return;
 
     setProject((prev) => {
-      const layersToDistribute = prev.layers.filter((l) => selectedLayerIds.includes(l.id));
+      const layersToDistribute = prev.layers.filter((l) => selectedLayerIds.includes(l.id) && !l.locked);
       if (layersToDistribute.length < 3) return prev;
 
       let nextLayers: ImageLayer[];
@@ -389,6 +425,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         width: project.preset.width,
         height: project.preset.height,
         style: { overflow: 'hidden' },
+        filter: (target: HTMLElement) => target.dataset?.editorOverlay !== 'true',
       };
       const blob = await toBlob(node, exportOptions);
       if (!blob) return false;
@@ -404,6 +441,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
           width: project.preset.width,
           height: project.preset.height,
           style: { overflow: 'hidden' },
+          filter: (target: HTMLElement) => target.dataset?.editorOverlay !== 'true',
         };
         const dataUrl = await toPng(node, exportOptions);
         const res = await fetch(dataUrl);
@@ -422,7 +460,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerFilter = useCallback((layerId: string, filter: ImageLayer['filter']) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, filter } : l
+        l.id === layerId && !l.locked ? { ...l, filter } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -433,7 +471,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerAdjustments = useCallback((layerId: string, adjustments: { brightness?: number; contrast?: number; blur?: number }) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, ...adjustments } : l
+        l.id === layerId && !l.locked ? { ...l, ...adjustments } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -444,7 +482,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerClipShape = useCallback((layerId: string, clipShape: ImageLayer['clipShape']) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, clipShape } : l
+        l.id === layerId && !l.locked ? { ...l, clipShape } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -467,7 +505,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) => {
-        if (l.id !== layerId) return l;
+        if (l.id !== layerId || l.locked) return l;
 
         const updated: ImageLayer = {
           ...l,
@@ -496,10 +534,78 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const updateGuideSettings = useCallback((patch: Partial<CanvasGuideSettings>) => {
+    setProject((prev) => {
+      const next = {
+        ...prev,
+        guideSettings: {
+          ...createDefaultGuideSettings(prev.preset),
+          ...(prev.guideSettings ?? {}),
+          ...patch,
+        },
+        updatedAt: new Date().toISOString(),
+      };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const applyAutoLayout = useCallback((direction: 'vertical' | 'horizontal' | 'grid') => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = autoLayoutLayers(prev.layers, selectedLayerIds, prev.preset, {
+        direction,
+        columns: direction === 'grid' ? Math.min(3, Math.ceil(Math.sqrt(selectedLayerIds.length))) : undefined,
+        profileId: prev.guideSettings?.profileId,
+      });
+      if (nextLayers === prev.layers) return prev;
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const fitSelectedText = useCallback(() => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((layer) =>
+        selectedLayerIds.includes(layer.id) ? fitTextLayer(layer, { mode: 'auto' }) : layer
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
+  const replaceLayerContent = useCallback((layerId: string, replacement: ContentReplacement) => {
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((layer) =>
+        layer.id === layerId
+          ? fitTextLayer(replaceLayerContentPreservingComposition(layer, replacement))
+          : layer
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const applyStyleVariant = useCallback((variantId: ImageStyleVariantId) => {
+    if (selectedLayerIds.length === 0) return;
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((layer) =>
+        selectedLayerIds.includes(layer.id) ? applyLayerStyleVariant(layer, variantId) : layer
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [selectedLayerIds, pushHistory]);
+
   const updateLayerPosition = useCallback((layerId: string, position: { x: number; y: number }) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, position: clampLayerPosition(position) } : l
+        l.id === layerId && !l.locked ? { ...l, position: clampLayerPosition(position) } : l
       );
       return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
@@ -508,7 +614,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerScale = useCallback((layerId: string, scale: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
+        l.id === layerId && !l.locked ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
@@ -519,7 +625,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
+        l.id === layerId && !l.locked ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
@@ -530,7 +636,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
+        l.id === layerId && !l.locked ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
@@ -541,7 +647,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerRotation = useCallback((layerId: string, rotation: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, rotation: Math.round(rotation) } : l
+        l.id === layerId && !l.locked ? { ...l, rotation: Math.round(rotation) } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
@@ -602,6 +708,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const removeLayer = useCallback((layerId: string) => {
     setProject((prev) => {
+      const target = prev.layers.find((layer) => layer.id === layerId);
+      if (target?.locked) return prev;
       const nextLayers = prev.layers.filter((l) => l.id !== layerId);
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       setSelectedLayerId(nextLayers[0]?.id ?? null);
@@ -635,7 +743,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const renameLayer = useCallback((layerId: string, title: string) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, title } : l
+        l.id === layerId && !l.locked ? { ...l, title } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -715,7 +823,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (idsToApply.length === 0) return;
 
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) => (idsToApply.includes(l.id) ? { ...l, ...styleToApply } : l));
+      const nextLayers = prev.layers.map((l) => (idsToApply.includes(l.id) && !l.locked ? { ...l, ...styleToApply } : l));
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
       return next;
@@ -725,7 +833,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const toggleFlipHorizontal = useCallback((layerId: string) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, flipHorizontal: !l.flipHorizontal } : l
+        l.id === layerId && !l.locked ? { ...l, flipHorizontal: !l.flipHorizontal } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -736,7 +844,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const toggleFlipVertical = useCallback((layerId: string) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, flipVertical: !l.flipVertical } : l
+        l.id === layerId && !l.locked ? { ...l, flipVertical: !l.flipVertical } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -748,7 +856,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     if (selectedLayerIds.length === 0) return;
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) => {
-        if (!selectedLayerIds.includes(l.id)) return l;
+        if (!selectedLayerIds.includes(l.id) || l.locked) return l;
         return {
           ...l,
           position: {
@@ -766,7 +874,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerOpacity = useCallback((layerId: string, opacity: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, opacity: Math.max(0, Math.min(1, opacity)) } : l
+        l.id === layerId && !l.locked ? { ...l, opacity: Math.max(0, Math.min(1, opacity)) } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -777,7 +885,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerShadowPreset = useCallback((layerId: string, shadowPreset: ImageLayer['shadowPreset']) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, shadowPreset } : l
+        l.id === layerId && !l.locked ? { ...l, shadowPreset } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -788,7 +896,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerBorder = useCallback((layerId: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, ...border } : l
+        l.id === layerId && !l.locked ? { ...l, ...border } : l
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -801,6 +909,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const sortedLayers = [...prev.layers].sort((a, b) => a.zIndex - b.zIndex);
       const currentIndex = sortedLayers.findIndex((l) => l.id === layerId);
       if (currentIndex === -1) return prev;
+      if (sortedLayers[currentIndex].locked) return prev;
 
       let targetIndex: number;
       if (direction === 'top') {
@@ -833,6 +942,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setProject((prev) => {
       const total = reorderedLayerIds.length;
       const nextLayers = prev.layers.map((layer) => {
+        if (layer.locked) return layer;
         const indexInList = reorderedLayerIds.indexOf(layer.id);
         if (indexInList === -1) return layer;
         return {
@@ -1143,7 +1253,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const clearCanvas = useCallback(() => {
     setProject((prev) => {
-      const next = { ...prev, layers: [], updatedAt: new Date().toISOString() };
+      const nextLayers = prev.layers.filter((layer) => layer.locked);
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       setSelectedLayerId(null);
       setSelectedLayerIds([]);
       pushHistory(next);
@@ -1179,6 +1290,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         style: {
           overflow: 'hidden',
         },
+        filter: (target: HTMLElement) => target.dataset?.editorOverlay !== 'true',
       };
 
       if (format === 'jpeg') {
@@ -1229,7 +1341,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const fitLayerToCanvas = useCallback((layerId: string) => {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
-      if (!layer) return prev;
+      if (!layer || layer.locked) return prev;
 
       const canvasWidth = prev.preset.width || 1080;
       const canvasHeight = prev.preset.height || 1080;
@@ -1320,7 +1432,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const ungroupLayer = useCallback((layerId: string) => {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
-      if (!layer) return prev;
+      if (!layer || layer.locked) return prev;
 
       let subLayers: ImageLayer[] = [];
       const props = layer.props as Record<string, unknown>;
@@ -1679,6 +1791,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     groupSelectedLayers,
     updateMultipleLayersPosition,
     updateLayerProps,
+    updateGuideSettings,
+    applyAutoLayout,
+    fitSelectedText,
+    replaceLayerContent,
+    applyStyleVariant,
     updateLayerPosition,
     updateLayerScale,
     updateLayerWidth,

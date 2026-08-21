@@ -20,6 +20,7 @@ import {
   Wand2,
   Film,
   FolderHeart,
+  Grid3X3,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -41,6 +42,10 @@ export const ImageStudio: React.FC = () => {
   const editor = useImageProjectEditor(initialProject);
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
+  const showToast = React.useCallback((msg: string) => {
+    setToastMessage(msg);
+    window.setTimeout(() => setToastMessage(null), 3000);
+  }, []);
 
   // Abrir automáticamente el inspector al seleccionar una capa
   useEffect(() => {
@@ -142,7 +147,7 @@ export const ImageStudio: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [editor]);
+  }, [editor, showToast]);
 
   const handleSelectLayer = (id: string, isShift?: boolean) => {
     if (isShift) {
@@ -196,11 +201,6 @@ export const ImageStudio: React.FC = () => {
     showToast('Guardando en DAM...');
   };
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
   // VISTA 1: HUB / DAM GALLERY DE ASSETS DE IMAGEN
   if (!assetId) {
     return (
@@ -228,6 +228,7 @@ export const ImageStudio: React.FC = () => {
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
+    { id: 'layout', label: 'Diseño', icon: <Grid3X3 className="size-4" /> },
 
     // 🔵 Zona 2: Identidad y Marca (6)
     { id: 'brand', label: 'Kit de Marca', icon: <Palette className="size-4" /> },
@@ -271,6 +272,10 @@ export const ImageStudio: React.FC = () => {
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onDeleteSelectedLayers={editor.deleteSelectedLayers}
+          onUpdateGuideSettings={editor.updateGuideSettings}
+          onAutoLayout={editor.applyAutoLayout}
+          onFitText={editor.fitSelectedText}
+          onApplyVariant={editor.applyStyleVariant}
         />
       }
       toolbar={
@@ -300,6 +305,9 @@ export const ImageStudio: React.FC = () => {
             project={editor.project}
             selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
             onUpdateLayerProps={editor.updateLayerProps}
+            onReplaceLayerContent={editor.replaceLayerContent}
+            onApplyStyleVariant={editor.applyStyleVariant}
+            onToggleLayerLock={editor.toggleLayerLock}
             onUpdateLayerScale={editor.updateLayerScale}
             onUpdateLayerWidth={editor.updateLayerWidth}
             onUpdateLayerHeight={editor.updateLayerHeight}

@@ -33,6 +33,11 @@ import {
   FolderHeart,
 } from 'lucide-react';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
+import {
+  createDefaultGuideSettings,
+  getGuideSnapLines,
+  getPlatformGuideProfile,
+} from '../../utils/imageDesignSystem';
 
 interface ImageStageProps {
   project: ImageProject;
@@ -134,6 +139,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; layer: ImageLayer } | null>(null);
 
   const effectiveHandMode = toolMode === 'hand' || isSpacePressed;
+  const guideSettings = project.guideSettings ?? createDefaultGuideSettings(project.preset);
+  const guideProfile = getPlatformGuideProfile(project.preset, guideSettings.profileId);
+  const guideSnapLines = getGuideSnapLines(project.preset, guideSettings);
 
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number }>({
     x: 0,
@@ -557,7 +565,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               activeLayer.height ?? 200,
               project.preset.width,
               project.preset.height,
-              project.layers
+              project.layers,
+              guideSettings.snapToGuides
+                ? {
+                    verticalGuides: guideSnapLines.vertical,
+                    horizontalGuides: guideSnapLines.horizontal,
+                  }
+                : undefined
             );
             nextX = (snap.x / project.preset.width) * 100;
             nextY = (snap.y / project.preset.height) * 100;
@@ -601,7 +615,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
+  }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, guideSettings.snapToGuides, guideSnapLines.vertical, guideSnapLines.horizontal, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     setPanOffset({ x: 0, y: 0 });
@@ -1176,13 +1190,100 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             />
           )}
 
-          {/* SAFE ZONES OVERLAY (STORIES / REELS / 4:5 ADS) */}
+          {/* PROFESSIONAL DESIGN GUIDES */}
           {showSafeZones && (
-            <div className="pointer-events-none absolute inset-0 z-50 border-2 border-dashed border-amber-400/60 p-8">
-              <div className="flex justify-between text-[10px] font-mono font-bold text-amber-400">
-                <span>Safe Margin Top</span>
-                <span>Instagram / TikTok Area</span>
-              </div>
+            <div
+              data-editor-overlay="true"
+              className="pointer-events-none absolute inset-0 z-50 overflow-hidden"
+              aria-hidden="true"
+            >
+              {guideSettings.showGrid && (
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage:
+                      'linear-gradient(to right, #94D2BD 1px, transparent 1px), linear-gradient(to bottom, #94D2BD 1px, transparent 1px)',
+                    backgroundSize: '24px 24px',
+                  }}
+                />
+              )}
+              {guideSettings.showColumns && (
+                <div
+                  className="absolute flex"
+                  style={{
+                    left: guideProfile.margins.left,
+                    right: guideProfile.margins.right,
+                    top: guideProfile.margins.top,
+                    bottom: guideProfile.margins.bottom,
+                    gap: guideSettings.columnGap,
+                  }}
+                >
+                  {Array.from({ length: guideSettings.columns }, (_, index) => (
+                    <div
+                      key={index}
+                      className="h-full flex-1 border-x border-brand-cyan/30 bg-brand-cyan/5"
+                    />
+                  ))}
+                </div>
+              )}
+              {guideSettings.showMargins && (
+                <div
+                  className="absolute border border-dashed border-brand-cyan/70"
+                  style={{
+                    left: guideProfile.margins.left,
+                    right: guideProfile.margins.right,
+                    top: guideProfile.margins.top,
+                    bottom: guideProfile.margins.bottom,
+                  }}
+                />
+              )}
+              {guideSettings.showSafeZone && (
+                <div
+                  className="absolute border-2 border-dashed border-amber-400/80 bg-amber-400/[0.03]"
+                  style={{
+                    left: guideProfile.safeInsets.left,
+                    right: guideProfile.safeInsets.right,
+                    top: guideProfile.safeInsets.top,
+                    bottom: guideProfile.safeInsets.bottom,
+                  }}
+                >
+                  <span className="absolute left-2 top-2 rounded bg-slate-950/85 px-2 py-1 font-mono text-[10px] font-bold text-amber-300">
+                    Safe zone · {guideProfile.label}
+                  </span>
+                </div>
+              )}
+              {guideSettings.customVerticalGuides.map((percent) => (
+                <div
+                  key={`v-${percent}`}
+                  className="absolute inset-y-0 w-px bg-fuchsia-400/80"
+                  style={{ left: `${percent}%` }}
+                />
+              ))}
+              {guideSettings.customHorizontalGuides.map((percent) => (
+                <div
+                  key={`h-${percent}`}
+                  className="absolute inset-x-0 h-px bg-fuchsia-400/80"
+                  style={{ top: `${percent}%` }}
+                />
+              ))}
+              {guideSettings.showRulers && (
+                <>
+                  <div className="absolute inset-x-0 top-0 flex h-6 items-end justify-between border-b border-brand-cyan/60 bg-slate-950/80 px-1 font-mono text-[9px] font-bold text-brand-cyan">
+                    {Array.from({ length: 11 }, (_, index) => (
+                      <span key={index} className="border-l border-brand-cyan/60 pl-1">
+                        {Math.round((project.preset.width / 10) * index)}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="absolute inset-y-0 left-0 flex w-8 flex-col justify-between border-r border-brand-cyan/60 bg-slate-950/80 py-1 font-mono text-[8px] font-bold text-brand-cyan">
+                    {Array.from({ length: 11 }, (_, index) => (
+                      <span key={index} className="border-t border-brand-cyan/60 pt-0.5">
+                        {Math.round((project.preset.height / 10) * index)}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -1322,7 +1423,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
                 {/* LOCK BADGE IF SELECTED AND LOCKED */}
                 {isSelected && isLocked && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[10px] font-bold text-slate-950 shadow-md backdrop-blur-xs">
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[10px] font-bold text-primary-dark shadow-md backdrop-blur-xs">
                     <span>🔒</span>
                     <span>Capa Bloqueada</span>
                   </div>

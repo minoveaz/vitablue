@@ -5,6 +5,7 @@ interface InlineEditableTextProps {
   children?: React.ReactNode;
   onSave: (newText: string) => void;
   className?: string;
+  style?: React.CSSProperties;
   as?: 'span' | 'h1' | 'h2' | 'h3' | 'p' | 'strong' | 'div';
 }
 
@@ -13,6 +14,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   children,
   onSave,
   className = '',
+  style,
   as: Component = 'span',
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -66,6 +68,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         className={`${className} !cursor-text outline-none ring-1 ring-brand-cyan/80 bg-white/10 rounded-xs px-1 select-text transition-all`}
+        style={style}
       >
         {text}
       </Component>
@@ -79,6 +82,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         setIsEditing(true);
       }}
       className={`${className} cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
+      style={style}
       title="Doble clic para editar texto directamente"
     >
       {children ?? text}

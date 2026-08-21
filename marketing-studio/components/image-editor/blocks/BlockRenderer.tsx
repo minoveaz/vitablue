@@ -96,6 +96,17 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
   onUpdateLayerProps,
 }) => {
   const blockProps = (layer.props ?? {}) as Record<string, unknown>;
+  const effectiveBrandTokens = brandTokens
+    ? {
+        ...brandTokens,
+        primaryColor: String(blockProps.primaryColor ?? brandTokens.primaryColor),
+        accentColor: String(blockProps.accentColor ?? brandTokens.accentColor),
+        mintColor: String(blockProps.accentColor ?? brandTokens.mintColor),
+        textColor: String(blockProps.textColor ?? brandTokens.textColor),
+        surfaceBg: String(blockProps.surfaceColor ?? brandTokens.surfaceBg),
+        cardBg: String(blockProps.surfaceColor ?? brandTokens.cardBg),
+      }
+    : brandTokens;
 
   switch (layer.blockType) {
     // 0. GRUPOS PERSONALIZADOS MULTI-CAPA
@@ -144,7 +155,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
           message={String(blockProps.message ?? '')}
           avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
           whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
-          tokens={brandTokens}
+          tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
         />
@@ -157,7 +168,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
           subtitle={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa')}
           highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
           verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
-          tokens={brandTokens}
+          tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
         />
@@ -168,7 +179,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         <MotionProviderGrid
           title={String(blockProps.title ?? 'Aseguradoras Líderes')}
           subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
-          tokens={brandTokens}
+          tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
         />
@@ -182,7 +193,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
           wrongOptionDesc={String(blockProps.wrongOptionDesc ?? '')}
           correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
           correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
-          tokens={brandTokens}
+          tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
         />
@@ -239,7 +250,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     // 7. CAPAS DE IMAGEN & FOTOS DE STOCK
     default:
       if (layer.type === 'image' || blockProps.imageUrl) {
-        const imageUrl = String(blockProps.imageUrl ?? '');
+        const imageUrl = String(blockProps.imageUrl ?? layer.src ?? '');
         const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
         const focalPoint = blockProps.focalPoint as { x?: number; y?: number } | undefined;
         const clipShape = layer.clipShape ?? 'rounded-2xl';
@@ -312,6 +323,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const hasGlowEffect = layer.textEffect === 'glow';
         const isNoWrap = Boolean(blockProps.nowrap ?? blockProps.singleLine ?? false);
         const baseFontSize = layer.fontSize ?? (blockProps.fontSize as number) ?? 24;
+        const textFit = blockProps.textFit as { mode?: 'auto' | 'fixed'; maxLines?: number } | undefined;
+        const maxLines = Math.max(1, textFit?.maxLines ?? 3);
 
         return (
           <div
@@ -329,6 +342,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
               lineHeight: layer.lineHeight ?? 1.25,
               overflowWrap: 'anywhere',
+              overflow: 'hidden',
               textShadow: hasGlowEffect ? '0 0 20px rgba(148, 210, 189, 0.9), 0 0 40px rgba(0, 95, 115, 0.8)' : undefined,
               WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'}` : undefined,
             }}
@@ -336,7 +350,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
             <InlineEditableText
               text={String(blockProps.text ?? layer.title ?? 'Texto')}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
-              className={`w-full block ${isNoWrap ? 'whitespace-nowrap' : 'whitespace-pre-line'}`}
+              className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line'}`}
+              style={{ '--text-fit-lines': maxLines } as React.CSSProperties}
               as={textTag}
             >
               {parseFormattedText(

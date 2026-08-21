@@ -28,9 +28,17 @@ import {
   BookmarkCheck,
   Check,
   Palette,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
-import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '../../types/imageStudio';
+import {
+  ImageLayer,
+  CanvasBackground,
+  ImageProject,
+  ImageFormatPreset,
+  ImageStyleVariantId,
+} from '../../types/imageStudio';
 import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
@@ -232,6 +240,9 @@ export interface ImageStudioInspectorProps {
   project: ImageProject;
   selectedLayer: ImageLayer | null;
   onUpdateLayerProps: (id: string, props: Record<string, unknown>) => void;
+  onReplaceLayerContent?: (id: string, replacement: { text?: string; imageUrl?: string }) => void;
+  onApplyStyleVariant?: (variant: ImageStyleVariantId) => void;
+  onToggleLayerLock?: (id: string) => void;
   onUpdateLayerScale?: (id: string, scale: number) => void;
   onUpdateLayerWidth?: (id: string, width?: number) => void;
   onUpdateLayerHeight?: (id: string, height?: number) => void;
@@ -261,6 +272,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   project,
   selectedLayer,
   onUpdateLayerProps,
+  onReplaceLayerContent,
+  onApplyStyleVariant,
+  onToggleLayerLock,
   onUpdateLayerScale,
   onUpdateLayerWidth,
   onUpdateLayerHeight,
@@ -296,6 +310,20 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   const [isSavedToDesigns, setIsSavedToDesigns] = useState(false);
   const [gradientTheme, setGradientTheme] = useState<'light' | 'dark'>('light');
   const [spellingFeedback, setSpellingFeedback] = useState<string | null>(null);
+  const [replacementImageUrl, setReplacementImageUrl] = useState('');
+
+  React.useEffect(() => {
+    setReplacementImageUrl(
+      selectedLayer?.type === 'image'
+        ? String(selectedLayer.props.imageUrl ?? selectedLayer.src ?? '')
+        : ''
+    );
+  }, [
+    selectedLayer?.id,
+    selectedLayer?.type,
+    selectedLayer?.props.imageUrl,
+    selectedLayer?.src,
+  ]);
 
   const currentPreset = project?.preset ?? {
     id: 'instagram-portrait',
@@ -637,6 +665,21 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             <strong className="text-xs text-slate-200 truncate">{selectedLayer.title}</strong>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
+            {onToggleLayerLock && (
+              <button
+                type="button"
+                aria-pressed={Boolean(selectedLayer.locked)}
+                onClick={() => onToggleLayerLock(selectedLayer.id)}
+                className={`flex size-7 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                  selectedLayer.locked
+                    ? 'border-amber-500/40 bg-amber-500/15 text-amber-300'
+                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+                title={selectedLayer.locked ? 'Desbloquear componente' : 'Bloquear componente'}
+              >
+                {selectedLayer.locked ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}
+              </button>
+            )}
             <button
               type="button"
               onClick={handleSaveCurrentLayer}
@@ -664,6 +707,45 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             </span>
           </div>
         </div>
+
+          {selectedLayer.locked && (
+            <div role="status" className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-[10px] leading-4 text-amber-200">
+              <Lock className="mt-0.5 size-3.5 shrink-0" />
+              <span>Componente protegido. Desbloquéalo para cambiar composición, contenido o estilo.</span>
+            </div>
+          )}
+
+          {onApplyStyleVariant && (
+            <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-2.5">
+              <span className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <Palette className="size-3.5 text-brand-cyan" />
+                Variante de color y estilo
+              </span>
+              <div className="grid grid-cols-4 gap-1">
+                {([
+                  ['ocean', 'Ocean', 'bg-primary'],
+                  ['gold', 'Gold', 'bg-accent'],
+                  ['mint', 'Mint', 'bg-brand-cyan'],
+                  ['midnight', 'Noche', 'bg-primary-dark'],
+                ] as const).map(([id, label, color]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    disabled={selectedLayer.locked}
+                    onClick={() => onApplyStyleVariant(id)}
+                    className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-1.5 text-[9px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan disabled:cursor-not-allowed disabled:opacity-40 ${
+                      selectedLayer.styleVariant === id
+                        ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span className={`size-3 rounded-full ${color}`} />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         {/* 2. BARRA DE GEOMETRÍA COMPACTA (FIGMA STYLE: 1 SOLA FILA) */}
         <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-2">
@@ -1032,7 +1114,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 }
                 className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
                   props.isFullCover
-                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    ? 'bg-amber-500 text-primary-dark shadow-xs'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -1083,17 +1165,22 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
                 onChange={(e) => {
                   const val = e.target.value;
-                  onUpdateLayerProps(selectedLayer.id, {
-                    text: val,
-                    ctaText: val,
-                    whatsAppText: val,
-                    verifiedLabel: val,
-                    highlight: val,
-                    badge: val,
-                    title: val,
-                    buttonText: val,
-                  });
+                  if (onReplaceLayerContent) {
+                    onReplaceLayerContent(selectedLayer.id, { text: val });
+                  } else {
+                    onUpdateLayerProps(selectedLayer.id, {
+                      text: val,
+                      ctaText: val,
+                      whatsAppText: val,
+                      verifiedLabel: val,
+                      highlight: val,
+                      badge: val,
+                      title: val,
+                      buttonText: val,
+                    });
+                  }
                 }}
+                disabled={selectedLayer.locked}
                 rows={2}
                 placeholder="Escribe el texto aquí..."
                 spellCheck={true}
@@ -1816,6 +1903,34 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <Crop className="size-3.5 text-brand-cyan" />
               <span>Encuadre inteligente</span>
             </div>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Reemplazar contenido
+              <span className="mt-1 flex gap-1.5">
+                <input
+                  type="url"
+                  value={replacementImageUrl}
+                  disabled={selectedLayer.locked}
+                  onChange={(event) => setReplacementImageUrl(event.target.value)}
+                  placeholder="https://…"
+                  className="min-w-0 flex-1 rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 text-[10px] font-normal normal-case tracking-normal text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none disabled:opacity-40"
+                />
+                <button
+                  type="button"
+                  disabled={selectedLayer.locked || !replacementImageUrl.trim()}
+                  onClick={() =>
+                    onReplaceLayerContent?.(selectedLayer.id, {
+                      imageUrl: replacementImageUrl.trim(),
+                    })
+                  }
+                  className="rounded-lg border border-primary/40 bg-primary/20 px-2 py-1 text-[10px] font-bold normal-case tracking-normal text-brand-cyan transition-colors hover:bg-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Reemplazar
+                </button>
+              </span>
+              <span className="mt-1 block text-[9px] font-normal normal-case tracking-normal text-slate-500">
+                Conserva posición, tamaño, máscara y punto focal.
+              </span>
+            </label>
             <div className="grid grid-cols-3 gap-1">
               {(['cover', 'contain', 'fill'] as const).map((fit) => (
                 <button

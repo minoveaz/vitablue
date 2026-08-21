@@ -147,10 +147,10 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia; la suite de Image Studio cubre 20 casos.
 
 #### Fase 2 — Sistema de diseño profesional
-- [ ] Reglas, guías, columnas, márgenes y safe zones por plataforma.
-- [ ] Auto-layout, ajuste inteligente de texto, máscaras, recorte y focal point.
-- [ ] Reemplazo de contenido sin romper la composición.
-- [ ] Variantes de color, estilo y componentes bloqueables.
+- [x] Reglas, guías, columnas, márgenes y safe zones por plataforma.
+- [x] Auto-layout, ajuste inteligente de texto, máscaras, recorte y focal point.
+- [x] Reemplazo de contenido sin romper la composición.
+- [x] Variantes de color, estilo y componentes bloqueables.
 
 #### Fase 3 — DAM real y multi-marca
 - [ ] Persistir proyectos, plantillas, assets y elementos reutilizables en Supabase.

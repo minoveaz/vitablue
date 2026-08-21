@@ -12,6 +12,11 @@ export interface SnapResult {
   guides: SnapGuideLine[];
 }
 
+export interface SnapGuideTargets {
+  verticalGuides?: number[];
+  horizontalGuides?: number[];
+}
+
 const SNAP_THRESHOLD = 6; // pixels
 
 export function calculateSnapping(
@@ -22,7 +27,8 @@ export function calculateSnapping(
   layerHeight: number,
   canvasWidth: number,
   canvasHeight: number,
-  layers: ImageLayer[]
+  layers: ImageLayer[],
+  guideTargets?: SnapGuideTargets
 ): SnapResult {
   let snappedX = targetX;
   let snappedY = targetY;
@@ -52,6 +58,13 @@ export function calculateSnapping(
     { val: canvasHeight / 2, type: 'canvas-center' },
     { val: canvasHeight, type: 'canvas-edge' },
   ];
+
+  guideTargets?.verticalGuides?.forEach((value) => {
+    if (Number.isFinite(value)) verticalTargets.push({ val: value, type: 'design-guide' });
+  });
+  guideTargets?.horizontalGuides?.forEach((value) => {
+    if (Number.isFinite(value)) horizontalTargets.push({ val: value, type: 'design-guide' });
+  });
 
   // Añadir bordes y centros de otras capas
   for (const l of layers) {

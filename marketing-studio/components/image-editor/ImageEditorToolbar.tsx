@@ -160,7 +160,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               ? 'border-accent bg-accent/20 text-accent shadow-xs'
               : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700 hover:text-slate-200'
           }`}
-          title={showSafeZones ? 'Ocultar márgenes de seguridad (Safe Zones)' : 'Mostrar márgenes de seguridad para historias/reels'}
+          title={showSafeZones ? 'Ocultar reglas, guías y zonas seguras' : 'Mostrar reglas, guías y zonas seguras de plataforma'}
         >
           <ShieldAlert className="size-3.5" />
         </button>
@@ -247,7 +247,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
             type="button"
             disabled={isExporting}
             onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-            className="flex items-center gap-1.5 rounded-xl bg-accent px-3 py-1.5 text-xs font-bold text-slate-950 hover:bg-amber-400 shadow-sm transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-xl bg-accent px-3 py-1.5 text-xs font-bold text-primary-dark hover:bg-amber-400 shadow-sm transition-all disabled:opacity-50"
           >
             {isExporting ? <LoaderCircle className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
             <span>Descargar</span>

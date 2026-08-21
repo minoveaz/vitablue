@@ -8,7 +8,12 @@ import {
   Film,
   Sparkles,
 } from 'lucide-react';
-import { ImageBlockType, ImageProject } from '../../types/imageStudio';
+import {
+  CanvasGuideSettings,
+  ImageBlockType,
+  ImageProject,
+  ImageStyleVariantId,
+} from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
@@ -16,6 +21,7 @@ import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer
 import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
 import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
+import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 
@@ -41,6 +47,10 @@ export interface ImageStudioAssetDrawerContentProps {
   onDuplicateLayer: (id: string) => void;
   onRemoveLayer: (id: string) => void;
   onDeleteSelectedLayers?: () => void;
+  onUpdateGuideSettings?: (patch: Partial<CanvasGuideSettings>) => void;
+  onAutoLayout?: (direction: 'vertical' | 'horizontal' | 'grid') => void;
+  onFitText?: () => void;
+  onApplyVariant?: (variant: ImageStyleVariantId) => void;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -65,6 +75,10 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onDuplicateLayer,
   onRemoveLayer,
   onDeleteSelectedLayers,
+  onUpdateGuideSettings,
+  onAutoLayout,
+  onFitText,
+  onApplyVariant,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -229,6 +243,18 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         />
       )}
 
+      {activeTab === 'layout' && onUpdateGuideSettings && onAutoLayout && onFitText && onApplyVariant && (
+        <ImageStudioLayoutDrawer
+          project={project}
+          selectedLayers={project.layers.filter((layer) => selectedLayerIds.includes(layer.id))}
+          onUpdateGuideSettings={onUpdateGuideSettings}
+          onAutoLayout={onAutoLayout}
+          onFitText={onFitText}
+          onApplyVariant={onApplyVariant}
+          onToggleLock={onToggleLock}
+        />
+      )}
+
       {/* 4. BRAND KIT OFICIAL (LOGOS, ISOTIPOS, DESTACADOS IG, COLORES Y GRADIENTES) */}
       {activeTab === 'brand' && (
         <div className="-m-4 h-[calc(100vh-140px)]">
@@ -377,7 +403,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
             </p>
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2.5 text-xs font-black transition-transform active:scale-95 shadow-md"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-primary-dark px-3 py-2.5 text-xs font-black transition-transform active:scale-95 shadow-md"
             >
               <Sparkles className="size-3.5" />
               <span>Convertir a Escena de Vídeo</span>
