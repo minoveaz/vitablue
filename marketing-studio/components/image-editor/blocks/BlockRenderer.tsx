@@ -36,6 +36,17 @@ import { InstagramHighlightBadge } from './HighlightCoverBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 
+const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
+  <div
+    className="flex h-full w-full items-center justify-center rounded-xl border border-dashed border-slate-600 bg-slate-900/70 px-4 text-center text-xs text-slate-400"
+    data-renderer-fallback="block"
+    role="img"
+    aria-label={`Vista previa no disponible para ${title || 'este recurso'}`}
+  >
+    Vista previa no disponible
+  </div>
+);
+
 export interface ImageLayerBlockRendererProps {
   layer: ImageLayer;
   brandTokens?: ImageProject['brandTokens'];
@@ -297,9 +308,17 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const isBadge = blockProps.tag === 'badge';
 
         if (isBadge) {
+          const badgeVariant = String(blockProps.badgeVariant ?? 'pill');
+          const badgeClasses = {
+            pill: 'rounded-full border border-teal-400/40 bg-teal-950/90',
+            outline: 'rounded-lg border border-current bg-transparent',
+            solid: 'rounded-lg bg-primary',
+            ribbon: 'rounded-none border-y-2 border-accent bg-accent/20',
+            stamp: 'rounded-full border-2 border-current',
+          }[badgeVariant as 'pill' | 'outline' | 'solid' | 'ribbon' | 'stamp'] ?? 'rounded-full border border-teal-400/40 bg-teal-950/90';
           return (
             <div
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-950/90 px-4 py-1.5 shadow-lg backdrop-blur-md w-full h-full"
+              className={`inline-flex items-center justify-center gap-1.5 px-4 py-1.5 shadow-lg backdrop-blur-md w-full h-full ${badgeClasses}`}
               style={{
                 fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
                 fontSize: layer.fontSize ? `${layer.fontSize}px` : '13px',
@@ -363,6 +382,6 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
           </div>
         );
       }
-      return null;
+      return <BlockRenderFallback title={layer.title} />;
   }
 };

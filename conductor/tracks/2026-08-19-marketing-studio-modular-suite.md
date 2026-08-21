@@ -217,6 +217,22 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Taxonomía P0 completa y tarjetas con preview, nombre, tipo, scope, licencia, compatibilidad Image/Video, estado e inserción estándar.
 - [x] Pruebas focalizadas de metadatos y renderizado de cada recurso, taxonomía, normalización, filtros y aislamiento multi-organización; typecheck y lint validados.
 
+#### P1 — Audio, Vídeo, Layout y Marca (siguiente fase)
+Estado actual:
+- [x] Existe un drawer de Medios con inserción de imágenes, fotos de stock, asesoras y fondos.
+- [x] Existe un puente inicial hacia Video Studio/Remotion y un editor de vídeo con timeline, transporte y zonas seguras.
+- [x] Existe un drawer de Layout con guías, safe zones, columnas, auto-layout, ajuste de texto y variantes.
+- [x] Existe un Brand Kit con logos, colores, gradientes y destacados de Instagram.
+- [x] El editor conserva composición al reemplazar imágenes y permite focal point, recorte y object-fit.
+
+Pendiente para cerrar P1:
+- [ ] Convertir Audio en una biblioteca funcional con preview, duración, licencia, búsqueda, favoritos e inserción en timeline.
+- [ ] Completar Vídeo con selección de clips, preview reproducible, trim, duración, transiciones y sincronización de audio.
+- [ ] Unificar Layout como sistema de constraints reutilizable entre formatos, no solo acciones puntuales del drawer.
+- [ ] Convertir Brand Kit en tokens aplicables globalmente, con validación de contraste, fuentes, logos protegidos y estados de aprobación.
+- [ ] Conectar Medios, Marca y Vídeo con scopes, reemplazo seguro, undo/redo y persistencia del proyecto.
+- [ ] Añadir pruebas de interacción y regresión visual para los cuatro módulos en móvil y escritorio.
+
 #### Fase 3 — DAM real y multi-marca
 - [ ] Persistir proyectos, plantillas, assets y elementos reutilizables en Supabase.
 - [ ] Incorporar versiones, carpetas, etiquetas, búsqueda, workspaces y permisos.

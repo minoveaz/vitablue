@@ -28,6 +28,8 @@ export function hasValidElementPreviewMetadata(preview: ElementPreviewMetadata):
       return preview.text.trim().length > 0;
     case 'surface':
       return preview.variant.trim().length > 0;
+    case 'external':
+      return preview.url.trim().length > 0 && preview.alt.trim().length > 0;
     case 'fallback':
       return preview.label.trim().length > 0;
     case 'saved':

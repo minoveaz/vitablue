@@ -171,6 +171,7 @@ export type ElementPreviewMetadata =
   | { renderer: 'illustration'; illustrationId: string }
   | { renderer: 'label'; variant: 'badge' | 'button'; text: string }
   | { renderer: 'surface'; variant: string }
+  | { renderer: 'external'; url: string; alt: string }
   | { renderer: 'saved' }
   | { renderer: 'fallback'; label: string };
 

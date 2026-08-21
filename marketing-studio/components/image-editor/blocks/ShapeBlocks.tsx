@@ -335,10 +335,10 @@ export const GeometricShapeBlock: React.FC<GeometricShapeBlockProps> = ({ layer 
   return (
     <GeometricShapeGraphic
       shapeType={(blockProps.shapeType as TraditionalShapeType) ?? 'rectangle'}
-      fill={(layer.fill as string) || (blockProps.fill as string) || 'currentColor'}
-      stroke={(layer.borderColor as string) || (blockProps.stroke as string) || 'transparent'}
-      strokeWidth={layer.borderWidth ?? (blockProps.strokeWidth as number) ?? 0}
-      borderRadius={layer.borderRadius ?? (blockProps.borderRadius as number) ?? 16}
+      fill={(blockProps.fill as string) || (layer.fill as string) || 'currentColor'}
+      stroke={(blockProps.stroke as string) || (blockProps.borderColor as string) || (layer.borderColor as string) || 'transparent'}
+      strokeWidth={(blockProps.strokeWidth as number) ?? (blockProps.borderWidth as number) ?? layer.borderWidth ?? 0}
+      borderRadius={(blockProps.borderRadius as number) ?? layer.borderRadius ?? 16}
       sides={(blockProps.sides as number) ?? 7}
       points={(blockProps.points as number) ?? 10}
       innerRadius={(blockProps.innerRadius as number) ?? 40}

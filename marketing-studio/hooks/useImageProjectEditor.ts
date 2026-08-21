@@ -515,6 +515,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         // Sincronizar propiedades estándar de capa si vienen en el patch
         if ('fill' in patch) updated.fill = patch.fill as string;
         if ('color' in patch) updated.fill = patch.color as string;
+        if ('borderColor' in patch) updated.borderColor = patch.borderColor as string;
+        if ('stroke' in patch) updated.borderColor = patch.stroke as string;
+        if ('borderWidth' in patch) updated.borderWidth = patch.borderWidth as number;
+        if ('strokeWidth' in patch) updated.borderWidth = patch.strokeWidth as number;
+        if ('borderRadius' in patch) updated.borderRadius = patch.borderRadius as number;
         if ('fontSize' in patch) updated.fontSize = patch.fontSize as number;
         if ('fontWeight' in patch) updated.fontWeight = patch.fontWeight as string;
         if ('fontFamily' in patch) updated.fontFamily = patch.fontFamily as string;

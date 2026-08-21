@@ -39,7 +39,8 @@ export interface ShapeCatalogSection {
     | 'brackets'
     | 'separators'
     | 'frames'
-    | 'masks';
+    | 'masks'
+    | 'universal_surfaces';
   title: string;
   items: ShapeCatalogItem[];
 }
@@ -269,6 +270,46 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
       shape('mask-heart', 'Máscara corazón', 'mask-heart', 220, 220, UNIVERSAL_SOFT, {
         kind: 'mask',
         category: 'frames_masks',
+      }),
+    ],
+  },
+  {
+    id: 'universal_surfaces',
+    title: 'Superficies universales',
+    items: [
+      shape('surface-panel', 'Panel de contenido', 'rounded_rect', 360, 220, '#0F172A', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        defaultBorderRadius: 24,
+        tags: ['panel', 'contenedor'],
+      }),
+      shape('surface-card', 'Tarjeta neutra', 'rounded_rect', 320, 180, '#1E293B', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        defaultBorderRadius: 18,
+        tags: ['tarjeta', 'contenedor'],
+      }),
+      shape('surface-soft', 'Superficie suave', 'rounded_rect', 320, 180, '#334155', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        defaultBorderRadius: 32,
+        tags: ['suave', 'contenedor'],
+      }),
+      shape('surface-circle', 'Fondo circular', 'circle', 240, 240, '#0E7490', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        tags: ['circular', 'fondo'],
+      }),
+      shape('surface-highlight', 'Franja destacada', 'rounded_rect', 360, 96, '#0F766E', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        defaultBorderRadius: 18,
+        tags: ['destacado', 'franja', 'contenedor'],
+      }),
+      shape('surface-divider', 'Divisor de sección', 'rectangle', 420, 16, '#475569', {
+        kind: 'surface',
+        category: 'backgrounds_surfaces',
+        tags: ['divisor', 'separador'],
       }),
     ],
   },

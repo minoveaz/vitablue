@@ -97,6 +97,17 @@ export const ElementResourcePreview: React.FC<{
     );
   }
 
+  if (preview.renderer === 'external') {
+    return (
+      <img
+        src={preview.url}
+        alt={preview.alt}
+        className={`size-20 object-contain ${className}`}
+        loading="lazy"
+      />
+    );
+  }
+
   if (preview.renderer === 'saved') {
     return <FolderHeart className={`size-12 text-accent ${className}`} />;
   }

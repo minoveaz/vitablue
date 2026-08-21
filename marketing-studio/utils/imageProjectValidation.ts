@@ -52,7 +52,8 @@ export function validateImageProject(project: ImageProject): ImageProjectValidat
 
 export function clampLayerPosition(position: ImageLayer['position']): ImageLayer['position'] {
   return {
-    x: Math.max(0, Math.min(100, position.x)),
-    y: Math.max(0, Math.min(100, position.y)),
+    // Permit compositions to intentionally bleed beyond the canvas edges.
+    x: Math.max(-100, Math.min(200, position.x)),
+    y: Math.max(-100, Math.min(200, position.y)),
   };
 }

@@ -34,7 +34,15 @@ export interface ImageStudioAssetDrawerContentProps {
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onAddTextLayer?: (preset: TextPresetItem) => void;
-  onAddImageLayer?: (imageUrl: string, options?: { title?: string; clipShape?: any }) => void;
+  onAddImageLayer?: (
+    imageUrl: string,
+    options?: {
+      title?: string;
+      width?: number;
+      height?: number;
+      clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon';
+    }
+  ) => void;
   onInsertSavedLayer?: (layer: ImageLayer) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
   onToggleLock: (id: string) => void;
@@ -273,7 +281,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
               if (onAddImageLayer) {
                 onAddImageLayer(url, options);
               } else {
-                onAddBlock('ImageMedia' as any, { imageUrl: url, ...options });
+                onAddBlock('ImageMedia' as ImageBlockType, { imageUrl: url, ...options });
               }
             }}
             onSetBackgroundImage={(url) => {
@@ -291,6 +299,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         <div className="-m-4 h-[calc(100vh-140px)]">
           <ImageStudioElementsDrawer
             onAddBlock={onAddBlock}
+            onAddImageLayer={onAddImageLayer}
             onInsertSavedLayer={onInsertSavedLayer}
           />
         </div>

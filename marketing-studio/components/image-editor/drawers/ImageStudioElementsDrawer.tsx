@@ -15,7 +15,6 @@ import {
   Shapes,
   ShieldCheck,
   Sparkles,
-  UserRound,
   X,
 } from 'lucide-react';
 import {
@@ -39,6 +38,7 @@ import { ElementResourcePreview } from '../blocks/ElementResourcePreview';
 
 export interface ImageStudioElementsDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
+  onAddImageLayer?: (imageUrl: string, options?: { title?: string }) => void;
   onInsertSavedLayer?: (layer: ImageLayer) => void;
 }
 
@@ -62,14 +62,6 @@ const CATEGORY_ICONS: Record<ElementCatalogCategoryId, React.ComponentType<{ cla
   reusable_components: Component,
   saved_elements: FolderHeart,
 };
-
-const SCOPE_OPTIONS: Array<{ id: ElementResourceScope | 'all'; label: string }> = [
-  { id: 'all', label: 'Todos los orígenes' },
-  { id: 'system', label: 'Sistema' },
-  { id: 'organization', label: 'Organización' },
-  { id: 'workspace', label: 'Workspace' },
-  { id: 'user', label: 'Usuario' },
-];
 
 const SCOPE_LABELS: Record<ElementResourceScope, string> = {
   system: 'Sistema',
@@ -168,10 +160,11 @@ const ResourceCard: React.FC<{
 
 export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps> = ({
   onAddBlock,
+  onAddImageLayer,
   onInsertSavedLayer,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<CatalogSelection>('all');
-  const [selectedScope, setSelectedScope] = useState<ElementResourceScope | 'all'>('all');
+  const [selectedScope, setSelectedScope] = useState<ElementResourceScope>('system');
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [stateFilter, setStateFilter] = useState<StateFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -255,6 +248,10 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
       });
     } else if (payload.source === 'preset') {
       onAddBlock(payload.preset.blockType, payload.preset.defaultProps);
+    } else if (payload.source === 'universal') {
+      onAddBlock(payload.blockType, payload.defaultProps);
+    } else if (payload.source === 'external') {
+      onAddImageLayer?.(payload.imageUrl, { title: resource.title });
     } else {
       onInsertSavedLayer?.(payload.saved.layer);
     }
@@ -288,17 +285,33 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
           )}
         </label>
 
-        <label className="flex items-center gap-2 text-[10px] font-medium text-slate-400">
-          <UserRound className="size-3.5 shrink-0" />
-          <span className="sr-only">Origen del recurso</span>
-          <select
-            value={selectedScope}
-            onChange={(event) => setSelectedScope(event.target.value as ElementResourceScope | 'all')}
-            className="min-h-9 w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-xs text-slate-200 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/30"
-          >
-            {SCOPE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-          </select>
-        </label>
+        <nav aria-label="Bibliotecas de elementos" className="grid grid-cols-3 gap-1.5">
+          {([
+            ['system', 'Universal'],
+            ['organization', 'Empresa'],
+            ['user', 'Míos'],
+          ] as Array<[ElementResourceScope, string]>).map(([scope, label]) => {
+            const active = selectedScope === scope;
+            return (
+              <button
+                key={scope}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setSelectedScope(scope);
+                  setSelectedCategory(scope === 'user' ? 'saved_elements' : 'all');
+                }}
+                className={`min-h-9 rounded-lg border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                  active
+                    ? 'border-brand-cyan/60 bg-primary/50 text-brand-cyan'
+                    : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </nav>
 
         <div className="flex flex-wrap gap-1.5" aria-label="Filtros secundarios">
           {([
@@ -357,30 +370,32 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             <span className="text-[10px] text-slate-400">{secondaryFilteredResources.length}</span>
           </button>
           <div className="grid grid-cols-2 gap-2">
-            {ELEMENT_CATALOG_CATEGORIES.map((category) => {
-              const Icon = CATEGORY_ICONS[category.id];
-              const active = selectedCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(category.id)}
-                  aria-current={active ? 'page' : undefined}
-                  title={category.description}
-                  className={`flex min-h-16 min-w-0 flex-col justify-between rounded-lg border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
-                    active
-                      ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
-                      : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
-                  }`}
-                >
-                  <span className="flex w-full items-center justify-between gap-2">
-                    <Icon className="size-4 shrink-0" />
-                    <span className="text-[9px] text-slate-500">{categoryCounts.get(category.id) ?? 0}</span>
-                  </span>
-                  <span className="truncate text-[10px] font-semibold">{category.shortLabel}</span>
-                </button>
-              );
-            })}
+            {ELEMENT_CATALOG_CATEGORIES
+              .filter((category) => (categoryCounts.get(category.id) ?? 0) > 0)
+              .map((category) => {
+                const Icon = CATEGORY_ICONS[category.id];
+                const active = selectedCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(category.id)}
+                    aria-current={active ? 'page' : undefined}
+                    title={category.description}
+                    className={`flex min-h-16 min-w-0 flex-col justify-between rounded-lg border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                      active
+                        ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                        : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
+                    }`}
+                  >
+                    <span className="flex w-full items-center justify-between gap-2">
+                      <Icon className="size-4 shrink-0" />
+                      <span className="text-[9px] text-slate-500">{categoryCounts.get(category.id) ?? 0}</span>
+                    </span>
+                    <span className="truncate text-[10px] font-semibold">{category.shortLabel}</span>
+                  </button>
+                );
+              })}
           </div>
         </nav>
 
@@ -407,6 +422,28 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                 <ResourceCard key={`recommended-${resource.id}`} resource={resource} onInsert={handleInsert} />
               ))}
             </div>
+          </section>
+        )}
+
+        {showDiscovery && (
+          <section className="space-y-2" aria-labelledby="all-elements">
+            <div className="flex items-end justify-between gap-3">
+              <h2 id="all-elements" className="text-xs font-semibold text-slate-100">Todos los recursos</h2>
+              <span className="text-[10px] text-slate-500">{visibleResources.length} recursos</span>
+            </div>
+            {visibleResources.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {visibleResources.map((resource) => (
+                  <ResourceCard key={`all-${resource.id}`} resource={resource} onInsert={handleInsert} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-700 px-4 py-8 text-center">
+                <Search className="mx-auto size-6 text-slate-500" />
+                <p className="mt-2 text-xs font-semibold text-slate-300">No hay recursos disponibles</p>
+                <p className="mt-1 text-[10px] text-slate-500">Prueba otra biblioteca, compatibilidad o estado.</p>
+              </div>
+            )}
           </section>
         )}
 
@@ -437,7 +474,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
               <div className="rounded-lg border border-dashed border-slate-700 px-4 py-8 text-center">
                 <Search className="mx-auto size-6 text-slate-500" />
                 <p className="mt-2 text-xs font-semibold text-slate-300">No hay recursos con estos filtros</p>
-                <p className="mt-1 text-[10px] text-slate-500">Cambia el origen, la compatibilidad o la categoría.</p>
+                <p className="mt-1 text-[10px] text-slate-500">Cambia la biblioteca, la compatibilidad o la categoría.</p>
               </div>
             )}
           </section>
