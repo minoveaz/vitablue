@@ -31,6 +31,7 @@ import {
 import { GlassCardSurfaceBlock } from './SurfaceBlocks';
 import { GeometricShapeBlock } from './ShapeBlocks';
 import { WebIllustrationBlock } from './WebIllustrationBlock';
+import { BrandLogoBlock } from './BrandLogoBlock';
 import { InlineEditableText } from '../InlineEditableText';
 
 export interface ImageLayerBlockRendererProps {
@@ -228,6 +229,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
       return <GeometricShapeBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
     case 'WebIllustration':
       return <WebIllustrationBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
+    case 'BrandLogo':
+      return <BrandLogoBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
 
     // 7. CAPAS DE IMAGEN & FOTOS DE STOCK
     default:

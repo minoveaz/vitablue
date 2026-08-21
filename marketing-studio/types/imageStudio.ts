@@ -266,6 +266,7 @@ export type ImageBlockType =
   | 'ComparisonCorrectBox'
   | 'GeometricShape'
   | 'WebIllustration'
+  | 'BrandLogo'
   | 'CustomText'
   | 'CustomGroup';
 

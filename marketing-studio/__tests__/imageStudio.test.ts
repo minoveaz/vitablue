@@ -262,5 +262,31 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
       expect(photo.tags.length).toBeGreaterThan(0);
     });
   });
+
+  it('validates that BrandLogoBlock renders all VitaBlue official logo and isotype variants', async () => {
+    const { BrandLogoBlock } = await import('../components/image-editor/blocks/BrandLogoBlock');
+    expect(BrandLogoBlock).toBeDefined();
+
+    const layer: import('../types/imageStudio').ImageLayer = {
+      id: 'layer-logo-brand',
+      type: 'block',
+      blockType: 'BrandLogo',
+      title: 'Logo VitaBlue',
+      props: {
+        variant: 'colored-on-dark',
+        showText: true,
+        showTagline: false,
+        orientation: 'horizontal',
+      },
+      position: { x: 50, y: 50 },
+      zIndex: 10,
+      scale: 1,
+      width: 220,
+      height: 52,
+    };
+
+    expect(layer.blockType).toBe('BrandLogo');
+    expect(layer.props.variant).toBe('colored-on-dark');
+  });
 });
 

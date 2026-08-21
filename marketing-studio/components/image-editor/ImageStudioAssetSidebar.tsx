@@ -15,6 +15,7 @@ import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
 import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
 import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
+import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 
@@ -65,13 +66,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onRemoveLayer,
   onDeleteSelectedLayers,
 }) => {
-  const brandColors = [
-    { name: 'Ocean Teal', value: '#005F73', gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 95, 115, 0.75) 0%, #001219 80%)' },
-    { name: 'Midnight Dark', value: '#001219', gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)' },
-    { name: 'Amber Gold', value: '#EE9B00', gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)' },
-    { name: 'Mint Green', value: '#94D2BD', gradient: 'radial-gradient(circle at 50% 25%, rgba(148, 210, 189, 0.45) 0%, #001219 80%)' },
-  ];
-
   return (
     <div className="space-y-4 select-none">
       {/* 0. MIS DISEÑOS & BIBLIOTECA PERSONAL (POSICIÓN 1) */}
@@ -235,28 +229,13 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         />
       )}
 
-      {/* 4. BRAND KIT / FONDOS OFICIALES */}
+      {/* 4. BRAND KIT OFICIAL (LOGOS, ISOTIPOS, COLORES Y GRADIENTES) */}
       {activeTab === 'brand' && (
-        <div className="space-y-3">
-          <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-            Gradientes y Mallas Oficiales
-          </span>
-          <div className="grid grid-cols-2 gap-2.5">
-            {brandColors.map((c) => (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => onUpdateBackground(c.gradient, c.value)}
-                className="flex flex-col items-center rounded-2xl border border-slate-800 bg-slate-950 p-3 hover:border-primary hover:bg-slate-900 transition-all text-center group"
-              >
-                <div
-                  className="size-10 rounded-xl border border-white/20 shadow-sm mb-2"
-                  style={{ background: c.gradient }}
-                />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-brand-cyan">{c.name}</span>
-              </button>
-            ))}
-          </div>
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioBrandKitDrawer
+            onAddBlock={onAddBlock}
+            onUpdateBackground={onUpdateBackground}
+          />
         </div>
       )}
 
