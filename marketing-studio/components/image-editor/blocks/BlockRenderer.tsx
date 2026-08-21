@@ -302,6 +302,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const hasBoxEffect = layer.textEffect === 'box';
         const hasStrokeEffect = layer.textEffect === 'stroke';
         const hasGlowEffect = layer.textEffect === 'glow';
+        const isNoWrap = Boolean(blockProps.nowrap ?? blockProps.singleLine ?? false);
 
         return (
           <div
@@ -309,22 +310,22 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               hasBoxEffect ? 'p-3 rounded-2xl shadow-xl' : ''
             }`}
             style={{
-              fontFamily: layer.fontFamily ?? 'Poppins, sans-serif',
-              fontSize: layer.fontSize ? `${layer.fontSize}px` : '24px',
-              fontWeight: layer.fontWeight ?? '700',
-              color: hasStrokeEffect ? 'transparent' : (layer.fill ?? '#FFFFFF'),
+              fontFamily: layer.fontFamily ?? (blockProps.fontFamily as string) ?? 'Poppins, sans-serif',
+              fontSize: layer.fontSize ? `${layer.fontSize}px` : (blockProps.fontSize ? `${blockProps.fontSize}px` : '24px'),
+              fontWeight: layer.fontWeight ?? (blockProps.fontWeight as any) ?? '700',
+              color: hasStrokeEffect ? 'transparent' : (layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'),
               backgroundColor: hasBoxEffect ? (layer.boxColor ?? '#EE9B00') : undefined,
-              textAlign: layer.align ?? 'center',
+              textAlign: layer.align ?? (blockProps.textAlign as any) ?? 'center',
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
               lineHeight: layer.lineHeight ?? 1.25,
               textShadow: hasGlowEffect ? '0 0 20px rgba(148, 210, 189, 0.9), 0 0 40px rgba(0, 95, 115, 0.8)' : undefined,
-              WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? '#FFFFFF'}` : undefined,
+              WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'}` : undefined,
             }}
           >
             <InlineEditableText
               text={String(blockProps.text ?? layer.title ?? 'Texto')}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
-              className="w-full block whitespace-pre-line"
+              className={`w-full block ${isNoWrap ? 'whitespace-nowrap' : 'whitespace-pre-line'}`}
               as={textTag}
             />
           </div>

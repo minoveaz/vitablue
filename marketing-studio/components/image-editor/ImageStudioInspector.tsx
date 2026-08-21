@@ -838,7 +838,20 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <div>
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
                   <span>Tamaño</span>
-                  <span className="font-mono text-brand-cyan">{selectedLayer.fontSize ?? 24}px</span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min={10}
+                      max={180}
+                      value={selectedLayer.fontSize ?? 24}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val)) onUpdateLayerProps(selectedLayer.id, { fontSize: Math.max(10, Math.min(200, val)) });
+                      }}
+                      className="w-10 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-0.5 py-0.2 focus:outline-none focus:border-brand-cyan"
+                    />
+                    <span className="text-[9px] text-slate-500">px</span>
+                  </div>
                 </div>
                 <input
                   type="range"
@@ -864,7 +877,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                       <button
                         key={al.id}
                         type="button"
-                        onClick={() => onUpdateLayerProps(selectedLayer.id, { textAlign: al.id })}
+                        onClick={() => onUpdateLayerProps(selectedLayer.id, { textAlign: al.id, align: al.id })}
                         className={`flex h-7 items-center justify-center rounded-lg border text-xs transition-colors ${
                           (selectedLayer.align ?? String(props.textAlign ?? 'center')) === al.id
                             ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
@@ -876,6 +889,52 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     );
                   })}
                 </div>
+              </div>
+            </div>
+
+            {/* DISPOSICIÓN: 1 SOLA LÍNEA VS MULTILÍNEA */}
+            <div className="pt-2 border-t border-slate-900 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Disposición de Texto
+                </label>
+                <span className="text-[9px] font-mono text-brand-cyan">
+                  {props.nowrap || props.singleLine ? '1 Sola Línea' : 'Multilínea'}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const textContent = String(props.text ?? selectedLayer.title ?? '');
+                    const currentFont = selectedLayer.fontSize ?? 36;
+                    const estimatedWidth = Math.max(320, Math.min(2200, Math.round(textContent.length * currentFont * 0.65 + 60)));
+                    onUpdateLayerProps(selectedLayer.id, { nowrap: true, singleLine: true });
+                    if (onUpdateLayerWidth) {
+                      onUpdateLayerWidth(selectedLayer.id, estimatedWidth);
+                    }
+                  }}
+                  className={`py-1.5 px-2 rounded-xl border text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${
+                    props.nowrap || props.singleLine
+                      ? 'border-brand-cyan bg-primary/30 text-brand-cyan shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:border-slate-700'
+                  }`}
+                  title="Mantener todo el texto en una sola línea horizontal sin cortes"
+                >
+                  <span>📏 1 Sola Línea</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onUpdateLayerProps(selectedLayer.id, { nowrap: false, singleLine: false })}
+                  className={`py-1.5 px-2 rounded-xl border text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${
+                    !props.nowrap && !props.singleLine
+                      ? 'border-brand-cyan bg-primary/30 text-brand-cyan shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:border-slate-700'
+                  }`}
+                  title="Permitir salto de línea automático"
+                >
+                  <span>📄 Multilínea</span>
+                </button>
               </div>
             </div>
 

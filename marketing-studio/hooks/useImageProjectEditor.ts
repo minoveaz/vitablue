@@ -511,7 +511,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, width: width ? Math.max(80, Math.min(1200, width)) : undefined } : l
+        l.id === layerId ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
       );
       return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
@@ -520,7 +520,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        l.id === layerId ? { ...l, height: height ? Math.max(40, Math.min(1400, height)) : undefined } : l
+        l.id === layerId ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
       );
       return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
     });
