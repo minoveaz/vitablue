@@ -4,6 +4,13 @@
 **Estado:** En definición y ejecución  
 **Rama:** `feat/remotion-video-studio-engine`  
 
+> **Actualización 2026-08-21 — Roadmap Image Studio**
+>
+> La Fase 2 original describe el alcance visual inicial, pero no cubre todavía el nivel de
+> estabilidad, reutilización y producción necesario para VitaBlue ni para futuros clientes.
+> El siguiente roadmap prioriza primero un núcleo fiable y después las capacidades
+> profesionales de composición, DAM, IA e integración audiovisual.
+
 ---
 
 ## 1. Objetivo y Visión del Producto
@@ -127,6 +134,54 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
   - Descarga instantánea en **PNG**, **JPEG** y **SVG** a 1080p para publicación directa en redes.
 - [x] Guardado directo como **Activo Reutilizable en Asset DAM** y botón "A Video Studio" para consumirlo en vídeos.
 - [x] Navegación unificada entre *Video Studio (Reels)* e *Image Studio (Canva)* con un solo clic.
+
+### Roadmap recomendado para llevar Image Studio a nivel profesional
+
+#### Fase 1 — Estabilizar el núcleo del editor
+- [x] Asegurar que las operaciones de edición persistentes (posición múltiple, escala, tamaño, rotación y opacidad) entren en el historial de undo/redo.
+- [ ] Consolidar el modelo de capas y grupos con contratos explícitos para geometría, estilos y contenido.
+- [ ] Separar cambios transitorios de interacción (drag/resize) de cambios confirmados para evitar historiales ruidosos.
+- [ ] Añadir autosave recuperable, estado de guardado y recuperación ante errores.
+- [ ] Validar límites, solapamientos, capas fuera del canvas y datos incompletos.
+- [ ] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia.
+
+#### Fase 2 — Sistema de diseño profesional
+- [ ] Reglas, guías, columnas, márgenes y safe zones por plataforma.
+- [ ] Auto-layout, ajuste inteligente de texto, máscaras, recorte y focal point.
+- [ ] Reemplazo de contenido sin romper la composición.
+- [ ] Variantes de color, estilo y componentes bloqueables.
+
+#### Fase 3 — DAM real y multi-marca
+- [ ] Persistir proyectos, plantillas, assets y elementos reutilizables en Supabase.
+- [ ] Incorporar versiones, carpetas, etiquetas, búsqueda, workspaces y permisos.
+- [ ] Mantener `localStorage` únicamente como caché offline o fallback temporal.
+
+#### Fase 4 — Plantillas y bloques empresariales
+- [ ] Definir contratos tipados de bloques con campos editables, bloqueados y variantes por formato.
+- [ ] Añadir validación de branding, textos legales y compatibilidad con Brand Hub.
+- [ ] Versionar y previsualizar componentes reutilizables.
+
+#### Fase 5 — Smart Resize y variantes de campaña
+- [ ] Reorganizar composiciones según reglas semánticas, no solo escalar píxeles.
+- [ ] Generar variantes 1:1, 4:5, 9:16 y 16:9 sin solapamientos.
+- [ ] Crear variantes A/B de copy, imagen, CTA y color.
+- [ ] Exportar paquetes completos de campaña.
+
+#### Fase 6 — IA creativa especializada
+- [ ] Convertir briefs en composiciones basadas en plantillas y bloques aprobados.
+- [ ] Generar hooks, copys, variantes y adaptaciones por plataforma.
+- [ ] Revisar legibilidad, contraste, branding y exceso de texto.
+- [ ] Recomendar assets disponibles en el DAM.
+
+#### Fase 7 — Integración con Video Studio
+- [ ] Insertar diseños y bloques de Image Studio en escenas con un clic.
+- [ ] Adaptar automáticamente el aspect ratio y conservar la referencia al asset original.
+- [ ] Permitir edición limitada a campos aprobados en vídeo.
+
+#### Fase 8 — Producción y calidad
+- [ ] Completar pruebas unitarias, visuales, de exportación, persistencia y permisos.
+- [ ] Probar textos largos, fuentes ausentes, imágenes inválidas y assets de gran tamaño.
+- [ ] Medir rendimiento y reforzar límites de seguridad para uploads.
 
 ### Fase 3 - Creative Studio: Consumo de Assets en Video Studio (Remotion)
 - [ ] Permitir insertar los bloques visuales editados directamente en cualquier escena del Video Generator con 1 solo clic.

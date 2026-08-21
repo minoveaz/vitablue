@@ -230,9 +230,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
           },
         };
       });
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, [selectedLayerIds]);
+  }, [selectedLayerIds, pushHistory]);
 
   const groupSelectedLayers = useCallback(() => {
     if (selectedLayerIds.length < 2) return;
@@ -511,36 +513,44 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
       );
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, []);
+  }, [pushHistory]);
 
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
       );
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, []);
+  }, [pushHistory]);
 
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
       );
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, []);
+  }, [pushHistory]);
 
   const updateLayerRotation = useCallback((layerId: string, rotation: number) => {
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, rotation: Math.round(rotation) } : l
       );
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, []);
+  }, [pushHistory]);
 
   const duplicateLayer = useCallback((layerId: string) => {
     setProject((prev) => {
@@ -761,9 +771,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const nextLayers = prev.layers.map((l) =>
         l.id === layerId ? { ...l, opacity: Math.max(0, Math.min(1, opacity)) } : l
       );
-      return { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
     });
-  }, []);
+  }, [pushHistory]);
 
   const updateLayerShadowPreset = useCallback((layerId: string, shadowPreset: ImageLayer['shadowPreset']) => {
     setProject((prev) => {
