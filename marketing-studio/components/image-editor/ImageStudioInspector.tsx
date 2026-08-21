@@ -34,6 +34,7 @@ import { ImageLayer, CanvasBackground, ImageProject, ImageFormatPreset } from '.
 import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
+import { correctSpanishText } from '../../utils/spellingCorrector';
 
 interface NumberInputProps {
   value?: number;
@@ -580,10 +581,43 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   ];
   const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '');
 
+  const [spellingFeedback, setSpellingFeedback] = useState<string | null>(null);
+
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
     setIsSavedToDesigns(true);
     setTimeout(() => setIsSavedToDesigns(false), 2500);
+  };
+
+  const handleAutoSpellcheck = () => {
+    const currentText = String(
+      props.text ??
+      props.ctaText ??
+      props.whatsAppText ??
+      props.verifiedLabel ??
+      props.highlight ??
+      props.badge ??
+      props.title ??
+      selectedLayer.title ??
+      ''
+    );
+    const { correctedText, changesCount } = correctSpanishText(currentText);
+    if (changesCount > 0) {
+      onUpdateLayerProps(selectedLayer.id, {
+        text: correctedText,
+        ctaText: correctedText,
+        whatsAppText: correctedText,
+        verifiedLabel: correctedText,
+        highlight: correctedText,
+        badge: correctedText,
+        title: correctedText,
+        buttonText: correctedText,
+      });
+      setSpellingFeedback(`✓ ${changesCount} ${changesCount === 1 ? 'corrección aplicada' : 'correcciones aplicadas'}`);
+    } else {
+      setSpellingFeedback('✓ Ortografía y gramática impecables');
+    }
+    setTimeout(() => setSpellingFeedback(null), 3000);
   };
 
   return (
@@ -914,8 +948,30 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </span>
             </div>
 
-            {/* CONTENIDO DEL TEXTO */}
-            <div>
+            {/* CONTENIDO DEL TEXTO CON ASISTENTE DE ORTOGRAFÍA */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Contenido
+                </label>
+                <button
+                  type="button"
+                  onClick={handleAutoSpellcheck}
+                  className="flex items-center gap-1 text-[10px] font-bold text-amber-400 hover:text-amber-300 transition-colors bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-lg hover:bg-amber-500/20 shadow-xs"
+                  title="Corregir tildes, signos ¿? y mayúsculas según la RAE y el sector asegurador"
+                >
+                  <Sparkles className="size-3 text-amber-400" />
+                  <span>Corregir Ortografía (RAE)</span>
+                </button>
+              </div>
+
+              {spellingFeedback && (
+                <div className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-1 rounded-lg animate-fadeIn flex items-center gap-1.5">
+                  <Check className="size-3" />
+                  <span>{spellingFeedback}</span>
+                </div>
+              )}
+
               <textarea
                 value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
                 onChange={(e) => {
@@ -933,6 +989,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 }}
                 rows={2}
                 placeholder="Escribe el texto aquí..."
+                spellCheck={true}
+                lang="es"
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed"
               />
               <span className="text-[9px] text-slate-500 mt-1 block">

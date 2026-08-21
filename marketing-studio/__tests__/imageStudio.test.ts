@@ -304,5 +304,23 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     const inlineNodes = parseFormattedText('Evita que te [DENEGUEN](#EE9B00) tu visado');
     expect(inlineNodes).toBeDefined();
   });
+
+  it('corrects accents, punctuation signs and insurance domain capitalization (Spelling Assistant)', async () => {
+    const { correctSpanishText } = await import('../utils/spellingCorrector');
+    expect(correctSpanishText).toBeDefined();
+
+    // 1. Signos de apertura ¿?, acentos en España y Extranjería
+    const res1 = correctSpanishText('vas a estudiar en espana?');
+    expect(res1.correctedText).toBe('¿Vas a estudiar en España?');
+    expect(res1.changesCount).toBeGreaterThan(0);
+
+    // 2. Términos de visado (denegacion, poliza, vitablue, whatsapp)
+    const res2 = correctSpanishText('evita la denegacion de tu poliza en vitablue por whatsapp');
+    expect(res2.correctedText).toBe('Evita la denegación de tu póliza en VitaBlue por WhatsApp');
+
+    // 3. Mayúsculas completas y conservación de [Palabra](#COLOR)
+    const res3 = correctSpanishText('que no te [DENEGUEN](#EE9B00) el visado!');
+    expect(res3.correctedText).toBe('¡Que no te [DENEGUEN](#EE9B00) el visado!');
+  });
 });
 
