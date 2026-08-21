@@ -229,9 +229,47 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'WebIllustration':
       return <WebIllustrationBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
 
-    // 7. CAPAS DE TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES)
-    case 'CustomText':
+    // 7. CAPAS DE IMAGEN & FOTOS DE STOCK
     default:
+      if (layer.type === 'image' || blockProps.imageUrl) {
+        const imageUrl = String(blockProps.imageUrl ?? '');
+        const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
+        const clipShape = layer.clipShape ?? 'rounded-2xl';
+
+        let clipStyle: React.CSSProperties = {};
+        if (clipShape === 'circle') {
+          clipStyle = { borderRadius: '9999px' };
+        } else if (clipShape === 'squircle' || clipShape === 'rounded-2xl') {
+          clipStyle = { borderRadius: '24px' };
+        } else if (clipShape === 'pill') {
+          clipStyle = { borderRadius: '9999px' };
+        } else if (clipShape === 'shield') {
+          clipStyle = { clipPath: 'polygon(50% 0%, 100% 15%, 100% 65%, 50% 100%, 0% 65%, 0% 15%)' };
+        } else if (clipShape === 'hexagon') {
+          clipStyle = { clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' };
+        }
+
+        return (
+          <div
+            className="w-full h-full overflow-hidden select-none flex items-center justify-center relative shadow-lg"
+            style={{
+              ...clipStyle,
+              border: layer.borderWidth ? `${layer.borderWidth}px solid ${layer.borderColor || '#005F73'}` : undefined,
+              filter: layer.filter ? `${layer.filter}` : undefined,
+            }}
+          >
+            <img
+              src={imageUrl}
+              alt={String(blockProps.alt ?? layer.title ?? 'Image')}
+              className="w-full h-full pointer-events-none"
+              style={{ objectFit }}
+              loading="lazy"
+            />
+          </div>
+        );
+      }
+
+      // 8. CAPAS DE TEXTO PERSONALIZADO (H1, H2, H3, P, BADGES)
       if (layer.type === 'text' || layer.blockType === 'CustomText') {
         const textTag = (blockProps.tag as 'h1' | 'h2' | 'h3' | 'p' | 'span') ?? 'p';
         const isBadge = blockProps.tag === 'badge';

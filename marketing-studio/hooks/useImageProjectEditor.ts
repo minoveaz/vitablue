@@ -1055,6 +1055,38 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [project.preset.width, project.layers.length, pushHistory]);
 
+  const addImageLayer = useCallback((imageUrl: string, options?: { title?: string; width?: number; height?: number; clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon' }) => {
+    const canvasWidth = project.preset.width || 1080;
+    const defaultW = options?.width ?? Math.round(canvasWidth * 0.45);
+    const defaultH = options?.height ?? Math.round(defaultW * 0.75);
+
+    const newLayer: ImageLayer = {
+      id: `image-${Date.now()}`,
+      type: 'image',
+      title: options?.title ?? 'Imagen de Stock',
+      props: {
+        imageUrl,
+        alt: options?.title ?? 'Stock Photo',
+        objectFit: 'cover',
+      },
+      position: { x: 50, y: 50 },
+      zIndex: project.layers.length + 10,
+      scale: 1,
+      width: defaultW,
+      height: defaultH,
+      clipShape: options?.clipShape ?? 'rounded-2xl',
+      opacity: 1,
+    };
+
+    setProject((prev) => {
+      const next = { ...prev, layers: [...prev.layers, newLayer], updatedAt: new Date().toISOString() };
+      setSelectedLayerId(newLayer.id);
+      setSelectedLayerIds([newLayer.id]);
+      pushHistory(next);
+      return next;
+    });
+  }, [project.preset.width, project.layers.length, pushHistory]);
+
   const saveLayerToMyDesigns = useCallback((layerId: string, customTitle?: string) => {
     const target = project.layers.find((l) => l.id === layerId);
     if (!target) return;
@@ -1601,6 +1633,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     reorderLayers,
     addBlockLayer,
     addTextLayer,
+    addImageLayer,
     saveLayerToMyDesigns,
     insertSavedLayer,
     clearCanvas,

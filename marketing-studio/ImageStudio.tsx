@@ -258,6 +258,7 @@ export const ImageStudio: React.FC = () => {
           onLoadTemplate={handleLoadTemplate}
           onAddBlock={handleAddBlock}
           onAddTextLayer={editor.addTextLayer}
+          onAddImageLayer={editor.addImageLayer}
           onInsertSavedLayer={editor.insertSavedLayer}
           onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
           onToggleLock={editor.toggleLayerLock}

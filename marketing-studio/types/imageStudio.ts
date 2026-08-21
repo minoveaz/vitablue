@@ -313,7 +313,7 @@ export interface ImageLayer {
   brightness?: number; // 50 to 150
   contrast?: number; // 50 to 150
   blur?: number; // 0 to 20 px
-  clipShape?: 'none' | 'circle' | 'squircle' | 'pill' | 'phone_mockup' | 'shield';
+  clipShape?: 'none' | 'circle' | 'squircle' | 'pill' | 'phone_mockup' | 'shield' | 'hexagon' | 'rounded-2xl';
   locked?: boolean;
   visible?: boolean;
 }

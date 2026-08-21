@@ -4,7 +4,6 @@ import {
   ShieldCheck,
   SplitSquareVertical,
   Grid,
-  UploadCloud,
   Download,
   Film,
   Sparkles,
@@ -15,6 +14,7 @@ import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
 import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
 import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
+import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 
@@ -27,6 +27,7 @@ export interface ImageStudioAssetDrawerContentProps {
   onLoadTemplate: (template: ImageProject) => void;
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onAddTextLayer?: (preset: TextPresetItem) => void;
+  onAddImageLayer?: (imageUrl: string, options?: { title?: string; clipShape?: any }) => void;
   onInsertSavedLayer?: (layer: ImageLayer) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
   onToggleLock: (id: string) => void;
@@ -50,6 +51,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onLoadTemplate,
   onAddBlock,
   onAddTextLayer,
+  onAddImageLayer,
   onInsertSavedLayer,
   onUpdateBackground,
   onToggleLock,
@@ -68,12 +70,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
     { name: 'Midnight Dark', value: '#001219', gradient: 'radial-gradient(circle at 50% 20%, rgba(0, 18, 25, 0.95) 0%, #00080C 85%)' },
     { name: 'Amber Gold', value: '#EE9B00', gradient: 'radial-gradient(circle at 50% 25%, rgba(238, 155, 0, 0.45) 0%, #001219 80%)' },
     { name: 'Mint Green', value: '#94D2BD', gradient: 'radial-gradient(circle at 50% 25%, rgba(148, 210, 189, 0.45) 0%, #001219 80%)' },
-  ];
-
-  const advisorPhotos = [
-    { name: 'Sofía', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop', role: 'Visados' },
-    { name: 'Elena', url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&auto=format&fit=crop', role: 'Salud y Repatriación' },
-    { name: 'Carlos', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop', role: 'Extranjería' },
   ];
 
   return (
@@ -264,38 +260,24 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 5. MEDIOS & ASESORAS */}
+      {/* 5. MEDIOS, FOTOS DE STOCK & ASESORAS */}
       {activeTab === 'media' && (
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/60 p-4 text-center hover:border-primary transition-colors cursor-pointer">
-            <UploadCloud className="size-6 text-brand-cyan mx-auto mb-1.5" />
-            <strong className="block text-xs font-bold text-slate-200">Subir imágenes</strong>
-            <p className="text-[10px] text-slate-500 mt-0.5">PNG, JPG, WebP hasta 10MB</p>
-          </div>
-
-          <div className="space-y-3">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-              Asesoras Oficiales de VitaBlue
-            </span>
-            <div className="space-y-2">
-              {advisorPhotos.map((advisor) => (
-                <div
-                  key={advisor.name}
-                  className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 hover:bg-slate-900 transition-all"
-                >
-                  <img
-                    src={advisor.url}
-                    alt={advisor.name}
-                    className="size-12 rounded-full object-cover border-2 border-primary shadow-sm"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <strong className="block text-xs font-bold text-slate-200">{advisor.name}</strong>
-                    <span className="text-[11px] text-slate-400">{advisor.role}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioMediaDrawer
+            onInsertImageLayer={(url, options) => {
+              if (onAddImageLayer) {
+                onAddImageLayer(url, options);
+              } else {
+                onAddBlock('ImageMedia' as any, { imageUrl: url, ...options });
+              }
+            }}
+            onSetBackgroundImage={(url) => {
+              onUpdateBackground(
+                `linear-gradient(rgba(0, 18, 25, 0.75), rgba(0, 18, 25, 0.85)), url('${url}') center/cover no-repeat`,
+                '#001219'
+              );
+            }}
+          />
         </div>
       )}
 

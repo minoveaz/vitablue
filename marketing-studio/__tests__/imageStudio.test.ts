@@ -243,5 +243,24 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
       expect(layer.height).toBeGreaterThan(0);
     });
   });
+
+  it('provides a curated stock photo library with categories for student visas, health, travel, and advisors', async () => {
+    const { CURATED_STOCK_PHOTOS, STOCK_CATEGORIES } = await import('../data/stockPhotos');
+    expect(CURATED_STOCK_PHOTOS.length).toBeGreaterThanOrEqual(15);
+    expect(STOCK_CATEGORIES.length).toBeGreaterThanOrEqual(6);
+
+    const categories = CURATED_STOCK_PHOTOS.map((p) => p.category);
+    expect(categories).toContain('students');
+    expect(categories).toContain('health');
+    expect(categories).toContain('travel');
+    expect(categories).toContain('advisors');
+
+    CURATED_STOCK_PHOTOS.forEach((photo) => {
+      expect(photo.id).toBeTruthy();
+      expect(photo.url).toBeTruthy();
+      expect(photo.thumbnailUrl).toBeTruthy();
+      expect(photo.tags.length).toBeGreaterThan(0);
+    });
+  });
 });
 
