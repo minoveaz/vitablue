@@ -205,11 +205,10 @@ export const ImageStudio: React.FC = () => {
   if (!assetId) {
     return (
       <BackofficeShell
-        title="Image & Graphic Studio"
-        eyebrow="Creative Studio"
-        breadcrumbs={['Marketing Studio', 'Image Studio']}
-        mode="full-bleed"
-        hideModuleHeader={true}
+        title="Hub de Creatividades Sociales"
+        eyebrow="3. Creative Studio"
+        breadcrumbs={['Marketing Studio', '3. Creative Studio', 'Image Studio (Canva)']}
+        mode="overview"
       >
         <ImageStudioHub
           onOpenProject={(id) => {
