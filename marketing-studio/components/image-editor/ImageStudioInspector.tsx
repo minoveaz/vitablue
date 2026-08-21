@@ -35,6 +35,7 @@ import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 import { correctSpanishText } from '../../utils/spellingCorrector';
+import { EditorPanelSection } from './EditorPanelSection';
 
 interface NumberInputProps {
   value?: number;
@@ -760,12 +761,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         {/* A. FORMA GEOMÉTRICA TRADICIONAL */}
         {selectedLayer.blockType === 'GeometricShape' && (
           <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
-              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-brand-cyan font-black">
-                <Shapes className="size-3.5" />
-                <span>Propiedades de Forma Geométrica</span>
-              </span>
-            </div>
+            <EditorPanelSection title={<><Shapes className="size-3.5" /> Propiedades de Forma Geométrica</>} tone="cyan" />
 
             {/* TIPO DE FORMA */}
             <div>

@@ -74,6 +74,30 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
       expect(validateImageProject(project).some((issue) => issue.code === 'out-of-bounds')).toBe(true);
     });
   });
+
+  describe('ImageStudio layer model and grouping contracts', () => {
+    it('preserves geometry when a custom group is expanded after scale and rotation', async () => {
+      const { createCustomGroup, expandCustomGroup } = await import('../utils/imageEditorCore');
+      const layers = [
+        { id: 'a', type: 'block' as const, blockType: 'CustomText' as const, title: 'A', props: {}, position: { x: 40, y: 50 }, zIndex: 1, scale: 1 },
+        { id: 'b', type: 'block' as const, blockType: 'CustomText' as const, title: 'B', props: {}, position: { x: 60, y: 50 }, zIndex: 2, scale: 1 },
+      ];
+      const group = createCustomGroup(layers, 'group');
+      const moved = { ...group, position: { x: 70, y: 60 }, scale: 2, rotation: 90 };
+      const expanded = expandCustomGroup(moved);
+
+      expect(expanded.map((layer) => layer.position)).toEqual([
+        { x: 70, y: 40 },
+        { x: 70, y: 80 },
+      ]);
+      expect(expanded[0].scale).toBe(2);
+    });
+
+    it('rejects grouping fewer than two layers', async () => {
+      const { createCustomGroup } = await import('../utils/imageEditorCore');
+      expect(() => createCustomGroup([], 'group')).toThrow();
+    });
+  });
 });
 
 describe('ImageStudio 7 Rapid Actions (Canva-Style Architecture)', () => {
@@ -353,4 +377,3 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     expect(highlightTemplates.length).toBe(5);
   });
 });
-
