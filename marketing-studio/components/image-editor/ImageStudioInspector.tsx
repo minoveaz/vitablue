@@ -934,6 +934,118 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         )}
 
+        {/* 1.5. CONTROL DE PORTADA / SELLO DE DESTACADOS INSTAGRAM */}
+        {selectedLayer.blockType === 'InstagramHighlightBadge' && (
+          <div className="space-y-3 rounded-2xl border border-amber-500/30 bg-slate-950 p-3 shadow-xs">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-300 font-black">
+                <Sparkles className="size-3.5 text-amber-400" />
+                <span>Destacado de Instagram</span>
+              </span>
+              <span className="text-[10px] font-mono text-amber-200/80 font-bold">
+                {String(props.iconKey ?? 'approved').toUpperCase()}
+              </span>
+            </div>
+
+            {/* SELECTOR DE ICONO */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Icono del Destacado
+              </label>
+              <select
+                value={String(props.iconKey ?? 'approved')}
+                onChange={(e) => {
+                  const key = e.target.value;
+                  const defaultLabelMap: Record<string, string> = {
+                    approved: 'Aprobados',
+                    visa: 'Visados',
+                    process: 'Paso a Paso',
+                    faq: 'Dudas & FAQ',
+                    contact: 'Contacto',
+                  };
+                  onUpdateLayerProps(selectedLayer.id, {
+                    iconKey: key,
+                    label: defaultLabelMap[key] || 'Destacado',
+                  });
+                }}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-bold text-white focus:border-amber-400 focus:outline-none transition-colors"
+              >
+                <option value="approved">🎓 Aprobados (Birrete + Check)</option>
+                <option value="visa">🛡️ Visados (Pasaporte + Cruz Médica)</option>
+                <option value="process">⚡ Paso a Paso (Ruta de 3 Nodos)</option>
+                <option value="faq">❓ Dudas & FAQs (Bocadillo + ?)</option>
+                <option value="contact">📱 Contacto (Smartphone + Chat WhatsApp)</option>
+              </select>
+            </div>
+
+            {/* TEXTO DE ETIQUETA */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Etiqueta / Nombre
+                </label>
+                <label className="flex items-center gap-1.5 text-[10px] text-slate-400 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={props.showLabel !== false}
+                    onChange={(e) => onUpdateLayerProps(selectedLayer.id, { showLabel: e.target.checked })}
+                    className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-0"
+                  />
+                  <span>Mostrar texto</span>
+                </label>
+              </div>
+              <input
+                type="text"
+                value={String(props.label ?? 'Aprobados')}
+                onChange={(e) => onUpdateLayerProps(selectedLayer.id, { label: e.target.value })}
+                className="w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-bold text-white focus:border-amber-400 focus:outline-none transition-colors"
+                placeholder="Ej: Aprobados"
+              />
+            </div>
+
+            {/* COLOR DEL ARO NEÓN */}
+            <HexColorPickerField
+              label="Color del Aro Neón (Ring Glow)"
+              value={String(props.ringColor ?? '#EE9B00')}
+              allowTransparent={false}
+              onChange={(hex) =>
+                onUpdateLayerProps(selectedLayer.id, {
+                  ringColor: hex,
+                  glowColor: `${hex}80`,
+                })
+              }
+            />
+
+            {/* COLOR DE ACENTO DE DETALLES */}
+            <HexColorPickerField
+              label="Color de Acento (Checks / Puntos)"
+              value={String(props.accentColor ?? props.ringColor ?? '#EE9B00')}
+              allowTransparent={false}
+              onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { accentColor: hex })}
+            />
+
+            {/* MODO PORTADA COMPLETA O SELLO */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+              <span className="text-[11px] font-bold text-slate-300">Modo Portada Completa</span>
+              <button
+                type="button"
+                onClick={() =>
+                  onUpdateLayerProps(selectedLayer.id, {
+                    isFullCover: !props.isFullCover,
+                  })
+                }
+                className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
+                  props.isFullCover
+                    ? 'bg-amber-500 text-slate-950 shadow-xs'
+                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                }`}
+              >
+                {props.isFullCover ? '✓ Portada 1080p' : 'Sello Aislado'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 2. TEXTO Y TIPOGRAFÍA (PANEL UNIVERSAL PARA TODOS LOS TEXTOS, BOTONES Y BADGES) */}
         {isTextType && (
           <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">

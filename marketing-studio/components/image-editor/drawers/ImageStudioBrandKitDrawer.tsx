@@ -3,13 +3,18 @@ import {
   Palette,
   Sparkles,
   Check,
+  ExternalLink,
+  Layers,
 } from 'lucide-react';
 import Logo from '../../../../components/atoms/Logo';
-import { ImageBlockType } from '../../../types/imageStudio';
+import { ImageBlockType, ImageProject } from '../../../types/imageStudio';
+import { HIGHLIGHT_PRESETS, HighlightVectorIcon } from '../blocks/HighlightCoverBlocks';
+import { INITIAL_IMAGE_TEMPLATES } from '../../../utils/imageTemplates';
 
 export interface ImageStudioBrandKitDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
   onUpdateBackground: (gradient: string, color: string) => void;
+  onLoadTemplate?: (template: ImageProject) => void;
 }
 
 interface LogoVariantPreset {
@@ -203,8 +208,9 @@ const BRAND_BACKGROUNDS = [
 export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps> = ({
   onAddBlock,
   onUpdateBackground,
+  onLoadTemplate,
 }) => {
-  const [logoTab, setLogoTab] = useState<'all' | 'isotype' | 'horizontal' | 'vertical'>('all');
+  const [logoTab, setLogoTab] = useState<'all' | 'highlights' | 'isotype' | 'horizontal' | 'vertical'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
 
   const handleCopyHex = (hex: string) => {
@@ -222,6 +228,27 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
       width: preset.width,
       height: preset.height,
     });
+  };
+
+  const handleInsertHighlight = (preset: typeof HIGHLIGHT_PRESETS[0]) => {
+    onAddBlock('InstagramHighlightBadge', {
+      iconKey: preset.id,
+      label: preset.label,
+      showLabel: true,
+      ringColor: preset.defaultRingColor,
+      glowColor: preset.defaultGlowColor,
+      strokeColor: '#FFFFFF',
+      accentColor: preset.defaultAccentColor,
+      isFullCover: false,
+    });
+  };
+
+  const handleOpenHighlightCover = (iconKey: string) => {
+    const templateId = `template-highlight-${iconKey}`;
+    const targetTemplate = INITIAL_IMAGE_TEMPLATES.find((t) => t.id === templateId);
+    if (targetTemplate && onLoadTemplate) {
+      onLoadTemplate(targetTemplate);
+    }
   };
 
   const filteredLogos = LOGO_PRESETS.filter(
@@ -242,12 +269,12 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
                 Kit de Marca Oficial VitaBlue
               </h3>
               <p className="text-[10px] text-slate-400">
-                Logos, isotipos, colores y gradientes de marca
+                Logos, destacados, colores y gradientes oficiales
               </p>
             </div>
           </div>
           <span className="text-[10px] font-mono text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded-md border border-brand-cyan/20">
-            {LOGO_PRESETS.length} variantes
+            {LOGO_PRESETS.length + HIGHLIGHT_PRESETS.length} activos
           </span>
         </div>
 
@@ -255,6 +282,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {[
             { id: 'all', label: 'Todos' },
+            { id: 'highlights', label: '🌟 Destacados IG' },
             { id: 'horizontal', label: '🏷️ Logotipos' },
             { id: 'isotype', label: '🔷 Isotipos' },
             { id: 'vertical', label: '📐 Apilados' },
@@ -277,7 +305,84 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
 
       {/* 2. CONTENIDO PRINCIPAL SCROLLABLE */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-6">
-        {/* SECCIÓN A: LOGOS E ISOTIPOS OFICIALES */}
+        {/* SECCIÓN 0: DESTACADOS DE INSTAGRAM (STORY HIGHLIGHTS OFICIALES) */}
+        {(logoTab === 'all' || logoTab === 'highlights') && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1">
+                <Sparkles className="size-3 text-amber-400" />
+                <span>Portadas de Destacados Instagram ({HIGHLIGHT_PRESETS.length})</span>
+              </span>
+              <span className="text-[10px] text-amber-200/80 font-mono">1080×1080 · IG Official</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {HIGHLIGHT_PRESETS.map((item) => (
+                <div
+                  key={item.id}
+                  className="group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0d1624] p-3 hover:border-amber-500/60 hover:shadow-xl transition-all"
+                >
+                  {/* PREVIEW DISCO CIRCULAR CON GLOW NEÓN */}
+                  <div
+                    className="w-full h-28 rounded-xl border border-slate-800/80 flex items-center justify-center p-3 mb-2.5 relative overflow-hidden bg-gradient-to-b from-[#001219] to-[#00080C] shadow-inner"
+                  >
+                    <div
+                      className="size-20 rounded-full flex items-center justify-center relative shadow-lg group-hover:scale-105 transition-transform"
+                      style={{
+                        background: 'radial-gradient(circle at 50% 35%, rgba(0, 95, 115, 0.85) 0%, #001219 85%)',
+                        border: `3px solid ${item.defaultRingColor}`,
+                        boxShadow: `0 0 20px ${item.defaultGlowColor}`,
+                      }}
+                    >
+                      <div className="size-11 flex items-center justify-center">
+                        <HighlightVectorIcon
+                          iconKey={item.id}
+                          strokeColor="#FFFFFF"
+                          accentColor={item.defaultAccentColor}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TÍTULO Y DESCRIPCIÓN */}
+                  <div className="mb-2.5">
+                    <strong className="block text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                      {item.label}
+                    </strong>
+                    <span className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">
+                      {item.sublabel}
+                    </span>
+                  </div>
+
+                  {/* ACCIONES: INSERTAR SELLO O ABRIR PORTADA COMPLETA */}
+                  <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
+                    <button
+                      type="button"
+                      onClick={() => handleInsertHighlight(item)}
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-brand-cyan text-[10px] font-bold border border-brand-cyan/30 transition-colors"
+                      title="Insertar este sello en el lienzo actual"
+                    >
+                      <Layers className="size-3" />
+                      <span>+ Sello</span>
+                    </button>
+
+                    {onLoadTemplate && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenHighlightCover(item.id)}
+                        className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] font-bold border border-amber-500/40 transition-colors"
+                        title="Cargar lienzo completo 1080x1080 para descargar portada"
+                      >
+                        <ExternalLink className="size-3" />
+                        <span>Abrir 1080p</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-black uppercase tracking-wider text-brand-cyan flex items-center gap-1">

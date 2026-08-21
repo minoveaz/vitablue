@@ -267,6 +267,7 @@ export type ImageBlockType =
   | 'GeometricShape'
   | 'WebIllustration'
   | 'BrandLogo'
+  | 'InstagramHighlightBadge'
   | 'CustomText'
   | 'CustomGroup';
 

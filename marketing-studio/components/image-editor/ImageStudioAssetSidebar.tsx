@@ -229,12 +229,13 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         />
       )}
 
-      {/* 4. BRAND KIT OFICIAL (LOGOS, ISOTIPOS, COLORES Y GRADIENTES) */}
+      {/* 4. BRAND KIT OFICIAL (LOGOS, ISOTIPOS, DESTACADOS IG, COLORES Y GRADIENTES) */}
       {activeTab === 'brand' && (
         <div className="-m-4 h-[calc(100vh-140px)]">
           <ImageStudioBrandKitDrawer
             onAddBlock={onAddBlock}
             onUpdateBackground={onUpdateBackground}
+            onLoadTemplate={onLoadTemplate}
           />
         </div>
       )}

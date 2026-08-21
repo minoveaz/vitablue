@@ -32,6 +32,7 @@ import { GlassCardSurfaceBlock } from './SurfaceBlocks';
 import { GeometricShapeBlock } from './ShapeBlocks';
 import { WebIllustrationBlock } from './WebIllustrationBlock';
 import { BrandLogoBlock } from './BrandLogoBlock';
+import { InstagramHighlightBadge } from './HighlightCoverBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 
@@ -232,6 +233,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
       return <WebIllustrationBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
     case 'BrandLogo':
       return <BrandLogoBlock layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
+    case 'InstagramHighlightBadge':
+      return <InstagramHighlightBadge layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
 
     // 7. CAPAS DE IMAGEN & FOTOS DE STOCK
     default:

@@ -322,5 +322,24 @@ describe('ImageStudio Smart Canvas Composer & Auto-Layout', () => {
     const res3 = correctSpanishText('que no te [DENEGUEN](#EE9B00) el visado!');
     expect(res3.correctedText).toBe('¡Que no te [DENEGUEN](#EE9B00) el visado!');
   });
+
+  it('defines the 5 official Instagram Story Highlight presets with vector icons and templates', async () => {
+    const { HIGHLIGHT_PRESETS } = await import('../components/image-editor/blocks/HighlightCoverBlocks');
+    expect(HIGHLIGHT_PRESETS.length).toBe(5);
+
+    const keys = HIGHLIGHT_PRESETS.map((h) => h.id);
+    expect(keys).toContain('approved');
+    expect(keys).toContain('visa');
+    expect(keys).toContain('process');
+    expect(keys).toContain('faq');
+    expect(keys).toContain('contact');
+
+    // Verificar que las 5 plantillas oficiales existan en INITIAL_IMAGE_TEMPLATES
+    const highlightTemplates = INITIAL_IMAGE_TEMPLATES.filter((t) =>
+      t.id.startsWith('template-highlight-')
+    );
+    expect(highlightTemplates.length).toBe(5);
+  });
 });
+
 
