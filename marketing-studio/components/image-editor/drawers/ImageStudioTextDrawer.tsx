@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Layers,
   CheckSquare,
-  FolderHeart,
   Plus,
   X,
 } from 'lucide-react';
