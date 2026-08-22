@@ -6,6 +6,7 @@ import {
   MotionComparisonCard,
 } from '../../../../packages/video-studio/src/motion-kit';
 import { ImageLayer, ImageProject } from '../../../types/imageStudio';
+import { getBlockCatalogItem } from '../../../data/blockCatalog';
 import {
   HookAlertBadgeBlock,
   AdvisorAvatarBadgeBlock,
@@ -125,7 +126,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
   brandTokens,
   onUpdateLayerProps,
 }) => {
-  const blockProps = (layer.props ?? {}) as Record<string, unknown>;
+  const blockProps = {
+    ...(layer.blockType ? getBlockCatalogItem(layer.blockType)?.defaultProps : {}),
+    ...((layer.props ?? {}) as Record<string, unknown>),
+  };
   const effectiveBrandTokens = brandTokens
     ? {
         ...brandTokens,

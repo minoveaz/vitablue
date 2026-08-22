@@ -11,31 +11,69 @@ import {
   XCircle,
 } from 'lucide-react';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
+import { getBlockCatalogItem } from '../../../data/blockCatalog';
 
 type BlockProps = Record<string, unknown>;
+
+const DEFAULT_COVERAGES = [
+  { title: 'Hospitalización completa', description: 'Especialistas, pruebas y hospitalización en una red amplia.' },
+  { title: 'Asistencia 24 horas', description: 'Atención urgente y soporte humano cuando lo necesitas.' },
+  { title: 'Repatriación sanitaria', description: 'Traslado médico incluido para tu situación.' },
+];
+const DEFAULT_TESTIMONIALS = [
+  { author: 'María García', meta: 'Asegurada VitaBlue', comment: 'Un asesoramiento claro, rápido y muy humano.', stars: 5 },
+  { author: 'Carlos López', meta: 'Cliente desde 2024', comment: 'Encontré la póliza que necesitaba sin llamadas comerciales.', stars: 5 },
+];
+const DEFAULT_PLANS = [
+  { name: 'Seguro Básico', subtitle: 'Acceso esencial', description: 'Cobertura médica para el día a día.', priceText: 'Consultar' },
+  { name: 'Seguro Completo', subtitle: 'Cobertura amplia', description: 'Hospitalización y especialistas incluidos.', priceText: 'Recomendado', isFeatured: true },
+  { name: 'Seguro Premium', subtitle: 'Máxima libertad', description: 'Reembolso y elección de centros.', priceText: 'Consultar' },
+];
+const DEFAULT_TRUST_ITEMS = [
+  { title: 'Homologación oficial', description: 'Pólizas autorizadas y revisadas.' },
+  { title: 'Gestión en 24 horas', description: 'Recibe tu documentación rápidamente.' },
+  { title: 'Soporte continuo', description: 'Te acompañamos durante todo el proceso.' },
+];
+const DEFAULT_FAQ_ITEMS = [
+  { question: '¿El seguro cumple los requisitos de mi visado?', answer: 'Sí. Mostramos las condiciones relevantes de cada póliza.' },
+  { question: '¿Puedo recibir ayuda antes de decidir?', answer: 'Sí, un asesor puede resolver tus dudas sin compromiso.' },
+];
 
 const text = (props: BlockProps, key: string, fallback = '') => String(props[key] ?? fallback);
 
 const list = (value: unknown, fallback: string[] = []): string[] => {
-  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  if (Array.isArray(value)) {
+    const values = value.map(String).filter(Boolean);
+    return values.length > 0 ? values : fallback;
+  }
   if (typeof value === 'string') {
     try {
       const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+      if (Array.isArray(parsed)) {
+        const values = parsed.map(String).filter(Boolean);
+        return values.length > 0 ? values : fallback;
+      }
     } catch {
       // Textarea values are intentionally supported for quick editing.
     }
-    return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+    const values = value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+    return values.length > 0 ? values : fallback;
   }
   return fallback;
 };
 
 const objectList = <T extends Record<string, unknown>>(value: unknown, fallback: T[]): T[] => {
-  if (Array.isArray(value)) return value.filter((item): item is T => Boolean(item && typeof item === 'object'));
+  if (Array.isArray(value)) {
+    const values = value.filter((item): item is T => Boolean(item && typeof item === 'object'));
+    return values.length > 0 ? values : fallback;
+  }
   if (typeof value === 'string') {
     try {
       const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) return parsed.filter((item): item is T => Boolean(item && typeof item === 'object'));
+      if (Array.isArray(parsed)) {
+        const values = parsed.filter((item): item is T => Boolean(item && typeof item === 'object'));
+        return values.length > 0 ? values : fallback;
+      }
     } catch {
       // Keep the catalog default when JSON is being edited.
     }
@@ -188,7 +226,7 @@ const InsuranceProductHero: React.FC<{ props: BlockProps }> = ({ props }) => (
 );
 
 const InsuranceCoverageGrid: React.FC<{ props: BlockProps }> = ({ props }) => {
-  const items = objectList<{ title?: string; description?: string }>(props.items, []);
+  const items = objectList<{ title?: string; description?: string }>(props.items, DEFAULT_COVERAGES);
   return (
     <Frame className="p-5 sm:p-7">
       <div className="flex h-full flex-col justify-center gap-4">
@@ -211,7 +249,7 @@ const InsuranceCoverageGrid: React.FC<{ props: BlockProps }> = ({ props }) => {
 };
 
 const InsuranceTestimonialGrid: React.FC<{ props: BlockProps }> = ({ props }) => {
-  const items = objectList<{ author?: string; meta?: string; comment?: string; stars?: number }>(props.items, []);
+  const items = objectList<{ author?: string; meta?: string; comment?: string; stars?: number }>(props.items, DEFAULT_TESTIMONIALS);
   return (
     <Frame className="bg-slate-50/70 p-5 sm:p-7">
       <div className="flex h-full flex-col justify-center gap-4">
@@ -228,7 +266,7 @@ const InsuranceTestimonialGrid: React.FC<{ props: BlockProps }> = ({ props }) =>
 };
 
 const InsurancePlanComparison: React.FC<{ props: BlockProps }> = ({ props }) => {
-  const plans = objectList<{ name?: string; subtitle?: string; description?: string; priceText?: string; isFeatured?: boolean }>(props.plans, []);
+  const plans = objectList<{ name?: string; subtitle?: string; description?: string; priceText?: string; isFeatured?: boolean }>(props.plans, DEFAULT_PLANS);
   return (
     <Frame className="bg-slate-50/70 p-5 sm:p-7">
       <div className="flex h-full flex-col justify-center gap-4">
@@ -274,7 +312,7 @@ const InsuranceProductCard: React.FC<{ props: BlockProps }> = ({ props }) => (
 );
 
 const InsuranceTrustBar: React.FC<{ props: BlockProps }> = ({ props }) => {
-  const items = objectList<{ title?: string; description?: string }>(props.items, []);
+  const items = objectList<{ title?: string; description?: string }>(props.items, DEFAULT_TRUST_ITEMS);
   return (
     <Frame className="bg-slate-50 p-5 sm:p-7">
       <div className="grid h-full items-center gap-4 sm:grid-cols-3">
@@ -314,7 +352,7 @@ const InsuranceTransparency: React.FC<{ props: BlockProps }> = ({ props }) => (
 );
 
 const InsuranceFaq: React.FC<{ props: BlockProps }> = ({ props }) => {
-  const items = objectList<{ question?: string; answer?: string }>(props.items, []);
+  const items = objectList<{ question?: string; answer?: string }>(props.items, DEFAULT_FAQ_ITEMS);
   return (
     <Frame className="bg-slate-50/70 p-5 sm:p-7">
       <div className="mx-auto flex h-full w-full max-w-3xl flex-col justify-center gap-4">
@@ -340,22 +378,29 @@ export const MarketingBlockRenderer: React.FC<{ blockType?: ImageBlockType; prop
   blockType,
   props,
 }) => {
+  // Catalog defaults are the single source of truth for both the drawer and
+  // canvas. They also make legacy layers with missing props render usefully.
+  const resolvedProps = {
+    ...(blockType ? getBlockCatalogItem(blockType)?.defaultProps : {}),
+    ...props,
+  };
+
   switch (blockType) {
-    case 'MarketingBrandHero': return <MarketingBrandHero props={props} />;
-    case 'MarketingSectionIntro': return <MarketingSectionIntro props={props} />;
-    case 'MarketingTestimonial': return <MarketingTestimonial props={props} />;
-    case 'MarketingFeatureGrid': return <MarketingFeatureGrid props={props} />;
-    case 'MarketingPromoCard': return <MarketingPromoCard props={props} />;
-    case 'InsuranceProductHero': return <InsuranceProductHero props={props} />;
-    case 'InsuranceCoverageGrid': return <InsuranceCoverageGrid props={props} />;
-    case 'InsuranceTestimonialGrid': return <InsuranceTestimonialGrid props={props} />;
-    case 'InsurancePlanComparison': return <InsurancePlanComparison props={props} />;
-    case 'InsuranceProductCard': return <InsuranceProductCard props={props} />;
-    case 'InsuranceTrustBar': return <InsuranceTrustBar props={props} />;
-    case 'InsuranceProviderBar': return <InsuranceProviderBar props={props} />;
-    case 'InsuranceTransparency': return <InsuranceTransparency props={props} />;
-    case 'InsuranceFaq': return <InsuranceFaq props={props} />;
-    case 'InsuranceAdvisorCta': return <InsuranceAdvisorCta props={props} />;
+    case 'MarketingBrandHero': return <MarketingBrandHero props={resolvedProps} />;
+    case 'MarketingSectionIntro': return <MarketingSectionIntro props={resolvedProps} />;
+    case 'MarketingTestimonial': return <MarketingTestimonial props={resolvedProps} />;
+    case 'MarketingFeatureGrid': return <MarketingFeatureGrid props={resolvedProps} />;
+    case 'MarketingPromoCard': return <MarketingPromoCard props={resolvedProps} />;
+    case 'InsuranceProductHero': return <InsuranceProductHero props={resolvedProps} />;
+    case 'InsuranceCoverageGrid': return <InsuranceCoverageGrid props={resolvedProps} />;
+    case 'InsuranceTestimonialGrid': return <InsuranceTestimonialGrid props={resolvedProps} />;
+    case 'InsurancePlanComparison': return <InsurancePlanComparison props={resolvedProps} />;
+    case 'InsuranceProductCard': return <InsuranceProductCard props={resolvedProps} />;
+    case 'InsuranceTrustBar': return <InsuranceTrustBar props={resolvedProps} />;
+    case 'InsuranceProviderBar': return <InsuranceProviderBar props={resolvedProps} />;
+    case 'InsuranceTransparency': return <InsuranceTransparency props={resolvedProps} />;
+    case 'InsuranceFaq': return <InsuranceFaq props={resolvedProps} />;
+    case 'InsuranceAdvisorCta': return <InsuranceAdvisorCta props={resolvedProps} />;
     default: return null;
   }
 };

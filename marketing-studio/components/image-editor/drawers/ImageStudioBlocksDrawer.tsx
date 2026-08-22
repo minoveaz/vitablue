@@ -15,6 +15,7 @@ export interface ImageStudioBlocksDrawerProps {
 }
 
 const BlockPreview: React.FC<{ block: BlockCatalogItem }> = ({ block }) => {
+  const previewSize = block.defaultSize ?? { width: 420, height: 280 };
   const layer: ImageLayer = {
     id: `catalog-preview-${block.id}`,
     type: 'block',
@@ -24,6 +25,8 @@ const BlockPreview: React.FC<{ block: BlockCatalogItem }> = ({ block }) => {
     position: { x: 50, y: 50 },
     zIndex: 0,
     scale: 1,
+    width: previewSize.width,
+    height: previewSize.height,
   };
 
   return (
@@ -32,11 +35,13 @@ const BlockPreview: React.FC<{ block: BlockCatalogItem }> = ({ block }) => {
       role="img"
       aria-label={`Vista previa de ${block.name}`}
     >
-      <div
-        className="pointer-events-none absolute left-0 top-0 origin-top-left"
-        style={{ width: '290%', height: '290%', transform: 'scale(0.345)' }}
-      >
-        <ImageLayerBlockRenderer layer={layer} brandTokens={defaultMotionBrandTokens} />
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div
+          className="relative h-full max-w-full"
+          style={{ aspectRatio: `${previewSize.width} / ${previewSize.height}` }}
+        >
+          <ImageLayerBlockRenderer layer={layer} brandTokens={defaultMotionBrandTokens} />
+        </div>
       </div>
     </div>
   );
