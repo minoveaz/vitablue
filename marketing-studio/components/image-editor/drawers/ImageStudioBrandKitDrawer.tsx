@@ -217,6 +217,17 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
+  const brandComponents = [
+    { name: 'CTA principal', description: 'Botón de conversión con acento oficial', blockType: 'Button' as ImageBlockType },
+    { name: 'Badge de confianza', description: 'Sello para garantías y beneficios', blockType: 'Badge' as ImageBlockType },
+    { name: 'Tarjeta de producto', description: 'Contenedor para oferta y métricas', blockType: 'Card' as ImageBlockType },
+  ];
+  const brandRules = [
+    { title: 'Área de seguridad', detail: 'Mantén una separación mínima equivalente al ancho del isotipo.' },
+    { title: 'Contraste', detail: 'Usa variantes claras sobre fondos oscuros y variantes oscuras sobre fondos claros.' },
+    { title: 'Color y forma', detail: 'No deformes, gires ni recolores los activos oficiales.' },
+    { title: 'Tipografía', detail: 'Usa Poppins para titulares e Inter para lectura y controles.' },
+  ];
 
   const handleCopyHex = (hex: string) => {
     navigator.clipboard.writeText(hex);
@@ -616,22 +627,44 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
           </div>
         </div>}
 
-        {(logoTab === 'components' || logoTab === 'rules') && (
-         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-5 text-center">
-           <p className="text-xs font-semibold text-slate-200">
-             {logoTab === 'components' ? 'Componentes de marca' : 'Reglas de uso'}
-           </p>
-           {logoTab === 'rules' ? (
-             <div className="mt-3 grid gap-2 text-left">
-               {['Mantener área de seguridad del logo', 'Usar contraste suficiente', 'No deformar ni recolorear variantes oficiales'].map((rule) => (
-                 <div key={rule} className="rounded-lg border border-slate-800 bg-[#0d1624] px-3 py-2 text-[10px] text-slate-300">
-                   {rule}
+        {logoTab === 'components' && (
+         <div className="space-y-3">
+           <div className="px-1">
+             <span className="text-[11px] font-black uppercase tracking-wider text-brand-cyan">Componentes de marca</span>
+             <p className="mt-1 text-[10px] text-slate-500">Configuraciones oficiales listas para insertar, no una segunda biblioteca de elementos.</p>
+           </div>
+           <div className="grid gap-2.5">
+             {brandComponents.map((component) => (
+               <div key={component.name} className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-[#0d1624] p-3">
+                 <div>
+                   <strong className="block text-xs font-bold text-slate-200">{component.name}</strong>
+                   <span className="text-[10px] text-slate-400">{component.description}</span>
                  </div>
-               ))}
-             </div>
-           ) : (
-             <p className="mt-1 text-[10px] text-slate-500">Los componentes reutilizables se definirán desde el editor.</p>
-           )}
+                 <button type="button" onClick={() => onAddBlock(component.blockType)} className="shrink-0 rounded-lg border border-brand-cyan/30 bg-brand-cyan/10 px-2 py-1 text-[10px] font-bold text-brand-cyan hover:bg-brand-cyan/20">
+                   Insertar
+                 </button>
+               </div>
+             ))}
+           </div>
+         </div>
+        )}
+        {logoTab === 'rules' && (
+         <div className="space-y-3">
+           <div className="px-1">
+             <span className="text-[11px] font-black uppercase tracking-wider text-amber-300">Reglas de uso</span>
+             <p className="mt-1 text-[10px] text-slate-500">Criterios prácticos para mantener consistencia visual.</p>
+           </div>
+           <div className="grid gap-2">
+             {brandRules.map((rule) => (
+               <div key={rule.title} className="rounded-xl border border-slate-800 bg-[#0d1624] p-3">
+                 <strong className="block text-[11px] font-bold text-slate-200">{rule.title}</strong>
+                 <p className="mt-1 text-[10px] leading-relaxed text-slate-400">{rule.detail}</p>
+               </div>
+             ))}
+           </div>
+           <button type="button" onClick={() => setLogoTab('identity')} className="w-full rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[10px] font-bold text-amber-300 hover:bg-amber-500/20">
+             Revisar activos de identidad
+           </button>
          </div>
         )}
       </div>
