@@ -226,13 +226,20 @@ Estado actual:
   con alineación, distribución, posición, z-order, agrupación, protección,
   controles contextuales de contenido y edición real de estilo/tokens.
 - [x] Existe un Brand Kit con logos, colores, gradientes y destacados de Instagram.
+- [x] Brand Kit reorganizado en cinco secciones sin duplicar bibliotecas: Identidad,
+  Tokens de marca, Fondos y mallas, Componentes y Reglas de uso.
+- [x] Identidad separa internamente logotipos, isotipos, apilados y destacados IG;
+  Componentes ofrece CTA, badge y tarjeta insertables; Reglas documenta criterios
+  de área de seguridad, contraste, variantes y tipografía.
 - [x] El editor conserva composición al reemplazar imágenes y permite focal point, recorte y object-fit.
 
 Pendiente para cerrar P1:
 - [ ] Convertir Audio en una biblioteca funcional con preview, duración, licencia, búsqueda, favoritos e inserción en timeline.
 - [ ] Completar Vídeo con selección de clips, preview reproducible, trim, duración, transiciones y sincronización de audio.
 - [x] Unificar Layout como sistema de constraints reutilizable entre formatos, no solo acciones puntuales del drawer.
-- [ ] Convertir Brand Kit en tokens aplicables globalmente, con validación de contraste, fuentes, logos protegidos y estados de aprobación.
+- [ ] Evolucionar Brand Kit más adelante: persistir un catálogo editable de
+  Componentes de marca y convertir Reglas de uso en validaciones automáticas
+  (contraste, fuentes, logos protegidos, área de seguridad y estados de aprobación).
 - [ ] Conectar Medios, Marca y Vídeo con scopes, reemplazo seguro, undo/redo y persistencia del proyecto.
 - [ ] Añadir pruebas de interacción y regresión visual para los cuatro módulos en móvil y escritorio.
 
