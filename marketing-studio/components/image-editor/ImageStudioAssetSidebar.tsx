@@ -195,26 +195,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           onDeleteSelectedLayers={onDeleteSelectedLayers}
         />
       )}
-      {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
-      {activeTab === 'layers' && (
-        <ImageStudioLayersPanel
-          project={project}
-          selectedLayerId={selectedLayerId}
-          selectedLayerIds={selectedLayerIds}
-          onSelectLayer={onSelectLayer}
-          onToggleLock={onToggleLock}
-          onToggleVisibility={onToggleVisibility}
-          onToggleAllLock={onToggleAllLock}
-          onToggleAllVisibility={onToggleAllVisibility}
-          onMoveZIndex={onMoveZIndex}
-          onReorderLayers={onReorderLayers}
-          onRenameLayer={onRenameLayer}
-          onDuplicateLayer={onDuplicateLayer}
-          onRemoveLayer={onRemoveLayer}
-          onDeleteSelectedLayers={onDeleteSelectedLayers}
-        />
-      )}
-
       {activeTab === 'layout' && onUpdateGuideSettings && onAutoLayout && onFitText && onApplyVariant && (
         <ImageStudioLayoutDrawer
           project={project}
