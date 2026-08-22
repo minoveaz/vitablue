@@ -276,6 +276,16 @@ export const ImageStudio: React.FC = () => {
           onAutoLayout={editor.applyAutoLayout}
           onFitText={editor.fitSelectedText}
           onApplyVariant={editor.applyStyleVariant}
+          onAlignSelectedLayers={editor.alignSelectedLayers}
+          onDistributeSelectedLayers={editor.distributeSelectedLayers}
+          onGroupSelectedLayers={editor.groupSelectedLayers}
+          onUngroupLayer={editor.ungroupLayer}
+          onUpdateLayerProps={editor.updateLayerProps}
+          onReplaceLayerContent={editor.replaceLayerContent}
+          onUpdateLayerPosition={editor.updateLayerPosition}
+          onUpdateLayerOpacity={editor.updateLayerOpacity}
+          onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
+          onUpdateLayerBorder={editor.updateLayerBorder}
         />
       }
       toolbar={

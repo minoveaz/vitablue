@@ -49,7 +49,7 @@ export interface ImageStudioAssetDrawerContentProps {
   onToggleVisibility: (id: string) => void;
   onToggleAllLock?: (locked: boolean) => void;
   onToggleAllVisibility?: (visible: boolean) => void;
-  onMoveZIndex: (id: string, direction: 'up' | 'down') => void;
+  onMoveZIndex: (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => void;
   onReorderLayers?: (layerIds: string[]) => void;
   onRenameLayer: (id: string, title: string) => void;
   onDuplicateLayer: (id: string) => void;
@@ -59,6 +59,19 @@ export interface ImageStudioAssetDrawerContentProps {
   onAutoLayout?: (direction: 'vertical' | 'horizontal' | 'grid') => void;
   onFitText?: () => void;
   onApplyVariant?: (variant: ImageStyleVariantId) => void;
+  onAlignSelectedLayers?: (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
+  onDistributeSelectedLayers?: (direction: 'horizontal' | 'vertical') => void;
+  onGroupSelectedLayers?: () => void;
+  onUngroupLayer?: (id: string) => void;
+  onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
+  onReplaceLayerContent?: (id: string, replacement: { text?: string; imageUrl?: string }) => void;
+  onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
+  onUpdateLayerOpacity?: (id: string, opacity: number) => void;
+  onUpdateLayerShadowPreset?: (id: string, preset: ImageLayer['shadowPreset']) => void;
+  onUpdateLayerBorder?: (
+    id: string,
+    border: { borderWidth?: number; borderColor?: string; borderRadius?: number }
+  ) => void;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -87,6 +100,16 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onAutoLayout,
   onFitText,
   onApplyVariant,
+  onAlignSelectedLayers,
+  onDistributeSelectedLayers,
+  onGroupSelectedLayers,
+  onUngroupLayer,
+  onUpdateLayerProps,
+  onReplaceLayerContent,
+  onUpdateLayerPosition,
+  onUpdateLayerOpacity,
+  onUpdateLayerShadowPreset,
+  onUpdateLayerBorder,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -260,6 +283,17 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           onFitText={onFitText}
           onApplyVariant={onApplyVariant}
           onToggleLock={onToggleLock}
+          onAlignSelectedLayers={onAlignSelectedLayers}
+          onDistributeSelectedLayers={onDistributeSelectedLayers}
+          onMoveZIndex={onMoveZIndex}
+          onGroupSelectedLayers={onGroupSelectedLayers}
+          onUngroupLayer={onUngroupLayer}
+          onUpdateLayerProps={onUpdateLayerProps}
+          onReplaceLayerContent={onReplaceLayerContent}
+          onUpdateLayerPosition={onUpdateLayerPosition}
+          onUpdateLayerOpacity={onUpdateLayerOpacity}
+          onUpdateLayerShadowPreset={onUpdateLayerShadowPreset}
+          onUpdateLayerBorder={onUpdateLayerBorder}
         />
       )}
 
