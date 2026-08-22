@@ -17,7 +17,6 @@ import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
 import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
 import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
-import { ImageStudioAudioDrawer } from './drawers/ImageStudioAudioDrawer';
 import { ImageStudioTemplatesDrawer } from './drawers/ImageStudioTemplatesDrawer';
 import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
@@ -241,7 +240,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           />
         </div>
       )}
-      {activeTab === 'audio' && <ImageStudioAudioDrawer />}
 
       {/* 9. AUDIO & VIDEO (REMOTION BRIDGE) */}
       {activeTab === 'video-bridge' && (

@@ -240,18 +240,18 @@ Estado actual:
   inserción, adaptación, favoritos y persistencia local, sin API externa integrada.
 
 Pendiente para cerrar P1:
-- [ ] Convertir Audio en un módulo con navegación Audio y Míos; la edición y
-  biblioteca de vídeo pertenecen exclusivamente a Video Studio.
-- [ ] Audio: catálogo de música, SFX y locuciones con preview reproducible,
+- [ ] Mover Audio y Vídeo a Video Studio; Image Studio permanece exclusivamente
+  para composiciones estáticas y ofrece solo la acción "Animar en Video Studio".
+- [ ] Video Studio: catálogo de música, SFX, locuciones y vídeo con preview reproducible,
   duración, BPM, licencia, búsqueda, favoritos, recientes, recorte, volumen,
   fade y sincronización en timeline.
 - [ ] Video Studio: clips stock/marca/subidos, fondos animados, loops y
   transiciones con preview, duración, resolución, orientación, licencia, trim,
   velocidad, volumen, focal point y object-fit.
-- [ ] Míos: uploads, favoritos, recientes, colecciones, etiquetas y recursos
+- [ ] Video Studio Míos: uploads, favoritos, recientes, colecciones, etiquetas y recursos
   compartidos por el equipo, inicialmente con caché local.
-- [ ] Adaptar audio en composiciones animadas y enviar recursos a Video Studio;
-  la adaptación de vídeo a 1:1, 4:5, 9:16 y 16:9 se implementará allí,
+- [ ] Enviar composiciones estáticas desde Image Studio a Video Studio; la
+  adaptación audiovisual a 1:1, 4:5, 9:16 y 16:9 se implementará allí,
   manteniendo escenas editables y sin convertir a imagen plana.
 - [ ] Integrar con Video Studio conservando referencia al proyecto, duración,
   campos aprobados, transiciones, audio y aspect ratio.

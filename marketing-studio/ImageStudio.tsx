@@ -18,7 +18,6 @@ import {
   Palette,
   Layers,
   Wand2,
-  Film,
   FolderHeart,
   Grid3X3,
 } from 'lucide-react';
@@ -239,7 +238,6 @@ export const ImageStudio: React.FC = () => {
 
     // 🟡 Zona 4: Inteligencia y Multimedia (9 - 10)
     { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
-    { id: 'audio', label: 'Audio', icon: <Film className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
