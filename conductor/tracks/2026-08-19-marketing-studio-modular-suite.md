@@ -244,6 +244,12 @@ Pendiente para cerrar P1:
   para recursos universales.
 - [ ] Incorporar librerías externas seleccionadas (tipografías, iconos, patrones e
   ilustraciones) con assets locales, metadatos de licencia y fallback seguro.
+- [ ] Ampliar Medios al finalizar el track con Pexels (fotos/vídeos), Pixabay
+  (fotos, vídeos, ilustraciones y audio), Openverse/Wikimedia (recursos abiertos),
+  Coverr/Mixkit (clips) y colecciones gráficas como unDraw, Storyset y Hero
+  Patterns; separar claramente Universal, Empresa y Míos.
+- [ ] Registrar por recurso la fuente, autor, licencia, fecha de captura,
+  restricciones de uso y política de caché antes de permitir su inserción.
 - [ ] Validar la experiencia completa de navegación e inserción en móvil y
   escritorio, incluyendo búsqueda, filtros, recientes, favoritos y estados vacíos.
 
