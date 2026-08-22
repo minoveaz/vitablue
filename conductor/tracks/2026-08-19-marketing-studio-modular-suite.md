@@ -220,7 +220,10 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 #### P1 — Audio, Vídeo, Layout y Marca (siguiente fase)
 Estado actual:
 - [x] Existe un drawer de Medios con inserción local de imágenes, fotos de stock, asesoras y fondos; fuentes externas, vídeo y DAM siguen pendientes.
-- [x] Existe un editor de vídeo local con timeline, transporte y zonas seguras; el puente Image Studio → Video Studio aún es visual.
+- [x] Existe un editor de vídeo local con timeline, transporte y zonas seguras.
+- [x] Image Studio incluye el módulo **Preparar vídeo**, situado debajo de Copys con IA,
+  para elegir formato, duración, estructura, audio y movimiento inicial antes de
+  transferir la composición editable a Video Studio.
 - [x] Existe un drawer de Layout con guías, safe zones, columnas, auto-layout, ajuste de texto y variantes.
 - [x] Layout quedó separado funcionalmente en Diseño, Organizar, Contenido y Estilo,
   con alineación, distribución, posición, z-order, agrupación, protección,
@@ -241,7 +244,8 @@ Estado actual:
 
 Pendiente para cerrar P1:
 - [ ] Mover Audio y Vídeo a Video Studio; Image Studio permanece exclusivamente
-  para composiciones estáticas y ofrece solo la acción "Animar en Video Studio".
+  para composiciones estáticas y ofrece el módulo "Preparar vídeo", sin timeline
+  ni edición temporal.
 - [ ] Video Studio: catálogo de música, SFX, locuciones y vídeo con preview reproducible,
   duración, BPM, licencia, búsqueda, favoritos, recientes, recorte, volumen,
   fade y sincronización en timeline.
@@ -250,12 +254,13 @@ Pendiente para cerrar P1:
   velocidad, volumen, focal point y object-fit.
 - [ ] Video Studio Míos: uploads, favoritos, recientes, colecciones, etiquetas y recursos
   compartidos por el equipo, inicialmente con caché local.
-- [~] Enviar composiciones estáticas desde Image Studio a Video Studio; la
+- [x] Enviar composiciones estáticas desde Image Studio a Video Studio; la
   adaptación audiovisual a 1:1, 4:5, 9:16 y 16:9 se implementará allí,
   manteniendo escenas editables y sin convertir a imagen plana.
 - [x] Definir el puente como un paquete de composición versionado: transferir
   canvas, formato, fondo, capas, grupos, geometría, estilos, tokens y referencias
-  a assets, conservando texto editable y logos protegidos.
+  a assets, conservando texto editable y logos protegidos. El handoff inicial se
+  persiste localmente con la configuración elegida en Preparar vídeo.
 - [ ] Crear en Video Studio una escena inicial editable a partir del paquete,
   añadiendo duración, animaciones, keyframes, transiciones y audio sin modificar
   el proyecto original de Image Studio.
