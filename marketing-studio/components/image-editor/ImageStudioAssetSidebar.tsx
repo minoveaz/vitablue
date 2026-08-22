@@ -1,10 +1,5 @@
 import React from 'react';
 import {
-  Download,
-  Film,
-  Sparkles,
-} from 'lucide-react';
-import {
   CanvasGuideSettings,
   ImageBlockType,
   ImageProject,
@@ -22,6 +17,7 @@ import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
+import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -71,6 +67,7 @@ export interface ImageStudioAssetDrawerContentProps {
     id: string,
     border: { borderWidth?: number; borderColor?: string; borderRadius?: number }
   ) => void;
+  onPrepareVideo?: (settings: VideoPreparationSettings) => void;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -110,6 +107,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onUpdateLayerOpacity,
   onUpdateLayerShadowPreset,
   onUpdateLayerBorder,
+  onPrepareVideo,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -241,8 +239,12 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 9. AUDIO & VIDEO (REMOTION BRIDGE) */}
+      {/* 9. PREPARACIÓN DE VÍDEO */}
       {activeTab === 'video-bridge' && (
+        <div className="-m-4 h-[calc(100vh-140px)] overflow-y-auto p-4">
+          <ImageStudioVideoBridgeDrawer onPrepare={onPrepareVideo ?? (() => undefined)} />
+        </div>
+        /*
         <div className="space-y-4">
           <div className="rounded-2xl border border-teal-500/30 bg-teal-950/20 p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -283,7 +285,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
               </button>
             </div>
           </div>
-        </div>
+        </div>*/
       )}
     </div>
   );

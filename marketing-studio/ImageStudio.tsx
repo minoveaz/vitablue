@@ -21,6 +21,7 @@ import {
   Wand2,
   FolderHeart,
   Grid3X3,
+  Video,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -239,6 +240,7 @@ export const ImageStudio: React.FC = () => {
 
     // 🟡 Zona 4: Inteligencia y Multimedia (9 - 10)
     { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
+    { id: 'video-bridge', label: 'Preparar vídeo', icon: <Video className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
@@ -286,6 +288,12 @@ export const ImageStudio: React.FC = () => {
           onUpdateLayerOpacity={editor.updateLayerOpacity}
           onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
           onUpdateLayerBorder={editor.updateLayerBorder}
+          onPrepareVideo={(settings) => {
+            const videoProject = saveImageVideoHandoff(editor.project);
+            localStorage.setItem('vitablue:image-video-preparation', JSON.stringify(settings));
+            showToast(`Vídeo preparado: ${settings.durationInSeconds}s`);
+            window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
+          }}
         />
       }
       toolbar={
