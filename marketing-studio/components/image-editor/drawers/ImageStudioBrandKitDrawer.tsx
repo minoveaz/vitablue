@@ -212,7 +212,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
   onAddBlock,
   onUpdateBackground,
 }) => {
-  const [logoTab, setLogoTab] = useState<'all' | 'highlights' | 'isotype' | 'horizontal' | 'vertical' | 'colors' | 'backgrounds' | 'typography'>('all');
+  const [logoTab, setLogoTab] = useState<'all' | 'identity' | 'tokens' | 'backgrounds' | 'components' | 'rules'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
@@ -277,9 +277,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
     }
   };
 
-  const filteredLogos = LOGO_PRESETS.filter(
-    (p) => logoTab === 'all' || p.category === logoTab
-  );
+  const filteredLogos = LOGO_PRESETS;
 
   return (
     <div className="flex flex-col h-full bg-[#001219] text-slate-100 font-sans select-none overflow-hidden">
@@ -307,14 +305,12 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
         {/* NAVEGACIÓN DE CATEGORÍAS */}
         <nav aria-label="Categorías del kit de marca" className="grid grid-cols-2 gap-1.5">
           {[
-            { id: 'all', label: 'Todos', count: LOGO_PRESETS.length + HIGHLIGHT_PRESETS.length },
-            { id: 'highlights', label: 'Destacados IG', count: HIGHLIGHT_PRESETS.length },
-            { id: 'horizontal', label: 'Logotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'horizontal').length },
-            { id: 'isotype', label: 'Isotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'isotype').length },
-            { id: 'vertical', label: 'Apilados', count: LOGO_PRESETS.filter((preset) => preset.category === 'vertical').length },
-            { id: 'colors', label: 'Colores', count: BRAND_COLORS.length },
+            { id: 'all', label: 'Todos', count: LOGO_PRESETS.length + HIGHLIGHT_PRESETS.length + BRAND_COLORS.length + BRAND_BACKGROUNDS.length + 2 },
+            { id: 'identity', label: 'Identidad', count: LOGO_PRESETS.length + HIGHLIGHT_PRESETS.length },
+            { id: 'tokens', label: 'Tokens de marca', count: BRAND_COLORS.length + 2 },
             { id: 'backgrounds', label: 'Fondos y mallas', count: BRAND_BACKGROUNDS.length },
-            { id: 'typography', label: 'Tipografías', count: 2 },
+            { id: 'components', label: 'Componentes', count: 0 },
+            { id: 'rules', label: 'Reglas de uso', count: 0 },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -336,7 +332,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
       {/* 2. CONTENIDO PRINCIPAL SCROLLABLE */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-6">
         {/* SECCIÓN 0: DESTACADOS DE INSTAGRAM (STORY HIGHLIGHTS OFICIALES) */}
-        {(logoTab === 'all' || logoTab === 'highlights') && (
+        {(logoTab === 'all' || logoTab === 'identity') && (
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1">
@@ -504,7 +500,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
         </div>
 
         {/* SECCIÓN B: PALETA DE COLORES OFICIALES */}
-        {(logoTab === 'all' || logoTab === 'colors') && <div className="space-y-3 pt-4 border-t border-slate-800/80">
+        {(logoTab === 'all' || logoTab === 'tokens') && <div className="space-y-3 pt-4 border-t border-slate-800/80">
           <span className="text-[11px] font-black uppercase tracking-wider text-slate-300 block px-1">
             Paleta de Colores Oficiales (Tokens)
           </span>
@@ -573,7 +569,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
         </div>}
 
         {/* SECCIÓN D: TIPOGRAFÍAS DE MARCA */}
-        {(logoTab === 'all' || logoTab === 'typography') && <div className="space-y-2 pt-4 border-t border-slate-800/80">
+        {(logoTab === 'all' || logoTab === 'tokens') && <div className="space-y-2 pt-4 border-t border-slate-800/80">
           <span className="text-[11px] font-black uppercase tracking-wider text-slate-300 block px-1">
             Tipografías Oficiales
           </span>
@@ -592,6 +588,15 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
             </div>
           </div>
         </div>}
+
+        {(logoTab === 'components' || logoTab === 'rules') && (
+         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-5 text-center">
+           <p className="text-xs font-semibold text-slate-200">
+             {logoTab === 'components' ? 'Componentes de marca' : 'Reglas de uso'}
+           </p>
+           <p className="mt-1 text-[10px] text-slate-500">Esta sección se conectará con el sistema de marca.</p>
+         </div>
+        )}
       </div>
     </div>
   );
