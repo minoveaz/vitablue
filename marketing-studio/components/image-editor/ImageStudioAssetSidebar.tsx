@@ -21,11 +21,13 @@ import { ImageStudioTemplatesDrawer } from './drawers/ImageStudioTemplatesDrawer
 import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
+import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
   project: ImageProject;
   selectedLayerId: string | null;
+  selectedLayer?: ImageLayer | null;
   selectedLayerIds?: string[];
   onSelectLayer: (id: string, isShift?: boolean) => void;
   onLoadTemplate: (template: ImageProject) => void;
@@ -75,6 +77,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   activeTab,
   project,
   selectedLayerId,
+  selectedLayer,
   selectedLayerIds = [],
   onSelectLayer,
   onLoadTemplate,
@@ -229,95 +232,12 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
       {/* 8. COPYS CON IA & HOOKS DE CONVERSIÓN */}
       {activeTab === 'ai-copy' && (
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Sparkles className="size-4 text-amber-400" />
-              <strong className="text-xs font-bold text-amber-200">Asistente IA de Copywriting</strong>
-            </div>
-            <p className="text-[11px] text-amber-200/80 leading-relaxed">
-              Titulares de alto impacto optimizados para conversión de seguros de visado y extranjería.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-              Ganchos (Hooks) de Entrada
-            </span>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => onAddTextLayer?.({
-                  id: 'hook-1',
-                  title: 'Hook Visado',
-                  category: 'hooks',
-                  previewText: '¿Te mudas a España? 🇪🇸 Evita denegaciones de visado.',
-                  defaultText: '¿Te mudas a España? 🇪🇸 Evita denegaciones de visado.',
-                  tag: 'h2',
-                  fontSize: 22,
-                  fontWeight: '800',
-                  color: '#FFFFFF',
-                  fill: '#FFFFFF',
-                  align: 'center',
-                  fontFamily: 'Poppins, sans-serif',
-                } as unknown as TextPresetItem)}
-                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
-              >
-                <span className="text-[11px] font-bold text-slate-200 group-hover:text-amber-300 block">
-                  "¿Te mudas a España? 🇪🇸 Evita denegaciones..."
-                </span>
-                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Gancho Estudiantes & Nómadas</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddTextLayer?.({
-                  id: 'hook-2',
-                  title: 'Hook Sin Copagos',
-                  category: 'hooks',
-                  previewText: 'Póliza 100% válida para Extranjería: Sin Copagos ni Carencias.',
-                  defaultText: 'Póliza 100% válida para Extranjería: Sin Copagos ni Carencias.',
-                  tag: 'h2',
-                  fontSize: 20,
-                  fontWeight: '800',
-                  color: '#94D2BD',
-                  fill: '#94D2BD',
-                  align: 'center',
-                  fontFamily: 'Poppins, sans-serif',
-                } as unknown as TextPresetItem)}
-                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-teal-400 hover:bg-slate-900 transition-all text-left group"
-              >
-                <span className="text-[11px] font-bold text-slate-200 group-hover:text-brand-cyan block">
-                  "Póliza 100% válida: Sin Copagos ni Carencias"
-                </span>
-                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Derribar Objeción Legal</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddTextLayer?.({
-                  id: 'hook-3',
-                  title: 'Hook WhatsApp Directo',
-                  category: 'ctas',
-                  previewText: '👉 Chatea con una asesora y recibe tu certificado hoy mismo.',
-                  defaultText: '👉 Chatea con una asesora y recibe tu certificado hoy mismo.',
-                  tag: 'p',
-                  fontSize: 14,
-                  fontWeight: '600',
-                  color: '#EE9B00',
-                  fill: '#EE9B00',
-                  align: 'center',
-                  fontFamily: 'Inter, sans-serif',
-                } as unknown as TextPresetItem)}
-                className="w-full p-2.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-amber-400 hover:bg-slate-900 transition-all text-left group"
-              >
-                <span className="text-[11px] font-bold text-slate-200 group-hover:text-amber-300 block">
-                  "👉 Chatea con una asesora y recibe tu certificado hoy"
-                </span>
-                <span className="text-[10px] text-slate-500 font-mono mt-0.5 block">Llamada a la Acción (CTA)</span>
-              </button>
-            </div>
-          </div>
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioAiCopyDrawer
+            selectedLayer={selectedLayer}
+            onAddTextLayer={onAddTextLayer}
+            onReplaceLayerContent={onReplaceLayerContent}
+          />
         </div>
       )}
 

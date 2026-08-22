@@ -254,6 +254,7 @@ export const ImageStudio: React.FC = () => {
           activeTab={activeToolId}
           project={editor.project}
           selectedLayerId={editor.selectedLayerId}
+          selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
           selectedLayerIds={editor.selectedLayerIds}
           onSelectLayer={handleSelectLayer}
           onLoadTemplate={handleLoadTemplate}
