@@ -143,8 +143,8 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
     };
 
     const fontMap = {
-      h1: 'Poppins, sans-serif',
-      h2: 'Poppins, sans-serif',
+      h1: 'Arial, sans-serif',
+      h2: 'Arial, sans-serif',
       p: 'Inter, sans-serif',
       badge: 'Inter, sans-serif',
     };
