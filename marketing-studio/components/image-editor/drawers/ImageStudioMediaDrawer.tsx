@@ -209,6 +209,32 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
 
       {/* 4. CONTENIDO PRINCIPAL: DROPZONE Y GRID DE FOTOS */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-4">
+        {/* ZONA DE SUBIDA LOCAL */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+          className="hidden"
+        />
+
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/70 p-4 text-center transition-all hover:border-brand-cyan/60 hover:bg-slate-900/80"
+        >
+          <div className="mb-1.5 flex size-9 items-center justify-center rounded-xl bg-teal-500/10 text-brand-cyan transition-transform group-hover:scale-110">
+            <UploadCloud className="size-5" />
+          </div>
+          <strong className="text-xs font-bold text-slate-200 transition-colors group-hover:text-brand-cyan">
+            {isUploading ? 'Procesando imagen...' : 'Subir tu propia foto o logo'}
+          </strong>
+          <p className="mt-0.5 text-[10px] text-slate-400">
+            Arrastra aquí o haz clic (PNG, JPG, WebP, SVG)
+          </p>
+        </div>
+
         {selectedScope === 'organization' && (
           <nav aria-label="Categorías de medios" className="grid grid-cols-2 gap-2">
             {STOCK_CATEGORIES.map((cat) => (
@@ -229,32 +255,6 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
             ))}
           </nav>
         )}
-        {/* ZONA DE SUBIDA LOCAL */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept="image/png,image/jpeg,image/webp,image/svg+xml"
-          className="hidden"
-        />
-
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-          className="group relative flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/70 hover:border-brand-cyan/60 hover:bg-slate-900/80 transition-all cursor-pointer text-center"
-        >
-          <div className="flex size-9 items-center justify-center rounded-xl bg-teal-500/10 text-brand-cyan mb-1.5 group-hover:scale-110 transition-transform">
-            <UploadCloud className="size-5" />
-          </div>
-          <strong className="text-xs font-bold text-slate-200 group-hover:text-brand-cyan transition-colors">
-            {isUploading ? 'Procesando imagen...' : 'Subir tu propia foto o logo'}
-          </strong>
-          <p className="text-[10px] text-slate-400 mt-0.5">
-            Arrastra aquí o haz clic (PNG, JPG, WebP, SVG)
-          </p>
-        </div>
-
         {/* GRID DE FOTOGRAFÍAS */}
         {selectedScope !== 'organization' || filteredPhotos.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-800 p-8 text-center bg-slate-950/40">
