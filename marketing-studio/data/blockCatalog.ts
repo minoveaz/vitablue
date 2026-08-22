@@ -2,18 +2,6 @@ import { ImageBlockType } from '../types/imageStudio';
 
 export type BlockScope = 'system' | 'organization' | 'user';
 
-export type BlockPreviewVariant =
-  | 'hero'
-  | 'grid'
-  | 'steps'
-  | 'testimonial'
-  | 'comparison'
-  | 'legal'
-  | 'metric'
-  | 'trust'
-  | 'advisor'
-  | 'providers';
-
 export interface BlockCatalogItem {
   id: string;
   name: string;
@@ -21,8 +9,8 @@ export interface BlockCatalogItem {
   type: ImageBlockType;
   scope: Exclude<BlockScope, 'user'>;
   category: string;
-  preview: BlockPreviewVariant;
-  previewLabel: string;
+  /** Props shared by the catalog renderer and the inserted canvas layer. */
+  defaultProps: Record<string, unknown>;
 }
 
 export const BLOCK_SCOPE_OPTIONS: ReadonlyArray<{
@@ -37,43 +25,60 @@ export const BLOCK_SCOPE_OPTIONS: ReadonlyArray<{
 export const UNIVERSAL_BLOCK_CATALOG = [
   {
     id: 'hero-universal',
-    name: 'Hero con titular y CTA',
-    description: 'Composición de apertura con jerarquía y llamada a la acción.',
+    name: 'Tarjeta de asesora',
+    description: 'Contacto directo con una asesora y llamada a la acción por WhatsApp.',
     type: 'MotionAdvisorCard',
     scope: 'system',
     category: 'Conversión',
-    preview: 'hero',
-    previewLabel: 'Titular + acción',
+    defaultProps: {
+      name: 'Sofía',
+      role: 'Asesora Especialista en Visados',
+      badge: 'ASESORA ASIGNADA · EN DIRECTO',
+      message: 'Te ayudo a verificar que tu póliza cumple el 100% de los requisitos del consulado sin copagos.',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+      whatsAppText: 'Pregúntanos por WhatsApp',
+    },
   },
   {
     id: 'benefits-universal',
-    name: 'Beneficios en tres columnas',
-    description: 'Bloque multicapa para presentar ventajas de forma escaneable.',
+    name: 'Red de aseguradoras',
+    description: 'Cuadrícula de compañías autorizadas para mostrar opciones de cobertura.',
     type: 'MotionProviderGrid',
     scope: 'system',
     category: 'Información',
-    preview: 'grid',
-    previewLabel: '3 beneficios',
+    defaultProps: {
+      title: 'COMPAÑÍAS LÍDERES AUTORIZADAS',
+      subtitle: 'Aceptadas oficialmente por Extranjería y Consulados',
+    },
   },
   {
     id: 'steps-universal',
-    name: 'Proceso en pasos',
-    description: 'Recorrido visual numerado para explicar un proceso.',
+    name: 'Comparativa de opciones',
+    description: 'Dos alternativas enfrentadas para explicar una decisión.',
     type: 'MotionComparisonCard',
     scope: 'system',
-    category: 'Procesos',
-    preview: 'steps',
-    previewLabel: 'Proceso guiado',
+    category: 'Información',
+    defaultProps: {
+      title: '¿QUÉ OPCIÓN TE CONVIENE?',
+      wrongOptionTitle: 'Opción básica',
+      wrongOptionDesc: 'Puede dejar fuera coberturas importantes para tu trámite.',
+      correctOptionTitle: 'Opción completa',
+      correctOptionDesc: 'Incluye la protección y documentación que necesitas.',
+    },
   },
   {
     id: 'testimonial-universal',
-    name: 'Testimonio con valoración',
-    description: 'Cita, valoración y contexto preparados para editar.',
+    name: 'Sello de garantía',
+    description: 'Garantía destacada con validación y cobertura editable.',
     type: 'MotionTrustBadge',
     scope: 'system',
-    category: 'Prueba social',
-    preview: 'testimonial',
-    previewLabel: 'Cita + valoración',
+    category: 'Confianza',
+    defaultProps: {
+      title: 'PÓLIZA 100% VÁLIDA PARA VISADO',
+      subtitle: 'Sin Copagos · Cobertura Completa · Repatriación Incluida',
+      highlight: 'GARANTÍA CONSULAR',
+      verifiedLabel: 'VERIFICADO PARA EXTRANJERÍA',
+    },
   },
   {
     id: 'comparison-universal',
@@ -82,31 +87,46 @@ export const UNIVERSAL_BLOCK_CATALOG = [
     type: 'MotionComparisonCard',
     scope: 'system',
     category: 'Información',
-    preview: 'comparison',
-    previewLabel: 'Dos alternativas',
+    defaultProps: {
+      title: '¿SEGURO DE VIAJE O SEGURO DE VISADO?',
+      wrongOptionTitle: 'Seguro de Viaje Común',
+      wrongOptionDesc: 'Denegación de visado: no cumple requisitos consulares ni incluye red médica completa.',
+      correctOptionTitle: 'Seguro VitaBlue Extranjería',
+      correctOptionDesc: 'Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.',
+    },
   },
   {
     id: 'legal-universal',
-    name: 'Aviso legal estructurado',
-    description: 'Jerarquía compacta para notas y condiciones.',
+    name: 'Validación de póliza',
+    description: 'Sello compacto para destacar condiciones y validez.',
     type: 'MotionTrustBadge',
     scope: 'system',
     category: 'Legal',
-    preview: 'legal',
-    previewLabel: 'Notas y condiciones',
+    defaultProps: {
+      title: 'CONDICIONES CLARAS',
+      subtitle: 'Consulta coberturas, límites y documentación antes de contratar.',
+      highlight: 'INFORMACIÓN VERIFICADA',
+      verifiedLabel: 'LISTO PARA REVISAR',
+    },
   },
 ] satisfies BlockCatalogItem[];
 
 export const COMPANY_BLOCK_CATALOG = [
   {
     id: 'hero-company',
-    name: 'Hero de seguro médico',
-    description: 'Apertura VitaBlue orientada a captación de seguros.',
+    name: 'Asesora de seguro médico',
+    description: 'Contacto VitaBlue orientado a la captación de seguros médicos.',
     type: 'MotionAdvisorCard',
     scope: 'organization',
     category: 'Seguros',
-    preview: 'hero',
-    previewLabel: 'Seguro médico',
+    defaultProps: {
+      name: 'Sofía',
+      role: 'Especialista en seguros médicos',
+      badge: 'ASESORA VITABLUE · EN DIRECTO',
+      message: 'Encuentra una póliza médica que encaje contigo y con los requisitos de tu trámite.',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+      whatsAppText: 'Hablar con una asesora',
+    },
   },
   {
     id: 'saving-company',
@@ -115,8 +135,12 @@ export const COMPANY_BLOCK_CATALOG = [
     type: 'MotionTrustBadge',
     scope: 'organization',
     category: 'Captación',
-    preview: 'metric',
-    previewLabel: 'Ahorro destacado',
+    defaultProps: {
+      title: 'AHORRA EN TU SEGURO MÉDICO',
+      subtitle: 'Compara opciones y encuentra una cobertura a tu medida.',
+      highlight: 'AHORRO DESTACADO',
+      verifiedLabel: 'COTIZACIÓN SIN COMPROMISO',
+    },
   },
   {
     id: 'coverage-company',
@@ -125,8 +149,13 @@ export const COMPANY_BLOCK_CATALOG = [
     type: 'MotionComparisonCard',
     scope: 'organization',
     category: 'Comparación',
-    preview: 'comparison',
-    previewLabel: 'Coberturas',
+    defaultProps: {
+      title: 'COMPARA TUS COBERTURAS',
+      wrongOptionTitle: 'Cobertura limitada',
+      wrongOptionDesc: 'Menos servicios y más límites cuando necesitas atención.',
+      correctOptionTitle: 'Cobertura completa',
+      correctOptionDesc: 'Más protección, asistencia y tranquilidad para tu día a día.',
+    },
   },
   {
     id: 'confidence-company',
@@ -135,8 +164,12 @@ export const COMPANY_BLOCK_CATALOG = [
     type: 'MotionTrustBadge',
     scope: 'organization',
     category: 'Confianza',
-    preview: 'trust',
-    previewLabel: 'Confianza VitaBlue',
+    defaultProps: {
+      title: 'CONFÍA EN VITABLUE',
+      subtitle: 'Te acompañamos con coberturas transparentes y asistencia experta.',
+      highlight: 'MARCA DE CONFIANZA',
+      verifiedLabel: 'ASESORAMIENTO EXPERTO',
+    },
   },
   {
     id: 'advisor-company',
@@ -145,8 +178,14 @@ export const COMPANY_BLOCK_CATALOG = [
     type: 'MotionAdvisorCard',
     scope: 'organization',
     category: 'Captación',
-    preview: 'advisor',
-    previewLabel: 'Habla con una asesora',
+    defaultProps: {
+      name: 'Sofía',
+      role: 'Asesora de seguros',
+      badge: 'ATENCIÓN PERSONALIZADA',
+      message: 'Cuéntame qué necesitas y te ayudo a encontrar la mejor opción.',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+      whatsAppText: 'Contactar',
+    },
   },
   {
     id: 'providers-company',
@@ -155,8 +194,10 @@ export const COMPANY_BLOCK_CATALOG = [
     type: 'MotionProviderGrid',
     scope: 'organization',
     category: 'Seguros',
-    preview: 'providers',
-    previewLabel: 'Red de aseguradoras',
+    defaultProps: {
+      title: 'ASEGURADORAS ASOCIADAS',
+      subtitle: 'Elige entre proveedores integrados y autorizados.',
+    },
   },
 ] satisfies BlockCatalogItem[];
 

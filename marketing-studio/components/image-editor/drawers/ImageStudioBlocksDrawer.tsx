@@ -1,205 +1,45 @@
 import React, { useMemo, useState } from 'react';
-import {
-  ArrowRight,
-  BadgeCheck,
-  Check,
-  CircleDollarSign,
-  FileText,
-  HeartHandshake,
-  MessageCircle,
-  Plus,
-  Quote,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from 'lucide-react';
-import { ImageBlockType } from '../../../types/imageStudio';
+import { HeartHandshake, Plus } from 'lucide-react';
+import { ImageLayer, ImageBlockType } from '../../../types/imageStudio';
 import {
   BLOCK_CATALOGS,
   BLOCK_SCOPE_OPTIONS,
-  BlockPreviewVariant,
+  BlockCatalogItem,
   BlockScope,
 } from '../../../data/blockCatalog';
+import { ImageLayerBlockRenderer } from '../blocks';
+import { defaultMotionBrandTokens } from '../../../../packages/video-studio/src/motion-kit';
 
 export interface ImageStudioBlocksDrawerProps {
-  onAddBlock: (blockType: ImageBlockType) => void;
+  onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
 }
 
-const PreviewBar = ({ className = '' }: { className?: string }) => (
-  <span className={`block h-1.5 rounded-full bg-white/20 ${className}`} />
-);
+const BlockPreview: React.FC<{ block: BlockCatalogItem }> = ({ block }) => {
+  const layer: ImageLayer = {
+    id: `catalog-preview-${block.id}`,
+    type: 'block',
+    blockType: block.type,
+    title: block.name,
+    props: block.defaultProps,
+    position: { x: 50, y: 50 },
+    zIndex: 0,
+    scale: 1,
+  };
 
-const BlockPreview: React.FC<{
-  variant: BlockPreviewVariant;
-  label: string;
-}> = ({ variant, label }) => {
-  switch (variant) {
-    case 'hero':
-      return (
-        <div className="relative flex min-h-28 flex-col justify-between overflow-hidden rounded-xl border border-brand-cyan/20 bg-gradient-to-br from-primary via-primary-dark to-slate-950 p-3">
-          <div className="absolute -right-8 -top-10 size-28 rounded-full bg-brand-cyan/20 blur-2xl" />
-          <div className="relative space-y-2">
-            <span className="inline-flex rounded-full border border-brand-cyan/40 bg-brand-cyan/10 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-brand-cyan">
-              {label}
-            </span>
-            <PreviewBar className="w-3/4 bg-white/90" />
-            <PreviewBar className="w-1/2 bg-white/40" />
-          </div>
-          <span className="relative flex w-fit items-center gap-1 rounded-md bg-accent px-2 py-1 text-[8px] font-black text-primary-dark">
-            Empezar <ArrowRight className="size-2.5" />
-          </span>
-        </div>
-      );
-    case 'grid':
-      return (
-        <div className="min-h-28 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="mb-3 flex items-center justify-between">
-            <PreviewBar className="w-2/5 bg-white/80" />
-            <Sparkles className="size-3 text-brand-cyan" />
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="space-y-2 rounded-lg border border-primary/50 bg-primary/20 p-2">
-                <span className="block size-4 rounded-md bg-brand-cyan/70" />
-                <PreviewBar className="w-full" />
-                <PreviewBar className="w-3/4 bg-white/10" />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    case 'steps':
-      return (
-        <div className="min-h-28 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="mb-3 flex items-center gap-2">
-            <PreviewBar className="w-2/5 bg-white/80" />
-            <span className="rounded bg-brand-cyan/20 px-1.5 py-0.5 text-[8px] text-brand-cyan">{label}</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {['01', '02', '03'].map((step, index) => (
-              <div key={step} className="relative space-y-2 rounded-lg bg-slate-900 p-2">
-                <span className={`flex size-5 items-center justify-center rounded-full text-[8px] font-black ${index === 1 ? 'bg-accent text-primary-dark' : 'bg-primary text-brand-cyan'}`}>
-                  {step}
-                </span>
-                <PreviewBar className="w-full" />
-                <PreviewBar className="w-2/3 bg-white/10" />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    case 'testimonial':
-      return (
-        <div className="min-h-28 rounded-xl border border-brand-cyan/20 bg-gradient-to-br from-slate-900 to-primary-dark p-3">
-          <div className="flex items-start justify-between">
-            <Quote className="size-5 text-accent" />
-            <span className="text-[10px] tracking-widest text-accent">★★★★★</span>
-          </div>
-          <div className="mt-3 space-y-2">
-            <PreviewBar className="w-full bg-white/70" />
-            <PreviewBar className="w-4/5 bg-white/30" />
-            <span className="flex items-center gap-1.5 pt-1 text-[8px] font-semibold text-brand-cyan">
-              <span className="size-3 rounded-full bg-brand-cyan/60" /> {label}
-            </span>
-          </div>
-        </div>
-      );
-    case 'comparison':
-      return (
-        <div className="min-h-28 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="mb-3 flex items-center justify-between">
-            <PreviewBar className="w-2/5 bg-white/80" />
-            <span className="text-[8px] text-slate-500">{label}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-2 rounded-lg border border-slate-700 bg-slate-900 p-2">
-              <PreviewBar className="w-3/5" />
-              <PreviewBar className="w-full bg-white/10" />
-              <PreviewBar className="w-4/5 bg-white/10" />
-            </div>
-            <div className="space-y-2 rounded-lg border border-brand-cyan/50 bg-primary/20 p-2">
-              <PreviewBar className="w-3/5 bg-brand-cyan/80" />
-              <span className="flex size-4 items-center justify-center rounded-full bg-brand-cyan text-primary-dark">
-                <Check className="size-2.5" />
-              </span>
-              <PreviewBar className="w-4/5 bg-brand-cyan/30" />
-            </div>
-          </div>
-        </div>
-      );
-    case 'legal':
-      return (
-        <div className="min-h-28 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="mb-3 flex items-center gap-2">
-            <FileText className="size-4 text-brand-cyan" />
-            <PreviewBar className="w-2/5 bg-white/80" />
-          </div>
-          <div className="space-y-2 rounded-lg bg-slate-900 p-2.5">
-            <PreviewBar className="w-full bg-white/50" />
-            <PreviewBar className="w-full bg-white/15" />
-            <PreviewBar className="w-3/4 bg-white/15" />
-          </div>
-          <span className="mt-2 block text-[8px] text-slate-500">{label}</span>
-        </div>
-      );
-    case 'metric':
-      return (
-        <div className="relative min-h-28 overflow-hidden rounded-xl border border-accent/30 bg-gradient-to-br from-accent/20 via-slate-900 to-slate-950 p-3">
-          <CircleDollarSign className="absolute -right-1 -top-2 size-16 text-accent/15" />
-          <span className="relative text-[8px] font-bold uppercase tracking-wider text-accent">{label}</span>
-          <strong className="relative mt-3 block text-2xl font-black text-white">-30%</strong>
-          <PreviewBar className="relative mt-1 w-2/3 bg-white/30" />
-          <span className="relative mt-3 inline-flex rounded-md bg-accent px-2 py-1 text-[8px] font-black text-primary-dark">Calcular ahorro</span>
-        </div>
-      );
-    case 'trust':
-      return (
-        <div className="flex min-h-28 items-center gap-3 rounded-xl border border-brand-cyan/30 bg-primary/20 p-3">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-brand-cyan/40 bg-brand-cyan/10">
-            <ShieldCheck className="size-6 text-brand-cyan" />
-          </div>
-          <div className="min-w-0 flex-1 space-y-2">
-            <PreviewBar className="w-3/4 bg-white/80" />
-            <PreviewBar className="w-full bg-white/20" />
-            <span className="block text-[8px] font-semibold text-brand-cyan">{label}</span>
-          </div>
-        </div>
-      );
-    case 'advisor':
-      return (
-        <div className="flex min-h-28 items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-brand-cyan/50 bg-primary">
-            <Users className="size-5 text-brand-cyan" />
-          </div>
-          <div className="min-w-0 flex-1 space-y-2">
-            <span className="flex items-center gap-1 text-[8px] font-bold text-brand-cyan">
-              <MessageCircle className="size-2.5" /> {label}
-            </span>
-            <PreviewBar className="w-full bg-white/60" />
-            <span className="inline-flex rounded-md bg-accent px-2 py-1 text-[8px] font-black text-primary-dark">Contactar</span>
-          </div>
-        </div>
-      );
-    case 'providers':
-      return (
-        <div className="min-h-28 rounded-xl border border-slate-700/80 bg-slate-950 p-3">
-          <div className="mb-3 flex items-center gap-2">
-            <BadgeCheck className="size-4 text-brand-cyan" />
-            <PreviewBar className="w-2/5 bg-white/80" />
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {['SALUD', 'NEXO', 'PLUS', 'VIDA'].map((provider) => (
-              <span key={provider} className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-[8px] font-bold text-slate-300">
-                {provider}
-              </span>
-            ))}
-          </div>
-          <span className="mt-3 block text-[8px] text-slate-500">{label}</span>
-        </div>
-      );
-    default:
-      return null;
-  }
+  return (
+    <div
+      className="relative h-28 overflow-hidden rounded-xl border border-slate-700/80 bg-slate-950"
+      role="img"
+      aria-label={`Vista previa de ${block.name}`}
+    >
+      <div
+        className="pointer-events-none absolute left-0 top-0 origin-top-left"
+        style={{ width: '290%', height: '290%', transform: 'scale(0.345)' }}
+      >
+        <ImageLayerBlockRenderer layer={layer} brandTokens={defaultMotionBrandTokens} />
+      </div>
+    </div>
+  );
 };
 
 export const ImageStudioBlocksDrawer: React.FC<ImageStudioBlocksDrawerProps> = ({
@@ -289,7 +129,7 @@ export const ImageStudioBlocksDrawer: React.FC<ImageStudioBlocksDrawerProps> = (
             <button
               key={block.id}
               type="button"
-              onClick={() => onAddBlock(block.type)}
+              onClick={() => onAddBlock(block.type, block.defaultProps)}
               className="group w-full rounded-2xl border border-slate-800/90 bg-slate-900/70 p-3.5 text-left transition-all hover:border-brand-cyan/60 hover:bg-slate-900 hover:shadow-lg"
             >
               <div className="mb-2 flex items-center justify-between gap-2">
@@ -303,7 +143,7 @@ export const ImageStudioBlocksDrawer: React.FC<ImageStudioBlocksDrawerProps> = (
                   <Plus className="size-3" /> Insertar
                 </span>
               </div>
-              <BlockPreview variant={block.preview} label={block.previewLabel} />
+              <BlockPreview block={block} />
             </button>
           ))
         )}
