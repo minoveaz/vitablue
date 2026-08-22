@@ -64,9 +64,9 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
   });
 
   describe('ImageStudio core validation contracts', () => {
-    it('clamps positions and reports incomplete or out-of-bounds layers', async () => {
+    it('keeps intentional bleed positions and reports out-of-bounds layers', async () => {
       const { clampLayerPosition, validateImageProject } = await import('../utils/imageProjectValidation');
-      expect(clampLayerPosition({ x: -10, y: 120 })).toEqual({ x: 0, y: 100 });
+      expect(clampLayerPosition({ x: -10, y: 120 })).toEqual({ x: -10, y: 120 });
       const project = {
         ...INITIAL_IMAGE_TEMPLATES[0],
         layers: [{ ...INITIAL_IMAGE_TEMPLATES[0].layers[0], position: { x: 140, y: 50 } }],
