@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Layers,
   CheckSquare,
+  FolderHeart,
   Plus,
   X,
 } from 'lucide-react';
@@ -63,9 +64,22 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
     }));
   }, [refreshTick]);
 
-  const allPresets = useMemo(() => {
-    return [...savedTextPresets, ...TEXT_PRESETS];
-  }, [savedTextPresets]);
+  const scopedPresets = useMemo(() => {
+    if (selectedScope === 'user') return savedTextPresets;
+    return TEXT_PRESETS.filter((preset) => (preset.scope ?? 'organization') === selectedScope);
+  }, [selectedScope, savedTextPresets]);
+
+  const categoryCounts = useMemo(() => {
+    return new Map([
+      ['all', scopedPresets.length],
+      ...TEXT_PRESET_CATEGORIES
+        .filter((category) => category.id !== 'all')
+        .map((category) => [
+          category.id,
+          scopedPresets.filter((preset) => preset.category === category.id).length,
+        ] as const),
+    ]);
+  }, [scopedPresets]);
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -92,7 +106,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
 
   const filteredPresets = useMemo(() => {
     if (selectedScope === 'user' || selectedCategory === 'saved') {
-      return savedTextPresets.filter((preset) => {
+      return scopedPresets.filter((preset) => {
         return (
           searchQuery.trim() === '' ||
           preset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,7 +115,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
       });
     }
 
-    return selectedScope === 'organization' ? [] : allPresets.filter((preset) => {
+    return scopedPresets.filter((preset) => {
       const matchesCategory =
         selectedCategory === 'all' || preset.category === selectedCategory;
       const matchesSearch =
@@ -111,7 +125,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
         preset.defaultText.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, selectedScope, searchQuery, allPresets, savedTextPresets]);
+  }, [selectedCategory, selectedScope, searchQuery, scopedPresets]);
 
   const handleAddQuickText = (tag: 'h1' | 'h2' | 'p' | 'badge') => {
     const sizeMap = {
@@ -265,7 +279,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-3 bg-[#050B14]/40">
         {selectedScope === 'system' && (
           <nav aria-label="Categorías de texto" className="grid grid-cols-2 gap-2">
-            {TEXT_PRESET_CATEGORIES.map((cat) => (
+            {TEXT_PRESET_CATEGORIES.filter((cat) => (categoryCounts.get(cat.id) ?? 0) > 0).map((cat) => (
               <button
                 key={cat.id}
                 type="button"
@@ -279,7 +293,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
               >
                 <span className="flex items-center justify-between">
                   {getCategoryIcon(cat.icon)}
-                  <span className="text-[9px] text-slate-500">{cat.count}</span>
+                  <span className="text-[9px] text-slate-500">{categoryCounts.get(cat.id) ?? 0}</span>
                 </span>
                 <span className="truncate text-[10px] font-semibold">{cat.name}</span>
               </button>

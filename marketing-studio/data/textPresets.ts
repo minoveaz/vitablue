@@ -1,5 +1,7 @@
 export interface TextPresetItem {
   id: string;
+  /** Library ownership: generic typography belongs to the universal kit; campaign copy belongs to the company kit. */
+  scope?: 'system' | 'organization';
   category: 'basics' | 'pairs' | 'capcut' | 'bullets' | 'hooks' | 'pricing' | 'ctas' | 'badges';
   title: string;
   previewText: string;
@@ -165,6 +167,7 @@ export const TEXT_PRESETS: TextPresetItem[] = [
   // 1. BÁSICOS
   {
     id: 'basic-h1',
+    scope: 'system',
     category: 'basics',
     title: 'Título Principal (H1)',
     previewText: 'Añadir Título Grande',
@@ -182,6 +185,7 @@ export const TEXT_PRESETS: TextPresetItem[] = [
   },
   {
     id: 'basic-h2',
+    scope: 'system',
     category: 'basics',
     title: 'Subtítulo (H2)',
     previewText: 'Añadir un subtítulo claro',
