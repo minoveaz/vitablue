@@ -1,9 +1,5 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  UserCheck,
-  ShieldCheck,
-  SplitSquareVertical,
-  Grid,
   Download,
   Film,
   Sparkles,
@@ -24,6 +20,40 @@ import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
 import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
+
+type BlockScope = 'system' | 'organization' | 'user';
+const BLOCKS = [
+  { id: 'comparison', name: 'Comparativa de opciones', description: 'Estructura multicapa para comparar alternativas.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
+  { id: 'advisor', name: 'Tarjeta de asesora', description: 'Composición con foto, confianza y CTA.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
+  { id: 'trust', name: 'Sello de confianza', description: 'Prueba social y garantía para campañas.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Confianza' },
+  { id: 'providers', name: 'Parrilla de proveedores', description: 'Bloque editorial con marcas y opciones.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Información' },
+];
+
+const BlocksDrawer = ({ onAddBlock }: { onAddBlock: (type: ImageBlockType) => void }) => {
+  const [scope, setScope] = useState<BlockScope>('system');
+  const [category, setCategory] = useState('all');
+  const visible = useMemo(() => BLOCKS.filter((block) => block.scope === scope && (category === 'all' || block.category === category)), [scope, category]);
+  const categories = ['all', ...new Set(BLOCKS.filter((block) => block.scope === scope).map((block) => block.category))];
+  return (
+    <div className="space-y-3">
+      <nav className="grid grid-cols-3 gap-1.5">
+        {([['system', 'Universal'], ['organization', 'Empresa'], ['user', 'Míos']] as const).map(([id, label]) => (
+          <button key={id} type="button" onClick={() => { setScope(id); setCategory('all'); }} className={`rounded-lg border px-2 py-2 text-[10px] font-semibold ${scope === id ? 'border-brand-cyan/60 bg-primary/40 text-brand-cyan' : 'border-slate-700 text-slate-400'}`}>{label}</button>
+        ))}
+      </nav>
+      <div className="flex flex-wrap gap-1.5">
+        {categories.map((item) => <button key={item} type="button" onClick={() => setCategory(item)} className={`rounded-md border px-2 py-1 text-[9px] ${category === item ? 'border-brand-cyan/50 text-brand-cyan' : 'border-slate-800 text-slate-400'}`}>{item === 'all' ? 'Todos' : item}</button>)}
+      </div>
+      <div className="space-y-2">
+        {visible.map((block) => <button key={block.id} type="button" onClick={() => onAddBlock(block.type)} className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-primary transition-all">
+          <Sparkles className="mt-0.5 size-4 shrink-0 text-brand-cyan" />
+          <span><strong className="block text-xs text-slate-200">{block.name}</strong><span className="text-[10px] text-slate-400">{block.description}</span></span>
+        </button>)}
+        {!visible.length && <p className="rounded-xl border border-dashed border-slate-700 p-4 text-center text-[10px] text-slate-500">Aún no hay bloques guardados en este ámbito.</p>}
+      </div>
+    </div>
+  );
+};
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -174,86 +204,28 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
       {/* 2. BLOQUES VISUALES DE MOTIONKIT */}
       {activeTab === 'blocks' && (
-        <div className="space-y-3">
-          <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block px-1">
-            Componentes Visuales de Marca
-          </span>
-          <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => onAddBlock('MotionAdvisorCard')}
-              className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-primary hover:bg-slate-900 transition-all group"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-brand-cyan">
-                <UserCheck className="size-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <strong className="block text-xs font-bold text-slate-200 group-hover:text-brand-cyan">
-                  Tarjeta de Asesora
-                </strong>
-                <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5">
-                  Foto real, live pulse y botón WhatsApp directo.
-                </p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onAddBlock('MotionTrustBadge')}
-              className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-accent hover:bg-slate-900 transition-all group"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
-                <ShieldCheck className="size-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <strong className="block text-xs font-bold text-slate-200 group-hover:text-accent">
-                  Sello de Garantía Consular
-                </strong>
-                <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5">
-                  Certificación de visado 100% sin copagos.
-                </p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onAddBlock('MotionComparisonCard')}
-              className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-teal-500 hover:bg-slate-900 transition-all group"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-teal-500/20 text-teal-400">
-                <SplitSquareVertical className="size-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <strong className="block text-xs font-bold text-slate-200 group-hover:text-teal-400">
-                  Comparativa ❌ vs ✅
-                </strong>
-                <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5">
-                  Seguro de Viaje vs Visado de Extranjería.
-                </p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onAddBlock('MotionProviderGrid')}
-              className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-sky-500 hover:bg-slate-900 transition-all group"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400">
-                <Grid className="size-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <strong className="block text-xs font-bold text-slate-200 group-hover:text-sky-400">
-                  Parrilla de Aseguradoras
-                </strong>
-                <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5">
-                  Sanitas, Adeslas, Asisa y DKV autorizadas.
-                </p>
-              </div>
-            </button>
-          </div>
-        </div>
+        <BlocksDrawer onAddBlock={onAddBlock} />
       )}
 
+      {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
+      {activeTab === 'layers' && (
+        <ImageStudioLayersPanel
+          project={project}
+          selectedLayerId={selectedLayerId}
+          selectedLayerIds={selectedLayerIds}
+          onSelectLayer={onSelectLayer}
+          onToggleLock={onToggleLock}
+          onToggleVisibility={onToggleVisibility}
+          onToggleAllLock={onToggleAllLock}
+          onToggleAllVisibility={onToggleAllVisibility}
+          onMoveZIndex={onMoveZIndex}
+          onReorderLayers={onReorderLayers}
+          onRenameLayer={onRenameLayer}
+          onDuplicateLayer={onDuplicateLayer}
+          onRemoveLayer={onRemoveLayer}
+          onDeleteSelectedLayers={onDeleteSelectedLayers}
+        />
+      )}
       {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
       {activeTab === 'layers' && (
         <ImageStudioLayersPanel
