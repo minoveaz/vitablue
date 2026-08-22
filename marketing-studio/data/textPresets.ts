@@ -195,7 +195,7 @@ export const TEXT_PRESETS: TextPresetItem[] = [
     fontSize: 24,
     fontWeight: '600',
     fontFamily: 'Poppins, sans-serif',
-    fill: '#94D2BD',
+    fill: '#E2E8F0',
     align: 'center',
     letterSpacing: 0,
     lineHeight: 1.25,

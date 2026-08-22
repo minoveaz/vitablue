@@ -150,10 +150,10 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
     };
 
     const colorMap = {
-      h1: '#FFFFFF',
-      h2: '#94D2BD',
-      p: '#E2E8F0',
-      badge: '#EE9B00',
+      h1: '#F8FAFC',
+      h2: '#E2E8F0',
+      p: '#CBD5E1',
+      badge: '#F8FAFC',
     };
 
     const labelMap = {
