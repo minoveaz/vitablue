@@ -23,10 +23,18 @@ import { ImageLayer } from '../../types/imageStudio';
 
 type BlockScope = 'system' | 'organization' | 'user';
 const BLOCKS = [
-  { id: 'comparison', name: 'Comparativa de opciones', description: 'Estructura multicapa para comparar alternativas.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
-  { id: 'advisor', name: 'Tarjeta de asesora', description: 'Composición con foto, confianza y CTA.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
-  { id: 'trust', name: 'Sello de confianza', description: 'Prueba social y garantía para campañas.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Confianza' },
-  { id: 'providers', name: 'Parrilla de proveedores', description: 'Bloque editorial con marcas y opciones.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Información' },
+  { id: 'hero-universal', name: 'Hero con titular y CTA', description: 'Composición de apertura con jerarquía y llamada a la acción.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Conversión' },
+  { id: 'benefits-universal', name: 'Beneficios en tres columnas', description: 'Bloque multicapa para presentar ventajas de forma escaneable.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
+  { id: 'steps-universal', name: 'Proceso en pasos', description: 'Recorrido visual numerado para explicar un proceso.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Procesos' },
+  { id: 'testimonial-universal', name: 'Testimonio con valoración', description: 'Cita, valoración y contexto preparados para editar.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'system' as BlockScope, category: 'Prueba social' },
+  { id: 'comparison-universal', name: 'Comparativa genérica', description: 'Dos alternativas enfrentadas con estructura editable.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
+  { id: 'legal-universal', name: 'Aviso legal estructurado', description: 'Jerarquía compacta para notas y condiciones.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'system' as BlockScope, category: 'Legal' },
+  { id: 'hero-company', name: 'Hero de seguro médico', description: 'Apertura VitaBlue orientada a captación de seguros.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Seguros' },
+  { id: 'saving-company', name: 'Bloque de ahorro', description: 'Propuesta de valor con ahorro y acción principal.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
+  { id: 'coverage-company', name: 'Comparador de coberturas', description: 'Comparación de coberturas de seguros.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Comparación' },
+  { id: 'confidence-company', name: 'Banner de confianza VitaBlue', description: 'Prueba social y garantías de la marca.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Confianza' },
+  { id: 'advisor-company', name: 'CTA de asesoría', description: 'Contacto directo con una asesora.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
+  { id: 'providers-company', name: 'Bloque de aseguradoras asociadas', description: 'Marcas y proveedores integrados en una composición.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Seguros' },
 ];
 
 const BlocksDrawer = ({ onAddBlock }: { onAddBlock: (type: ImageBlockType) => void }) => {
@@ -49,7 +57,7 @@ const BlocksDrawer = ({ onAddBlock }: { onAddBlock: (type: ImageBlockType) => vo
           <Sparkles className="mt-0.5 size-4 shrink-0 text-brand-cyan" />
           <span><strong className="block text-xs text-slate-200">{block.name}</strong><span className="text-[10px] text-slate-400">{block.description}</span></span>
         </button>)}
-        {!visible.length && <p className="rounded-xl border border-dashed border-slate-700 p-4 text-center text-[10px] text-slate-500">Aún no hay bloques guardados en este ámbito.</p>}
+        {!visible.length && <p className="rounded-xl border border-dashed border-slate-700 p-4 text-center text-[10px] text-slate-500">Aún no hay bloques guardados en este ámbito. Guarda una composición del lienzo para verla aquí.</p>}
       </div>
     </div>
   );
