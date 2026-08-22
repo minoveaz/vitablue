@@ -12,7 +12,7 @@ export const ImageStudioTemplatesDrawer: React.FC<Props> = ({ onLoadTemplate }) 
   const [category, setCategory] = useState('all');
   const templates = useMemo(() => TEMPLATE_CATALOG.filter((item) => item.scope === scope && (category === 'all' || item.category === category)), [scope, category]);
   const categories = ['all', ...new Set(TEMPLATE_CATALOG.filter((item) => item.scope === scope).map((item) => item.category))];
-  const sourceTemplates = scope === 'system' ? INITIAL_IMAGE_TEMPLATES : [];
+  const sourceTemplates = scope === 'user' ? [] : INITIAL_IMAGE_TEMPLATES;
   return (
     <div className="space-y-3">
       <nav className="grid grid-cols-3 gap-1.5">
@@ -23,7 +23,8 @@ export const ImageStudioTemplatesDrawer: React.FC<Props> = ({ onLoadTemplate }) 
         <div className="grid grid-cols-2 gap-2.5">
           {templates.map((item, index) => {
             const template = sourceTemplates[index % Math.max(sourceTemplates.length, 1)];
-            return <button key={item.id} type="button" disabled={!template} onClick={() => template && onLoadTemplate(template)} className="rounded-2xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary transition-all">
+            const preparedTemplate = template ? { ...template, id: `${template.id}-${item.id}`, title: item.name } : undefined;
+            return <button key={item.id} type="button" disabled={!preparedTemplate} onClick={() => preparedTemplate && onLoadTemplate(preparedTemplate)} className="rounded-2xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary transition-all">
               <div className="mb-2 flex h-24 items-center justify-center rounded-xl border border-slate-700/40 bg-primary/20"><span className="rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white">{item.aspectRatio}</span></div>
               <strong className="block truncate text-[11px] text-slate-100">{item.name}</strong><span className="text-[9px] text-slate-500">{item.category}</span>
             </button>;
