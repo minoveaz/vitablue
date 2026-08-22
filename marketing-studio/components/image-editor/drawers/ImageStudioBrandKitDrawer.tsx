@@ -304,29 +304,30 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
           </span>
         </div>
 
-        {/* CHIPS DE NAVEGACIÓN */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        {/* NAVEGACIÓN DE CATEGORÍAS */}
+        <nav aria-label="Categorías del kit de marca" className="grid grid-cols-2 gap-1.5">
           {[
-            { id: 'all', label: 'Todos' },
-            { id: 'highlights', label: '🌟 Destacados IG' },
-            { id: 'horizontal', label: '🏷️ Logotipos' },
-            { id: 'isotype', label: '🔷 Isotipos' },
-            { id: 'vertical', label: '📐 Apilados' },
+            { id: 'all', label: 'Todos', count: LOGO_PRESETS.length + HIGHLIGHT_PRESETS.length },
+            { id: 'highlights', label: 'Destacados IG', count: HIGHLIGHT_PRESETS.length },
+            { id: 'horizontal', label: 'Logotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'horizontal').length },
+            { id: 'isotype', label: 'Isotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'isotype').length },
+            { id: 'vertical', label: 'Apilados', count: LOGO_PRESETS.filter((preset) => preset.category === 'vertical').length },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setLogoTab(tab.id as any)}
-              className={`rounded-xl px-2.5 py-1 text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex min-h-10 items-center justify-between rounded-lg border px-2.5 text-left text-[10px] font-semibold transition-colors ${
                 logoTab === tab.id
-                  ? 'bg-primary text-brand-cyan border border-brand-cyan/50 shadow-xs'
-                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  ? 'border-brand-cyan/60 bg-primary/50 text-brand-cyan'
+                  : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
               }`}
             >
-              {tab.label}
+              <span>{tab.label}</span>
+              <span className="text-[9px] text-slate-500">{tab.count}</span>
             </button>
           ))}
-        </div>
+        </nav>
       </div>
 
       {/* 2. CONTENIDO PRINCIPAL SCROLLABLE */}
