@@ -31,6 +31,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedScope, setSelectedScope] = useState<'system' | 'organization' | 'user'>('organization');
   const [selectedClipShape, setSelectedClipShape] = useState<'squircle' | 'circle' | 'rounded-2xl' | 'none' | 'hexagon'>('rounded-2xl');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -108,10 +109,10 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
             </div>
             <div>
               <h3 className="font-display text-xs font-bold text-white tracking-wide">
-                Imágenes & Fotos de Stock
+                Medios
               </h3>
               <p className="text-[10px] text-slate-400">
-                Librería de alta resolución para seguros y visados
+                Imágenes, fotos y recursos visuales
               </p>
             </div>
           </div>
@@ -142,27 +143,30 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
         </div>
       </div>
 
-      {/* 2. CHIPS DE CATEGORÍAS */}
-      <div className="flex items-center gap-1.5 p-2.5 border-b border-slate-800/80 bg-[#070e17] overflow-x-auto no-scrollbar shrink-0">
-        {STOCK_CATEGORIES.map((cat) => {
-          const isActive = selectedCategory === cat.id;
-          return (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-primary/40 text-brand-cyan border border-brand-cyan/50 shadow-xs'
-                  : 'bg-slate-900/90 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
-              }`}
-            >
-              <span>{cat.icon}</span>
-              <span className="truncate">{cat.name}</span>
-            </button>
-          );
-        })}
-      </div>
+      <nav aria-label="Bibliotecas de medios" className="grid grid-cols-3 gap-1.5 border-b border-slate-800/80 bg-[#070e17] p-3">
+        {([
+          ['system', 'Universal'],
+          ['organization', 'Empresa'],
+          ['user', 'Míos'],
+        ] as const).map(([scope, label]) => (
+          <button
+            key={scope}
+            type="button"
+            aria-pressed={selectedScope === scope}
+            onClick={() => {
+              setSelectedScope(scope);
+              setSelectedCategory('all');
+            }}
+            className={`min-h-9 rounded-lg border px-2 text-[11px] font-semibold transition-colors ${
+              selectedScope === scope
+                ? 'border-brand-cyan/60 bg-primary/50 text-brand-cyan'
+                : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
 
       {/* 3. FORMA DE RECORTE (CLIP SHAPE SELECTOR) */}
       <div className="px-3.5 py-2 border-b border-slate-800/60 bg-[#070e17]/60 flex items-center justify-between text-[11px] shrink-0">
@@ -196,6 +200,26 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
 
       {/* 4. CONTENIDO PRINCIPAL: DROPZONE Y GRID DE FOTOS */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-4">
+        {selectedScope === 'organization' && (
+          <nav aria-label="Categorías de medios" className="grid grid-cols-2 gap-2">
+            {STOCK_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                aria-current={selectedCategory === cat.id ? 'page' : undefined}
+                className={`flex min-h-14 flex-col justify-between rounded-lg border p-2.5 text-left ${
+                  selectedCategory === cat.id
+                    ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                    : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+                }`}
+              >
+                <span className="text-sm">{cat.icon}</span>
+                <span className="truncate text-[10px] font-semibold">{cat.name}</span>
+              </button>
+            ))}
+          </nav>
+        )}
         {/* ZONA DE SUBIDA LOCAL */}
         <input
           type="file"
@@ -223,10 +247,12 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
         </div>
 
         {/* GRID DE FOTOGRAFÍAS */}
-        {filteredPhotos.length === 0 ? (
+        {selectedScope !== 'organization' || filteredPhotos.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-800 p-8 text-center bg-slate-950/40">
             <ImageIcon className="size-8 text-slate-600 mx-auto mb-2" />
-            <h4 className="text-xs font-bold text-slate-300">No se encontraron fotos</h4>
+            <h4 className="text-xs font-bold text-slate-300">
+              {selectedScope === 'system' ? 'No hay medios universales todavía' : selectedScope === 'user' ? 'Aún no tienes medios guardados' : 'No se encontraron fotos'}
+            </h4>
             <p className="text-[10px] text-slate-500 mt-1">
               Prueba buscando con otros términos o cambia de categoría.
             </p>
