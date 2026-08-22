@@ -277,7 +277,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
 
       {/* 2. ZONA DE RESULTADOS EN ANCHO COMPLETO (1 SOLA COLUMNA CON MÁXIMO AIRE) */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-3 bg-[#050B14]/40">
-        {selectedScope === 'system' && (
+        {selectedScope !== 'user' && (
           <nav aria-label="Categorías de texto" className="grid grid-cols-2 gap-2">
             {TEXT_PRESET_CATEGORIES.filter((cat) => (categoryCounts.get(cat.id) ?? 0) > 0).map((cat) => (
               <button
