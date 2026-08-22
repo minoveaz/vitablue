@@ -70,6 +70,7 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
 }) => {
   const [guideAxis, setGuideAxis] = React.useState<'vertical' | 'horizontal'>('vertical');
   const [guidePercent, setGuidePercent] = React.useState(50);
+  const [activeSection, setActiveSection] = React.useState<'design' | 'organize' | 'content' | 'style'>('design');
   const settings = project.guideSettings!;
   const profile = getPlatformGuideProfile(project.preset, settings.profileId);
   const selectedText = selectedLayers.some(
@@ -89,7 +90,31 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
         </p>
       </header>
 
+      <nav aria-label="Secciones de diseño" className="grid grid-cols-4 gap-1 border-b border-slate-800 p-3">
+        {([
+          ['design', 'Diseño'],
+          ['organize', 'Organizar'],
+          ['content', 'Contenido'],
+          ['style', 'Estilo'],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={activeSection === id}
+            onClick={() => setActiveSection(id)}
+            className={`min-h-9 rounded-lg border px-1 text-[10px] font-semibold transition-colors ${
+              activeSection === id
+                ? 'border-brand-cyan/60 bg-primary/40 text-brand-cyan'
+                : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+
       <div className="flex-1 space-y-5 overflow-y-auto p-4">
+        {activeSection === 'design' && (
         <section aria-labelledby="layout-guides-heading" className="space-y-2">
           <h3 id="layout-guides-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Guías del lienzo
@@ -231,7 +256,9 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
             )}
           </div>
         </section>
+        )}
 
+        {activeSection === 'organize' && (
         <section aria-labelledby="auto-layout-heading" className="space-y-2">
           <h3 id="auto-layout-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Organizar
@@ -258,7 +285,9 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
             ))}
           </div>
         </section>
+        )}
 
+        {activeSection === 'content' && (
         <section aria-labelledby="smart-content-heading" className="space-y-2">
           <h3 id="smart-content-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
             Contenido inteligente
@@ -273,7 +302,9 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
             Ajustar texto sin desbordar
           </button>
         </section>
+        )}
 
+        {activeSection === 'style' && (
         <section aria-labelledby="variants-heading" className="space-y-2">
           <h3 id="variants-heading" className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <Palette className="size-3.5" />
@@ -299,6 +330,7 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
             ))}
           </div>
         </section>
+        )}
 
         <section aria-labelledby="component-lock-heading" className="space-y-2">
           <h3 id="component-lock-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
