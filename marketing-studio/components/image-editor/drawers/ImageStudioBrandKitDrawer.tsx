@@ -213,6 +213,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
   onUpdateBackground,
 }) => {
   const [logoTab, setLogoTab] = useState<'all' | 'identity' | 'tokens' | 'backgrounds' | 'components' | 'rules'>('all');
+  const [identityFilter, setIdentityFilter] = useState<'all' | 'logos' | 'isotypes' | 'stacked'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
@@ -277,7 +278,12 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
     }
   };
 
-  const filteredLogos = LOGO_PRESETS;
+  const filteredLogos = LOGO_PRESETS.filter((preset) =>
+    identityFilter === 'all' ||
+    (identityFilter === 'logos' && preset.category === 'horizontal') ||
+    (identityFilter === 'isotypes' && preset.category === 'isotype') ||
+    (identityFilter === 'stacked' && preset.category === 'vertical')
+  );
 
   return (
     <div className="flex flex-col h-full bg-[#001219] text-slate-100 font-sans select-none overflow-hidden">
@@ -365,6 +371,27 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
                   </>
                 )}
               </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: 'all', label: 'Todos' },
+                { id: 'logos', label: 'Logotipos' },
+                { id: 'isotypes', label: 'Isotipos' },
+                { id: 'stacked', label: 'Apilados' },
+              ].map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => setIdentityFilter(filter.id as typeof identityFilter)}
+                  className={`rounded-md border px-2 py-1 text-[9px] font-semibold ${
+                    identityFilter === filter.id
+                      ? 'border-brand-cyan/50 bg-brand-cyan/10 text-brand-cyan'
+                      : 'border-slate-800 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -594,7 +621,17 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
            <p className="text-xs font-semibold text-slate-200">
              {logoTab === 'components' ? 'Componentes de marca' : 'Reglas de uso'}
            </p>
-           <p className="mt-1 text-[10px] text-slate-500">Esta sección se conectará con el sistema de marca.</p>
+           {logoTab === 'rules' ? (
+             <div className="mt-3 grid gap-2 text-left">
+               {['Mantener área de seguridad del logo', 'Usar contraste suficiente', 'No deformar ni recolorear variantes oficiales'].map((rule) => (
+                 <div key={rule} className="rounded-lg border border-slate-800 bg-[#0d1624] px-3 py-2 text-[10px] text-slate-300">
+                   {rule}
+                 </div>
+               ))}
+             </div>
+           ) : (
+             <p className="mt-1 text-[10px] text-slate-500">Los componentes reutilizables se definirán desde el editor.</p>
+           )}
          </div>
         )}
       </div>
