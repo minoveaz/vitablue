@@ -26,9 +26,18 @@ import {
   getPlatformGuideProfile,
   replaceLayerContent as replaceLayerContentPreservingComposition,
 } from '../utils/imageDesignSystem';
+import {
+  createDefaultLayoutMetadata,
+  getLayerLayoutConstraints,
+  resizeLayersForFormat,
+} from '../../packages/video-studio/src/domain/layoutConstraints';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...project,
+  layout: {
+    ...createDefaultLayoutMetadata(),
+    ...(project.layout ?? {}),
+  },
   guideSettings: {
     ...createDefaultGuideSettings(project.preset),
     ...(project.guideSettings ?? {}),
@@ -191,21 +200,12 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         return next;
       }
 
-      const scaleUniform = Math.min(newW / oldW, newH / oldH);
-
-      const nextLayers = prev.layers.map((layer) => {
-        if (layer.locked) return layer;
-        const width = layer.width ? Math.round(layer.width * scaleUniform) : undefined;
-        const height = layer.height ? Math.round(layer.height * scaleUniform) : undefined;
-        const fontSize = layer.fontSize ? Math.round(layer.fontSize * scaleUniform) : undefined;
-
-        return {
-          ...layer,
-          ...(width !== undefined ? { width } : {}),
-          ...(height !== undefined ? { height } : {}),
-          ...(fontSize !== undefined ? { fontSize } : {}),
-        };
-      });
+      const nextLayers = resizeLayersForFormat(
+        prev.layers,
+        { width: oldW, height: oldH },
+        { width: newW, height: newH },
+        prev.layout?.defaultLayerConstraints
+      );
 
       const next: ImageProject = {
         ...prev,
@@ -562,6 +562,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         direction,
         columns: direction === 'grid' ? Math.min(3, Math.ceil(Math.sqrt(selectedLayerIds.length))) : undefined,
         profileId: prev.guideSettings?.profileId,
+        defaultConstraints: prev.layout?.defaultLayerConstraints,
       });
       if (nextLayers === prev.layers) return prev;
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
@@ -618,9 +619,13 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const updateLayerScale = useCallback((layerId: string, scale: number) => {
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) =>
-        l.id === layerId && !l.locked ? { ...l, scale: Math.max(0.3, Math.min(2.5, scale)) } : l
-      );
+      const nextLayers = prev.layers.map((l) => {
+        if (l.id !== layerId || l.locked) return l;
+        const constraints = getLayerLayoutConstraints(l, prev.layout?.defaultLayerConstraints);
+        const minScale = Math.max(0.3, constraints.minScale ?? 0.3);
+        const maxScale = Math.min(2.5, Math.max(minScale, constraints.maxScale ?? 2.5));
+        return { ...l, scale: Math.max(minScale, Math.min(maxScale, scale)) };
+      });
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
       return next;
@@ -629,9 +634,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const updateLayerWidth = useCallback((layerId: string, width?: number) => {
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) =>
-        l.id === layerId && !l.locked ? { ...l, width: width ? Math.max(40, Math.min(2400, width)) : undefined } : l
-      );
+      const nextLayers = prev.layers.map((l) => {
+        if (l.id !== layerId || l.locked) return l;
+        const nextWidth = width ? Math.max(40, Math.min(2400, width)) : undefined;
+        const constraints = getLayerLayoutConstraints(l, prev.layout?.defaultLayerConstraints);
+        const nextHeight = nextWidth !== undefined && constraints.preserveAspectRatio && l.width && l.height
+          ? Math.max(20, Math.round((nextWidth / l.width) * l.height))
+          : l.height;
+        return { ...l, width: nextWidth, ...(nextWidth === undefined || nextHeight === undefined ? {} : { height: nextHeight }) };
+      });
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
       return next;
@@ -640,9 +651,15 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const updateLayerHeight = useCallback((layerId: string, height?: number) => {
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) =>
-        l.id === layerId && !l.locked ? { ...l, height: height ? Math.max(20, Math.min(2400, height)) : undefined } : l
-      );
+      const nextLayers = prev.layers.map((l) => {
+        if (l.id !== layerId || l.locked) return l;
+        const nextHeight = height ? Math.max(20, Math.min(2400, height)) : undefined;
+        const constraints = getLayerLayoutConstraints(l, prev.layout?.defaultLayerConstraints);
+        const nextWidth = nextHeight !== undefined && constraints.preserveAspectRatio && l.width && l.height
+          ? Math.max(40, Math.round((nextHeight / l.height) * l.width))
+          : l.width;
+        return { ...l, height: nextHeight, ...(nextHeight === undefined || nextWidth === undefined ? {} : { width: nextWidth }) };
+      });
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       scheduleTransientCommit(next);
       return next;

@@ -1,5 +1,6 @@
-export const VIDEO_SCHEMA_VERSION = 'video-schema-v1' as const;
+import type { LayerLayoutConstraints, LayoutProjectMetadata } from './layoutConstraints';
 
+export const VIDEO_SCHEMA_VERSION = 'video-schema-v1' as const;
 export type VideoFormat = 'vertical' | 'square' | 'landscape';
 
 export type SceneTemplateId =
@@ -33,6 +34,8 @@ export interface LayerBase {
   visible?: boolean;
   locked?: boolean;
   zIndex?: number;
+  /** Shared with Image Studio so format changes retain intent, not pixels. */
+  constraints?: LayerLayoutConstraints;
 }
 
 export interface TextLayer extends LayerBase {
@@ -142,6 +145,7 @@ export interface VideoProject {
   scenes: Scene[];
   audio?: AudioTrack[];
   metadata?: Record<string, unknown>;
+  layout?: LayoutProjectMetadata;
 }
 
 export interface VideoProjectRepository {

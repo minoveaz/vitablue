@@ -1,4 +1,5 @@
 import { VIDEO_SCHEMA_VERSION, type VideoProject } from './videoProject';
+import { createDefaultLayoutMetadata } from './layoutConstraints';
 
 export const defaultVisaRejectionProject: VideoProject = {
   schemaVersion: VIDEO_SCHEMA_VERSION,
@@ -8,6 +9,7 @@ export const defaultVisaRejectionProject: VideoProject = {
   format: 'vertical',
   width: 1080,
   height: 1920,
+  layout: createDefaultLayoutMetadata(),
   scenes: [
     {
       id: 'slide_1',

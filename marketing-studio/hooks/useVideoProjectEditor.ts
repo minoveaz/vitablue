@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Layer, LayerType, Scene, SceneTemplateId, ShapeLayer, SubtitleLayer, TextLayer, ComponentLayer } from '../../packages/video-studio/src/domain/videoProject';
 import { defaultVisaRejectionProject } from '../../packages/video-studio/src/domain/defaultProject';
 import { getVideoSceneWarnings } from './videoSceneValidation';
+import { DEFAULT_LAYER_LAYOUT_CONSTRAINTS } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 const createSceneId = (scenes: Scene[]): string => {
   const usedIds = new Set(scenes.map((scene) => scene.id));
@@ -66,7 +67,10 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
           break;
       }
 
-      return { ...scene, layers: [...scene.layers, layer] };
+      return {
+        ...scene,
+        layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }],
+      };
     }));
   };
 
@@ -76,7 +80,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       const id = `${scene.id}-text-${scene.layers.length + 1}`;
       const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
       const layer: TextLayer = { id, type: 'text', text: customText, timing, fontSize: 48, color: '#ffffff', position: 'center' };
-      return { ...scene, layers: [...scene.layers, layer] };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
     }));
   };
 
@@ -86,7 +90,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       const id = `${scene.id}-sub-${scene.layers.length + 1}`;
       const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
       const layer: SubtitleLayer = { id, type: 'subtitle', text: customText, timing, stylePreset: 'viral-yellow', fontSize: 44, position: 'bottom' };
-      return { ...scene, layers: [...scene.layers, layer] };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
     }));
   };
 
@@ -110,7 +114,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       }
 
       const layer: ComponentLayer = { id, type: 'component', componentId, props: initialProps, timing, position: 'center' };
-      return { ...scene, layers: [...scene.layers, layer] };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
     }));
   };
 

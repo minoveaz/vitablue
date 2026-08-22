@@ -561,13 +561,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               primary.id,
               pixelX,
               pixelY,
-              activeLayer.width ?? 380,
-              activeLayer.height ?? 200,
+              (activeLayer.width ?? 380) * (activeLayer.scale ?? 1),
+              (activeLayer.height ?? 200) * (activeLayer.scale ?? 1),
               project.preset.width,
               project.preset.height,
               project.layers,
               guideSettings.snapToGuides
                 ? {
+                    enabled: true,
                     verticalGuides: guideSnapLines.vertical,
                     horizontalGuides: guideSnapLines.horizontal,
                   }

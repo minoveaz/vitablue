@@ -1,4 +1,5 @@
 import { ImageLayer } from '../types/imageStudio';
+import { getLayerLayoutConstraints } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 export interface SnapGuideLine {
   points: [number, number, number, number]; // [x1, y1, x2, y2]
@@ -15,6 +16,8 @@ export interface SnapResult {
 export interface SnapGuideTargets {
   verticalGuides?: number[];
   horizontalGuides?: number[];
+  /** When false, no guide targets are added (canvas alignment remains available). */
+  enabled?: boolean;
 }
 
 const SNAP_THRESHOLD = 6; // pixels
@@ -33,6 +36,10 @@ export function calculateSnapping(
   let snappedX = targetX;
   let snappedY = targetY;
   const guides: SnapGuideLine[] = [];
+  const movingLayer = layers.find((layer) => layer.id === draggingLayerId);
+  const canUseDesignGuides = movingLayer
+    ? getLayerLayoutConstraints(movingLayer).snapToGuides !== false
+    : true;
 
   const halfW = layerWidth / 2;
   const halfH = layerHeight / 2;
@@ -59,18 +66,21 @@ export function calculateSnapping(
     { val: canvasHeight, type: 'canvas-edge' },
   ];
 
-  guideTargets?.verticalGuides?.forEach((value) => {
-    if (Number.isFinite(value)) verticalTargets.push({ val: value, type: 'design-guide' });
-  });
-  guideTargets?.horizontalGuides?.forEach((value) => {
-    if (Number.isFinite(value)) horizontalTargets.push({ val: value, type: 'design-guide' });
-  });
+  if (guideTargets?.enabled !== false && canUseDesignGuides) {
+    guideTargets?.verticalGuides?.forEach((value) => {
+      if (Number.isFinite(value)) verticalTargets.push({ val: value, type: 'design-guide' });
+    });
+    guideTargets?.horizontalGuides?.forEach((value) => {
+      if (Number.isFinite(value)) horizontalTargets.push({ val: value, type: 'design-guide' });
+    });
+  }
 
   // Añadir bordes y centros de otras capas
   for (const l of layers) {
     if (l.id === draggingLayerId || l.visible === false) continue;
-    const lWidth = l.width ?? 380;
-    const lHeight = l.height ?? 200;
+    if (getLayerLayoutConstraints(l).snapToGuides === false) continue;
+    const lWidth = (l.width ?? 380) * (l.scale ?? 1);
+    const lHeight = (l.height ?? 200) * (l.scale ?? 1);
     const lx = (l.position.x / 100) * canvasWidth;
     const ly = (l.position.y / 100) * canvasHeight;
 

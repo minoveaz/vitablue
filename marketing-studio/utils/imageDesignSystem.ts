@@ -6,6 +6,12 @@ import {
   ImageStyleVariantId,
   ImageTextFit,
 } from '../types/imageStudio';
+import {
+  getLayerLayoutConstraints,
+  type LayerLayoutConstraints,
+  type LayoutCanvasSize,
+  resizeLayerForFormat,
+} from '../../packages/video-studio/src/domain/layoutConstraints';
 
 export interface PlatformGuideProfile {
   id: ImagePlatformGuideId;
@@ -23,7 +29,11 @@ export interface AutoLayoutOptions {
   columns?: number;
   alignment?: 'start' | 'center' | 'end';
   profileId?: ImagePlatformGuideId | 'auto';
+  defaultConstraints?: LayerLayoutConstraints;
 }
+
+export { getLayerLayoutConstraints, resizeLayerForFormat };
+export type { LayerLayoutConstraints, LayoutCanvasSize };
 
 export interface ContentReplacement {
   text?: string;
@@ -228,7 +238,10 @@ export const autoLayoutLayers = (
   preset: ImageFormatPreset,
   options: AutoLayoutOptions
 ): ImageLayer[] => {
-  const selected = layers.filter((layer) => selectedIds.includes(layer.id) && !layer.locked);
+  const selected = layers.filter((layer) => {
+    if (!selectedIds.includes(layer.id) || layer.locked) return false;
+    return getLayerLayoutConstraints(layer, options.defaultConstraints).participatesInAutoLayout !== false;
+  });
   if (selected.length === 0) return layers;
 
   const profile = getPlatformGuideProfile(preset, options.profileId);

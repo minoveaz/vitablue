@@ -231,7 +231,7 @@ Estado actual:
 Pendiente para cerrar P1:
 - [ ] Convertir Audio en una biblioteca funcional con preview, duración, licencia, búsqueda, favoritos e inserción en timeline.
 - [ ] Completar Vídeo con selección de clips, preview reproducible, trim, duración, transiciones y sincronización de audio.
-- [ ] Unificar Layout como sistema de constraints reutilizable entre formatos, no solo acciones puntuales del drawer.
+- [x] Unificar Layout como sistema de constraints reutilizable entre formatos, no solo acciones puntuales del drawer.
 - [ ] Convertir Brand Kit en tokens aplicables globalmente, con validación de contraste, fuentes, logos protegidos y estados de aprobación.
 - [ ] Conectar Medios, Marca y Vídeo con scopes, reemplazo seguro, undo/redo y persistencia del proyecto.
 - [ ] Añadir pruebas de interacción y regresión visual para los cuatro módulos en móvil y escritorio.

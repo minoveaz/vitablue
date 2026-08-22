@@ -1,4 +1,5 @@
 import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
+import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 export interface ImageFormatPreset {
   id: string;
@@ -354,6 +355,8 @@ export interface ImageLayer {
   locked?: boolean;
   visible?: boolean;
   styleVariant?: ImageStyleVariantId;
+  /** Format-independent layout rules persisted with the layer. */
+  constraints?: LayerLayoutConstraints;
 }
 
 /** Stable contracts used by the editor engine and persistence adapters. */
@@ -399,6 +402,8 @@ export interface ImageProject {
   layers: ImageLayer[];
   brandTokens: MotionBrandTokens;
   guideSettings?: CanvasGuideSettings;
+  /** Shared layout metadata; absent on legacy projects and filled at runtime. */
+  layout?: LayoutProjectMetadata;
   carouselPages?: number;
   currentSlide?: number;
   createdAt: string;

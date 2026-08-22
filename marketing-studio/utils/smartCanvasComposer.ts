@@ -1,5 +1,6 @@
 import { ImageLayer, ImageProject, CanvasBackground, IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
 import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
+import { createDefaultLayoutMetadata, type LayerLayoutConstraints } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 export type SmartCanvasObjective =
   | 'visa_student'
@@ -645,6 +646,16 @@ export const generateSmartCanvasProject = (options: SmartComposerOptions): Image
         : 120);
     return {
       ...layer,
+      constraints: {
+        version: 1,
+        horizontal: 'scale',
+        vertical: 'scale',
+        width: 'scale',
+        height: 'scale',
+        preserveAspectRatio: true,
+        participatesInAutoLayout: true,
+        snapToGuides: true,
+      } satisfies LayerLayoutConstraints,
       position: {
         x: Math.max(0, Math.min(100, Math.round(((layer.position.x + layerWidth / 2) / w) * 1000) / 10)),
         y: Math.max(0, Math.min(100, Math.round(((layer.position.y + layerHeight / 2) / h) * 1000) / 10)),
@@ -658,6 +669,7 @@ export const generateSmartCanvasProject = (options: SmartComposerOptions): Image
     preset,
     background,
     brandTokens: defaultMotionBrandTokens,
+    layout: createDefaultLayoutMetadata(),
     layers: normalizedLayers,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

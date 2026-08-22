@@ -1,9 +1,14 @@
 import { ImageLayer, ImageLayerContent, ImageLayerGeometry, ImageLayerStyle } from '../types/imageStudio';
+import {
+  DEFAULT_LAYER_LAYOUT_CONSTRAINTS,
+  type LayerLayoutConstraints,
+} from '../../packages/video-studio/src/domain/layoutConstraints';
 
 export type ImageLayerModel = ImageLayerContent & ImageLayerGeometry & ImageLayerStyle & {
   id: ImageLayer['id'];
   zIndex: ImageLayer['zIndex'];
   props: ImageLayer['props'];
+  constraints?: LayerLayoutConstraints;
 };
 
 export const toImageLayerModel = (layer: ImageLayer): ImageLayerModel => layer;
@@ -34,6 +39,7 @@ export function createCustomGroup(layers: ImageLayer[], id: string): ImageLayer 
     position: center,
     zIndex: Math.max(...layers.map((layer) => layer.zIndex)),
     scale: 1,
+    constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS },
   };
 }
 

@@ -8,6 +8,7 @@ import {
   getGuideSnapLines,
   getPlatformGuideProfile,
   replaceLayerContent,
+  resizeLayerForFormat,
 } from '../utils/imageDesignSystem';
 import { calculateSnapping } from '../hooks/useKonvaSnapping';
 
@@ -74,6 +75,7 @@ describe('Image Studio professional design system', () => {
       direction: 'vertical',
       gap: 24,
     });
+
     const profile = getPlatformGuideProfile(portrait);
     const editable = result.filter((item) => !item.locked);
 
@@ -85,6 +87,32 @@ describe('Image Studio professional design system', () => {
       expect(centerY).toBeGreaterThanOrEqual(profile.safeInsets.top);
       expect(centerY).toBeLessThanOrEqual(portrait.height - profile.safeInsets.bottom);
     });
+  });
+
+  it('keeps explicit edge constraints when adapting a layer to another format', () => {
+    const pinned = layer('pinned', {
+      position: { x: 12, y: 20 },
+      width: 200,
+      height: 100,
+      constraints: {
+        horizontal: 'start',
+        vertical: 'end',
+        width: 'fixed',
+        height: 'fixed',
+      },
+    });
+    const resized = resizeLayerForFormat(
+      pinned,
+      { width: portrait.width, height: portrait.height },
+      { width: 1920, height: 1080 }
+    );
+
+    expect(resized.width).toBe(200);
+    expect(resized.height).toBe(100);
+    expect(resized.position.x).toBeGreaterThan(7);
+    expect(resized.position.x).toBeLessThan(15);
+    expect(resized.position.y).toBeGreaterThan(15);
+    expect(resized.position.y).toBeLessThan(25);
   });
 
   it('fits long copy into its text box using persisted fitting rules', () => {
