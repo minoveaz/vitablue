@@ -222,6 +222,9 @@ Estado actual:
 - [x] Existe un drawer de Medios con inserción de imágenes, fotos de stock, asesoras y fondos.
 - [x] Existe un puente inicial hacia Video Studio/Remotion y un editor de vídeo con timeline, transporte y zonas seguras.
 - [x] Existe un drawer de Layout con guías, safe zones, columnas, auto-layout, ajuste de texto y variantes.
+- [x] Layout quedó separado funcionalmente en Diseño, Organizar, Contenido y Estilo,
+  con alineación, distribución, posición, z-order, agrupación, protección,
+  controles contextuales de contenido y edición real de estilo/tokens.
 - [x] Existe un Brand Kit con logos, colores, gradientes y destacados de Instagram.
 - [x] El editor conserva composición al reemplazar imágenes y permite focal point, recorte y object-fit.
 
