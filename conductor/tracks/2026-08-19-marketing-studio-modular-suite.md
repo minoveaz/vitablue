@@ -253,6 +253,15 @@ Pendiente para cerrar P1:
 - [ ] Enviar composiciones estáticas desde Image Studio a Video Studio; la
   adaptación audiovisual a 1:1, 4:5, 9:16 y 16:9 se implementará allí,
   manteniendo escenas editables y sin convertir a imagen plana.
+- [ ] Definir el puente como un paquete de composición versionado: transferir
+  canvas, formato, fondo, capas, grupos, geometría, estilos, tokens y referencias
+  a assets, conservando texto editable y logos protegidos.
+- [ ] Crear en Video Studio una escena inicial editable a partir del paquete,
+  añadiendo duración, animaciones, keyframes, transiciones y audio sin modificar
+  el proyecto original de Image Studio.
+- [ ] Ofrecer los modos "escena vinculada", "copia independiente" y fallback de
+  render plano para recursos incompatibles; no duplicar las bibliotecas de
+  Elementos, Texto o Medios en el puente.
 - [ ] Integrar con Video Studio conservando referencia al proyecto, duración,
   campos aprobados, transiciones, audio y aspect ratio.
 - [ ] Validar codec, formato, peso, duración, licencia, restricciones y estados
