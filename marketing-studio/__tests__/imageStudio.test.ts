@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
-import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
+import {
+  EMPRESA_IMAGE_TEMPLATES,
+  INITIAL_IMAGE_TEMPLATES,
+  MARKETING_TEMPLATE_PROJECT_BY_ID,
+  UNIVERSAL_IMAGE_TEMPLATES,
+} from '../utils/imageTemplates';
+import { TEMPLATE_CATALOG } from '../data/templateCatalog';
 
 describe('ImageStudio Presets & Templates', () => {
   it('defines the 7 required social media image format presets', () => {
@@ -45,6 +51,28 @@ describe('ImageStudio Presets & Templates', () => {
       )
     );
     expect(templatesWithCompoundBlocks.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('maps every marketing catalog item to an independent project with the correct aspect', () => {
+    expect(UNIVERSAL_IMAGE_TEMPLATES).toHaveLength(8);
+    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(8);
+
+    const marketingCatalog = TEMPLATE_CATALOG;
+    expect(marketingCatalog).toHaveLength(16);
+    marketingCatalog.forEach((item) => {
+      const project = MARKETING_TEMPLATE_PROJECT_BY_ID.get(item.projectId);
+      expect(project, item.id).toBeDefined();
+      expect(project?.preset.aspectRatio, item.id).toBe(item.aspectRatio);
+      expect(project?.layers.length, item.id).toBeGreaterThan(1);
+      expect(new Set(project?.layers.map((layer) => layer.id)).size, item.id).toBe(project?.layers.length);
+    });
+
+    expect(new Set(UNIVERSAL_IMAGE_TEMPLATES.map((template) => template.id)).size).toBe(8);
+    const universalCopy = UNIVERSAL_IMAGE_TEMPLATES.flatMap((template) =>
+      template.layers.map((layer) => JSON.stringify(layer.props))
+    ).join(' ');
+    expect(universalCopy).not.toContain('VitaBlue');
+    expect(universalCopy).not.toContain('#005F73');
   });
 });
 
