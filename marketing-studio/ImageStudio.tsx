@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import BackofficeShell from '../components/layouts/BackofficeShell';
 import { StudioWorkspaceShell, StudioToolItem } from '../components/backoffice-shell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
@@ -21,12 +21,10 @@ import {
   Wand2,
   FolderHeart,
   Grid3X3,
-  Video,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const assetId = searchParams.get('assetId');
 
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -241,7 +239,6 @@ export const ImageStudio: React.FC = () => {
 
     // 🟡 Zona 4: Inteligencia y Multimedia (9 - 10)
     { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
-    { id: 'video-studio', label: 'Video Studio', icon: <Video className="size-4" /> },
   ];
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
@@ -250,14 +247,7 @@ export const ImageStudio: React.FC = () => {
       suiteTitle="Image & Graphic Studio"
       tools={studioTools}
       activeToolId={activeToolId}
-      onSelectTool={(toolId) => {
-        if (toolId === 'video-studio') {
-          saveImageVideoHandoff(editor.project);
-          navigate('/backoffice/marketing-studio/generador-contenido?from=image-studio');
-          return;
-        }
-        setActiveToolId(toolId);
-      }}
+      onSelectTool={setActiveToolId}
       drawerContent={
         <ImageStudioAssetSidebar
           activeTab={activeToolId}

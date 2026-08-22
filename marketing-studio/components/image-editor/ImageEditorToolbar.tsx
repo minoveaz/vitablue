@@ -240,7 +240,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors"
               >
                 <Video className="size-4 text-brand-cyan" />
-                <span>Abrir en Video Studio</span>
+                <span>Preparar para Video Studio</span>
               </Link>
             </div>
           )}
