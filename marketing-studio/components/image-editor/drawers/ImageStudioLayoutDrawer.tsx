@@ -284,6 +284,20 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
               </button>
             ))}
           </div>
+          <div className="space-y-2 border-t border-slate-800 pt-3">
+            <h3 id="component-lock-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Protección de componentes
+            </h3>
+            <button
+              type="button"
+              disabled={selectedLayers.length === 0}
+              onClick={() => selectedLayers.forEach((layer) => onToggleLock(layer.id))}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-300 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {allLocked ? <Unlock className="size-4" /> : <Lock className="size-4" />}
+              {allLocked ? 'Desbloquear selección' : 'Bloquear selección'}
+            </button>
+          </div>
         </section>
         )}
 
@@ -332,20 +346,6 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
         </section>
         )}
 
-        <section aria-labelledby="component-lock-heading" className="space-y-2">
-          <h3 id="component-lock-heading" className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Protección de componentes
-          </h3>
-          <button
-            type="button"
-            disabled={selectedLayers.length === 0}
-            onClick={() => selectedLayers.forEach((layer) => onToggleLock(layer.id))}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-300 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {allLocked ? <Unlock className="size-4" /> : <Lock className="size-4" />}
-            {allLocked ? 'Desbloquear selección' : 'Bloquear selección'}
-          </button>
-        </section>
       </div>
     </div>
   );
