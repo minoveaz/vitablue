@@ -26,6 +26,7 @@ import {
   getPlatformGuideProfile,
   replaceLayerContent as replaceLayerContentPreservingComposition,
 } from '../utils/imageDesignSystem';
+import { getBlockCatalogItem } from '../data/blockCatalog';
 import {
   createDefaultLayoutMetadata,
   getLayerLayoutConstraints,
@@ -999,6 +1000,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   const addBlockLayer = useCallback((blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => {
     let initialProps: Record<string, unknown> = defaultProps ?? {};
     let initialTitle = 'Bloque Visual';
+    const catalogDefinition = getBlockCatalogItem(blockType);
 
     if (blockType === 'MotionAdvisorCard') {
       initialTitle = 'Tarjeta de Asesora';
@@ -1075,8 +1077,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       initialTitle = shapeNames[type] ? `Forma: ${shapeNames[type]}` : `Forma: ${type}`;
     }
 
-    let width = typeof defaultProps?.width === 'number' ? defaultProps.width : undefined;
-    let height = typeof defaultProps?.height === 'number' ? defaultProps.height : undefined;
+    if (catalogDefinition && initialTitle === 'Bloque Visual') {
+      initialTitle = catalogDefinition.name;
+      initialProps = { ...catalogDefinition.defaultProps, ...initialProps };
+    }
+
+    let width = typeof defaultProps?.width === 'number'
+      ? defaultProps.width
+      : catalogDefinition?.defaultSize?.width;
+    let height = typeof defaultProps?.height === 'number'
+      ? defaultProps.height
+      : catalogDefinition?.defaultSize?.height;
 
     if (blockType === 'GeometricShape') {
       width = width ?? 200;

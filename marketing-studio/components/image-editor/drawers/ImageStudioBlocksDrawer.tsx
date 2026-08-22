@@ -138,6 +138,9 @@ export const ImageStudioBlocksDrawer: React.FC<ImageStudioBlocksDrawerProps> = (
                     {block.name}
                   </span>
                   <span className="mt-0.5 block truncate text-[10px] text-slate-500">{block.description}</span>
+                  <span className="mt-1 block text-[9px] font-semibold uppercase tracking-wider text-slate-600">
+                    {block.scope === 'system' ? 'Universal' : 'Empresa'} · {block.category} · {(block.aspectCompatibility ?? []).join(' · ')}
+                  </span>
                 </div>
                 <span className="flex shrink-0 items-center gap-1 rounded-full border border-brand-cyan/40 bg-brand-cyan/10 px-2 py-1 text-[9px] font-black text-brand-cyan">
                   <Plus className="size-3" /> Insertar

@@ -8,4 +8,5 @@ export * from './ElementResourcePreview';
 export * from './BrandLogoBlock';
 export * from './WebIllustrationBlock';
 export * from './HighlightCoverBlocks';
+export * from './MarketingBlocks';
 export * from './BlockRenderer';

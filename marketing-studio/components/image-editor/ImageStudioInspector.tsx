@@ -44,6 +44,7 @@ import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 import { correctSpanishText } from '../../utils/spellingCorrector';
 import { EditorPanelSection } from './EditorPanelSection';
+import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog';
 
 interface NumberInputProps {
   value?: number;
@@ -232,6 +233,103 @@ const HexColorPickerField: React.FC<HexColorPickerFieldProps> = ({
           />
         ))}
       </div>
+    </div>
+  );
+};
+
+const CatalogBlockPropsEditor: React.FC<{
+  layer: ImageLayer;
+  onUpdate: (patch: Record<string, unknown>) => void;
+}> = ({ layer, onUpdate }) => {
+  const definition = layer.blockType ? getBlockCatalogItem(layer.blockType) : undefined;
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  React.useEffect(() => setDrafts({}), [layer.id]);
+  if (!definition?.editableProps?.length) return null;
+
+  const props = layer.props as Record<string, unknown>;
+  const collectionKeys = new Set(['items', 'plans', 'features', 'inclusions', 'exclusions', 'providers', 'badges', 'highlights']);
+  const formatValue = (control: BlockEditableProp) => {
+    const value = props[control.key];
+    if (Array.isArray(value) || (value && typeof value === 'object')) return JSON.stringify(value, null, 2);
+    return value === undefined ? '' : String(value);
+  };
+  const commitValue = (control: BlockEditableProp, raw: string) => {
+    if (control.type === 'number') {
+      const parsed = Number(raw);
+      if (Number.isFinite(parsed)) onUpdate({ [control.key]: Math.max(control.min ?? -Infinity, Math.min(control.max ?? Infinity, parsed)) });
+      return;
+    }
+    if (control.type === 'textarea' && collectionKeys.has(control.key)) {
+      try {
+        onUpdate({ [control.key]: JSON.parse(raw) });
+      } catch {
+        onUpdate({ [control.key]: raw.split(/\r?\n/).map((item) => item.trim()).filter(Boolean) });
+      }
+      return;
+    }
+    onUpdate({ [control.key]: raw });
+  };
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-3">
+      <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-brand-cyan">
+        <Sliders className="size-3.5" />
+        <span>Contenido del bloque</span>
+      </div>
+      {definition.editableProps.map((control) => (
+        <div key={control.key}>
+          <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">{control.label}</label>
+          {control.type === 'select' ? (
+            <div className="flex flex-wrap gap-1.5">
+              {control.options?.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onUpdate({ [control.key]: option.value })}
+                  className={`rounded-lg border px-2 py-1 text-[10px] font-bold ${
+                    String(props[control.key] ?? '') === option.value
+                      ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
+                      : 'border-slate-800 bg-slate-900 text-slate-400'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          ) : control.type === 'textarea' ? (
+            <textarea
+              value={drafts[control.key] ?? formatValue(control)}
+              placeholder={control.placeholder}
+              rows={Array.isArray(props[control.key]) || (props[control.key] && typeof props[control.key] === 'object') ? 4 : 3}
+              onChange={(event) => {
+                setDrafts((current) => ({ ...current, [control.key]: event.target.value }));
+                if (!collectionKeys.has(control.key)) commitValue(control, event.target.value);
+              }}
+              onBlur={() => {
+                if (collectionKeys.has(control.key)) {
+                  commitValue(control, drafts[control.key] ?? formatValue(control));
+                  setDrafts((current) => {
+                    const next = { ...current };
+                    delete next[control.key];
+                    return next;
+                  });
+                }
+              }}
+              className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs leading-relaxed text-white focus:border-brand-cyan focus:outline-none"
+            />
+          ) : (
+            <input
+              type={control.type === 'number' ? 'number' : 'text'}
+              value={formatValue(control)}
+              min={control.min}
+              max={control.max}
+              placeholder={control.placeholder}
+              onChange={(event) => commitValue(control, event.target.value)}
+              className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2 text-xs text-white focus:border-brand-cyan focus:outline-none"
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 };
@@ -1706,6 +1804,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         )}
 
         {/* 4. ESTILO VISUAL & ACABADO (COMPACTO Y ELEGANTE) */}
+        <CatalogBlockPropsEditor
+          layer={selectedLayer}
+          onUpdate={(patch) => onUpdateLayerProps(selectedLayer.id, patch)}
+        />
         
         {/* A. OPACIDAD Y ACCIONES RÁPIDAS DE ESTILO */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2.5">

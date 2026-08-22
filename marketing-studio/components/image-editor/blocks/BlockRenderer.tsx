@@ -35,6 +35,7 @@ import { BrandLogoBlock } from './BrandLogoBlock';
 import { InstagramHighlightBadge } from './HighlightCoverBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
+import { MarketingBlockRenderer } from './MarketingBlocks';
 
 const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
   <div
@@ -68,6 +69,24 @@ export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, b
       return '420px';
     case 'MotionComparisonCard':
     case 'MotionProviderGrid':
+      return '420px';
+    case 'MarketingBrandHero':
+    case 'MarketingFeatureGrid':
+    case 'InsuranceProductHero':
+    case 'InsuranceCoverageGrid':
+    case 'InsuranceTestimonialGrid':
+    case 'InsurancePlanComparison':
+    case 'InsuranceTrustBar':
+    case 'InsuranceProviderBar':
+    case 'InsuranceTransparency':
+    case 'InsuranceFaq':
+    case 'InsuranceAdvisorCta':
+      return '760px';
+    case 'MarketingSectionIntro':
+      return '620px';
+    case 'MarketingPromoCard':
+    case 'InsuranceProductCard':
+    case 'MarketingTestimonial':
       return '420px';
     case 'HookAlertBadge':
     case 'TrustHighlightPill':
@@ -209,6 +228,24 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
         />
       );
+
+    // 1b. COMPOSICIONES LOCALES BASADAS EN PATRONES DEL STYLEGUIDE
+    case 'MarketingBrandHero':
+    case 'MarketingSectionIntro':
+    case 'MarketingTestimonial':
+    case 'MarketingFeatureGrid':
+    case 'MarketingPromoCard':
+    case 'InsuranceProductHero':
+    case 'InsuranceCoverageGrid':
+    case 'InsuranceTestimonialGrid':
+    case 'InsurancePlanComparison':
+    case 'InsuranceProductCard':
+    case 'InsuranceTrustBar':
+    case 'InsuranceProviderBar':
+    case 'InsuranceTransparency':
+    case 'InsuranceFaq':
+    case 'InsuranceAdvisorCta':
+      return <MarketingBlockRenderer blockType={layer.blockType} props={blockProps} layer={layer} />;
 
     // 2. SUB-BLOQUES DE ASESORA
     case 'HookAlertBadge':
