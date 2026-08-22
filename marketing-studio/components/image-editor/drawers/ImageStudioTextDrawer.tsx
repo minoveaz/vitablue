@@ -9,8 +9,6 @@ import {
   ShieldCheck,
   Layers,
   CheckSquare,
-  ChevronLeft,
-  ChevronRight,
   FolderHeart,
   Plus,
   X,
@@ -30,6 +28,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
   onAddTextLayer,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedScope, setSelectedScope] = useState<'system' | 'organization' | 'user'>('system');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [refreshTick, setRefreshTick] = useState<number>(0);
 
@@ -93,7 +92,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
   };
 
   const filteredPresets = useMemo(() => {
-    if (selectedCategory === 'saved') {
+    if (selectedScope === 'user' || selectedCategory === 'saved') {
       return savedTextPresets.filter((preset) => {
         return (
           searchQuery.trim() === '' ||
@@ -103,7 +102,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
       });
     }
 
-    return allPresets.filter((preset) => {
+    return selectedScope === 'organization' ? [] : allPresets.filter((preset) => {
       const matchesCategory =
         selectedCategory === 'all' || preset.category === selectedCategory;
       const matchesSearch =
@@ -113,7 +112,7 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
         preset.defaultText.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery, allPresets, savedTextPresets]);
+  }, [selectedCategory, selectedScope, searchQuery, allPresets, savedTextPresets]);
 
   const handleAddQuickText = (tag: 'h1' | 'h2' | 'p' | 'badge') => {
     const sizeMap = {
@@ -237,93 +236,58 @@ export const ImageStudioTextDrawer: React.FC<ImageStudioTextDrawerProps> = ({
           )}
         </div>
 
-        {/* SELECTOR HORIZONTAL DE CHIPS / PASTILLAS DE CATEGORÍAS CON NAVEGACIÓN Y PESO VISUAL */}
-        <div className="space-y-1.5 pt-0.5">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-              Colecciones & Estilos ({TEXT_PRESET_CATEGORIES.length})
-            </span>
-            <div className="flex items-center gap-1 text-slate-500">
-              <button
-                type="button"
-                onClick={() => {
-                  const container = document.getElementById('text-categories-scroll-track');
-                  if (container) container.scrollBy({ left: -140, behavior: 'smooth' });
-                }}
-                className="size-5 rounded flex items-center justify-center hover:bg-slate-800 hover:text-white transition-colors"
-                title="Desplazar a la izquierda"
-              >
-                <ChevronLeft className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const container = document.getElementById('text-categories-scroll-track');
-                  if (container) container.scrollBy({ left: 140, behavior: 'smooth' });
-                }}
-                className="size-5 rounded flex items-center justify-center hover:bg-slate-800 hover:text-white transition-colors"
-                title="Desplazar a la derecha"
-              >
-                <ChevronRight className="size-3.5" />
-              </button>
-            </div>
-          </div>
-
-          <div
-            id="text-categories-scroll-track"
-            className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 no-scrollbar scroll-smooth shadow-inner"
-          >
-            {savedTextPresets.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setSelectedCategory('saved')}
-                className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all select-none ${
-                  selectedCategory === 'saved'
-                    ? 'bg-gradient-to-r from-amber-500/30 to-amber-600/40 text-amber-300 border border-amber-400 shadow-sm ring-1 ring-amber-400/30'
-                    : 'bg-slate-950/80 text-amber-300/90 hover:bg-slate-800 hover:text-amber-200 border border-amber-500/30'
-                }`}
-              >
-                <FolderHeart className="size-3.5 text-amber-400" />
-                <span>Mis Textos</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                  selectedCategory === 'saved' ? 'bg-amber-400/20 text-amber-300' : 'bg-slate-800 text-amber-400'
-                }`}>
-                  {savedTextPresets.length}
-                </span>
-              </button>
-            )}
-
-            {TEXT_PRESET_CATEGORIES.map((cat) => {
-              const isActive = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all select-none ${
-                    isActive
-                      ? 'bg-gradient-to-r from-primary/40 to-teal-900/60 text-brand-cyan border border-brand-cyan shadow-sm ring-1 ring-brand-cyan/30'
-                      : 'bg-slate-950/80 text-slate-200 hover:bg-slate-800 hover:text-white border border-slate-800/90'
-                  }`}
-                >
-                  <span className={isActive ? 'text-brand-cyan' : 'text-slate-400'}>
-                    {getCategoryIcon(cat.icon)}
-                  </span>
-                  <span>{cat.name}</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                    isActive ? 'bg-brand-cyan/20 text-brand-cyan' : 'bg-slate-800 text-slate-400'
-                  }`}>
-                    {cat.count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <nav aria-label="Bibliotecas de texto" className="grid grid-cols-3 gap-1.5">
+          {([
+            ['system', 'Universal'],
+            ['organization', 'Empresa'],
+            ['user', 'Míos'],
+          ] as const).map(([scope, label]) => (
+            <button
+              key={scope}
+              type="button"
+              aria-pressed={selectedScope === scope}
+              onClick={() => {
+                setSelectedScope(scope);
+                setSelectedCategory(scope === 'user' ? 'saved' : 'all');
+              }}
+              className={`min-h-9 rounded-lg border px-2 text-[11px] font-semibold transition-colors ${
+                selectedScope === scope
+                  ? 'border-brand-cyan/60 bg-primary/50 text-brand-cyan'
+                  : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* 2. ZONA DE RESULTADOS EN ANCHO COMPLETO (1 SOLA COLUMNA CON MÁXIMO AIRE) */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-3 bg-[#050B14]/40">
+        {selectedScope === 'system' && (
+          <nav aria-label="Categorías de texto" className="grid grid-cols-2 gap-2">
+            {TEXT_PRESET_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                aria-current={selectedCategory === cat.id ? 'page' : undefined}
+                className={`flex min-h-14 flex-col justify-between rounded-lg border p-2.5 text-left ${
+                  selectedCategory === cat.id
+                    ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                    : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+                }`}
+              >
+                <span className="flex items-center justify-between">
+                  {getCategoryIcon(cat.icon)}
+                  <span className="text-[9px] text-slate-500">{cat.count}</span>
+                </span>
+                <span className="truncate text-[10px] font-semibold">{cat.name}</span>
+              </button>
+            ))}
+          </nav>
+        )}
+
         {filteredPresets.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-center p-4">
             <Search className="size-8 text-slate-600 mb-2 stroke-[1.5]" />
