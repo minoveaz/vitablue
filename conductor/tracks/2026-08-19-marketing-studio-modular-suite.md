@@ -275,6 +275,16 @@ Pendiente para cerrar P1:
 - [ ] Exportar paquetes completos de campaña.
 
 #### Fase 6 — IA creativa especializada
+- [ ] Especificar el módulo Copys con IA con navegación Generar, Adaptar,
+  Variantes y Míos.
+- [ ] Generar titulares, subtítulos, CTA, captions, descripciones y textos
+  legales según objetivo, audiencia, tono, idioma y número de propuestas.
+- [ ] Adaptar el copy seleccionado a longitud, tono y formato sin alterar su
+  significado; conservar tipografía, posición y estilos al aplicarlo.
+- [ ] Generar variantes comparables, permitir copiar/guardar/regenerar y
+  mantener historial con deshacer y recuperación de versiones.
+- [ ] Aplicar contexto del Brand Hub y advertir sobre claims, precios,
+  coberturas, garantías o contenido que requiera revisión legal.
 - [ ] Convertir briefs en composiciones basadas en plantillas y bloques aprobados.
 - [ ] Generar hooks, copys, variantes y adaptaciones por plataforma.
 - [ ] Revisar legibilidad, contraste, branding y exceso de texto.
