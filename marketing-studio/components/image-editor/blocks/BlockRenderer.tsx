@@ -58,6 +58,10 @@ export interface ImageLayerBlockRendererProps {
 export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, blockProps?: Record<string, unknown>): string => {
   if (customWidth) return `${customWidth}px`;
   switch (blockType) {
+    case 'CustomGroup':
+      return blockProps?.width ? `${Number(blockProps.width)}px` : '420px';
+    case 'MarketingBlockPart':
+      return blockProps?.width ? `${Number(blockProps.width)}px` : 'auto';
     case 'MotionAdvisorCard':
       return '380px';
     case 'GlassCardSurface':
@@ -147,12 +151,18 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'CustomGroup': {
       const children = (blockProps.childrenLayers ?? []) as (ImageLayer & { relX?: number; relY?: number })[];
       const initialCentroid = (blockProps.initialCentroid as { x: number; y: number } | undefined);
+      const baseWidth = Number(blockProps.baseWidth ?? layer.width ?? 420);
+      const baseHeight = Number(blockProps.baseHeight ?? layer.height ?? 280);
+      const widthScale = Number(layer.width ?? baseWidth) / baseWidth;
+      const heightScale = Number(layer.height ?? baseHeight) / baseHeight;
 
       return (
-        <div className="relative w-full h-full pointer-events-none">
+        <div className="relative h-full w-full pointer-events-none overflow-visible">
           {children.map((child) => {
             const relX = child.relX !== undefined ? child.relX : (initialCentroid ? child.position.x - initialCentroid.x : 0);
             const relY = child.relY !== undefined ? child.relY : (initialCentroid ? child.position.y - initialCentroid.y : 0);
+            const isBackground = (child.props as Record<string, unknown> | undefined)?.part === 'background';
+            const childScale = isBackground ? 1 : (child.scale ?? 1) * Math.min(widthScale, heightScale);
 
             return (
               <div
@@ -161,10 +171,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
                 style={{
                   left: `calc(50% + ${relX}%)`,
                   top: `calc(50% + ${relY}%)`,
-                  transform: `translate(-50%, -50%) rotate(${child.rotation ?? 0}deg) scale(${child.scale ?? 1})`,
+                  transform: `translate(-50%, -50%) rotate(${child.rotation ?? 0}deg) scale(${childScale})`,
                   zIndex: child.zIndex,
-                  width: getBlockDefaultWidth(child.blockType, child.width, child.props as Record<string, unknown>),
-                  height: child.height ? `${child.height}px` : 'auto',
+                  width: isBackground ? `${layer.width ?? baseWidth}px` : getBlockDefaultWidth(child.blockType, child.width, child.props as Record<string, unknown>),
+                  height: isBackground ? `${layer.height ?? baseHeight}px` : (child.height ? `${child.height}px` : 'auto'),
                 }}
               >
                 <ImageLayerBlockRenderer
@@ -235,6 +245,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
 
     // 1b. COMPOSICIONES LOCALES BASADAS EN PATRONES DEL STYLEGUIDE
     case 'MarketingBrandHero':
+    case 'MarketingBlockPart':
     case 'MarketingSectionIntro':
     case 'MarketingTestimonial':
     case 'MarketingFeatureGrid':
@@ -249,7 +260,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'InsuranceTransparency':
     case 'InsuranceFaq':
     case 'InsuranceAdvisorCta':
-      return <MarketingBlockRenderer blockType={layer.blockType} props={blockProps} layer={layer} />;
+      return <MarketingBlockRenderer blockType={layer.blockType} props={blockProps} layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
 
     // 2. SUB-BLOQUES DE ASESORA
     case 'HookAlertBadge':

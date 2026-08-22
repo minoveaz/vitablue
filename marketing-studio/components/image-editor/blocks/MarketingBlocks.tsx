@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { getBlockCatalogItem } from '../../../data/blockCatalog';
+import { InlineEditableText } from '../InlineEditableText';
 
 type BlockProps = Record<string, unknown>;
 
@@ -374,9 +375,87 @@ const InsuranceAdvisorCta: React.FC<{ props: BlockProps }> = ({ props }) => (
   </Frame>
 );
 
-export const MarketingBlockRenderer: React.FC<{ blockType?: ImageBlockType; props: BlockProps; layer?: ImageLayer }> = ({
+/**
+ * The catalog canvas representation is a CustomGroup made from these small
+ * parts. Keeping the parts in this module means the drawer and the canvas
+ * still use the same visual language while every editable child has its own
+ * layer bounds.
+ */
+const MarketingBlockPart: React.FC<{
+  props: BlockProps;
+  layer?: ImageLayer;
+  onUpdateLayerProps?: (layerId: string, patch: Record<string, unknown>) => void;
+}> = ({ props, layer, onUpdateLayerProps }) => {
+  const parentType = String(props.parentBlockType ?? '');
+  const part = String(props.part ?? '');
+  const value = text(props, 'text');
+  const editableValue = (
+    <InlineEditableText
+      text={value}
+      onSave={(nextValue) => layer && onUpdateLayerProps?.(layer.id, { text: nextValue })}
+      as="span"
+    />
+  );
+  const isDark = ['MarketingBrandHero', 'MarketingPromoCard', 'InsuranceProductHero', 'InsuranceAdvisorCta'].includes(parentType);
+  const backgroundClass = isDark
+    ? 'bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white'
+    : 'bg-white text-text-main';
+
+  if (part === 'background') {
+    return <div className={`h-full w-full ${backgroundClass} ${parentType === 'MarketingTestimonial' || parentType === 'MarketingPromoCard' || parentType === 'InsuranceProductCard' ? 'rounded-3xl' : ''}`} />;
+  }
+
+  const common = 'h-full w-full overflow-hidden';
+  if (part === 'eyebrow' || part === 'label' || part === 'tagline' || part === 'meta') {
+    return <p className={`${common} text-caption flex items-center font-black uppercase tracking-[0.14em] ${isDark ? 'text-brand-cyan' : 'text-primary'}`}>{editableValue}</p>;
+  }
+  if (part === 'title') {
+    return <h2 className={`${common} text-h2 flex items-center font-display font-black leading-tight ${isDark ? 'text-white' : 'text-text-main'}`}>{editableValue}</h2>;
+  }
+  if (part === 'description') {
+    return <p className={`${common} flex items-center text-body-reg font-medium leading-relaxed ${isDark ? 'text-slate-200' : 'text-text-secondary'}`}>{editableValue}</p>;
+  }
+  if (part === 'cta' || part === 'primaryAction') {
+    return <div className="flex h-full w-full items-center justify-center rounded-xl bg-accent px-3 text-center text-xs font-black text-primary-dark">{editableValue}<ArrowRight className="ml-1 size-3.5" /></div>;
+  }
+  if (part === 'secondaryAction') {
+    return <div className="flex h-full w-full items-center justify-center rounded-xl border border-white/20 px-3 text-center text-xs font-bold text-white">{editableValue}</div>;
+  }
+  if (part === 'stars') return <Stars value={Math.max(1, Math.min(5, Number(value) || 5))} />;
+  if (part === 'icon') {
+    return <div className="flex h-full w-full items-center justify-center rounded-xl bg-primary/10 text-lg font-black text-primary">{value}</div>;
+  }
+  if (part === 'badge') {
+    return <div className={`flex h-full w-full items-center justify-center rounded-full px-2 text-center text-[9px] font-black uppercase ${isDark ? 'bg-white/10 text-brand-cyan' : 'bg-primary/10 text-primary-dark'}`}>{editableValue}</div>;
+  }
+  if (part === 'feature' || part === 'features' || part === 'highlights' || part === 'providers') {
+    return <div className={`${common} flex flex-wrap content-center items-center gap-2 rounded-xl border border-primary/10 bg-primary/5 p-2 text-xs font-bold leading-relaxed ${isDark ? 'border-white/10 bg-white/5 text-slate-200' : 'text-text-secondary'}`}>{editableValue}</div>;
+  }
+  if (part === 'item' || part === 'plan') {
+    return <div className={`${common} rounded-2xl border border-primary/10 bg-primary/5 p-3 text-xs font-bold leading-relaxed ${isDark ? 'border-white/10 bg-white/5 text-slate-200' : 'text-text-main'}`}><CheckCircle2 className="mb-2 size-4 text-primary" />{editableValue}</div>;
+  }
+  if (part === 'inclusions' || part === 'exclusions') {
+    return <div className={`${common} rounded-2xl border border-slate-100 ${part === 'inclusions' ? 'bg-white' : 'bg-slate-50'} p-3 text-xs font-semibold leading-relaxed text-text-secondary`}><strong className="mb-2 block text-sm font-black text-text-main">{part === 'inclusions' ? 'Lo que SÍ incluye' : 'Lo que NO cubre'}</strong>{editableValue}</div>;
+  }
+  if (part === 'faq') {
+    return <div className={`${common} rounded-xl border border-slate-100 bg-white p-3 text-xs font-black text-text-main`}><CircleHelp className="mr-1 inline size-4 text-primary" />{editableValue}</div>;
+  }
+  if (part === 'price') {
+    return <div className="flex h-full w-full items-center justify-center rounded-xl bg-primary/10 text-xs font-black text-primary">{editableValue}</div>;
+  }
+  return <div className={`${common} flex items-center text-body-reg font-medium text-text-secondary`}>{value}</div>;
+};
+
+export const MarketingBlockRenderer: React.FC<{
+  blockType?: ImageBlockType;
+  props: BlockProps;
+  layer?: ImageLayer;
+  onUpdateLayerProps?: (layerId: string, patch: Record<string, unknown>) => void;
+}> = ({
   blockType,
   props,
+  layer,
+  onUpdateLayerProps,
 }) => {
   // Catalog defaults are the single source of truth for both the drawer and
   // canvas. They also make legacy layers with missing props render usefully.
@@ -386,6 +465,7 @@ export const MarketingBlockRenderer: React.FC<{ blockType?: ImageBlockType; prop
   };
 
   switch (blockType) {
+    case 'MarketingBlockPart': return <MarketingBlockPart props={resolvedProps} layer={layer} onUpdateLayerProps={onUpdateLayerProps} />;
     case 'MarketingBrandHero': return <MarketingBrandHero props={resolvedProps} />;
     case 'MarketingSectionIntro': return <MarketingSectionIntro props={resolvedProps} />;
     case 'MarketingTestimonial': return <MarketingTestimonial props={resolvedProps} />;

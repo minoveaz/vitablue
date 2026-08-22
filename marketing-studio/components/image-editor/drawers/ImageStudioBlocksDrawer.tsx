@@ -9,6 +9,7 @@ import {
 } from '../../../data/blockCatalog';
 import { ImageLayerBlockRenderer } from '../blocks';
 import { defaultMotionBrandTokens } from '../../../../packages/video-studio/src/motion-kit';
+import { createMarketingBlockGroup, isMarketingBlockType } from '../../../utils/imageEditorCore';
 
 export interface ImageStudioBlocksDrawerProps {
   onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
@@ -16,18 +17,24 @@ export interface ImageStudioBlocksDrawerProps {
 
 const BlockPreview: React.FC<{ block: BlockCatalogItem }> = ({ block }) => {
   const previewSize = block.defaultSize ?? { width: 420, height: 280 };
-  const layer: ImageLayer = {
-    id: `catalog-preview-${block.id}`,
-    type: 'block',
-    blockType: block.type,
-    title: block.name,
-    props: block.defaultProps,
-    position: { x: 50, y: 50 },
-    zIndex: 0,
-    scale: 1,
-    width: previewSize.width,
-    height: previewSize.height,
-  };
+  const layer: ImageLayer = isMarketingBlockType(block.type)
+    ? createMarketingBlockGroup(block.type, block.defaultProps, `catalog-preview-${block.id}`, {
+        width: previewSize.width,
+        height: previewSize.height,
+        position: { x: 50, y: 50 },
+      })
+    : {
+        id: `catalog-preview-${block.id}`,
+        type: 'block',
+        blockType: block.type,
+        title: block.name,
+        props: block.defaultProps,
+        position: { x: 50, y: 50 },
+        zIndex: 0,
+        scale: 1,
+        width: previewSize.width,
+        height: previewSize.height,
+      };
 
   return (
     <div

@@ -15,7 +15,12 @@ import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue }
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
-import { createCustomGroup, expandCustomGroup } from '../utils/imageEditorCore';
+import {
+  createCustomGroup,
+  createMarketingBlockGroup,
+  expandCustomGroup,
+  isMarketingBlockType,
+} from '../utils/imageEditorCore';
 import { appendImageProjectHistory } from '../utils/imageEditorHistory';
 import {
   applyLayerStyleVariant,
@@ -206,7 +211,17 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
         { width: oldW, height: oldH },
         { width: newW, height: newH },
         prev.layout?.defaultLayerConstraints
-      );
+      ).map((layer) => {
+        if (layer.blockType !== 'CustomGroup' || layer.props.relativeSpace !== 'group-percent') return layer;
+        return {
+          ...layer,
+          props: {
+            ...layer.props,
+            canvasWidth: newW,
+            canvasHeight: newH,
+          },
+        };
+      });
 
       const next: ImageProject = {
         ...prev,
@@ -504,36 +519,50 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, []);
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
-    setProject((prev) => {
-      const nextLayers = prev.layers.map((l) => {
-        if (l.id !== layerId || l.locked) return l;
+    const applyStandardProps = (layer: ImageLayer): ImageLayer => {
+      const updated: ImageLayer = { ...layer, props: { ...layer.props, ...patch } };
 
-        const updated: ImageLayer = {
-          ...l,
-          props: { ...l.props, ...patch },
-        };
+      if ('fill' in patch) updated.fill = patch.fill as string;
+      if ('color' in patch) updated.fill = patch.color as string;
+      if ('borderColor' in patch) updated.borderColor = patch.borderColor as string;
+      if ('stroke' in patch) updated.borderColor = patch.stroke as string;
+      if ('borderWidth' in patch) updated.borderWidth = patch.borderWidth as number;
+      if ('strokeWidth' in patch) updated.borderWidth = patch.strokeWidth as number;
+      if ('borderRadius' in patch) updated.borderRadius = patch.borderRadius as number;
+      if ('fontSize' in patch) updated.fontSize = patch.fontSize as number;
+      if ('fontWeight' in patch) updated.fontWeight = patch.fontWeight as string;
+      if ('fontFamily' in patch) updated.fontFamily = patch.fontFamily as string;
+      if ('align' in patch) updated.align = patch.align as 'left' | 'center' | 'right';
+      if ('textAlign' in patch) updated.align = patch.textAlign as 'left' | 'center' | 'right';
+      if ('letterSpacing' in patch) updated.letterSpacing = patch.letterSpacing as number;
+      if ('lineHeight' in patch) updated.lineHeight = patch.lineHeight as number;
+      if ('textEffect' in patch) updated.textEffect = patch.textEffect as 'none' | 'box' | 'stroke' | 'glow';
+      if ('boxColor' in patch) updated.boxColor = patch.boxColor as string;
+      if ('shadowPreset' in patch) updated.shadowPreset = patch.shadowPreset as ImageLayer['shadowPreset'];
+      return updated;
+    };
 
-        // Sincronizar propiedades estándar de capa si vienen en el patch
-        if ('fill' in patch) updated.fill = patch.fill as string;
-        if ('color' in patch) updated.fill = patch.color as string;
-        if ('borderColor' in patch) updated.borderColor = patch.borderColor as string;
-        if ('stroke' in patch) updated.borderColor = patch.stroke as string;
-        if ('borderWidth' in patch) updated.borderWidth = patch.borderWidth as number;
-        if ('strokeWidth' in patch) updated.borderWidth = patch.strokeWidth as number;
-        if ('borderRadius' in patch) updated.borderRadius = patch.borderRadius as number;
-        if ('fontSize' in patch) updated.fontSize = patch.fontSize as number;
-        if ('fontWeight' in patch) updated.fontWeight = patch.fontWeight as string;
-        if ('fontFamily' in patch) updated.fontFamily = patch.fontFamily as string;
-        if ('align' in patch) updated.align = patch.align as 'left' | 'center' | 'right';
-        if ('textAlign' in patch) updated.align = patch.textAlign as 'left' | 'center' | 'right';
-        if ('letterSpacing' in patch) updated.letterSpacing = patch.letterSpacing as number;
-        if ('lineHeight' in patch) updated.lineHeight = patch.lineHeight as number;
-        if ('textEffect' in patch) updated.textEffect = patch.textEffect as 'none' | 'box' | 'stroke' | 'glow';
-        if ('boxColor' in patch) updated.boxColor = patch.boxColor as string;
-        if ('shadowPreset' in patch) updated.shadowPreset = patch.shadowPreset as ImageLayer['shadowPreset'];
+    const patchNestedLayer = (layer: ImageLayer): { layer: ImageLayer; changed: boolean } => {
+      if (layer.id === layerId) {
+        return layer.locked ? { layer, changed: false } : { layer: applyStandardProps(layer), changed: true };
+      }
+      if (layer.blockType !== 'CustomGroup' || !Array.isArray(layer.props.childrenLayers)) {
+        return { layer, changed: false };
+      }
 
-        return updated;
+      let changed = false;
+      const childrenLayers = (layer.props.childrenLayers as ImageLayer[]).map((child) => {
+        const result = patchNestedLayer(child);
+        changed ||= result.changed;
+        return result.layer;
       });
+      return changed
+        ? { layer: { ...layer, props: { ...layer.props, childrenLayers } }, changed: true }
+        : { layer, changed: false };
+    };
+
+    setProject((prev) => {
+      const nextLayers = prev.layers.map((layer) => patchNestedLayer(layer).layer);
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
       return next;
@@ -1125,22 +1154,35 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     const borderWidth = typeof defaultProps?.strokeWidth === 'number' ? defaultProps.strokeWidth : (typeof defaultProps?.borderWidth === 'number' ? defaultProps.borderWidth : undefined);
     const borderRadius = typeof defaultProps?.borderRadius === 'number' ? defaultProps.borderRadius : undefined;
 
-    const newLayer: ImageLayer = {
-      id: `layer-${Date.now()}`,
-      type: 'block',
-      blockType,
-      title: initialTitle,
-      props: initialProps,
-      position: { x: 50, y: 50 },
-      zIndex: 999,
-      scale: 1,
-      width,
-      height,
-      fill,
-      borderColor,
-      borderWidth,
-      borderRadius,
-    };
+    const newLayer: ImageLayer = isMarketingBlockType(blockType)
+      ? createMarketingBlockGroup(
+          blockType,
+          initialProps,
+          `layer-${Date.now()}`,
+          {
+            width: width ?? 420,
+            height: height ?? 280,
+            position: { x: 50, y: 50 },
+            canvasWidth: project.preset.width,
+            canvasHeight: project.preset.height,
+          },
+        )
+      : {
+          id: `layer-${Date.now()}`,
+          type: 'block',
+          blockType,
+          title: initialTitle,
+          props: initialProps,
+          position: { x: 50, y: 50 },
+          zIndex: 999,
+          scale: 1,
+          width,
+          height,
+          fill,
+          borderColor,
+          borderWidth,
+          borderRadius,
+        };
 
     setProject((prev) => {
       const maxZ = prev.layers.reduce((max, l) => Math.max(max, l.zIndex ?? 0), 0);
@@ -1151,7 +1193,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       pushHistory(next);
       return next;
     });
-  }, [pushHistory]);
+  }, [project.preset.height, project.preset.width, pushHistory]);
 
   const addTextLayer = useCallback((preset?: Partial<TextPresetItem>) => {
     const canvasWidth = project.preset.width || 1080;

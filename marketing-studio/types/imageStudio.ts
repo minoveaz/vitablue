@@ -319,6 +319,8 @@ export type ImageBlockType =
   | 'InsuranceTransparency'
   | 'InsuranceFaq'
   | 'InsuranceAdvisorCta'
+  /** Internal editable children used by catalog marketing compositions. */
+  | 'MarketingBlockPart'
   | 'CustomText'
   | 'CustomGroup';
 
