@@ -121,6 +121,15 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
           </span>
         </div>
 
+        <button
+         type="button"
+         onClick={() => fileInputRef.current?.click()}
+         className="flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black text-white shadow-md shadow-primary/25 transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan active:scale-[0.98]"
+        >
+         <UploadCloud className="size-4" />
+         <span>Subir una imagen</span>
+        </button>
+
         {/* BUSCADOR */}
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" />
