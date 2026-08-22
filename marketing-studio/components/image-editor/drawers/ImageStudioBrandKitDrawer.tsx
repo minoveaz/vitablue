@@ -212,7 +212,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
   onAddBlock,
   onUpdateBackground,
 }) => {
-  const [logoTab, setLogoTab] = useState<'all' | 'highlights' | 'isotype' | 'horizontal' | 'vertical'>('all');
+  const [logoTab, setLogoTab] = useState<'all' | 'highlights' | 'isotype' | 'horizontal' | 'vertical' | 'colors' | 'backgrounds' | 'typography'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
@@ -312,6 +312,9 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
             { id: 'horizontal', label: 'Logotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'horizontal').length },
             { id: 'isotype', label: 'Isotipos', count: LOGO_PRESETS.filter((preset) => preset.category === 'isotype').length },
             { id: 'vertical', label: 'Apilados', count: LOGO_PRESETS.filter((preset) => preset.category === 'vertical').length },
+            { id: 'colors', label: 'Colores', count: BRAND_COLORS.length },
+            { id: 'backgrounds', label: 'Fondos y mallas', count: BRAND_BACKGROUNDS.length },
+            { id: 'typography', label: 'Tipografías', count: 2 },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -501,7 +504,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
         </div>
 
         {/* SECCIÓN B: PALETA DE COLORES OFICIALES */}
-        <div className="space-y-3 pt-4 border-t border-slate-800/80">
+        {(logoTab === 'all' || logoTab === 'colors') && <div className="space-y-3 pt-4 border-t border-slate-800/80">
           <span className="text-[11px] font-black uppercase tracking-wider text-slate-300 block px-1">
             Paleta de Colores Oficiales (Tokens)
           </span>
@@ -537,10 +540,10 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               );
             })}
           </div>
-        </div>
+        </div>}
 
         {/* SECCIÓN C: GRADIENTES Y MESH BACKGROUNDS */}
-        <div className="space-y-3 pt-4 border-t border-slate-800/80">
+        {(logoTab === 'all' || logoTab === 'backgrounds') && <div className="space-y-3 pt-4 border-t border-slate-800/80">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-black uppercase tracking-wider text-slate-300">
               Fondos & Mallas de Marca
@@ -567,10 +570,10 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               </button>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* SECCIÓN D: TIPOGRAFÍAS DE MARCA */}
-        <div className="space-y-2 pt-4 border-t border-slate-800/80">
+        {(logoTab === 'all' || logoTab === 'typography') && <div className="space-y-2 pt-4 border-t border-slate-800/80">
           <span className="text-[11px] font-black uppercase tracking-wider text-slate-300 block px-1">
             Tipografías Oficiales
           </span>
@@ -588,7 +591,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               <p className="text-[10px] text-slate-400">Párrafos, descripciones, sellos y botones CTA</p>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
