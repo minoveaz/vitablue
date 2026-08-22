@@ -38,6 +38,7 @@ export interface ImageEditorToolbarProps {
   onCopyToClipboard?: () => void;
   onExport: (format: 'png' | 'jpeg' | 'svg') => void;
   onSaveToDam: () => void;
+  onSendToVideoStudio?: () => void;
 }
 
 export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
@@ -57,6 +58,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   onCopyToClipboard,
   onExport,
   onSaveToDam,
+  onSendToVideoStudio,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
@@ -230,8 +232,11 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               </button>
 
               <Link
-                to="/backoffice/marketing-studio/generador-contenido"
-                onClick={() => setIsMoreMenuOpen(false)}
+                to="/backoffice/marketing-studio/generador-contenido?from=image-studio"
+                onClick={() => {
+                  onSendToVideoStudio?.();
+                  setIsMoreMenuOpen(false);
+                }}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors"
               >
                 <Video className="size-4 text-brand-cyan" />

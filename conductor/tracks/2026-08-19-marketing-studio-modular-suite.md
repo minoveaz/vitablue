@@ -250,10 +250,10 @@ Pendiente para cerrar P1:
   velocidad, volumen, focal point y object-fit.
 - [ ] Video Studio Míos: uploads, favoritos, recientes, colecciones, etiquetas y recursos
   compartidos por el equipo, inicialmente con caché local.
-- [ ] Enviar composiciones estáticas desde Image Studio a Video Studio; la
+- [~] Enviar composiciones estáticas desde Image Studio a Video Studio; la
   adaptación audiovisual a 1:1, 4:5, 9:16 y 16:9 se implementará allí,
   manteniendo escenas editables y sin convertir a imagen plana.
-- [ ] Definir el puente como un paquete de composición versionado: transferir
+- [x] Definir el puente como un paquete de composición versionado: transferir
   canvas, formato, fondo, capas, grupos, geometría, estilos, tokens y referencias
   a assets, conservando texto editable y logos protegidos.
 - [ ] Crear en Video Studio una escena inicial editable a partir del paquete,

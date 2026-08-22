@@ -9,6 +9,7 @@ import { ImageStudioInspector } from './components/image-editor/ImageStudioInspe
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
+import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import {
   LayoutTemplate,
   Type,
@@ -306,6 +307,10 @@ export const ImageStudio: React.FC = () => {
           onCopyToClipboard={handleCopyToClipboard}
           onExport={handleExport}
           onSaveToDam={handleSaveToDam}
+          onSendToVideoStudio={() => {
+            saveImageVideoHandoff(editor.project);
+            showToast('Composición enviada a Video Studio');
+          }}
         />
       }
       aside={
