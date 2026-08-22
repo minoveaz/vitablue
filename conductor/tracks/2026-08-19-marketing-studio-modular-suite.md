@@ -238,6 +238,15 @@ Pendiente para cerrar P1:
 - [ ] Incorporar versiones, carpetas, etiquetas, búsqueda, workspaces y permisos.
 - [ ] Mantener `localStorage` únicamente como caché offline o fallback temporal.
 
+#### Cierre del track — Bibliotecas de Elementos y Texto
+- [ ] Auditar y ampliar las bibliotecas Universal y Empresa de Elementos y Texto,
+  manteniendo scopes, categorías visuales, previews, licencias y colores neutros
+  para recursos universales.
+- [ ] Incorporar librerías externas seleccionadas (tipografías, iconos, patrones e
+  ilustraciones) con assets locales, metadatos de licencia y fallback seguro.
+- [ ] Validar la experiencia completa de navegación e inserción en móvil y
+  escritorio, incluyendo búsqueda, filtros, recientes, favoritos y estados vacíos.
+
 #### Fase 4 — Plantillas y bloques empresariales
 - [ ] Definir contratos tipados de bloques con campos editables, bloqueados y variantes por formato.
 - [ ] Añadir validación de branding, textos legales y compatibilidad con Brand Hub.
