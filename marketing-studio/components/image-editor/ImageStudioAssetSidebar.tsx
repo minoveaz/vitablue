@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import {
   Download,
   Film,
@@ -18,50 +18,9 @@ import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
 import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
 import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
+import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
-
-type BlockScope = 'system' | 'organization' | 'user';
-const BLOCKS = [
-  { id: 'hero-universal', name: 'Hero con titular y CTA', description: 'Composición de apertura con jerarquía y llamada a la acción.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Conversión' },
-  { id: 'benefits-universal', name: 'Beneficios en tres columnas', description: 'Bloque multicapa para presentar ventajas de forma escaneable.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
-  { id: 'steps-universal', name: 'Proceso en pasos', description: 'Recorrido visual numerado para explicar un proceso.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Procesos' },
-  { id: 'testimonial-universal', name: 'Testimonio con valoración', description: 'Cita, valoración y contexto preparados para editar.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'system' as BlockScope, category: 'Prueba social' },
-  { id: 'comparison-universal', name: 'Comparativa genérica', description: 'Dos alternativas enfrentadas con estructura editable.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'system' as BlockScope, category: 'Información' },
-  { id: 'legal-universal', name: 'Aviso legal estructurado', description: 'Jerarquía compacta para notas y condiciones.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'system' as BlockScope, category: 'Legal' },
-  { id: 'hero-company', name: 'Hero de seguro médico', description: 'Apertura VitaBlue orientada a captación de seguros.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Seguros' },
-  { id: 'saving-company', name: 'Bloque de ahorro', description: 'Propuesta de valor con ahorro y acción principal.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
-  { id: 'coverage-company', name: 'Comparador de coberturas', description: 'Comparación de coberturas de seguros.', type: 'MotionComparisonCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Comparación' },
-  { id: 'confidence-company', name: 'Banner de confianza VitaBlue', description: 'Prueba social y garantías de la marca.', type: 'MotionTrustBadge' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Confianza' },
-  { id: 'advisor-company', name: 'CTA de asesoría', description: 'Contacto directo con una asesora.', type: 'MotionAdvisorCard' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Captación' },
-  { id: 'providers-company', name: 'Bloque de aseguradoras asociadas', description: 'Marcas y proveedores integrados en una composición.', type: 'MotionProviderGrid' as ImageBlockType, scope: 'organization' as BlockScope, category: 'Seguros' },
-];
-
-const BlocksDrawer = ({ onAddBlock }: { onAddBlock: (type: ImageBlockType) => void }) => {
-  const [scope, setScope] = useState<BlockScope>('system');
-  const [category, setCategory] = useState('all');
-  const visible = useMemo(() => BLOCKS.filter((block) => block.scope === scope && (category === 'all' || block.category === category)), [scope, category]);
-  const categories = ['all', ...new Set(BLOCKS.filter((block) => block.scope === scope).map((block) => block.category))];
-  return (
-    <div className="space-y-3">
-      <nav className="grid grid-cols-3 gap-1.5">
-        {([['system', 'Universal'], ['organization', 'Empresa'], ['user', 'Míos']] as const).map(([id, label]) => (
-          <button key={id} type="button" onClick={() => { setScope(id); setCategory('all'); }} className={`rounded-lg border px-2 py-2 text-[10px] font-semibold ${scope === id ? 'border-brand-cyan/60 bg-primary/40 text-brand-cyan' : 'border-slate-700 text-slate-400'}`}>{label}</button>
-        ))}
-      </nav>
-      <div className="flex flex-wrap gap-1.5">
-        {categories.map((item) => <button key={item} type="button" onClick={() => setCategory(item)} className={`rounded-md border px-2 py-1 text-[9px] ${category === item ? 'border-brand-cyan/50 text-brand-cyan' : 'border-slate-800 text-slate-400'}`}>{item === 'all' ? 'Todos' : item}</button>)}
-      </div>
-      <div className="space-y-2">
-        {visible.map((block) => <button key={block.id} type="button" onClick={() => onAddBlock(block.type)} className="flex w-full items-start gap-3 rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left hover:border-primary transition-all">
-          <Sparkles className="mt-0.5 size-4 shrink-0 text-brand-cyan" />
-          <span><strong className="block text-xs text-slate-200">{block.name}</strong><span className="text-[10px] text-slate-400">{block.description}</span></span>
-        </button>)}
-        {!visible.length && <p className="rounded-xl border border-dashed border-slate-700 p-4 text-center text-[10px] text-slate-500">Aún no hay bloques guardados en este ámbito. Guarda una composición del lienzo para verla aquí.</p>}
-      </div>
-    </div>
-  );
-};
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -212,7 +171,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
 
       {/* 2. BLOQUES VISUALES DE MOTIONKIT */}
       {activeTab === 'blocks' && (
-        <BlocksDrawer onAddBlock={onAddBlock} />
+        <div className="-m-4 h-[calc(100vh-140px)]">
+          <ImageStudioBlocksDrawer onAddBlock={onAddBlock} />
+        </div>
       )}
 
       {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
