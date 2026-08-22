@@ -36,6 +36,16 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const categoryCounts = STOCK_CATEGORIES.reduce((counts, category) => {
+    counts.set(
+      category.id,
+      category.id === 'all'
+        ? CURATED_STOCK_PHOTOS.length
+        : CURATED_STOCK_PHOTOS.filter((photo) => photo.category === category.id).length,
+    );
+    return counts;
+  }, new Map<string, number>());
+
   // Filtrado de fotos
   const filteredPhotos = CURATED_STOCK_PHOTOS.filter((photo) => {
     const matchesCategory = selectedCategory === 'all' || photo.category === selectedCategory;
@@ -248,8 +258,10 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
                     : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
                 }`}
               >
-                <span className="text-sm">{cat.icon}</span>
-                <span className="truncate text-[10px] font-semibold">{cat.name}</span>
+                <span className="flex items-center justify-between gap-2">
+                  <span className="truncate text-[10px] font-semibold">{cat.name}</span>
+                  <span className="text-[9px] text-slate-500">{categoryCounts.get(cat.id) ?? 0}</span>
+                </span>
               </button>
             ))}
           </nav>
