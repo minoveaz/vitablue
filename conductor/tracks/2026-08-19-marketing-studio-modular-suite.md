@@ -240,8 +240,21 @@ Estado actual:
   inserción, adaptación, favoritos y persistencia local, sin API externa integrada.
 
 Pendiente para cerrar P1:
-- [ ] Convertir Audio en una biblioteca funcional con preview, duración, licencia, búsqueda, favoritos e inserción en timeline.
-- [ ] Completar Vídeo con selección de clips, preview reproducible, trim, duración, transiciones y sincronización de audio.
+- [ ] Convertir Audio & Vídeo en un módulo con navegación Audio, Vídeo y Míos.
+- [ ] Audio: catálogo de música, SFX y locuciones con preview reproducible,
+  duración, BPM, licencia, búsqueda, favoritos, recientes, recorte, volumen,
+  fade y sincronización en timeline.
+- [ ] Vídeo: clips stock/marca/subidos, fondos animados, loops y transiciones
+  con preview, duración, resolución, orientación, licencia, trim, velocidad,
+  volumen, focal point y object-fit.
+- [ ] Míos: uploads, favoritos, recientes, colecciones, etiquetas y recursos
+  compartidos por el equipo, inicialmente con caché local.
+- [ ] Adaptar audio/vídeo a 1:1, 4:5, 9:16 y 16:9 manteniendo capas editables;
+  permitir uso como fondo, capa o escena sin convertir a imagen plana.
+- [ ] Integrar con Video Studio conservando referencia al proyecto, duración,
+  campos aprobados, transiciones, audio y aspect ratio.
+- [ ] Validar codec, formato, peso, duración, licencia, restricciones y estados
+  de procesamiento; añadir límites seguros para uploads.
 - [x] Unificar Layout como sistema de constraints reutilizable entre formatos, no solo acciones puntuales del drawer.
 - [ ] Evolucionar Brand Kit más adelante: persistir un catálogo editable de
   Componentes de marca y convertir Reglas de uso en validaciones automáticas
