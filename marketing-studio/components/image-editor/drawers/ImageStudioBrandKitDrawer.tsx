@@ -483,7 +483,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
             </div>
           </div>
         )}
-        <div className="space-y-3">
+        {(logoTab === 'all' || logoTab === 'identity') && <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-black uppercase tracking-wider text-brand-cyan flex items-center gap-1">
               <Sparkles className="size-3" />
@@ -524,7 +524,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               </div>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* SECCIÓN B: PALETA DE COLORES OFICIALES */}
         {(logoTab === 'all' || logoTab === 'tokens') && <div className="space-y-3 pt-4 border-t border-slate-800/80">
