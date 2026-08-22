@@ -10,7 +10,6 @@ import {
   ImageProject,
   ImageStyleVariantId,
 } from '../../types/imageStudio';
-import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
 import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
 import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
@@ -18,6 +17,7 @@ import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
 import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
 import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
 import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
+import { ImageStudioTemplatesDrawer } from './drawers/ImageStudioTemplatesDrawer';
 import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
@@ -134,40 +134,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
       )}
 
       {/* 1. PLANTILLAS EN GRID DE 2 COLUMNAS (AMPLIO Y VISUAL) */}
-      {activeTab === 'templates' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400">
-              Plantillas Disponibles ({INITIAL_IMAGE_TEMPLATES.length})
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            {INITIAL_IMAGE_TEMPLATES.map((tmpl) => (
-              <button
-                key={tmpl.id}
-                type="button"
-                onClick={() => onLoadTemplate(tmpl)}
-                className="flex flex-col w-full rounded-2xl border border-slate-800 bg-slate-950 p-2.5 text-left hover:border-primary hover:bg-slate-900 transition-all group shadow-sm hover:shadow-md"
-              >
-                <div
-                  className="w-full h-24 rounded-xl border border-slate-700/40 flex items-center justify-center relative overflow-hidden shadow-inner mb-2"
-                  style={{ background: tmpl.background.gradient ?? '#001219' }}
-                >
-                  <span className="text-[9px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-xs border border-white/10">
-                    {tmpl.preset.aspectRatio}
-                  </span>
-                </div>
-                <strong className="block text-xs font-bold text-slate-100 group-hover:text-brand-cyan transition-colors truncate">
-                  {tmpl.title}
-                </strong>
-                <span className="text-[10px] text-slate-500 font-mono mt-0.5">
-                  {tmpl.preset.width} × {tmpl.preset.height} px
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {activeTab === 'templates' && <ImageStudioTemplatesDrawer onLoadTemplate={onLoadTemplate} />}
 
       {/* 2. BLOQUES VISUALES DE MOTIONKIT */}
       {activeTab === 'blocks' && (
