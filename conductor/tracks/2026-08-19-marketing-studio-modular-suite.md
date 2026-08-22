@@ -186,8 +186,8 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
   - **Gancho Titular & Alerta:** Titular de alto impacto con badge de advertencia.
 - [x] Motor de exportación directa en alta resolución:
   - Descarga instantánea en **PNG**, **JPEG** y **SVG** a 1080p para publicación directa en redes.
-- [x] Guardado directo como **Activo Reutilizable en Asset DAM** y botón "A Video Studio" para consumirlo en vídeos.
-- [x] Navegación unificada entre *Video Studio (Reels)* e *Image Studio (Canva)* con un solo clic.
+- [ ] Guardado directo como **Activo Reutilizable en Asset DAM** y consumo desde Video Studio; actualmente solo existe exportación/caché local.
+- [x] Navegación inicial entre *Video Studio (Reels)* e *Image Studio (Canva)*; queda pendiente el puente funcional de inserción.
 
 ### Roadmap recomendado para llevar Image Studio a nivel profesional
 
@@ -198,7 +198,7 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Separar cambios transitorios de interacción (drag/resize) de cambios confirmados para evitar historiales ruidosos.
 - [x] Añadir autosave recuperable, estado de guardado y recuperación ante errores mediante snapshot de recuperación en `localStorage`.
 - [x] Validar límites, solapamientos, capas fuera del canvas y datos incompletos.
-- [x] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia; la suite de Image Studio cubre 20 casos.
+- [x] Añadir pruebas unitarias del motor de transformaciones, agrupación, historial y persistencia; la suite focalizada cubre actualmente 47 casos.
 
 #### Fase 2 — Sistema de diseño profesional
 - [x] Reglas, guías, columnas, márgenes y safe zones por plataforma.
@@ -215,12 +215,12 @@ Esta arquitectura garantiza que la generación de contenido en VitaBlue sea un e
 - [x] Formas y conectores completos: curvas, arcos, conectores angulares y curvos, polígonos y estrellas paramétricos, blobs, corchetes y separadores decorativos.
 - [x] Renderer gráfico compartido entre previews del drawer y capas geométricas del canvas, con fallback explícito.
 - [x] Taxonomía P0 completa y tarjetas con preview, nombre, tipo, scope, licencia, compatibilidad Image/Video, estado e inserción estándar.
-- [x] Pruebas focalizadas de metadatos y renderizado de cada recurso, taxonomía, normalización, filtros y aislamiento multi-organización; typecheck y lint validados.
+- [x] Pruebas focalizadas de metadatos y renderizado de cada recurso, taxonomía, normalización, filtros y aislamiento multi-organización; typecheck validado.
 
 #### P1 — Audio, Vídeo, Layout y Marca (siguiente fase)
 Estado actual:
-- [x] Existe un drawer de Medios con inserción de imágenes, fotos de stock, asesoras y fondos.
-- [x] Existe un puente inicial hacia Video Studio/Remotion y un editor de vídeo con timeline, transporte y zonas seguras.
+- [x] Existe un drawer de Medios con inserción local de imágenes, fotos de stock, asesoras y fondos; fuentes externas, vídeo y DAM siguen pendientes.
+- [x] Existe un editor de vídeo local con timeline, transporte y zonas seguras; el puente Image Studio → Video Studio aún es visual.
 - [x] Existe un drawer de Layout con guías, safe zones, columnas, auto-layout, ajuste de texto y variantes.
 - [x] Layout quedó separado funcionalmente en Diseño, Organizar, Contenido y Estilo,
   con alineación, distribución, posición, z-order, agrupación, protección,
@@ -232,6 +232,12 @@ Estado actual:
   Componentes ofrece CTA, badge y tarjeta insertables; Reglas documenta criterios
   de área de seguridad, contraste, variantes y tipografía.
 - [x] El editor conserva composición al reemplazar imágenes y permite focal point, recorte y object-fit.
+- [x] Bloques dispone de catálogos Universal/Empresa, previews compartidas con canvas,
+  composiciones inspiradas en Styleguide y grupos editables con resize y desagrupado.
+- [x] Plantillas dispone de catálogos Universal/Empresa con composiciones neutrales
+  e independientes de Empresa, formatos y proporciones; Míos queda pendiente de persistencia.
+- [x] Copys con IA dispone de drawer Generar/Adaptar/Variantes/Míos con proveedor mock,
+  inserción, adaptación, favoritos y persistencia local, sin API externa integrada.
 
 Pendiente para cerrar P1:
 - [ ] Convertir Audio en una biblioteca funcional con preview, duración, licencia, búsqueda, favoritos e inserción en timeline.
@@ -242,6 +248,10 @@ Pendiente para cerrar P1:
   (contraste, fuentes, logos protegidos, área de seguridad y estados de aprobación).
 - [ ] Conectar Medios, Marca y Vídeo con scopes, reemplazo seguro, undo/redo y persistencia del proyecto.
 - [ ] Añadir pruebas de interacción y regresión visual para los cuatro módulos en móvil y escritorio.
+- [ ] Completar pruebas de interacción, responsive y regresión visual de drawers,
+  plantillas, bloques, Brand Kit y Copys con IA.
+- [ ] Persistir scopes Míos (plantillas, bloques y copys) y conectar catálogo,
+  permisos, versionado y favoritos con una fuente remota.
 
 #### Fase 3 — DAM real y multi-marca
 - [ ] Persistir proyectos, plantillas, assets y elementos reutilizables en Supabase.
