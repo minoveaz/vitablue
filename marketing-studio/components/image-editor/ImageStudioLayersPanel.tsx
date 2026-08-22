@@ -60,12 +60,17 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
   const [editingTitle, setEditingTitle] = useState<string>('');
   const [draggedLayerId, setDraggedLayerId] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [activePanel, setActivePanel] = useState<'organize' | 'layers'>('layers');
+  const [layerFilter, setLayerFilter] = useState<'all' | 'overlapping'>('all');
 
   // Ordenar capas de mayor zIndex a menor (arriba = al frente)
   const sortedLayers = [...project.layers].sort((a, b) => b.zIndex - a.zIndex);
 
   const allLocked = project.layers.length > 0 && project.layers.every((l) => Boolean(l.locked));
   const allVisible = project.layers.length > 0 && project.layers.every((l) => l.visible !== false);
+  const visibleLayers = layerFilter === 'overlapping' && selectedLayerIds.length > 1
+    ? sortedLayers.filter((layer) => selectedLayerIds.includes(layer.id))
+    : sortedLayers;
 
   const getLayerIcon = (layer: ImageLayer) => {
     switch (layer.blockType) {
@@ -152,6 +157,53 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
 
   return (
     <div className="flex flex-col space-y-2.5 select-none text-xs">
+    <div className="grid grid-cols-2 gap-1 border-b border-slate-800/80 pb-2">
+      {([
+        ['organize', 'Organizar'],
+        ['layers', 'Capas'],
+      ] as const).map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          aria-pressed={activePanel === id}
+          onClick={() => setActivePanel(id)}
+          className={`min-h-9 rounded-lg border px-3 text-xs font-semibold transition-colors ${
+            activePanel === id
+              ? 'border-brand-cyan/60 bg-primary/40 text-brand-cyan'
+              : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    {activePanel === 'organize' && (
+      <div className="space-y-2 border-b border-slate-800/80 pb-2">
+        <div className="grid grid-cols-2 gap-2">
+          {([
+            ['up', 'Adelante'],
+            ['down', 'Atrás'],
+          ] as const).map(([direction, label]) => (
+            <button
+              key={direction}
+              type="button"
+              disabled={!selectedLayerId}
+              onClick={() => selectedLayerId && onMoveZIndex(selectedLayerId, direction)}
+              className="min-h-9 rounded-lg border border-slate-700 bg-slate-900 px-2 text-xs text-slate-300 transition-colors hover:border-brand-cyan/60 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-500">
+          Selecciona una capa para cambiar su orden en el lienzo.
+        </p>
+      </div>
+    )}
+
+    {activePanel === 'layers' && (
+      <>
       {/* CABECERA CON ESTADÍSTICAS Y ACCIONES EN LOTE */}
       <div className="flex flex-col gap-2 pb-2 border-b border-slate-800/80">
         <div className="flex items-center justify-between px-1">
@@ -206,14 +258,33 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-900/70 p-1">
+        {([
+          ['all', 'Todas'],
+          ['overlapping', 'Superpuestas'],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={layerFilter === id}
+            onClick={() => setLayerFilter(id)}
+            className={`min-h-8 rounded-md px-2 text-[11px] font-semibold ${
+              layerFilter === id ? 'bg-slate-100 text-slate-950' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* LISTA ORDENADA DE CAPAS (CON DRAG & DROP NATIVO) */}
-      {sortedLayers.length === 0 ? (
+      {visibleLayers.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-800 p-6 text-center text-slate-500 text-xs">
           No hay capas en este lienzo. Añade un bloque desde la biblioteca.
         </div>
       ) : (
         <div className="space-y-1 max-h-[calc(100vh-340px)] overflow-y-auto pr-1 custom-scrollbar">
-          {sortedLayers.map((layer, index) => {
+          {visibleLayers.map((layer, index) => {
             const isSelected = selectedLayerId === layer.id || selectedLayerIds.includes(layer.id);
             const isEditing = editingLayerId === layer.id;
             const isLocked = Boolean(layer.locked);
@@ -383,6 +454,8 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
             );
           })}
         </div>
+      )}
+      </>
       )}
     </div>
   );
