@@ -33,18 +33,74 @@ const postBlocks = [...blogData.matchAll(/\{\s*slug:\s*'([^']+)'([\s\S]*?)\n\s*\
 const blogPostsRaw = postBlocks.map(([, slug, block]) => {
   const alternateMatch = block.match(/alternateSlug:\s*'([^']+)'/);
   const langMatch = block.match(/lang:\s*'([^']+)'/);
+  const dateMatch = block.match(/date:\s*'([^']+)'/);
+  const updatedAtMatch = block.match(/updatedAt:\s*'([^']+)'/);
   const isEn = langMatch ? langMatch[1] === 'en' : (slug.startsWith('student-visa-') || slug.startsWith('health-insurance-'));
+  
+  // Parse Spanish and English textual dates to YYYY-MM-DD
+  let isoDate = '2026-08-03';
+  const rawDate = (updatedAtMatch && updatedAtMatch[1]) || (dateMatch && dateMatch[1]);
+  if (rawDate) {
+    const months = {
+      'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
+      'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
+      'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06',
+      'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12'
+    };
+    const parts = rawDate.toLowerCase().split(/\s+/);
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0');
+      const month = months[parts[1]] || '08';
+      const year = parts[2];
+      isoDate = `${year}-${month}-${day}`;
+    }
+  }
+
   return {
     slug,
     lang: isEn ? 'en' : 'es',
     alternateSlug: alternateMatch ? alternateMatch[1] : undefined,
+    lastmod: isoDate,
   };
 });
+
+const routeLastmods = new Map();
+// Fechas de última actualización canónica para páginas de producto y landings clave
+const canonicalPageDates = {
+  '/': '2026-08-23',
+  '/en': '2026-08-23',
+  '/sobre-nosotros': '2026-08-15',
+  '/en/about-us': '2026-08-15',
+  '/contacto': '2026-08-10',
+  '/en/contact': '2026-08-10',
+  '/blog': '2026-08-23',
+  '/en/blog': '2026-08-23',
+  '/productos/seguros-salud': '2026-08-20',
+  '/productos/seguros-salud/seguro-medico-estudiantes': '2026-08-22',
+  '/en/health-insurance-student-visa-spain': '2026-08-22',
+  '/productos/seguros-salud/seguro-expatriados': '2026-08-20',
+  '/en/health-insurance-expatriates-spain': '2026-08-20',
+  '/productos/seguros-salud/seguro-nomadas-digitales': '2026-08-21',
+  '/en/digital-nomad-insurance-spain': '2026-08-21',
+  '/productos/seguros-salud/seguro-salud-extranjeros': '2026-08-18',
+  '/productos/seguros-salud/seguros-sanitas': '2026-08-18',
+  '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud': '2026-08-18',
+  '/productos/seguros-salud/seguros-sanitas/international-students': '2026-08-22',
+  '/productos/seguro-mascotas/sanitas-mascotas': '2026-08-15',
+  '/productos/seguro-para-decesos/asistencia-familiar': '2026-08-15',
+  '/productos/seguro-viaje': '2026-08-15',
+  '/productos/seguro-vida': '2026-08-15',
+};
+
+for (const [route, date] of Object.entries(canonicalPageDates)) {
+  routeLastmods.set(route, date);
+}
 
 for (const post of blogPostsRaw) {
   const isEn = post.lang === 'en';
   const path = `${isEn ? '/en' : ''}/blog/${post.slug}`;
   routeLocales.set(path, isEn ? 'en' : 'es');
+  routeLastmods.set(path, post.lastmod);
 
   if (post.alternateSlug) {
     const altIsEn = !isEn;
@@ -70,6 +126,7 @@ const createBlock = (route) => {
   const alternate = alternatesMap.get(route);
   const currentLocale = routeLocales.get(route) || (route.startsWith('/en') ? 'en' : 'es');
   const alternateLocale = currentLocale === 'en' ? 'es' : 'en';
+  const lastmod = routeLastmods.get(route) || today;
 
   const lines = [
     '  <url>',
@@ -84,7 +141,7 @@ const createBlock = (route) => {
     lines.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es${defaultHref}" />`);
   }
 
-  lines.push(`    <lastmod>${today}</lastmod>`);
+  lines.push(`    <lastmod>${lastmod}</lastmod>`);
   lines.push(`    <changefreq>${changefreq}</changefreq>`);
   lines.push(`    <priority>${priority}</priority>`);
   lines.push('  </url>');
