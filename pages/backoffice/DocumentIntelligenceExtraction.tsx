@@ -8,7 +8,6 @@ import {
   emptyIdentityDocumentFields,
   type DocumentExtractionResult,
   type IdentityDocumentFields,
-  type DocumentBoundingBoxes,
 } from '@/features/document-intelligence/types';
 import {
   normalizeIdentityDocumentDates,
@@ -55,7 +54,6 @@ const DocumentIntelligence: React.FC = () => {
   const [activeViewerSide, setActiveViewerSide] = useState<'front' | 'back'>('front');
   const [fields, setFields] = useState<IdentityDocumentFields>(emptyIdentityDocumentFields);
   const [rawFields, setRawFields] = useState<IdentityDocumentFields>(emptyIdentityDocumentFields);
-  const [boundingBoxes, setBoundingBoxes] = useState<DocumentBoundingBoxes | null>(null);
   const [activeHighlightField, setActiveHighlightField] = useState<FieldKey | null>(null);
   const [usage, setUsage] = useState<DocumentExtractionResult['usage'] | null>(null);
   const [rotation, setRotation] = useState(0);
@@ -95,7 +93,6 @@ const DocumentIntelligence: React.FC = () => {
       setStage(historyRecord.hasWarnings ? 'review-with-warnings' : 'review');
       setFields(normalizeIdentityDocumentDates(historyRecord.fields));
       setRawFields(normalizeIdentityDocumentDates(historyRecord.rawFields));
-      setBoundingBoxes(historyRecord.boundingBoxes ?? null);
       setUsage(historyRecord.usage ?? null);
     }
   }, [extractionId, isNewExtraction]);
@@ -126,7 +123,6 @@ const DocumentIntelligence: React.FC = () => {
     setPreviewUrl(URL.createObjectURL(next));
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
-    setBoundingBoxes(null);
     setActiveHighlightField(null);
     setActiveViewerSide('front');
     setUsage(null);
@@ -235,7 +231,6 @@ const DocumentIntelligence: React.FC = () => {
     setActiveViewerSide('front');
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
-    setBoundingBoxes(null);
     setActiveHighlightField(null);
     setUsage(null);
     setRotation(0);
@@ -347,9 +342,6 @@ const DocumentIntelligence: React.FC = () => {
       const normalizedRaw = normalizeIdentityDocumentDates(result.rawFields ?? result.fields);
       setFields(normalizedFields);
       setRawFields(normalizedRaw);
-      if (result.boundingBoxes && Object.keys(result.boundingBoxes).length > 0) {
-        setBoundingBoxes(result.boundingBoxes);
-      }
       if (result.usage) setUsage(result.usage);
       const warnings = getDocumentExtractionWarnings({
         ...result,
@@ -359,7 +351,7 @@ const DocumentIntelligence: React.FC = () => {
         fileName: file.name,
         fields: normalizedFields,
         rawFields: normalizedRaw,
-        boundingBoxes: result.boundingBoxes ?? null,
+        boundingBoxes: null,
         usage: result.usage ?? null,
         hasWarnings: warnings.length > 0,
       });
@@ -461,15 +453,6 @@ const DocumentIntelligence: React.FC = () => {
     }
   };
 
-  const handleSelectBoxField = (fieldKey: FieldKey) => {
-    setActiveHighlightField(fieldKey);
-    const inputElement = document.getElementById(`field-input-${fieldKey}`);
-    if (inputElement) {
-      inputElement.focus();
-      inputElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
-
   const handleFieldChange = (key: FieldKey, value: string | null) => {
     if (key === 'firstSurname') {
       const newSurnames = buildSurnames(value, fields.secondSurname);
@@ -554,9 +537,6 @@ const DocumentIntelligence: React.FC = () => {
       isPdf={isPdf}
       zoom={zoom}
       rotation={rotation}
-      boundingBoxes={boundingBoxes}
-      activeField={activeHighlightField}
-      onSelectField={handleSelectBoxField}
       onZoomIn={handleZoomIn}
       onZoomOut={handleZoomOut}
       onResetZoom={handleResetZoom}

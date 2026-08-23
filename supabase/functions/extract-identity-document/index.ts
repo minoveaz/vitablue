@@ -74,26 +74,6 @@ const extractionSchema = {
     birthplace: { type: 'STRING', nullable: true },
     address: { type: 'STRING', nullable: true },
     mrz: { type: 'STRING', nullable: true },
-    boundingBoxes: {
-      type: 'OBJECT',
-      description: 'Normalized 2D bounding box coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 scale for each field located on the image.',
-      properties: {
-        documentNumber: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        supportNumber: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        givenNames: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        surnames: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        firstSurname: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        secondSurname: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        birthDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        nationality: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        sex: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        issueDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        expiryDate: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        birthplace: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        address: { type: 'ARRAY', items: { type: 'INTEGER' } },
-        mrz: { type: 'ARRAY', items: { type: 'INTEGER' } },
-      },
-    },
   },
   required: ['documentType'],
 };
@@ -265,7 +245,7 @@ Deno.serve(async (request: Request) => {
     }
 
     parts.push({
-      text: 'Return the identity document extraction and exact boundingBoxes as the requested JSON schema. If two images are provided, they represent the Front and Back of the same identity document (such as Spanish DNI/NIE or residence card). Correlate both sides to extract names, numbers, supportNumber (IDESP / Support Number), address, birthplace, issueDate, expiryDate, and MRZ.'
+      text: 'Return the identity document extraction as the requested JSON schema. If two images are provided, they represent the Front and Back of the same identity document (such as Spanish DNI/NIE or residence card). Correlate both sides to extract names, numbers, supportNumber (IDESP / Support Number), address, birthplace, issueDate, expiryDate, and MRZ.'
     });
 
     const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiApiKey)}`, {
@@ -274,7 +254,7 @@ Deno.serve(async (request: Request) => {
       body: JSON.stringify({
         systemInstruction: {
           parts: [{
-            text: 'You are an expert identity document OCR and spatial analysis AI. Extract all visible identity fields (documentType, issuingCountry, documentNumber, supportNumber, fullName, givenNames, surnames, firstSurname, secondSurname, birthDate, nationality, sex, issueDate, expiryDate, birthplace, address, mrz). If an ID card has front and back, extract supportNumber (such as IDESP / Support Number) and address from the appropriate side. For each extracted field, YOU MUST ALSO extract its normalized 2D bounding box in boundingBoxes as an integer array [ymin, xmin, ymax, xmax] on a 0 to 1000 scale representing the exact visual bounding coordinates of the text on the document. Dates must use DD/MM/YYYY format. Never infer absent values, return null for unreadable fields.'
+            text: 'You are an expert identity document OCR and extraction AI. Extract all visible identity fields (documentType, issuingCountry, documentNumber, supportNumber, fullName, givenNames, surnames, firstSurname, secondSurname, birthDate, nationality, sex, issueDate, expiryDate, birthplace, address, mrz). If an ID card has front and back, extract supportNumber (such as IDESP / Support Number) and address from the appropriate side. Dates must use DD/MM/YYYY format. Never infer absent values, return null for unreadable fields.'
           }]
         },
         contents: [{ parts }],
