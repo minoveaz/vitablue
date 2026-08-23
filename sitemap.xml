@@ -4,15 +4,15 @@
   <url>
     <loc>https://www.vitablue.es/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />
     <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />
+    <loc>https://www.vitablue.es/en/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />
     <lastmod>2026-08-23</lastmod>
@@ -20,223 +20,223 @@
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/sobre-nosotros</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/sobre-nosotros" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/about-us" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/sobre-nosotros" />
+    <loc>https://www.vitablue.es/sobre-nosotros/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/sobre-nosotros/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/about-us/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/sobre-nosotros/" />
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/about-us</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/about-us" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/sobre-nosotros" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/sobre-nosotros" />
+    <loc>https://www.vitablue.es/en/about-us/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/about-us/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/sobre-nosotros/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/sobre-nosotros/" />
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/contacto</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/contacto" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/contact" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/contacto" />
+    <loc>https://www.vitablue.es/contacto/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/contacto/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/contact/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/contacto/" />
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/contact</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/contacto" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/contacto" />
+    <loc>https://www.vitablue.es/en/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/contact/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/contacto/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/contacto/" />
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud</loc>
+    <loc>https://www.vitablue.es/productos/seguros-salud/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/" />
     <lastmod>2026-08-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/health-insurance-student-visa-spain</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
+    <loc>https://www.vitablue.es/en/health-insurance-student-visa-spain/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/" />
     <lastmod>2026-08-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-expatriados</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/health-insurance-expatriates-spain</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+    <loc>https://www.vitablue.es/en/health-insurance-expatriates-spain/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
     <lastmod>2026-08-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/digital-nomad-insurance-spain</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
+    <loc>https://www.vitablue.es/en/digital-nomad-insurance-spain/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
     <lastmod>2026-08-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros</loc>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas</loc>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud</loc>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students</loc>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/</loc>
     <lastmod>2026-08-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas</loc>
+    <loc>https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar</loc>
+    <loc>https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguro-viaje</loc>
+    <loc>https://www.vitablue.es/productos/seguro-viaje/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/productos/seguro-vida</loc>
+    <loc>https://www.vitablue.es/productos/seguro-vida/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog" />
+    <loc>https://www.vitablue.es/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/" />
     <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/blog</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog" />
+    <loc>https://www.vitablue.es/en/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/" />
     <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana" />
+    <loc>https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
     <lastmod>2026-08-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana" />
+    <loc>https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie</loc>
+    <loc>https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie/</loc>
     <lastmod>2026-07-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/que-es-el-copago-seguro-salud</loc>
+    <loc>https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/</loc>
     <lastmod>2026-08-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico</loc>
+    <loc>https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud</loc>
+    <loc>https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud/</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana" />
+    <loc>https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana" />
+    <loc>https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
