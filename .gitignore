@@ -32,5 +32,8 @@ test-results/
 # misc
 *.local
 
+# analytics exports (Search Console, etc.)
+Search Console/
+
 playwright/.auth/
 packages/video-studio/out/
