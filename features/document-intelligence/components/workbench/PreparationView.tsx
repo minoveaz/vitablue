@@ -159,9 +159,9 @@ export const PreparationView: React.FC<{
   const backInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 md:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+    <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 md:grid-cols-12">
       {/* Columna Principal: Carga / Visor Unificado */}
-      <div className="flex min-w-0 flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-4 md:col-span-8">
         {!file && !backFile ? (
           /* Estado 1: Dropzone Inteligente Universal (1 o 2 archivos) */
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -356,7 +356,7 @@ export const PreparationView: React.FC<{
       </div>
 
       {/* Columna Lateral (35%): Guía Inicial o Metadata Predictiva tras la subida */}
-      <div className="flex min-w-0 flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-4 md:col-span-4">
         {file ? (
           /* Estado Activo: Metadata predictiva y Checklist de pre-vuelo */
           <>
