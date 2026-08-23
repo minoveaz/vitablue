@@ -1,66 +1,88 @@
-# 📊 Keyword Research & Brainstorming Transaccional — VitaBlue (Paso 2)
+# 📊 Master Keyword Research: Transaccionales & Long-Tail — VitaBlue 2026
 
-> **Documento Estratégico de Palabras Clave**  
-> Basado en el **Prompt #2** del método *SEO 2026 con IA* (Dani Llamazares).  
-> Prioriza keywords con **alta intención de contratación (transaccionales)** y términos **long-tail de 3+ palabras** para captar tráfico cualificado con alta tasa de conversión.
-
----
-
-## 🎯 Criterios de Clasificación de Intención de Búsqueda
-
-* **Transaccional (🔴 Alta Prioridad - Conversión Inmediata):** Búsquedas con intención explícita de contratar, calcular precio, obtener certificado o comprar un seguro específico.
-* **Consideración / Comercial (🟡 Media Prioridad - Comparación):** Búsquedas donde el usuario compara aseguradoras, busca los mejores precios o evalúa coberturas antes de decidirse.
-* **Informativa (🟢 Soporte & Tráfico Educativo):** Búsquedas sobre requisitos legales, trámites consulares, conceptos de seguros (copagos, carencias) que atraen usuarios en fase inicial para luego derivarlos al cotizador.
+> **Base de Datos Consolidada de Palabras Clave**  
+> Extraídas y normalizadas a partir de los 4 archivos CSV de Google Keyword Planner (2.758 keywords únicas analizadas).
 
 ---
 
-## 📋 Tabla Maestra de Keywords (35 Ideas Estratégicas)
+## 🏆 Resumen Global del Keyword Pool
 
-| # | Palabra Clave (Long-Tail) | Tipo de Intención | Cluster / Silo | Página Objetivo en VitaBlue |
-|---|---|---|---|---|
-| 1 | `seguro medico visado estudiante espana precio` | **Transaccional** | Estudiantes / Visados | `/productos/seguros-salud/seguro-medico-estudiantes/` |
-| 2 | `contratar seguro medico sin copagos extranjeros` | **Transaccional** | Visados / Extranjería | `/productos/seguros-salud/seguro-salud-extranjeros/` |
-| 3 | `sanitas international students contratar online` | **Transaccional** | Estudiantes / Sanitas | `/productos/seguros-salud/seguros-sanitas/international-students/` |
-| 4 | `certificado seguro medico visado estudiante 24h` | **Transaccional** | Estudiantes / Visados | `/blog/requisitos-seguro-medico-visado-estudiante-espana/` |
-| 5 | `seguro de salud para residencia no lucrativa` | **Transaccional** | Expatriados / RNL | `/productos/seguros-salud/seguro-expatriados/` |
-| 6 | `digital nomad health insurance spain buy` | **Transaccional** | Nómadas Digitales | `/en/digital-nomad-insurance-spain/` |
-| 7 | `seguro medico teletrabajadores extranjeros espana` | **Transaccional** | Nómadas Digitales | `/productos/seguros-salud/seguro-nomadas-digitales/` |
-| 8 | `student visa spain health insurance requirements` | **Transaccional** | Estudiantes (EN) | `/en/health-insurance-student-visa-spain/` |
-| 9 | `health insurance spain non lucrative visa sanitas` | **Transaccional** | Expatriados (EN) | `/en/health-insurance-expatriates-spain/` |
-| 10 | `seguro mascotas sanitas precio mensual` | **Transaccional** | Mascotas | `/productos/seguro-mascotas/sanitas-mascotas/` |
-| 11 | `contratar seguro decesos asistencia familiar online` | **Transaccional** | Decesos / Familia | `/productos/seguro-para-decesos/asistencia-familiar/` |
-| 12 | `seguro de viaje internacional con repatriacion` | **Transaccional** | Viajes | `/productos/seguro-viaje/` |
-| 13 | `seguro de vida vinculado a hipoteca barato` | **Transaccional** | Vida | `/productos/seguro-vida/` |
-| 14 | `cotizador seguro de salud sin registrarse` | **Transaccional** | Comparador General | `/wizard/` |
-| 15 | `comparador de seguros de salud sin llamadas` | **Transaccional** | Comparador General | `/` |
-| 16 | `sanitas mas salud precio por edad` | **Consideración** | Sanitas / Salud | `/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/` |
-| 17 | `mejor seguro medico para extranjeros en espana` | **Consideración** | Extranjería / Salud | `/productos/seguros-salud/seguro-salud-extranjeros/` |
-| 18 | `sanitas vs adeslas seguro visado estudiante` | **Consideración** | Comparativas / Blog | `/blog/sanitas-vs-adeslas-seguro-estudiantes/` |
-| 19 | `mejores seguros de salud privados espana comparativa` | **Consideración** | Hub Salud / Blog | `/productos/seguros-salud/` |
-| 20 | `seguro medico sin copago ni carencias precios` | **Consideración** | Salud General | `/productos/seguros-salud/` |
-| 21 | `seguros de salud sanitas opiniones y coberturas` | **Consideración** | Silo Sanitas | `/productos/seguros-salud/seguros-sanitas/` |
-| 22 | `seguro veterinario con reembolso 80 por ciento` | **Consideración** | Mascotas | `/productos/seguro-mascotas/sanitas-mascotas/` |
-| 23 | `seguro de salud para autonomos desgravacion irpf` | **Consideración** | Salud Autónomos | `/blog/seguro-salud-autonomos-ventajas-fiscales/` |
-| 24 | `sanitas para extranjeros sin nie ni cuenta bancaria` | **Consideración** | Extranjería / FAQ | `/productos/seguros-salud/seguro-salud-extranjeros/` |
-| 25 | `requisitos seguro medico visado estudiante espana` | **Informativa** | Blog / Guías | `/blog/requisitos-seguro-medico-visado-estudiante-espana/` |
-| 26 | `seguro medico residencia no lucrativa espana requisitos` | **Informativa** | Blog / Guías | `/blog/seguro-medico-residencia-no-lucrativa-espana/` |
-| 27 | `seguro de salud pareja de hecho nie requisitos` | **Informativa** | Blog / Guías | `/blog/seguro-de-salud-pareja-de-hecho-nie/` |
-| 28 | `que es el copago seguro salud y como funciona` | **Informativa** | Blog / Guías | `/blog/que-es-el-copago-seguro-salud/` |
-| 29 | `periodos de carencia seguro medico que cubre y que no` | **Informativa** | Blog / Guías | `/blog/periodos-de-carencia-seguro-medico/` |
-| 30 | `preexistencias medicas seguro salud como declararlas` | **Informativa** | Blog / Guías | `/blog/preexistencias-medicas-seguro-salud/` |
-| 31 | `como solicitar certificado consular seguro de salud` | **Informativa** | Blog / Guías | `/blog/como-obtener-certificado-seguro-consulado/` |
-| 32 | `que seguro medico exige la uge para nomadas digitales` | **Informativa** | Blog / Guías | `/blog/requisitos-seguro-salud-nomada-digital-uge/` |
-| 33 | `devolucion dinero seguro denegacion visado espana` | **Informativa** | Blog / Guías | `/blog/devolucion-seguro-por-denegacion-visado/` |
-| 34 | `diferencia seguro con copago y sin copago extranjeria` | **Informativa** | Blog / Guías | `/blog/copago-vs-sin-copago-visados-espana/` |
-| 35 | `spanish student visa health insurance english certificate` | **Informativa** | Blog EN | `/en/blog/student-visa-spain-health-insurance-requirements/` |
+* **Total Keywords Únicas Analizadas**: 2.758
+* **Keywords Transaccionales (Alta Intención de Compra)**: 1.021
+* **Keywords Long-Tail (3 palabras o más - Máxima Conversión y Baja Fricción)**: 2.475
 
 ---
 
-## 💡 Conclusiones Estratégicas del Paso 2
+## 1. 🎯 Top Keywords Transaccionales de Mayor Valor (Intención de Contratación Directa)
 
-1. **Intención Transaccional Dominante:**
-   Los usuarios de extranjería (estudiantes, nómadas, RNL) tienen prisa por presentar su expediente en el consulado y buscan términos transaccionales con palabras clave como `"precio"`, `"certificado"`, `"contratar online"`, `"sin copagos"`.
-2. **Oportunidad en Inglés (Bilingual Advantage):**
-   Las keywords en inglés (`digital nomad health insurance spain`, `student visa spain health insurance requirements`) tienen menor competencia directa en España y un alto CPC publicitario, lo que hace que el SEO orgánico bilingüe sea extraordinariamente rentable.
-3. **Puente Blog ➔ Transacción:**
-   Los artículos informativos deben resolver la duda en los primeros dos párrafos y colocar un CTA claro hacia la landing de producto o el wizard.
+Estas palabras clave indican que el usuario tiene el dinero en la mano o la necesidad urgente de resolver su visado / póliza:
+
+| Keyword | Tipo / Intención | Búsquedas Promedio / Mes | Rango CPC Sugerido |
+|---|---|---|---|
+| `seguros de salud sin copagos` | Transaccional (Exigencia legal) | 5.000 | 4,51€ - 10,80€ |
+| `seguro medico sin copago` | Transaccional (Exigencia legal) | 5.000 | 4,29€ - 10,16€ |
+| `seguro medico privado` | Transaccional (General) | 5.000 | 3,27€ - 8,38€ |
+| `adeslas seguro medico` | Transaccional / Marca | 5.000 | 2,83€ - 5,77€ |
+| `sanitas seguro medico` | Transaccional / Marca | 5.000 | 2,66€ - 6,56€ |
+| `seguro sanitas precio` | Transaccional / Precio | 5.000 | 2,15€ - 4,28€ |
+| `seguro adeslas precio` | Transaccional / Precio | 5.000 | 2,65€ - 5,09€ |
+| `sanitas precios` | Transaccional / Precio | 5.000 | 1,96€ - 3,21€ |
+| `seguro medico para extranjeros en españa` | Transaccional / Nicho | 500 | 2,30€ - 5,70€ |
+| `seguro medico españa para extranjeros` | Transaccional / Nicho | 500 | 2,30€ - 5,70€ |
+| `seguro medico internacional` | Transaccional / Extranjería | 500 | 1,68€ - 4,29€ |
+| `seguros de salud baratos` | Transaccional / Oportunidad | 500 | 4,93€ - 12,50€ |
+| `seguro medico visado españa` | Transaccional / Visados | 50 | 2,78€ - 4,07€ |
+| `seguro medico para residencia en españa` | Transaccional / Residencia | 50 | 2,50€ - 4,65€ |
+| `seguro medico para estudiantes extranjeros en españa` | Transaccional / Estudiantes | 50 (Pico: Jul-Oct) | 2,41€ - 6,45€ |
+| `seguro para estudiantes extranjeros en españa baratos` | Transaccional / Estudiantes | 50 (Pico: Jul-Oct) | 1,52€ - 4,93€ |
+| `seguro médico para estudiantes extranjeros en españa precios` | Transaccional / Estudiantes | 50 (Pico: Jul-Oct) | 1,62€ - 4,93€ |
+
+---
+
+## 2. 🎣 Top Keywords Long-Tail de Alta Precisión (3+ palabras, Fácil Posicionamiento)
+
+Las keywords Long-Tail son la clave del SEO en 2026 porque **los usuarios escriben frases completas en Google y preguntas en ChatGPT/Perplexity**:
+
+### 🎓 Cluster: Visado de Estudiante & Universidad
+1. `seguro medico para estudiantes extranjeros en españa`
+2. `seguro medico en españa para estudiantes extranjeros`
+3. `seguro para estudiantes extranjeros en españa baratos`
+4. `seguro médico para estudiantes extranjeros en españa precios`
+5. `requisitos seguro medico para visado de estudiante españa`
+6. `seguro de salud sin copagos para visado estudiante`
+7. `seguro medico sanitas para estudiantes internacionales`
+8. `seguro de salud con repatriacion para estudiantes extranjeros`
+9. `certificado de seguro medico para consulado de españa`
+10. `seguro medico estudiantes extranjeros barcelona / madrid`
+
+### 💻 Cluster: Nómada Digital & Residencia / NIE
+11. `seguro medico visa nomada digital españa ley startups`
+12. `seguro medico para extranjeros sin copago ni carencias`
+13. `seguro medico para tramites de extranjeria españa`
+14. `seguro de salud para solicitar el nie en españa`
+15. `seguro medico para renovacion del nie y tie`
+16. `seguro para residencia no lucrativa en españa`
+17. `seguro medico homologado para extranjeria en españa`
+18. `que seguro medico acepta el consulado de españa`
+19. `seguro de salud privado con cobertura de repatriacion`
+20. `seguro de salud para teletrabajo internacional uge`
+
+### 🛡️ Cluster: Comparativas de Salud & Precios
+21. `seguros de salud sin copagos ni periodos de carencia`
+22. `seguro medico privado sin copago con hospitalizacion`
+23. `sanitas mas salud para extranjeros precio y coberturas`
+24. `adeslas extranjeros completo sin copago precio mensual`
+25. `cual es el mejor seguro medico para extranjeros en españa`
+26. `calcular seguro medico online sin dejar numero de telefono`
+27. `comparar precios de seguros medicos para familias en españa`
+28. `seguro de salud para extranjeros mayores de 65 años`
+29. `seguro medico para reagrupacion familiar en españa`
+30. `seguro de viaje vs seguro medico para visado españa`
+
+---
+
+## 💡 Cómo se Aplican en los Siguientes Pasos
+
+1. **En el Paso 4 (Jerarquía H1-H3):** Inyectamos las keywords transaccionales directas en los encabezados principales.
+2. **En el Paso 5 (Contenido Copywriting):** Distribuimos las variantes semánticas y long-tail de forma natural en los párrafos.
+3. **En el Paso 6 (FAQs para LLMs):** Usamos las long-tail que empiezan por *“Qué”*, *“Cómo”* o *“Cuál”* para que la IA nos cite como fuente oficial.
