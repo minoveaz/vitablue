@@ -9,9 +9,6 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import type { DocumentBoundingBoxes } from '../../types';
-import type { FieldKey } from '../../fieldLabels';
-import { BoundingBoxOverlay } from './BoundingBoxOverlay';
 
 if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -24,9 +21,6 @@ export const DocumentViewer: React.FC<{
   isPdf: boolean;
   zoom: number;
   rotation: number;
-  boundingBoxes?: DocumentBoundingBoxes | null;
-  activeField?: FieldKey | null;
-  onSelectField?: (fieldKey: FieldKey) => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
@@ -39,9 +33,6 @@ export const DocumentViewer: React.FC<{
   isPdf,
   zoom,
   rotation,
-  boundingBoxes,
-  activeField,
-  onSelectField,
   onZoomIn,
   onZoomOut,
   onResetZoom,
@@ -112,8 +103,6 @@ export const DocumentViewer: React.FC<{
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
-
-  const effectiveBoundingBoxes = boundingBoxes ?? null;
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -324,11 +313,6 @@ export const DocumentViewer: React.FC<{
                   }}
                 />
               )}
-              <BoundingBoxOverlay
-                boundingBoxes={effectiveBoundingBoxes}
-                activeField={activeField}
-                onBoxClick={onSelectField}
-              />
             </div>
           </div>
         ) : (
