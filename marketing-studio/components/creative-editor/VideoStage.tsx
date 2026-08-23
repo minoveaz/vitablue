@@ -125,7 +125,9 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
       try {
         (stageRef.current as HTMLElement)?.setPointerCapture(e.pointerId);
-      } catch {}
+      } catch {
+        // Pointer capture may already have been released by the browser.
+      }
     }
   };
 
@@ -143,7 +145,9 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       setIsPanning(false);
       try {
         (stageRef.current as HTMLElement)?.releasePointerCapture(e.pointerId);
-      } catch {}
+      } catch {
+        // Pointer capture may already have been released by the browser.
+      }
     }
   };
 

@@ -152,7 +152,7 @@ export const SocialGenerator: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPlaying, currentFrame, totalFrames, selectedLayerId, activeScene]);
 
-  const handlePlayPause = () => {
+  function handlePlayPause() {
     const player = playerInstance || playerRef.current;
     if (!player) return;
     if (player.isPlaying()) {
@@ -166,7 +166,7 @@ export const SocialGenerator: React.FC = () => {
       player.play();
       setIsPlaying(true);
     }
-  };
+  }
 
   const handleRestart = () => {
     const player = playerInstance || playerRef.current;
@@ -175,19 +175,19 @@ export const SocialGenerator: React.FC = () => {
     setCurrentFrame(0);
   };
 
-  const handleSeek = (frame: number) => {
+  function handleSeek(frame: number) {
     const player = playerInstance || playerRef.current;
     if (!player) return;
     player.seekTo(frame);
     setCurrentFrame(frame);
-  };
+  }
 
   const handleSelectScene = (sceneId: string, startFrame: number) => {
     setActiveSlideId(sceneId);
     handleSeek(startFrame);
   };
 
-  const handleSplitAtPlayhead = () => {
+  function handleSplitAtPlayhead() {
     let accumulated = 0;
     const targetScene = scenes.find((s) => {
       const match = currentFrame >= accumulated && currentFrame < accumulated + s.durationInFrames;
@@ -199,7 +199,7 @@ export const SocialGenerator: React.FC = () => {
       const localFrame = currentFrame - accumulated;
       splitScene(targetScene.id, localFrame);
     }
-  };
+  }
 
   const handleExportMp4 = async () => {
     setIsExporting(true);
