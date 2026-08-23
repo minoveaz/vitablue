@@ -11,11 +11,6 @@ import {
   type DocumentBoundingBoxes,
 } from '@/features/document-intelligence/types';
 import {
-  clearDocumentFromStorage,
-  loadDocumentFromStorage,
-  saveDocumentToStorage,
-} from '@/features/document-intelligence/storage';
-import {
   normalizeIdentityDocumentDates,
   validateIdentityDocumentFields,
 } from '@/features/document-intelligence/validation';
@@ -43,24 +38,13 @@ import { ReviewView } from '@/features/document-intelligence/components/workbenc
 
 const maxDocumentBytes = 10 * 1024 * 1024; // 10MB
 const acceptedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-const extractionSessionStorageKey = 'vitablue.document-intelligence.session';
 
 type Stage = 'preparation' | 'processing' | 'error' | 'review' | 'review-with-warnings';
-
-interface PersistedExtractionSession {
-  stage: 'review' | 'review-with-warnings';
-  fields: IdentityDocumentFields;
-  rawFields: IdentityDocumentFields;
-  boundingBoxes?: DocumentBoundingBoxes | null;
-  fileName: string | null;
-  usage?: DocumentExtractionResult['usage'] | null;
-}
 
 const DocumentIntelligence: React.FC = () => {
   const { extractionId } = useParams<{ extractionId: string }>();
   const navigate = useNavigate();
   const isNewExtraction = !extractionId || extractionId === 'new';
-  const isStartingNewExtraction = extractionId === 'new';
   const { config: rulesConfig } = useRulesConfig();
   const [stage, setStage] = useState<Stage>('preparation');
   const [file, setFile] = useState<File | null>(null);
@@ -101,75 +85,20 @@ const DocumentIntelligence: React.FC = () => {
   };
 
   useEffect(() => {
-    let active = true;
-    const restore = async () => {
-      if (!isNewExtraction) {
-        const historyRecord = getExtractionHistoryRecord(extractionId);
-        if (!historyRecord) {
-          setNotFound(true);
-          return;
-        }
-        setNotFound(false);
-        setStage(historyRecord.hasWarnings ? 'review-with-warnings' : 'review');
-        setFields(normalizeIdentityDocumentDates(historyRecord.fields));
-        setRawFields(normalizeIdentityDocumentDates(historyRecord.rawFields));
-        setBoundingBoxes(historyRecord.boundingBoxes ?? null);
-        setUsage(historyRecord.usage ?? null);
-        const savedDoc = await loadDocumentFromStorage();
-        if (active && savedDoc?.name === historyRecord.fileName) {
-          setFile(savedDoc);
-          setPreviewUrl(URL.createObjectURL(savedDoc));
-        }
+    if (!isNewExtraction) {
+      const historyRecord = getExtractionHistoryRecord(extractionId);
+      if (!historyRecord) {
+        setNotFound(true);
         return;
       }
-
-      if (isStartingNewExtraction) {
-        await clearDocumentFromStorage();
-        sessionStorage.removeItem(extractionSessionStorageKey);
-        return;
-      }
-
-      const savedDoc = await loadDocumentFromStorage();
-      if (!active) return;
-      if (savedDoc) {
-        setFile(savedDoc);
-        setPreviewUrl(URL.createObjectURL(savedDoc));
-      }
-
-      const saved = isNewExtraction ? sessionStorage.getItem(extractionSessionStorageKey) : null;
-      if (!saved) return;
-      try {
-        const session = JSON.parse(saved) as PersistedExtractionSession;
-        if (session.stage !== 'review' && session.stage !== 'review-with-warnings') return;
-        setStage(session.stage);
-        setFields(normalizeIdentityDocumentDates(session.fields));
-        setRawFields(normalizeIdentityDocumentDates(session.rawFields ?? session.fields));
-        if (session.boundingBoxes) setBoundingBoxes(session.boundingBoxes);
-        if (session.usage) setUsage(session.usage);
-      } catch {
-        sessionStorage.removeItem(extractionSessionStorageKey);
-      }
-    };
-    restore();
-    return () => {
-      active = false;
-    };
-  }, [extractionId, isNewExtraction, isStartingNewExtraction]);
-
-  useEffect(() => {
-    if (stage !== 'review' && stage !== 'review-with-warnings') return;
-    sessionStorage.setItem(
-      extractionSessionStorageKey,
-      JSON.stringify({
-        stage,
-        fields,
-        rawFields,
-        boundingBoxes,
-        fileName: file?.name ?? null,
-        usage,
-      } satisfies PersistedExtractionSession),
-    );
-  }, [boundingBoxes, fields, file, rawFields, stage, usage]);
+      setNotFound(false);
+      setStage(historyRecord.hasWarnings ? 'review-with-warnings' : 'review');
+      setFields(normalizeIdentityDocumentDates(historyRecord.fields));
+      setRawFields(normalizeIdentityDocumentDates(historyRecord.rawFields));
+      setBoundingBoxes(historyRecord.boundingBoxes ?? null);
+      setUsage(historyRecord.usage ?? null);
+    }
+  }, [extractionId, isNewExtraction]);
 
   useEffect(
     () => () => {
@@ -195,7 +124,6 @@ const DocumentIntelligence: React.FC = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(next);
     setPreviewUrl(URL.createObjectURL(next));
-    saveDocumentToStorage(next);
     setFields(emptyIdentityDocumentFields());
     setRawFields(emptyIdentityDocumentFields());
     setBoundingBoxes(null);
@@ -265,7 +193,6 @@ const DocumentIntelligence: React.FC = () => {
     setPreviewUrl(backPreviewUrl);
     setBackFile(tempFile);
     setBackPreviewUrl(tempUrl);
-    saveDocumentToStorage(backFile);
     setNotice('Caras invertidas: Anverso ⇄ Reverso.');
   };
 
@@ -300,7 +227,6 @@ const DocumentIntelligence: React.FC = () => {
   const clear = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (backPreviewUrl) URL.revokeObjectURL(backPreviewUrl);
-    clearDocumentFromStorage();
     setStage('preparation');
     setFile(null);
     setBackFile(null);
@@ -316,7 +242,6 @@ const DocumentIntelligence: React.FC = () => {
     setZoom(1);
     setErrorMessage(null);
     setNotice('');
-    sessionStorage.removeItem(extractionSessionStorageKey);
   };
 
   const loadDemoDocument = () => {
@@ -385,7 +310,6 @@ const DocumentIntelligence: React.FC = () => {
       const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
       setFile(croppedFile);
       setPreviewUrl(URL.createObjectURL(blob));
-      saveDocumentToStorage(croppedFile);
     }
     setZoom(1);
     setCropOpen(false);
