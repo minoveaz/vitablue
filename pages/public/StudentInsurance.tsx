@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import {
   ShieldCheck, Clock, Award, GraduationCap
 } from 'lucide-react';
+import TravelVsHealthComparison from '../../components/organisms/TravelVsHealthComparison';
 import ProductProcessSection from '../../components/organisms/ProductProcessSection';
 import { useWizard } from '../../context/WizardContext';
 import ProductBreadcrumbBar from '../../components/organisms/ProductBreadcrumbBar';
@@ -56,90 +57,90 @@ export const StudentInsurance: React.FC = () => {
   void visaRequirements;
 
   const inclusions = isEnglish ? [
-    'Comprehensive healthcare including general medicine, specialties, and emergencies.',
-    '100% covered medical and surgical hospitalization.',
-    'Official repatriation guarantee to country of origin in case of illness/death.',
-    'Zero copays (access any medical consult with no additional fees).'
+    'Comprehensive healthcare including general medicine, specialized doctors, and 24/7 emergencies.',
+    '100% full hospital stay and medical/surgical hospitalizations with zero copays.',
+    'Official sanitary and funeraria repatriation to country of origin without insufficient caps.',
+    'Zero waiting periods for all diagnostic tests and immediate consular certificate emission.'
   ] : [
-    'Asistencia sanitaria completa en medicina general, especialidades y urgencias.',
-    'Hospitalización médica y quirúrgica al 100% de cobertura.',
-    'Garantía de repatriación sanitaria al país de origen en caso de fallecimiento o enfermedad grave.',
-    'Sin copagos (acceso a cualquier consulta médica sin pagar cargos adicionales).'
+    'Asistencia sanitaria completa en medicina general, especialistas y urgencias 24/7.',
+    'Hospitalización médica y quirúrgica al 100% de cobertura sin copagos ni franquicias.',
+    'Repatriación sanitaria y funeraria a tu país de origen sin límites insuficientes.',
+    'Sin periodos de carencia en consultas o pruebas y certificado oficial consular para el visado.'
   ];
 
   const exclusions = isEnglish ? [
-    'Aesthetic treatments, elective reconstructive medicine, and cosmetics.',
-    'Out-of-hospital prescription medications.',
-    'Pre-existing conditions not declared in the health questionnaire.',
-    'Complex dental treatments (such as implants or orthodontics).'
+    'Elective aesthetic treatments, cosmetic medicine, and non-essential surgery.',
+    'Out-of-hospital prescription pharmacy medications.',
+    'Pre-existing serious conditions not declared in the initial medical application.',
+    'Complex dental prosthetics or advanced orthodontics.'
   ] : [
-    'Tratamientos estéticos, medicina reconstructiva electiva y cosmética.',
-    'Medicamentos recetados fuera del ámbito hospitalario.',
-    'Patologías y lesiones preexistentes no declaradas en el cuestionario de salud.',
-    'Tratamientos dentales complejos (como implantes u ortodoncia).'
+    'Tratamientos estéticos voluntarios, medicina cosmética y cirugía no esencial.',
+    'Medicamentos de farmacia recetados fuera del ámbito de hospitalización.',
+    'Patologías y lesiones preexistentes graves no declaradas en la solicitud inicial.',
+    'Prótesis dentales complejas o tratamientos avanzados de ortodoncia.'
   ];
 
   const coverages = isEnglish ? [
     {
-      title: 'No Copays or Deductibles',
-      desc: 'Access consultations, tests, and surgeries without paying any extra cost, as strictly required by consular regulations.',
+      title: 'Zero Copays or Deductibles',
+      desc: 'Access GP, specialists, and surgeries with 0€ extra fees, as strictly required by Spanish immigration law (RD 557/2011).',
       illustration: MedicalAttentionIllustration
     },
     {
-      title: 'Sanitary Repatriation',
-      desc: 'Official and unlimited guarantee of medical transport to the country of origin due to serious illness or death.',
+      title: 'Zero Wait Times (From Day 1)',
+      desc: 'Immediate full access from day one to emergency care, complex diagnostics, and full hospital admission without waiting periods.',
+      illustration: PreventionIllustration
+    },
+    {
+      title: 'Sanitary & Funeral Repatriation',
+      desc: 'Official guarantee of medical transfer and repatriation of remains to your country of origin in case of accident or illness.',
       illustration: TravelIllustration
     },
     {
-      title: 'Emergencies & Hospitalization',
-      desc: '24/7 continuous medical emergency attention and 100% covered hospital stay expenses.',
-      illustration: HealthIllustration
+      title: 'Official Consular PDF Certificate',
+      desc: 'Official stamped certificate issued in Spanish with all required clauses ready to attach to your visa or NIE application.',
+      illustration: StudentIllustration
     },
     {
       title: 'National Medical Network',
-      desc: 'Direct access to over 50,000 specialist doctors and top-tier hospital networks (Quirón, Ruber, Vithas).',
-      illustration: StudentIllustration
-    },
-    {
-      title: 'Free Blua Digital Module',
-      desc: 'Medical video consultations in under 5 minutes, official e-prescriptions on your phone, and wellness plans.',
+      desc: 'Direct access to over 50,000 specialist doctors and top private hospitals in Madrid, Barcelona, Valencia and across Spain.',
       illustration: HealthIllustration
     },
     {
-      title: 'Zero Wait Times',
-      desc: 'Coverage active from day one for all emergency medical needs required for your visa approval.',
-      illustration: PreventionIllustration
+      title: 'Telemedicine & Digital Health App',
+      desc: 'Medical video consultations in under 5 minutes, official e-prescriptions on your smartphone, and 24/7 digital emergency support.',
+      illustration: HealthIllustration
     }
   ] : [
     {
-      title: 'Sin Copagos ni Franquicias',
-      desc: 'Acceso a consultas, análisis y cirugías sin pagar ningún coste adicional, tal como exige la normativa consular.',
+      title: 'Póliza 100% Sin Copagos ni Franquicias',
+      desc: 'Accede a consultas, análisis y cirugías sin pagar ningún coste adicional, tal como exige estrictamente la ley de extranjería (RD 557/2011).',
       illustration: MedicalAttentionIllustration
     },
     {
-      title: 'Repatriación Sanitaria',
-      desc: 'Garantía oficial e ilimitada de traslado sanitario al país de origen por enfermedad grave o fallecimiento del estudiante.',
+      title: 'Sin Periodos de Carencia (Día 1)',
+      desc: 'Cobertura completa desde el primer día en urgencias, pruebas diagnósticas y hospitalización médica o quirúrgica sin esperas.',
+      illustration: PreventionIllustration
+    },
+    {
+      title: 'Repatriación Sanitaria y Funeraria',
+      desc: 'Garantía obligatoria de traslado sanitario y repatriación de restos mortales a tu país de origen en caso de fallecimiento o accidente.',
       illustration: TravelIllustration
     },
     {
-      title: 'Urgencias y Hospitalización',
-      desc: 'Atención médica continuada de urgencia 24/7 y cobertura de ingreso hospitalario completo al 100% de los gastos.',
-      illustration: HealthIllustration
-    },
-    {
-      title: 'Cuadro Médico Nacional',
-      desc: 'Acceso directo a más de 50.000 médicos especialistas y red de hospitales de primer nivel (Quirón, Ruber, Vithas).',
+      title: 'Certificado Consular Oficial en 24h',
+      desc: 'Documento oficial sellado en español con las cláusulas exactas que exigen embajadas y oficinas de Extranjería para tu visado o NIE.',
       illustration: StudentIllustration
     },
     {
-      title: 'Blua Digital Gratis',
-      desc: 'Videoconsultas médicas en menos de 5 minutos, receta electrónica oficial en el móvil y planes preventivos incluidos.',
+      title: 'Cuadro Médico Nacional Completo',
+      desc: 'Acceso directo a más de 50.000 médicos especialistas y a los mejores hospitales privados de Madrid, Barcelona, Valencia y toda España.',
       illustration: HealthIllustration
     },
     {
-      title: 'Sin Períodos de Carencia',
-      desc: 'Coberturas activas desde el primer día para todas las necesidades médicas de urgencia requeridas para tu visado.',
-      illustration: PreventionIllustration
+      title: 'Telemedicina y Videoconsultas en App',
+      desc: 'Consultas médicas online en menos de 5 minutos, receta electrónica oficial en el móvil y urgencias 24/7 sin desplazarte.',
+      illustration: HealthIllustration
     }
   ];
 
@@ -515,9 +516,30 @@ export const StudentInsurance: React.FC = () => {
 
       <CoverageGrid
         eyebrow={isEnglish ? 'Consular Requirements' : 'Requisitos Consulares'}
-        title={isEnglish ? 'Official Health Insurance Requirements' : 'Requisitos Oficiales del Seguro Médico'}
-        description={isEnglish ? 'All our selected policies strictly comply with the Spanish immigration law for your absolute peace of mind.' : 'Todas nuestras pólizas seleccionadas cumplen estrictamente la ley de extranjería española para tu absoluta tranquilidad.'}
+        title={isEnglish ? 'Official Health Insurance Requirements' : 'Requisitos Oficiales del Seguro Médico que Exige el Consulado y Extranjería'}
+        description={isEnglish ? 'All our selected policies strictly comply with the Spanish immigration law (RD 557/2011) for your absolute peace of mind.' : 'En VitaBlue todas nuestras pólizas están preconfiguradas para cumplir estrictamente la ley de extranjería (RD 557/2011) y asegurar la aprobación de tu visado.'}
         items={coverages.map(({ title, desc, illustration }) => ({ title, description: desc, illustration }))}
+      />
+
+      {/* Critical Differentiation: Travel vs Health Insurance */}
+      <TravelVsHealthComparison
+        eyebrow={isEnglish ? 'Crucial Difference' : 'Diferenciación Crítica'}
+        title={isEnglish ? 'Why Standard Travel Insurance is NOT Valid for Student Visas' : '¿Por Qué NO Sirve un Seguro de Viaje para el Visado de Estudios?'}
+        description={isEnglish ? 'One of the most frequent mistakes made by international students is purchasing a generic travel assistance policy.' : 'Uno de los errores más comunes de los estudiantes internacionales es contratar un seguro de viaje genérico por ser aparentemente más económico.'}
+        alertNotice={isEnglish ? '⚠️ Spanish Consulates (especially in Mexico, Colombia, Peru, Argentina, Ecuador, and the US) systematically reject standard travel insurance for long-term study visas and NIE cards.' : '⚠️ Los consulados de España (especialmente en Colombia, México, Perú, Argentina, Ecuador y EE.UU.) rechazan sistemáticamente los seguros de viaje para estancias académicas y tarjetas TIE/NIE.'}
+        travelLabel={isEnglish ? 'Standard Travel Insurance' : 'Seguro de Asistencia en Viaje'}
+        healthLabel={isEnglish ? 'Compliant Health Insurance (VitaBlue)' : 'Seguro Médico de Salud (VitaBlue)'}
+        items={isEnglish ? [
+          { feature: 'Coverage Type', travel: 'Emergency assistance only with low financial limits (e.g. max €30,000).', health: 'Unlimited full healthcare coverage, surgeries, and comprehensive hospital stay.' },
+          { feature: 'Consular Validity', travel: 'Rejected by consulates and Spanish immigration offices.', health: '100% accepted and approved under Spanish Royal Decree 557/2011.' },
+          { feature: 'How it Works', travel: 'Deferred reimbursement (you must pay upfront from your pocket).', health: 'Direct access with zero out-of-pocket expenses to private hospital networks.' },
+          { feature: 'Certificate', travel: 'Standard receipt without mandatory consular legal clauses.', health: 'Official Certificate in Spanish stamped and signed by authorized insurer.' },
+        ] : [
+          { feature: 'Tipo de Cobertura', travel: 'Solo cubre urgencias puntuales con límites económicos estrictos (ej. hasta 30.000€).', health: 'Cobertura médica ilimitada, especialistas, cirugías y hospitalización completa.' },
+          { feature: 'Validez Legal Consular', travel: 'Rechazado sistemáticamente por consulados y oficinas de Extranjería.', health: '100% homologado y aceptado bajo el Real Decreto 557/2011.' },
+          { feature: 'Forma de Pago Médico', travel: 'Reembolso diferido (tienes que pagar tú primero de tu propio bolsillo).', health: 'Acceso directo con tarjeta médica en hospitales privados sin adelantar dinero.' },
+          { feature: 'Certificado de Póliza', travel: 'Recibo genérico que no incluye las cláusulas obligatorias de extranjería.', health: 'Certificado Consular Oficial sellado y firmado por la aseguradora en 24h.' },
+        ]}
       />
 
       {/* Plans List section */}
@@ -535,25 +557,25 @@ export const StudentInsurance: React.FC = () => {
 
       {/* How to hire in 4 steps Onboarding timeline */}
       <ProductProcessSection
-        eyebrow={isEnglish ? 'Process' : 'Proceso'}
-        title={isEnglish ? 'How to apply in 4 steps' : 'Cómo contratar en 4 pasos'}
-        description={isEnglish ? '100% online process, fast and secure with the personalized assistance of VitaBlue.' : 'Proceso 100% online, rápido y seguro con el acompañamiento personalizado de VitaBlue.'}
+        eyebrow={isEnglish ? 'Simple Process' : 'Contratación Sencilla'}
+        title={isEnglish ? 'How to Contract Online in 4 Steps (From Your Home Country)' : 'Cómo Contratar tu Seguro de Estudiante Online en 4 Pasos (Desde tu País)'}
+        description={isEnglish ? '100% digital process without requiring a NIE, Spanish bank account, or physical presence in Spain.' : 'Proceso 100% digital sin necesidad de NIE previo, cuenta bancaria en España ni presencia física previa.'}
         steps={[
           {
-            title: isEnglish ? 'Fill in the form' : 'Rellena el formulario',
-            description: isEnglish ? 'Enter your age, arrival date in Spain, and select your ideal insurer in our comparator.' : 'Introduce tu edad, fecha de llegada a España y selecciona tu aseguradora ideal en nuestro comparador.'
+            title: isEnglish ? 'Step 1: Choose insurer & stay dates' : 'Paso 1: Elige aseguradora y fechas',
+            description: isEnglish ? 'Select your preferred company (ASISA, Sanitas, Adeslas) and specify your course start and end dates.' : 'Selecciona tu aseguradora preferida (ASISA, Sanitas, Adeslas) e indica la fecha de inicio y duración de tu estancia.'
           },
           {
-            title: isEnglish ? 'Choose payment' : 'Elige forma de pago',
-            description: isEnglish ? 'Monthly or annual payment; we will show you applicable discounts and current promotions.' : 'Pago mensual o pago anual; te indicamos los descuentos aplicables y la promoción de cuota vigente.'
+            title: isEnglish ? 'Step 2: Enter details with your Passport' : 'Paso 2: Datos solo con Pasaporte (Sin NIE)',
+            description: isEnglish ? 'No Spanish NIE or residence card needed. Simply complete the form using your valid passport number.' : 'No necesitas NIE ni trámites complejos. Rellena tus datos personales utilizando tu número de pasaporte vigente.'
           },
           {
-            title: isEnglish ? 'Health questionnaire' : 'Cuestionario de salud',
-            description: isEnglish ? 'Complete a short digital medical questionnaire required for immediate student policy issuance.' : 'Completa un breve cuestionario digital necesario para la emisión inmediata de tu póliza de estudiante.'
+            title: isEnglish ? 'Step 3: Secure international online payment' : 'Paso 3: Pago seguro online internacional',
+            description: isEnglish ? 'Pay quickly with international credit/debit card (Visa, Mastercard) with zero hidden transaction fees.' : 'Paga con tarjeta de crédito/débito internacional (Visa, Mastercard) o transferencia sin comisiones ocultas.'
           },
           {
-            title: isEnglish ? 'Get your policy' : 'Recibe tu póliza',
-            description: isEnglish ? 'Get your official coverage certificate in PDF in 24 business hours, ready to present at the consulate.' : 'Obtén tu certificado oficial de cobertura en PDF en 24h laborales, listo para presentar en el consulado.'
+            title: isEnglish ? 'Step 4: Download your consular PDF certificate' : 'Paso 4: Descarga tu certificado consular en PDF',
+            description: isEnglish ? 'Receive your official certificate in PDF in <24 hours in your inbox and WhatsApp, ready for the consulate.' : 'Recibe en menos de 24 horas tu certificado oficial firmado en PDF en tu correo y WhatsApp, listo para el visado.'
           }
         ]}
       />
