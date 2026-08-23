@@ -43,7 +43,10 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
   const activePreset = geometryPreset ?? SUITE_SHELL_MODE_PRESETS[mode].canvasGeometry;
   const geometryClass = SUITE_CANVAS_GEOMETRY_CLASSES[activePreset.geometry];
   const paddingClass = SUITE_CANVAS_PADDING_CLASSES[activePreset.padding];
-  const isFullBleed = activePreset.geometry === 'full-bleed' || activePreset.geometry === 'split';
+  const isFullBleed =
+    activePreset.geometry === 'full-bleed' ||
+    activePreset.geometry === 'split' ||
+    mode === 'workspace';
 
   return (
     <div

@@ -109,11 +109,11 @@ export const SUITE_SHELL_MODE_PRESETS: Record<SuiteCanvasMode, SuiteShellModePre
   workspace: {
     canvasGeometry: {
       mode: 'workspace',
-      geometry: 'bounded',
+      geometry: 'wide',
       columns: 12,
       mobileColumns: 4,
-      maxWidth: 'bounded',
-      padding: 'comfortable',
+      maxWidth: 'wide',
+      padding: 'compact',
       gap: 'md',
       overflowX: 'hidden',
       overflowY: 'canvas',

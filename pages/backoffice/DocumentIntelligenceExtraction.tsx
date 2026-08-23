@@ -647,7 +647,7 @@ const DocumentIntelligence: React.FC = () => {
       title="Document Intelligence"
       eyebrow="Operaciones documentales"
       breadcrumbs={['Tools', 'Document Intelligence']}
-      mode="split"
+      mode="workspace"
       showState={false}
       actionsSlot={
         <Link
