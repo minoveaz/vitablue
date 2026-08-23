@@ -680,7 +680,12 @@ const DocumentIntelligence: React.FC = () => {
   );
 
   return (
-    <BackofficeShell title="Document Intelligence" eyebrow="Operaciones documentales">
+    <BackofficeShell
+      title="Document Intelligence"
+      eyebrow="Operaciones documentales"
+      breadcrumbs={['Tools', 'Document Intelligence']}
+      mode="split"
+    >
       <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
         {/* Sub-navegación de Módulo: Workbench vs Reglas vs Perfiles */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
