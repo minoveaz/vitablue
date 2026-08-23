@@ -17,6 +17,7 @@ export interface ModuleHeaderProps {
   stateLabel?: string;
   rightSlot?: React.ReactNode;
   actionsSlot?: React.ReactNode;
+  showState?: boolean;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
   stateLabel,
   rightSlot,
   actionsSlot,
+  showState = true,
   className = '',
 }) => {
   const actions = rightSlot ?? actionsSlot;
@@ -102,7 +104,7 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
-        {renderStateBadge()}
+        {showState && renderStateBadge()}
         {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
     </header>

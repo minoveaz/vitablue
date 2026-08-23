@@ -147,6 +147,7 @@ export interface BackofficeShellProps {
   navigationMode?: 'expanded' | 'rail' | 'hidden';
   onNavigationModeChange?: (mode: 'expanded' | 'rail') => void;
   hideModuleHeader?: boolean;
+  showState?: boolean;
 }
 
 const BackofficeShell: React.FC<BackofficeShellProps> = ({
@@ -169,6 +170,7 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
   navigationMode = 'expanded',
   onNavigationModeChange,
   hideModuleHeader = false,
+  showState = true,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -215,6 +217,7 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
               breadcrumbs={breadcrumbs.length > 0 ? breadcrumbs : [eyebrow, title]}
               state={state}
               stateLabel={stateLabel}
+              showState={showState}
               actionsSlot={actionsSlot}
             />
           ) : undefined

@@ -1,11 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import {
-  Plus,
-  Trash2,
-  X,
-  Zap,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import BackofficeShell from '@/components/layouts/BackofficeShell';
 import { extractDocumentWithTimeout } from '@/features/document-intelligence/extraction';
 import { uploadAndExtractDualDocument } from '@/features/document-intelligence/supabase-service';
@@ -647,81 +642,23 @@ const DocumentIntelligence: React.FC = () => {
     />
   );
 
-  const isSessionActive = Boolean(file || stage !== 'preparation');
-
-  const header = (
-    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-3.5">
-      <div>
-        <div className="flex items-center gap-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">{`{Document workspace}`}</p>
-          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
-            {stage === 'preparation'
-              ? 'Paso 1 de 2: Carga y Preparación'
-              : stage === 'processing'
-                ? 'Procesando con IA...'
-                : 'Paso 2 de 2: Revisión y Validación'}
-          </span>
-          {usage && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-              <Zap className="size-3" /> {usage.totalTokens.toLocaleString('es-ES')} tokens · $
-              {usage.estimatedCostUsd.toFixed(4)}
-            </span>
-          )}
-        </div>
-        <h2 className="mt-1 font-display text-h2 font-black text-slate-900">
-          {stage === 'preparation'
-            ? 'Preparar documento'
-            : stage === 'processing'
-              ? 'Procesando documento'
-              : stage === 'error'
-                ? 'No se pudo procesar el documento'
-                : 'Revisión y validación de identidad'}
-        </h2>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {stage !== 'preparation' && stage !== 'processing' && (
-          <button
-            type="button"
-            onClick={startNewExtraction}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-xs font-black text-white shadow-sm transition-colors hover:bg-primary-dark"
-          >
-            <Plus className="size-4" /> Extraer nuevo documento
-          </button>
-        )}
-        {isSessionActive && stage !== 'processing' && (
-          <button
-            type="button"
-            onClick={clear}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:border-red-200 hover:text-red-600"
-          >
-            <Trash2 className="size-4" /> Limpiar sesión
-          </button>
-        )}
-      </div>
-    </header>
-  );
-
   return (
     <BackofficeShell
       title="Document Intelligence"
       eyebrow="Operaciones documentales"
       breadcrumbs={['Tools', 'Document Intelligence']}
       mode="split"
+      showState={false}
+      actionsSlot={
+        <Link
+          to="/backoffice/tools/document-intelligence/extraccion"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 transition-colors hover:border-primary hover:text-primary"
+        >
+          ← Historial de extracciones
+        </Link>
+      }
     >
       <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
-          <Link
-            to="/backoffice/tools/document-intelligence/extraccion"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary"
-          >
-            ← Historial de extracciones
-          </Link>
-          {isSessionActive && (
-            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
-              Sesión activa: {file?.name ?? 'Documento'}
-            </span>
-          )}
-        </div>
         {notFound ? (
           <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
             <h2 className="text-h3 text-slate-900">Extracción no encontrada</h2>
@@ -735,7 +672,6 @@ const DocumentIntelligence: React.FC = () => {
           </div>
         ) : (
           <>
-            {header}
             {notice && (
               <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3.5 py-2 text-xs font-medium text-slate-800">
                 <span className="truncate">{notice}</span>
