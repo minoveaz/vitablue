@@ -781,7 +781,7 @@ const Review: React.FC<{
               <button
                 type="button"
                 aria-label={`Copiar ${label}`}
-                onClick={() => copy(fields[key], label)}
+                onClick={() => copy(fields[key] ?? null, label)}
                 className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-primary"
               >
                 <Clipboard className="size-4" />

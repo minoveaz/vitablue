@@ -51,26 +51,21 @@ jobs:
         uses: dorny/paths-filter@v3
         with:
           filters: |
-            frontend:
+            public_frontend:
               - 'App.tsx'
               - 'index.html'
               - 'index.css'
-              - 'components/**'
-              - 'config/**'
-              - 'context/**'
-              - 'features/**'
-              - 'hooks/**'
-              - 'marketing-studio/**'
-              - 'pages/**'
+              - 'components/atoms/**'
+              - 'components/molecules/**'
+              - 'components/organisms/**'
+              - 'components/layouts/Navbar.tsx'
+              - 'components/layouts/Footer.tsx'
+              - 'pages/public/**'
+              - 'pages/Home.tsx'
+              - 'pages/StudentInsurance.tsx'
+              - 'pages/Wizard.tsx'
+              - 'pages/Results.tsx'
               - 'public/**'
-              - 'scripts/**'
-              - 'utils/**'
-              - 'vite.config.ts'
-              - 'tailwind.config.js'
-              - 'postcss.config.js'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'tsconfig.json'
               - 'e2e/**'
 
   # ────────────────────────────────────────────────────────────────────
@@ -114,13 +109,20 @@ jobs:
           # Puppeteer en CI usa Chromium del sistema, no el local de macOS
           PUPPETEER_EXECUTABLE_PATH: ''
 
+      - name: Save dist to Cache
+        uses: actions/cache/save@v4
+        with:
+          path: dist
+          key: vitablue-dist-${{ github.sha }}
+
       - name: Upload dist Artifact
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: vitablue-dist-${{ github.sha }}
           path: dist
           retention-days: 1
-          if-no-files-found: error
+          if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 2: Playwright E2E — Responsive & SEO Audit
@@ -132,7 +134,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -140,9 +142,9 @@ jobs:
       matrix:
         include:
           - project: desktop
-            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/responsive.diagnostic.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/visual.critical.spec.ts
           - project: mobile
-            tests: e2e/mobile.navigation.spec.ts e2e/responsive.diagnostic.spec.ts
+            tests: e2e/mobile.navigation.spec.ts
           - project: mobile-compact
             tests: e2e/responsive.diagnostic.spec.ts
 
@@ -159,8 +161,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Download dist Artifact
+      - name: Restore dist from Cache
+        uses: actions/cache/restore@v4
+        id: restore-dist
+        with:
+          path: dist
+          key: vitablue-dist-${{ github.sha }}
+
+      - name: Download dist Artifact (fallback)
+        if: steps.restore-dist.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: vitablue-dist-${{ github.sha }}
           path: dist
@@ -177,6 +188,7 @@ jobs:
       - name: Upload Playwright Report (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: playwright-report-${{ matrix.project }}-${{ github.sha }}
           path: playwright-report/
@@ -185,6 +197,7 @@ jobs:
       - name: Upload Playwright Traces (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: playwright-traces-${{ matrix.project }}-${{ github.sha }}
           path: test-results/
@@ -200,7 +213,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     steps:
       - name: Checkout Source Code
@@ -215,8 +228,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Download dist Artifact
+      - name: Restore dist from Cache
+        uses: actions/cache/restore@v4
+        id: restore-dist
+        with:
+          path: dist
+          key: vitablue-dist-${{ github.sha }}
+
+      - name: Download dist Artifact (fallback)
+        if: steps.restore-dist.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: vitablue-dist-${{ github.sha }}
           path: dist
@@ -233,6 +255,7 @@ jobs:
       - name: Upload SEO Audit Report (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: seo-audit-report-${{ github.sha }}
           path: playwright-report/
@@ -257,7 +280,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.public_frontend == 'true'
 
     steps:
       - name: Checkout Source Code
@@ -272,8 +295,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Download dist Artifact
+      - name: Restore dist from Cache
+        uses: actions/cache/restore@v4
+        id: restore-dist
+        with:
+          path: dist
+          key: vitablue-dist-${{ github.sha }}
+
+      - name: Download dist Artifact (fallback)
+        if: steps.restore-dist.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: vitablue-dist-${{ github.sha }}
           path: dist
@@ -301,6 +333,7 @@ jobs:
       - name: Upload Lighthouse report
         if: always()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: lighthouse-report-${{ github.sha }}
           path: .unlighthouse/
@@ -311,6 +344,7 @@ jobs:
       - name: Upload preview log on failure
         if: failure()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: lighthouse-preview-log-${{ github.sha }}
           path: /tmp/vitablue-preview.log

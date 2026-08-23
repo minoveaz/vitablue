@@ -13,6 +13,8 @@ export interface IdentityDocumentFields {
   fullName: NullableIdentityField;
   givenNames: NullableIdentityField;
   surnames: NullableIdentityField;
+  firstSurname?: NullableIdentityField;
+  secondSurname?: NullableIdentityField;
   documentNumber: NullableIdentityField;
   birthDate: NullableIdentityField;
   nationality: NullableIdentityField;
@@ -20,6 +22,8 @@ export interface IdentityDocumentFields {
   issueDate: NullableIdentityField;
   expiryDate: NullableIdentityField;
   birthplace: NullableIdentityField;
+  supportNumber?: NullableIdentityField;
+  address?: NullableIdentityField;
   mrz: NullableIdentityField;
 }
 
@@ -41,10 +45,15 @@ export interface DocumentExtractionUsage {
   estimatedCostUsd: number;
 }
 
+export type BoundingBox = [number, number, number, number]; // [ymin, xmin, ymax, xmax] normalizado 0..1000
+
+export type DocumentBoundingBoxes = Partial<Record<keyof IdentityDocumentFields, BoundingBox>>;
+
 export interface DocumentExtractionResult {
   classification: DocumentClassification;
   fields: IdentityDocumentFields;
   rawFields?: IdentityDocumentFields;
+  boundingBoxes?: DocumentBoundingBoxes | null;
   validations: DocumentFieldValidation[];
   provider: 'fixture' | 'gemini';
   usage?: DocumentExtractionUsage;
@@ -54,6 +63,9 @@ export interface DocumentExtractionRequest {
   fileName: string;
   mimeType: 'image/jpeg' | 'image/png' | 'application/pdf';
   documentReference: string;
+  backFileName?: string;
+  backMimeType?: 'image/jpeg' | 'image/png' | 'application/pdf';
+  backDocumentReference?: string;
 }
 
 export interface DocumentExtractionService {
@@ -66,6 +78,8 @@ export const emptyIdentityDocumentFields = (): IdentityDocumentFields => ({
   fullName: null,
   givenNames: null,
   surnames: null,
+  firstSurname: null,
+  secondSurname: null,
   documentNumber: null,
   birthDate: null,
   nationality: null,
@@ -73,5 +87,7 @@ export const emptyIdentityDocumentFields = (): IdentityDocumentFields => ({
   issueDate: null,
   expiryDate: null,
   birthplace: null,
+  supportNumber: null,
+  address: null,
   mrz: null,
 });

@@ -1,14 +1,14 @@
 ---
 id: document-intelligence-poc
 title: Document Intelligence POC for identity document extraction
-status: active
+status: completed
 created: 2026-08-14
 updated: 2026-08-15
 owner: vitablue
 lead: null
 branch: feature/document-intelligence-poc
 phase: 0
-pull_requests: []
+pull_requests: [25, 27, 30, 31, 33, 34]
 issues: []
 packages: []
 release: not-required
@@ -17,6 +17,28 @@ dependencies: []
 blocked_by: []
 supersedes: []
 ---
+
+## Delivery status
+
+The Document Intelligence POC is live in production on `vitablue.es`.
+
+- Gemini extraction runs through the Supabase Edge Function with the API key kept
+  server-side.
+- Temporary document transport uses Supabase Storage and the review session is
+  recoverable after a browser reload through temporary session storage.
+- Production CORS is enabled for `https://vitablue.es` and
+  `https://www.vitablue.es`.
+- Production smoke validation confirmed that a real identity document can be
+  extracted from the VitaBlue domain and that normalized values are returned to
+  the review surface.
+- The CI route is aligned with the branch policy: feature branches merge into
+  `develop`, and only `develop` promotes to `main`.
+- Backend-only changes skip Playwright, SEO, and Lighthouse while retaining
+  build, typecheck, lint, and Quality Gate validation.
+
+The POC is complete. The remaining unchecked items are deliberately deferred to
+the LoopDev migration and future product hardening, not blockers for the current
+production delivery.
 
 ## Outcome
 
