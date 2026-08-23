@@ -152,7 +152,7 @@ export const SanitasMascotas: React.FC = () => {
         }
       },
       {
-        "@type": "Product",
+        "@type": "FinancialProduct",
         "@id": `${canonicalUrl}#producto`,
         "name": "Sanitas Salud Mascotas",
         "description": "Sanitas Mascotas: seguro veterinario con reembolso del 80%, hasta 2.500 €/año. Libre elección de veterinario y gestión 100% digital.",
@@ -160,12 +160,8 @@ export const SanitasMascotas: React.FC = () => {
           "@type": "Brand",
           "name": "Sanitas"
         },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": canonicalUrl
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
         },
         "aggregateRating": {
           "@type": "AggregateRating",

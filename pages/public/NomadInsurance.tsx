@@ -276,7 +276,7 @@ export const NomadInsurance: React.FC = () => {
         }
       },
       {
-        "@type": "Product",
+        "@type": "FinancialProduct",
         "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales#producto",
         "name": "Seguro Médico para Nómadas Digitales",
         "description": "Seguro médico de cobertura completa sin copagos y con asistencia global en viaje para el visado de nómada digital en España.",
@@ -284,12 +284,8 @@ export const NomadInsurance: React.FC = () => {
           "@type": "Brand",
           "name": "VitaBlue"
         },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales"
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
         },
         "aggregateRating": {
           "@type": "AggregateRating",

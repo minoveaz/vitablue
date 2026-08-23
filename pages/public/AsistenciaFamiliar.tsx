@@ -179,7 +179,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         }
       },
       {
-        "@type": "Product",
+        "@type": "FinancialProduct",
         "@id": `${canonicalUrl}#producto`,
         "name": "Asistencia Familiar iPlus Sanitas",
         "description": "Seguro de asistencia familiar y decesos: servicios funerarios completos, traslado mundial, apoyo emocional y gestión documental.",
@@ -187,16 +187,8 @@ export const AsistenciaFamiliar: React.FC = () => {
           "@type": "Brand",
           "name": "Sanitas"
         },
-        "isSimilarTo": {
-          "@type": "Brand",
-          "name": "Santalucía"
-        },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": canonicalUrl
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
