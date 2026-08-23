@@ -50,26 +50,57 @@ export const createSupabaseDocumentExtractionService = (
   },
 });
 
+export const uploadAndExtractDualDocument = async (
+  frontFile: File,
+  backFile: File | null | undefined,
+  userId: string,
+  service: DocumentExtractionService = createSupabaseDocumentExtractionService(),
+  client: SupabaseDocumentClient = supabase,
+): Promise<DocumentExtractionResult> => {
+  const frontPath = createStoragePath(userId, frontFile.name);
+  const { error: frontUploadError } = await client.storage
+    .from(DOCUMENT_INTELLIGENCE_BUCKET)
+    .upload(frontPath, frontFile, { contentType: frontFile.type, upsert: false });
+
+  if (frontUploadError) throw new Error('Document upload failed');
+
+  let backPath: string | undefined;
+  if (backFile) {
+    backPath = createStoragePath(userId, backFile.name);
+    const { error: backUploadError } = await client.storage
+      .from(DOCUMENT_INTELLIGENCE_BUCKET)
+      .upload(backPath, backFile, { contentType: backFile.type, upsert: false });
+
+    if (backUploadError) {
+      await client.storage.from(DOCUMENT_INTELLIGENCE_BUCKET).remove([frontPath]);
+      throw new Error('Document upload failed');
+    }
+  }
+
+  try {
+    return await service.extract({
+      fileName: frontFile.name,
+      mimeType: frontFile.type as DocumentExtractionRequest['mimeType'],
+      documentReference: frontPath,
+      ...(backFile && backPath
+        ? {
+            backFileName: backFile.name,
+            backMimeType: backFile.type as DocumentExtractionRequest['mimeType'],
+            backDocumentReference: backPath,
+          }
+        : {}),
+    });
+  } finally {
+    const pathsToRemove = [frontPath, ...(backPath ? [backPath] : [])];
+    await client.storage.from(DOCUMENT_INTELLIGENCE_BUCKET).remove(pathsToRemove);
+  }
+};
+
 export const uploadAndExtractDocument = async (
   file: File,
   userId: string,
   service: DocumentExtractionService = createSupabaseDocumentExtractionService(),
   client: SupabaseDocumentClient = supabase,
-): Promise<DocumentExtractionResult> => {
-  const path = createStoragePath(userId, file.name);
-  const { error: uploadError } = await client.storage
-    .from(DOCUMENT_INTELLIGENCE_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false });
-
-  if (uploadError) throw new Error('Document upload failed');
-
-  try {
-    return await service.extract({
-      fileName: file.name,
-      mimeType: file.type as DocumentExtractionRequest['mimeType'],
-      documentReference: path,
-    });
-  } finally {
-    await client.storage.from(DOCUMENT_INTELLIGENCE_BUCKET).remove([path]);
-  }
-};
+): Promise<DocumentExtractionResult> => (
+  uploadAndExtractDualDocument(file, null, userId, service, client)
+);

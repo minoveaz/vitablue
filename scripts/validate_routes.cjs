@@ -58,6 +58,7 @@ const concreteAppRoutes = appRoutes.filter((route) =>
   !route.includes(':') &&
   route !== '*' &&
   !nonSeoRoutes.has(route) &&
+  !route.startsWith('/backoffice') &&
   !legacyRegistryRoutes.has(route) &&
   !route.startsWith('/styleguide') &&
   !route.startsWith('/marketing-studio') &&

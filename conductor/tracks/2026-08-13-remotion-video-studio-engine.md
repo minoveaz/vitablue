@@ -1,12 +1,12 @@
-# Track: VitaBlue Social Video Studio
+# Track: VitaBlue Social Video & Creative Studio
 
-**Fecha:** 2026-08-13
-**Estado:** En definición
+**Fecha:** 2026-08-13 (Actualizado: 2026-08-19)
+**Estado:** Image Studio Core + Phase 4 (Layers Tree, StudioWorkspaceShell Canva-Style, Modular Blocks, Punteros V/H, Deep-Cloned Undo/Redo) Completados al 100% · En curso: Rail de 9 Herramientas Estilo Canva + Carrusel Multi-Página · En cola: 1-Click Video Bridge con Remotion
 **Rama:** `feat/remotion-video-studio-engine`
 
 ## 1. Objetivo
 
-Crear un estudio de generación de vídeo para redes sociales que permita producir piezas de forma rápida, repetible y editable utilizando los componentes, contenidos y tokens visuales de VitaBlue.
+Crear un estudio de generación creativa y de vídeo para redes sociales que permita producir piezas estáticas (anuncios 4:5, 9:16, 1:1, carruseles de Instagram/LinkedIn) y piezas animadas (Reels, TikToks, Shorts en Remotion) de forma rápida, repetible y editable utilizando los componentes, contenidos y tokens visuales de VitaBlue.
 
 El sistema debe permitir editar dos dimensiones de una pieza:
 
@@ -188,14 +188,14 @@ La timeline multicapa es importante, pero no debe bloquear la primera versión �
 
 ### Fase 0 - Contrato del producto y prueba de viabilidad
 
-- [ ] Definir los primeros canales: Reels/Stories/TikTok y formato 9:16.
-- [ ] Elegir dos o tres casos de uso concretos: requisitos de visado, producto de salud y CTA de asesoría.
-- [ ] Inventariar componentes VitaBlue aptos para vídeo.
-- [ ] Confirmar licencia de Remotion y dependencias.
-- [ ] Definir criterios de éxito: tiempo para crear una pieza, tiempo de preview y tiempo de render.
-- [ ] Definir qué assets pueden utilizarse y con qué derechos.
-- [ ] Registrar qué capacidades serán específicas de VitaBlue y cuáles pertenecen al core reutilizable.
-- [ ] Confirmar que el módulo se integrará en Marketing Studio de Loopdev y no como una aplicación independiente.
+- [x] Definir los primeros canales: Reels/Stories/TikTok y formato 9:16.
+- [x] Elegir dos o tres casos de uso concretos: requisitos de visado, producto de salud y CTA de asesoría.
+- [x] Inventariar componentes VitaBlue aptos para vídeo.
+- [x] Confirmar licencia de Remotion y dependencias.
+- [x] Definir criterios de éxito: tiempo para crear una pieza, tiempo de preview y tiempo de render.
+- [x] Definir qué assets pueden utilizarse y con qué derechos.
+- [x] Registrar qué capacidades serán específicas de VitaBlue y cuáles pertenecen al core reutilizable.
+- [x] Confirmar que el módulo se integrará en Marketing Studio de Loopdev y no como una aplicación independiente.
 
 **Salida:** tres plantillas objetivo, contrato inicial de datos y una métrica de eficiencia.
 
@@ -231,35 +231,53 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 
 **Salida:** un vídeo vertical generado desde JSON utilizando componentes de VitaBlue.
 
-### Fase 3 - Editor de storyboard eficiente
+### Fase 3 - Editor de storyboard eficiente, Brand Kit & Multi-Resolución (Inspiración Canva)
 
-- [ ] Crear una pantalla privada en Marketing Studio.
-- [ ] Mantener el editor como aplicación de VitaBlue, sin introducir todavía organización, workspace, Brand Hub ni repositorios multi-tenant.
+- [x] Crear una pantalla privada en Marketing Studio alineada con los contratos y receta `CreativeEditor` de LoopDev (`full-bleed`).
+- [x] Mantener el editor como aplicación de VitaBlue, sin introducir todavía organización, workspace, Brand Hub ni repositorios multi-tenant.
+- [x] **Brand Kit VitaBlue en `ModuleContextSidebar`:** Integración directa de componentes de marca (`AdvisorCard`, `ProductCard`, `WhatsAppBadge`), paleta de tokens (`Ocean`, `Midnight`, `Mint`, `Amber`), tipografías e ilustraciones categorizadas (`Salud`, `Mascotas`, `Viajes`).
+- [x] **Magic Resize Multi-Resolución:** Soporte multi-resolución en caliente: 9:16 (Vertical Reels/TikTok/Shorts), 1:1 (Cuadrado Feed/LinkedIn) y 16:9 (Landscape YouTube).
+- [x] **Safe Zones Overlay (Márgenes de Redes Sociales):** Guías visuales superpuestas para previsualizar y respetar las zonas tapadas por la interfaz de TikTok e Instagram Reels.
+- [x] **Edición Visual Directa en el Canvas (`On-Canvas Editing`):**
+  - Selección de elementos mediante clic en pantalla con recuadro delimitador (*bounding box*).
+  - Reposicionamiento por arrastre libre (*drag-and-drop on canvas*) con guías inteligentes de centrado.
+  - Edición rápida de texto por doble clic en el lienzo.
+  - Barra flotante de acciones rápidas sobre la capa seleccionada (tamaño, color, duplicar, Z-Index, eliminar).
+  - Menú contextual de clic derecho en cualquier punto del `VideoStage` (Añadir texto, subtítulo, forma o componente en esas coordenadas).
+- [x] Selector de zoom (`Fit`, `50%`, `75%`, `100%`) y conmutador de tema de marca.
 - [x] Listar, seleccionar, duplicar, eliminar y reordenar escenas.
 - [x] Editar duración y contenido de la escena activa.
 - [x] Mostrar formularios específicos por plantilla.
 - [x] Añadir presets de proyecto y de formato.
-- [ ] Implementar preview con `@remotion/player`.
+- [x] Implementar preview interactivo con `@remotion/player`.
 - [x] Sincronizar reproducción, pausa, reinicio, frame actual y escena activa.
 - [x] Añadir scrubbing y salto directo a una escena.
 - [x] Avisar de textos largos, campos faltantes y contenido que exceda límites.
 - [x] No borrar contenido automáticamente al cambiar una plantilla sin confirmación.
 - [x] Mantener el estado mediante memoria o una implementación local sustituible, sin poner `localStorage` dentro del dominio.
 
-**Salida:** una persona no técnica puede crear y ajustar un vídeo sin editar código.
+**Salida:** una persona no técnica puede crear y adaptar un vídeo con la identidad de VitaBlue en múltiples formatos sin editar código, tanto desde paneles como interactuando directamente sobre el vídeo.
 
-### Fase 4 - Timeline y edición audiovisual
+### Fase 4 - Timeline profesional, pistas superpuestas, menú contextual y sincronización tri-direccional (Inspiración CapCut)
 
-- [x] Mostrar una timeline horizontal con escala temporal.
-- [x] Representar cada escena como un bloque editable.
-- [x] Añadir cabezal de reproducción sincronizado con el Player.
-- [x] Permitir ajustar inicio y duración mediante interacción controlada.
-- [ ] Añadir tracks de texto, imagen, componente, vídeo y audio cuando el caso de uso lo justifique.
-- [x] Añadir transiciones con presets seguros.
-- [x] Añadir reordenación mediante drag-and-drop con teclado como alternativa accesible.
+- [x] Mostrar una timeline horizontal con escala temporal en segundos y frames.
+- [x] Representar cada escena como un bloque editable con tiradores para estirar/encoger duración en frames.
+- [x] **Split at Playhead:** Dividir escena o capa en el frame exacto del cabezal de reproducción (`Cmd+B`, botón de tijeras o menú contextual).
+- [x] **Pistas Superpuestas (Overlays):** Pista de escenas, Pista de textos/subtítulos, Pista de componentes de marca y Pista de audio con forma de onda (waveforms).
+- [x] **Menú Contextual de Clic Derecho (`VideoContextMenu`):**
+  - En Escena: Duplicar, Dividir (Split), Duración rápida, Cambiar plantilla, Eliminar.
+  - En Capa: Ocultar/Mostrar, Bloquear, Reordenar Z-Index, Eliminar.
+- [x] **Transiciones entre Escenas:** Conector `[⚡/+]` entre bloques con selector de transiciones (`Fade`, `Slide`, `Zoom`, `Cut`).
+- [x] **Atajos de Teclado Profesionales:** `Espacio` (Play/Pause), `Cmd+B` (Split), `←/→` (1 frame), `Shift+←/→` (1 seg), `Delete/Backspace` (Borrar).
+- [x] **Inspector Contextual Inteligente (`ModuleContextPanel`):**
+  - Edición de copies, colores y efectos de entrada (*Fade in*, *Slide up*, *Pop*).
+  - Control de duración, fondo y alertas de límite de caracteres en tiempo real.
+- [x] **Sincronización Tri-direccional en Tiempo Real:** Cambios en el `VideoStage` (Lienzo) ↔ `VideoTimeline` (Tiempo) ↔ `ModuleContextPanel` (Inspector) se propagan de forma instantánea.
+- [x] Añadir cabezal de reproducción sincronizado bidireccionalmente con el Player.
+- [x] Permitir reordenación mediante drag-and-drop con teclado como alternativa accesible.
 - [x] Mantener límites para evitar escenas imposibles de renderizar.
 
-**Salida:** edición temporal suficientemente potente para producción de contenido corto, sin intentar replicar un editor profesional completo.
+**Salida:** edición temporal y visual fluida, precisa y con ergonomía híbrida entre Canva y CapCut para producción de contenido publicitario.
 
 ### Fase 5 - Exportación y biblioteca de plantillas
 
@@ -299,6 +317,130 @@ La Fase 1 no crea tablas, Storage, repositorios concretos ni integración con Lo
 **Salida VitaBlue:** editor local funcional para editar, previsualizar y exportar sin depender de persistencia remota.
 
 **Trabajo futuro en Loopdev:** exportación remota multiusuario con persistencia, autorización, Storage, limpieza automática y worker desplegado.
+
+### Fase 6.5 - Módulo de Asset Management Studio & Suite de Componentes de Vídeo Agnósticos (MotionKit)
+
+- [x] Crear módulo independiente `/backoffice/marketing-studio/assets` con vista de 3 pestañas:
+  1. **Kits de Vídeo (MotionKit):** Catálogo con selector de aspect ratio (`9:16`, `1:1`, `16:9`), *Live Preview* en dispositivo móvil y editor de propiedades (Playground) con exportación a JSON.
+  2. **Tokens de Marca (White-Label):** Paleta semántica (`primaryColor`, `accentColor`, `mintColor`, `surfaceBg`) inyectable a cualquier marca cliente.
+  3. **Biblioteca de Audio & Media:** Catálogo de pistas de fondo y efectos SFX con metadatos de BPM y duración.
+- [x] Crear suite de 4 componentes nativos de vídeo 1080p en `packages/video-studio/src/motion-kit/`:
+  - `MotionAdvisorCard`: Tarjeta vertical en Glassmorphism con foto de asesora, badge de estado en directo y botón WhatsApp vibrante con resplandor.
+  - `MotionTrustBadge`: Sello de garantía consular y 100% válido para visados.
+  - `MotionProviderGrid`: Grid de tarjetas de cristal brillante con logos de aseguradoras autorizadas (Sanitas, Adeslas, Asisa, DKV).
+  - `MotionComparisonCard`: Comparativa visual clara (❌ *Seguro de viaje tradicional* vs ✅ *Seguro VitaBlue Extranjería*).
+- [x] Lienzo de previsualización con mockup fotorrealista de smartphone (iPhone con Dynamic Island, bisel de titanio, barras de progreso de Story y branding de cuenta verificada).
+- [x] Integrar consumo directo de MotionKit en el Video Generator (`CreativeEditorAssetSidebar.tsx`, `CreativeEditorInspector.tsx`, `ReelVisaRejection.tsx`, `SceneRenderer.tsx`).
+- [x] Actualizar registro central de rutas en `config/routes.ts` y navegación en `BackofficeShell.tsx`.
+- [x] Pruebas unitarias de MotionKit y registro (`motionKit.test.ts`) con 50 tests en verde.
+
+### Fase 6.6 - Image Studio (Editor Estático & Carruseles con Arquitectura Canva-Style)
+
+- [x] **Lienzo Interactivo WYSIWYG:**
+  - Redimensionamiento proporcional de 8 tiradores + ajuste libre de anchura/altura (`updateLayerWidth` / `updateLayerHeight`).
+  - Rotación angular libre 360° con manejador superior.
+  - Snapping magnético con guías de alineación en tiempo real (`calculateSnapping`).
+  - Marquee Selection (caja elástica de multiselección turquesa) y agrupación `Cmd+G` / Desagrupar.
+  - Selección de Puntero (`V` - Selección estándar) vs Mano (`H` - Desplazar/Pan) con soporte para tecla `Espacio`.
+  - Botón de ajuste perfecto a pantalla (`fitZoom` matemático dinámico).
+- [x] **Arquitectura de Navegación `StudioWorkspaceShell`:**
+  - Estructura inspirada en Canva.com y 100% alineada con los shells de LoopDev.
+  - Header oficial `PlatformHeader` + Rail de herramientas (`w-16`) + Flyout Drawer (`360px`) colapsable con botón `❮`/`❯`.
+  - Inspector derecho reactivo de propiedades (`isInspectorOpen`) que se abre automáticamente al seleccionar capas.
+- [x] **Modularización Atómica de Bloques (`blocks/`):**
+  - Desacoplamiento de `ImageStage.tsx` hacia `marketing-studio/components/image-editor/blocks/` (`AdvisorBlocks`, `ProviderBlocks`, `TrustBlocks`, `ComparisonBlocks`, `SurfaceBlocks`, `BlockRenderer`).
+- [x] **Motor de Historial Inmutable (Undo / Redo Atómico):**
+  - Snapshots mediante clonación profunda (`JSON.parse(JSON.stringify)`).
+  - Gestos continuos acumulativos (un solo paso al soltar el ratón en `commitPositionChange`).
+  - Atajos `Cmd+Z` (Undo), `Cmd+Shift+Z` / `Ctrl+Y` (Redo) y botones en toolbar.
+  - Scrollbar oscuro ultra-fino (`.custom-scrollbar`).
+
+#### 🎨 Rail de 9 Herramientas de Edición Rápida (De lo Atómico a lo Macro):
+
+```text
+┌─── TOOL RAIL (16) ───┐ ┌────────────── FLYOUT DRAWER SPLIT (380px - 420px) ─────────────┐
+│                      │ │ 🔍 Barra de Búsqueda Superior                                  │
+│  1. 🔤  Texto        │ ├──────────────────────┬─────────────────────────────────────────┤
+│  2. 🔷  Elementos    │ │ 📑 SUBCATEGORÍAS     │ 👁️ PREVISUALIZACIÓN Y RECURSOS          │
+│  3. 📁  Medios       │ │  (Columna Izquierda) │  (Cuadrícula Interactiva con 1-Clic)    │
+│  4. 📑  Capas        │ ├──────────────────────┼─────────────────────────────────────────┤
+│  5. 🎨  Kit de Marca │ │ • Filtros rápidos    │ ┌──────────────────┐┌─────────────────┐ │
+│  6. 🧩  Bloques      │ │ • Sub-grupos         │ │ Tarjeta Recurso  ││ Tarjeta Recurso │ │
+│  7. 📑  Plantillas   │ │ • Badges con conteo  │ └──────────────────┘└─────────────────┘ │
+│  8. ✨  Copys con IA │ │ • "Ver todo"         │ ┌──────────────────┐┌─────────────────┐ │
+│  9. 🎵  Audio/Video  │ │                      │ │ Tarjeta Recurso  ││ Tarjeta Recurso │ │
+└──────────────────────┘ └──────────────────────┴─────────────────────────────────────────┘
+```
+
+##### 🟢 Zona 1: Creación Atómica y Frecuente (1 - 4)
+- [x] **1. 🔤 Suite de Texto Avanzada (`Text & Typography Suite - Canva & CapCut Style`):**
+  - **Estructura Split 2 Zonas:** Columna izquierda (*Básicos, Combinaciones Duos, Ganchos CTR, Subtítulos CapCut, Ofertas/Precios, CTAs, Listas de Beneficios*) + Columna derecha (*Previsualización interactiva en vivo con 1-clic insert*).
+  - **Jerarquías Rápidas & Botón Libre:** `[ + Añadir cuadro de texto ]` y botones rápidos `H1 (56px)`, `H2 (42px)`, `Cuerpo (24px)`, `Badge (18px)` con escalado dinámico proporcional a 1080px.
+  - **Combinaciones Tipográficas Duos (Font Pairs):** Bloques prediseñados de Título + Subtítulo con contraste de marca (ej: Montserrat Black + Inter Regular, Poppins Bold + Cursiva).
+  - **Listas de Beneficios con Checks (Bullets):** Inserción rápida de 3 viñetas con checks verdes/dorados para pólizas y coberturas de extranjería.
+  - **Inspector Unificado & Motor Universal de Tipografía:**
+    - Input numérico libre (`NumberInput`) para tamaño de fuente.
+    - Selector Universal de Color HEX (`HexColorPickerField`) en texto, fondo y bordes.
+    - Resaltado de palabras individuales mediante sintaxis limpia `[DENEGUEN](#EE9B00)` y `**palabras**` (sin saturar el inspector de chips).
+    - Selector visual de Google Fonts (Poppins, Inter, Montserrat, Oswald, Playfair Display, Plus Jakarta Sans, Outfit).
+    - Espaciado Fino (*Letter-spacing* y *Line-height* interactivos).
+    - Disposición en 1 clic: `📏 1 Sola Línea` vs `📄 Multilínea`.
+  - **Asistente Inteligente de Ortografía y Gramática (RAE & Dominio Asegurador):**
+    - Corrección automática en 1-clic de tildes (*Extranjería, póliza, denegación, garantía*), signos `¿?` e `¡!`, interrogativos y marcas (*VitaBlue, WhatsApp*).
+    - Atributos nativos `spellCheck={true}` y `lang="es"` en tiempo real.
+- [x] **2. 🔷 Elementos (`Elements & Shapes`):**
+  - **Catálogo de 20+ Formas Geométricas SVG:** Círculos, rectángulos redondeados, rombos, flechas, bocadillos, sellos burst y estrellas.
+  - **Catálogo de 20+ Ilustraciones Web:** Símbolos médicos, pasaportes, estudiantes, maletas, asistencia en viaje, visados.
+  - **Controles de Estilo:** Grosor y color de trazo/borde con selector HEX y radio de esquina.
+- [x] **3. 📁 Medios y Fotos de Stock (`Media & Uploads`):**
+  - Galería curada con fotos profesionales para Extranjería (Estudiantes, Asesoras de confianza, Pasaportes, Parejas, Nómadas).
+  - Dropzone de subida local e inserción con 1-clic sobre el lienzo o como fondo.
+  - Formas de recorte (*Squircle, Círculo, Rectángulo Redondeado, Hexágono*).
+- [x] **4. 📑 Capas (`Layers Manager`):**
+  - Árbol de capas con Drag & Drop, bloqueo, visibilidad y selección múltiple agrupable (`Cmd+G`).
+  - **Corrección de Prioridad Z-Index (`maxZ + 1`):** Nuevas capas, duplicados y pegados aparecen siempre al frente absoluto del lienzo.
+
+##### 🔵 Zona 2: Identidad y Marca (5)
+- [x] **5. 🎨 Kit de Marca (`Brand Kit`):**
+  - Logos e isotipos oficiales vectoriales de VitaBlue (Horizontal principal, Blanco sobre fondos oscuros, Isotipo solo, Isotipo en caja turquesa y versión monocromática).
+  - Paleta semántica oficial VitaBlue (`vb-ocean`, `vb-gold`, `vb-midnight`, `vb-mint`).
+  - Paleta de gradientes mesh interactivos con selector Claro / Oscuro y fondo transparente.
+
+##### 🟣 Zona 3: Aceleración y Composición Rápida (6 - 7)
+- [x] **6. 🧩 Bloques de Conversión (`Conversion Blocks`):**
+  - `MotionAdvisorCard`: Tarjeta de asesora con foto, badge live pulse y botón WhatsApp directo.
+  - `MotionTrustBadge`: Sello de garantía consular y 100% válido para visados.
+  - `MotionComparisonCard`: Comparativa visual clara (❌ *Seguro de viaje común* vs ✅ *Seguro VitaBlue Extranjería*).
+  - `MotionProviderGrid`: Grid de aseguradoras autorizadas (Sanitas, Adeslas, Asisa, DKV).
+  - `WhatsAppCtaButton`: Botón de llamada a la acción con selector de icono (`👉`, `💬`, `⚡`, `✓`, `ninguno`).
+  - `TrustVerifiedPill` & `TrustHighlightPill`: Píldoras y badges de confianza para visados.
+  - `GlassCardSurface`: Superficie de cristal translúcido glassmorphism con tinte turquesa/dorado.
+- [x] **7. 📑 Plantillas Completas (`Templates`):**
+  - Subcategorías: *Visados Estudiantes*, *Nómadas Digitales*, *Comparativas*, *Historias & Reels*.
+
+##### 🟡 Zona 4: Pendientes Críticos a Implementar (8 - 11)
+- [ ] **8. 🧩 Bloques Complementarios de Conversión Pendientes:**
+  - `AdvisorQuoteBox`: Caja de cita textual / testimonio directo de la asesora con comillas grandes de marca.
+  - `ProviderBadge`: Badge individual aislado con logo oficial de aseguradora y sello de aprobación consular.
+  - `TrustShieldIcon`: Escudo heráldico de garantía consular aislado con borde dorado y resplandor.
+  - `ComparisonHeader`: Cabecera gráfica de comparativa con indicadores visuales ❌ vs ✅.
+- [ ] **9. ✨ Copys con IA Expandido (`AI Copywriter & Hooks Drawer`):**
+  - Drawer interactivo con selector de audiencia (*Estudiantes, Nómadas, Trabajo por cuenta propia, Reagrupación familiar*).
+  - Generador de ganchos por país de origen (*Colombia, México, Perú, Argentina, Chile, EE.UU.*).
+  - Variantes A/B de urgencia, derribar objeciones (copagos y carencias) y llamadas a la acción directas para WhatsApp.
+- [ ] **10. 📑 Carrusel Multi-Página (Instagram / LinkedIn Multi-Slide):**
+  - Barra inferior de páginas/slides (`[ Slide 1 ] [ Slide 2 ] [ + Añadir Slide ]`).
+  - Reordenación drag-and-drop de diapositivas del carrusel y duplicación de slide.
+  - Exportador multi-página: descarga en archivo comprimido ZIP con todos los PNGs numerados (`slide-1.png`, `slide-2.png`, etc.) y exportación a documento PDF.
+- [ ] **11. 🎵 1-Click Video Bridge (`Remotion Video Generator`):**
+  - Botón directo para convertir el diseño gráfico del lienzo en una escena animada en Remotion Video Studio con animación de entrada, música y locución.
+
+##### 🎛️ Inspector Contextual Inteligente (Panel Derecho):
+- Panel lateral no intrusivo con botón colapsador `❯` y switch `[ ⚙️ Propiedades ]` en toolbar.
+- Actualización reactiva de propiedades según la capa seleccionada (tipografía, colores, avatar, WhatsApp, opacidad, filtros, sombras, efectos de texto).
+- Quick Toolbar flotante sobre el lienzo para acciones instantáneas (Duplicar, Eliminar, Auto-Ajustar, Desagrupar).
+
+**Salida:** Suite creativa estructurada con ergonomía profesional Canva-style y capacidades dinámicas CapCut para producción de creatividades estáticas y vídeo en segundos.
 
 ### Fase 7 - Capacidades asistidas por Gemini u otro LLM
 

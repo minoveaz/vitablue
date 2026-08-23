@@ -6,7 +6,9 @@ export default {
     "./index.tsx",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
+    "./features/**/*.{js,ts,jsx,tsx}",
     "./marketing-studio/**/*.{js,ts,jsx,tsx}",
+    "./packages/video-studio/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {

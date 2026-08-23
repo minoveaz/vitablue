@@ -15,7 +15,12 @@ const ProductCatalog: React.FC = () => {
   return (
     <>
       <Helmet><title>Catálogo de productos | Backoffice VitaBlue</title><meta name="robots" content="noindex, nofollow" /></Helmet>
-      <BackofficeShell title="Catálogo de productos" eyebrow="Área privada · Catálogo">
+      <BackofficeShell
+        title="Catálogo de productos"
+        eyebrow="Catálogo"
+        breadcrumbs={['Backoffice', 'Catálogo de productos']}
+        mode="data"
+      >
         <p className="text-body-lg max-w-3xl text-text-secondary">Inventario interno de productos y variantes. Los datos comerciales pendientes no se publican como cifras hasta recibir una fuente oficial.</p>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">

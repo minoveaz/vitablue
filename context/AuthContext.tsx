@@ -29,11 +29,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
         return;
       }
-      const { data, error } = await supabase.rpc('get_my_marketing_role');
-      if (!active) return;
-      if (error) console.error('Error loading Marketing Studio role:', error.message);
-      setRole(data === 'admin' || data === 'editor' || data === 'viewer' ? data : null);
-      setIsLoading(false);
+      try {
+        const { data, error } = await supabase.rpc('get_my_marketing_role');
+        if (!active) return;
+        if (error) console.error('Error loading Marketing Studio role:', error.message);
+        setRole(data === 'admin' || data === 'editor' || data === 'viewer' ? data : null);
+      } catch (err) {
+        console.error('Error fetching role:', err);
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
     };
 
     supabase.auth.getSession().then(({ data }) => loadRole(data.session));
@@ -44,7 +51,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      setIsLoading(true);
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setRole(null);
+        setIsLoading(false);
+        return;
+      }
+
+      // Background session changes update state gracefully without unmounting the UI
       void loadRole(nextSession);
     });
 
