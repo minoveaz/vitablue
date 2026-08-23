@@ -17,10 +17,12 @@ const expectedRoutes = [
 ];
 const actualRoutes = [...sitemap.matchAll(/<loc>https?:\/\/[^<]+?(\/[^<]*)<\/loc>/g)].map((match) => match[1] || '/');
 
+// Normaliza trailing slash para comparar: /page y /page/ son equivalentes
+const stripSlash = (r) => (r === '/' ? r : r.replace(/\/$/, ''));
 const unique = (routes) => [...new Set(routes)];
-const expected = unique(expectedRoutes);
-const actual = unique(actualRoutes);
-const missing = expected.filter((route) => !actual.includes(route));
+const expected = unique(expectedRoutes.map(stripSlash));
+const actual   = unique(actualRoutes.map(stripSlash));
+const missing    = expected.filter((route) => !actual.includes(route));
 const unexpected = actual.filter((route) => !expected.includes(route));
 
 // Forbidden routes that must NEVER be in sitemap (thin content, legal, duplications)
