@@ -170,7 +170,13 @@ if (write) {
 } else {
   const existingSitemap = fs.readFileSync(sitemapPath, 'utf8');
   const currentRoutes = [...existingSitemap.matchAll(/<loc>https?:\/\/[^<]+?(\/[^<]*)<\/loc>/g)].map((match) => match[1]);
-  const sameRouteSet = routes.length === new Set(currentRoutes).size && routes.every((route) => currentRoutes.includes(route));
+  // Normaliza trailing slash en ambos lados: el registry usa /page y el
+  // sitemap generado usa /page/ — stripSlash hace la comparación agnóstica.
+  const stripSlash = (r) => (r === '/' ? r : r.replace(/\/$/, ''));
+  const normalizedExpected = routes.map(stripSlash);
+  const normalizedActual   = currentRoutes.map(stripSlash);
+  const sameRouteSet = normalizedExpected.length === new Set(normalizedActual).size
+    && normalizedExpected.every((route) => normalizedActual.includes(route));
   if (sameRouteSet && existingSitemap.includes('xmlns:xhtml')) {
     console.log(`Sitemap is up to date: ${routes.length} canonical URLs with hreflang links.`);
   } else {
