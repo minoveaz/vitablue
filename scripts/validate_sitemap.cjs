@@ -6,7 +6,10 @@ const registry = fs.readFileSync(path.join(root, 'config', 'routes.ts'), 'utf8')
 const blogData = fs.readFileSync(path.join(root, 'utils', 'blogData.ts'), 'utf8');
 const sitemap = fs.readFileSync(path.join(root, 'public', 'sitemap.xml'), 'utf8');
 
-const registryCanonicalRoutes = [...registry.matchAll(/canonical\('([^']+)'/g)].map((match) => match[1]);
+const registryCanonicalRoutes = [...registry.matchAll(/canonical\('([^']+)',\s*\{([\s\S]*?)\}\)/g)]
+  .filter(([, , options]) => !/sitemap:\s*false/.test(options))
+  .map(([, path]) => path);
+
 const blogSlugs = [...blogData.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
 const expectedRoutes = [
   ...registryCanonicalRoutes,
@@ -20,22 +23,38 @@ const actual = unique(actualRoutes);
 const missing = expected.filter((route) => !actual.includes(route));
 const unexpected = actual.filter((route) => !expected.includes(route));
 
+// Forbidden routes that must NEVER be in sitemap (thin content, legal, duplications)
+const forbiddenLegalRoutes = [
+  '/aviso-legal',
+  '/politica-privacidad',
+  '/politica-cookies',
+  '/privacidad',
+  '/cookies',
+];
+const forbiddenFound = actual.filter((route) => forbiddenLegalRoutes.includes(route));
+
 console.log('=== VitaBlue sitemap parity audit ===');
 console.log(`Expected registry URLs: ${expected.length}`);
 console.log(`Actual sitemap URLs: ${actual.length}`);
 
-if (missing.length > 0) {
-  console.log(`\nMissing from sitemap (${missing.length}):`);
-  missing.forEach((route) => console.log(`- ${route}`));
+if (forbiddenFound.length > 0) {
+  console.error(`\n❌ Error: Sitemap contains forbidden legal/thin content URLs (${forbiddenFound.length}):`);
+  forbiddenFound.forEach((route) => console.error(`  - ${route}`));
 }
 
-if (unexpected.length > 0) {
-  console.log(`\nNot present in canonical registry (${unexpected.length}):`);
-  unexpected.forEach((route) => console.log(`- ${route}`));
+const hasXhtmlNamespace = sitemap.includes('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+const alternateLinksCount = [...sitemap.matchAll(/<xhtml:link\s+rel="alternate"/g)].length;
+
+if (!hasXhtmlNamespace) {
+  console.error('\n❌ Error: Sitemap is missing xmlns:xhtml namespace for hreflang links.');
 }
 
-if (missing.length === 0 && unexpected.length === 0) {
-  console.log('\nSitemap matches the current canonical registry and blog content.');
+if (alternateLinksCount === 0) {
+  console.error('\n❌ Error: Sitemap has no <xhtml:link rel="alternate"> tags for multilingual SEO.');
+}
+
+if (missing.length === 0 && unexpected.length === 0 && forbiddenFound.length === 0 && hasXhtmlNamespace && alternateLinksCount > 0) {
+  console.log(`\n✅ Sitemap matches canonical registry, excludes thin legal content, and includes ${alternateLinksCount} hreflang alternate links.`);
 } else {
   process.exitCode = 1;
 }

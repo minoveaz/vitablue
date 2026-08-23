@@ -385,27 +385,48 @@ const nonIndexableRoutes = [
   { name: 'cookies', path: '/cookies' },
 ];
 
-test.describe('🛡️ Páginas Legales — Solo HTTP 200 Check', () => {
+test.describe('🛡️ Páginas Legales — Noindex y Exclusión de Sitemap', () => {
   for (const route of nonIndexableRoutes) {
-    test(`[${route.name}] ${route.path} devuelve HTTP 200`, async ({ page }) => {
+    test(`[${route.name}] ${route.path} devuelve HTTP 200 y meta noindex`, async ({ page }) => {
       const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
       expect(
         response?.status(),
         `${route.path}: Expected 200, got ${response?.status()}`,
       ).toBe(200);
 
-      // Y que tenga un noindex (o que no esté indexada accidentalmente)
+      // Debe contener explícitamente noindex
       const robotsMeta = await page
         .locator('meta[name="robots"]')
         .getAttribute('content');
 
-      // noindex puede estar en robots meta o en la ruta misma, sólo lo verificamos si existe
-      if (robotsMeta) {
-        expect(
-          robotsMeta.toLowerCase(),
-          `${route.path}: página legal debería tener noindex. Robots meta: "${robotsMeta}"`,
-        ).toContain('noindex');
-      }
+      expect(
+        robotsMeta?.toLowerCase() ?? '',
+        `${route.path}: página legal debe tener <meta name="robots" content="noindex">`,
+      ).toContain('noindex');
     });
   }
+
+  test('El sitemap.xml no contiene ninguna URL de páginas legales ni de cookies', async ({ request }) => {
+    const response = await request.get('/sitemap.xml');
+    expect(response.status()).toBe(200);
+    const sitemapText = await response.text();
+
+    for (const route of nonIndexableRoutes) {
+      expect(
+        sitemapText,
+        `La URL ${route.path} no debe estar presente en el sitemap.xml`,
+      ).not.toContain(`<loc>https://www.vitablue.es${route.path}</loc>`);
+    }
+  });
+
+  test('El sitemap.xml incluye namespace xhtml y enlaces hreflang alternativos para páginas multilingües', async ({ request }) => {
+    const response = await request.get('/sitemap.xml');
+    expect(response.status()).toBe(200);
+    const sitemapText = await response.text();
+
+    expect(sitemapText).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />');
+  });
 });
