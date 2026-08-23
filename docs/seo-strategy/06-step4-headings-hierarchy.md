@@ -42,8 +42,8 @@ H2: Requisitos Oficiales del Seguro Médico que Exige el Consulado y Extranjerí
 H2: ¿Por Qué NO Sirve un Seguro de Viaje para el Visado de Estudios?
    ↳ Explicación: Ataque directo a la confusión más frecuente (estudiantes que compran seguros baratos de viaje y el consulado se los rechaza). Posiciona a VitaBlue como la opción segura.
 
-H2: Comparativa de Pólizas Oficiales para Estudiantes: Sanitas vs Adeslas vs DKV
-   ↳ Explicación: Tráfico transaccional comparativo. Muestra una tabla clara y transparente con coberturas reales, videoconsultas Blua y cuadro médico nacional.
+H2: Comparativa de Pólizas Oficiales para Estudiantes: ASISA vs Sanitas vs Adeslas vs DKV
+   ↳ Explicación: Tráfico transaccional comparativo. Destaca ASISA (nuestra opción #1 más contratada y ágil), junto con Sanitas y Adeslas, mostrando cuadro médico nacional, coberturas completas y rapidez de emisión.
 
 H2: Precios del Seguro Médico para Estudiantes Extranjeros en España
    ↳ Explicación: Ataca las KWs "seguro medico estudiantes extranjeros precios" y "baratos". Muestra tarifas reales transparentes por meses o año completo.

@@ -145,38 +145,56 @@ export const StudentInsurance: React.FC = () => {
 
   const plansList = isEnglish ? [
     {
-      name: 'Sanitas International Students',
-      subtitle: 'Premium Digital',
-      desc: 'The preferred choice for student visas. Includes the Blua telemedicine module free forever, unlimited video consults, and immediate official certificate.',
-      priceDetail: 'Consular PDF certificate instantly',
-      tag: 'Recommended',
-      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
+      name: 'ASISA Salud Estudiantes',
+      subtitle: 'Most Popular & Best Price',
+      desc: 'The #1 choice for student visas in Spain. Full coverage with zero copays and zero wait times. Ultra-fast certificate emission in less than 24 hours.',
+      priceDetail: 'Official Consular PDF in <24h · From €38/mo',
+      tag: 'Best Value',
+      badgeColor: 'bg-accent/10 text-accent border border-accent/20',
       isFeatured: true
     },
     {
-      name: 'Adeslas Plena Extra',
+      name: 'Sanitas International Students',
+      subtitle: 'Premium Digital',
+      desc: 'The preferred choice for student visas. Includes the Blua telemedicine module free forever, unlimited video consults, and immediate official certificate.',
+      priceDetail: 'Consular PDF certificate instantly · From €45/mo',
+      tag: 'Recommended',
+      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
+      isFeatured: false
+    },
+    {
+      name: 'Adeslas Extranjeros Completo',
       subtitle: 'Standard Network Insurance',
       desc: 'Excellent national medical coverage from Adeslas with zero copays. Includes repatriation and international reimbursement for emergencies outside Spain.',
-      priceDetail: 'Large network of private hospitals',
+      priceDetail: 'Large network of private hospitals · From €49/mo',
       tag: 'Alternative',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
     }
   ] : [
     {
-      name: 'Sanitas International Students',
-      subtitle: 'Premium Digital',
-      desc: 'La opción predilecta para el visado de estudiantes. Incluye el módulo Blua de telemedicina gratis para siempre, videoconsultas ilimitadas y certificado oficial inmediato.',
-      priceDetail: 'Certificado consular en PDF al instante',
-      tag: 'Recomendado',
-      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
+      name: 'ASISA Salud Estudiantes',
+      subtitle: 'La Opción Más Contratada y Ágil',
+      desc: 'Nuestra opción #1 más recomendada para visados de estudiantes. Cobertura médica completa 100% homologada sin copagos ni carencias. Emisión de certificado express en menos de 24h.',
+      priceDetail: 'Certificado consular en <24h · Desde 38€/mes',
+      tag: 'Mejor Precio',
+      badgeColor: 'bg-accent/10 text-accent border border-accent/20',
       isFeatured: true
     },
     {
-      name: 'Adeslas Plena Extra',
-      subtitle: 'Seguro Médico de Cuadro',
-      desc: 'Excelente cobertura médica nacional de Adeslas sin copagos. Incluye repatriación y reembolso internacional para emergencias fuera de España en periodos vacacionales.',
-      priceDetail: 'Gran red de clínicas concertadas',
+      name: 'Sanitas International Students',
+      subtitle: 'Premium Digital',
+      desc: 'La opción predilecta para el visado de estudiantes. Incluye el módulo Blua de telemedicina gratis para siempre, videoconsultas ilimitadas y certificado oficial inmediato.',
+      priceDetail: 'Certificado consular en PDF al instante · Desde 45€/mes',
+      tag: 'Recomendado',
+      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
+      isFeatured: false
+    },
+    {
+      name: 'Adeslas Extranjeros Completo',
+      subtitle: 'Seguro Médico de Cuadro Nacional',
+      desc: 'Excelente cobertura médica nacional de Adeslas sin copagos. Incluye repatriación y asistencia en viajes fuera de España para periodos vacacionales.',
+      priceDetail: 'Gran red de clínicas concertadas · Desde 49€/mes',
       tag: 'Alternativa',
       badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
       isFeatured: false
@@ -209,21 +227,21 @@ export const StudentInsurance: React.FC = () => {
     {
       author: 'Mariana Silva',
       meta: 'Estudiante de Máster en Madrid',
-      comment: 'Necesitaba un seguro sin copagos ni carencias para el visado de estudios y estaba perdidísima. Me atendieron al momento por WhatsApp, me recomendaron la opción ideal y me enviaron el certificado consular de inmediato. ¡Visado aprobado!',
+      comment: 'Necesitaba un seguro sin copagos ni carencias para el visado de estudios y estaba perdidísima. Me atendieron al momento por WhatsApp, me recomendaron ASISA y me enviaron el certificado consular en 24h. ¡Visado aprobado!',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
       author: 'Carlos Mendoza',
       meta: 'Estudiante de Grado en Barcelona',
-      comment: 'Buscaba un seguro de salud privado normal. Probé en otros comparadores y me acribillaron a llamadas telefónicas de telemarketing. En VitaBlue pude ver los precios reales sin registrarme y contraté directamente a mi ritmo. Excelente.',
+      comment: 'Buscaba un seguro médico para estudiantes en España. En otros comparadores me acribillaron a llamadas. En VitaBlue vi los precios reales de ASISA y Sanitas sin registrarme y contraté por WhatsApp a mi ritmo.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
     },
     {
       author: 'Li Wei',
       meta: 'Curso de Idiomas en Sevilla',
-      comment: 'Gestión 100% online súper rápida. La documentación en español e inglés llegó a mi correo en minutos y fue aceptada por el consulado de España en Pekín sin ningún problema.',
+      comment: 'Gestión 100% online súper rápida. La documentación en español e inglés llegó a mi correo en horas y fue aceptada por el consulado de España en Pekín sin ningún problema.',
       stars: 5,
       avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100'
     }
@@ -231,29 +249,85 @@ export const StudentInsurance: React.FC = () => {
 
   const faqs = isEnglish ? [
     {
-      q: 'What does it mean for the insurance to be "without copays" (sin copagos)?',
-      a: 'It means you pay a fixed monthly premium and won\'t have to pay any extra amount when you visit a doctor, have lab tests, or undergo surgery. Spanish immigration offices and consulates strictly require that the insurance has zero copays.'
+      q: 'What requirements must health insurance meet for a student visa in Spain?',
+      a: 'The policy must meet 4 mandatory conditions: 1) Zero copays or deductibles, 2) Zero wait times (carencias) for medical services, 3) Full coverage equivalent to the Spanish public healthcare system (including hospitalization and surgeries), and 4) Sanitary and funeral repatriation to the country of origin included.'
     },
     {
-      q: 'When will I receive the certificate for my student visa?',
-      a: 'Once you apply online and complete the first payment, the certificate of coverage and policy details in PDF are automatically generated and sent to your email within a maximum of 24 business hours.'
+      q: 'Does travel insurance work for a Spanish student visa?',
+      a: 'No. Spanish consulates and immigration offices reject standard travel insurance because it only covers emergency assistance with low financial caps. You must hold comprehensive health insurance from an authorized Spanish insurer (like ASISA or Sanitas).'
     },
     {
-      q: 'What happens if my visa is denied?',
-      a: 'Both Adeslas and Sanitas guarantee a full refund of the amount paid if you present the official visa rejection letter issued by the consulate of Spain, provided you request it before the policy start date.'
+      q: 'What is the best health insurance for international students in Spain in 2026?',
+      a: 'ASISA Salud Estudiantes is the top-rated choice through VitaBlue for its unbeatable value, comprehensive network across Spain, and fast certificate issuance in less than 24 business hours (starting from approx. €38/month).'
+    },
+    {
+      q: 'Can I purchase the student health insurance before traveling without a NIE or Spanish bank account?',
+      a: 'Yes, absolutely. You can apply 100% online from your home country using only your valid Passport and pay securely with an international credit or debit card.'
+    },
+    {
+      q: 'What happens if my student visa is denied by the consulate?',
+      a: 'VitaBlue provides a 100% Money-Back Guarantee. If your visa application is rejected, you will receive a full refund upon presenting the official consular rejection letter before the policy start date.'
+    },
+    {
+      q: 'How much does health insurance for international students in Spain cost?',
+      a: 'Prices range from €38 to €50 per month (approx. €450 to €550 for a full 12-month academic year), depending on the student\'s age and the chosen insurer (ASISA, Sanitas, or Adeslas).'
+    },
+    {
+      q: 'Does the student health insurance cover accompanying family members?',
+      a: 'Yes. Dependents (spouses or children) can be added to the policy or contracted under individual plans, each receiving their official certificate for their visa application.'
+    },
+    {
+      q: 'How long does it take to receive the official consular certificate?',
+      a: 'With fast-track insurers like ASISA, the official certificate in PDF is delivered to your email and WhatsApp in less than 24 business hours.'
+    },
+    {
+      q: 'Does the student insurance include dental coverage and European travel assistance?',
+      a: 'Yes. Policies include basic dental emergency coverage and emergency travel assistance across Schengen countries (up to €12,000 to €30,000) for leisure trips.'
+    },
+    {
+      q: 'How do I renew my insurance for my student residence card (TIE) extension?',
+      a: 'When renewing your TIE/NIE for the next academic year, you can easily renew your existing policy or compare updated rates directly with VitaBlue via WhatsApp.'
     }
   ] : [
     {
-      q: '¿Qué significa que el seguro sea "sin copagos"?',
-      a: 'Significa que pagas una prima mensual fija y no tendrás que abonar ninguna cantidad adicional cuando vayas al médico, te hagas análisis o te sometas a una intervención. Las oficinas de Extranjería y Consulados exigen explícitamente que el seguro no tenga copagos.'
+      q: '¿Qué requisitos debe tener el seguro médico para el visado de estudiante en España?',
+      a: 'Para que el consulado o Extranjería apruebe tu visado de estudiante (o tarjeta TIE), tu seguro debe cumplir 4 requisitos: 1) Sin copagos ni franquicias, 2) Sin periodos de carencia (cobertura desde el primer día), 3) Cobertura sanitaria completa equivalente a la sanidad pública con hospitalización, y 4) Repatriación sanitaria y funeraria al país de origen incluida.'
     },
     {
-      q: '¿Cuándo recibiré el certificado para mi visado?',
-      a: 'Una vez contratada la póliza online y realizado el primer pago, el certificado de cobertura y las condiciones particulares en PDF se generan automáticamente y se envían a tu correo en un plazo máximo de 24 horas laborales.'
+      q: '¿Sirve un seguro de viaje para solicitar el visado de estudios en España?',
+      a: 'No. Los consulados de España (especialmente en Latinoamérica: Colombia, México, Perú, Argentina, Ecuador) rechazan los seguros de viaje estándar porque solo cubren emergencias temporales limitadas. Extranjería exige un seguro médico de salud completo homologado con hospitalización ilimitada.'
     },
     {
-      q: '¿Qué pasa si mi visado es denegado?',
-      a: 'Tanto Adeslas como Sanitas garantizan la devolución íntegra del importe abonado si presentas la carta oficial de denegación del visado emitida por el consulado de España, siempre que lo solicites antes de la fecha de inicio de la póliza.'
+      q: '¿Cuál es el mejor seguro médico para estudiantes extranjeros en España en 2026?',
+      a: 'ASISA Salud Estudiantes es la opción #1 más recomendada en VitaBlue por su excelente precio (desde 38€/mes), cobertura nacional completa y la emisión más ágil de certificados consulares en menos de 24 horas. Sanitas y Adeslas también son opciones destacadas.'
+    },
+    {
+      q: '¿Puedo contratar el seguro médico antes de viajar y sin tener NIE ni cuenta bancaria en España?',
+      a: 'Sí, totalmente. Puedes contratar 100% online desde tu país de origen únicamente con tu número de Pasaporte y pagar con tarjeta internacional (Visa o Mastercard).'
+    },
+    {
+      q: '¿Qué pasa con el dinero del seguro si el consulado me deniega el visado?',
+      a: 'En VitaBlue cuentas con Garantía de Reembolso Total. Si el consulado deniega tu visado, te devolvemos el 100% del importe abonado presentando la carta oficial de denegación consular.'
+    },
+    {
+      q: '¿Cuánto cuesta un seguro médico para estudiantes extranjeros en España?',
+      a: 'El precio oscila entre 38€ y 50€ al mes (entre 450€ y 550€ por un año académico completo de 12 meses), según la edad y la compañía aseguradora seleccionada.'
+    },
+    {
+      q: '¿El seguro médico para visado cubre a familiares o acompañantes del estudiante?',
+      a: 'Sí. Puedes incluir a cónyuges e hijos en la póliza. Cada familiar recibirá su propio certificado consular oficial para tramitar su visado de acompañante.'
+    },
+    {
+      q: '¿Cuánto tiempo tarda en emitirse el certificado consular del seguro médico?',
+      a: 'Con aseguradoras ágiles como ASISA, el certificado oficial en PDF se emite y se entrega en tu correo y WhatsApp en menos de 24 horas laborales tras la contratación.'
+    },
+    {
+      q: '¿El seguro médico de estudiante incluye cobertura dental y asistencia en otros países de Europa?',
+      a: 'Sí. Incluye revisiones y urgencias dentales básicas, además de asistencia médica en viaje para desplazamientos por Europa y el espacio Schengen (hasta 12.000€ - 30.000€).'
+    },
+    {
+      q: '¿Dónde y cómo puedo renovar mi seguro para prorrogar la estancia por estudios o el NIE?',
+      a: 'Para renovar tu tarjeta TIE en Extranjería para el siguiente curso, puedes renovar tu póliza existente o cotizar una mejor tarifa directamente en VitaBlue por WhatsApp.'
     }
   ];
 
@@ -376,32 +450,14 @@ export const StudentInsurance: React.FC = () => {
       },
       {
         "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "¿El seguro médico de Sanitas es válido para el visado de estudiante en España?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Sí. Sanitas International Students está diseñado específicamente para cumplir con todos los requisitos de los consulados españoles: sin copagos, sin carencias (en servicios sanitarios cubiertos), con repatriación y un capital de cobertura ilimitado."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Cuánto se tarda en obtener el certificado oficial para el visado?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Una vez confirmada la contratación y el pago, el certificado de seguro digital en español (y en inglés si lo solicitas) se emite y envía a tu correo en menos de 24 horas laborables."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Qué ocurre si deniegan mi visado?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "En caso de denegación oficial del visado por parte del consulado, Sanitas permite la cancelación de la póliza y la devolución de la prima abonada, siempre que se presente el justificante oficial antes de la fecha de efecto del seguro."
-            }
+        "mainEntity": faqs.map(faq => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.a
           }
-        ]
+        }))
       }
     ]
   };
@@ -436,9 +492,9 @@ export const StudentInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: isEnglish ? 'Health Insurance' : 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: isEnglish ? 'Sanitas Insurance' : 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }, { label: isEnglish ? 'International Students' : 'Estudiantes Extranjeros', href: isEnglish ? '/en/health-insurance-student-visa-spain' : '/productos/seguros-salud/seguros-sanitas/international-students' }]} />
+      <ProductBreadcrumbBar items={[{ label: isEnglish ? 'Health Insurance' : 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: isEnglish ? 'Student Insurance' : 'Seguro de Estudiantes', href: isEnglish ? '/en/health-insurance-student-visa-spain' : '/productos/seguros-salud/seguro-medico-estudiantes' }]} />
 
-      <ProductHero badges={[{ label: t.heroTag, icon: <GraduationCap className="h-4 w-4" /> }, { label: isEnglish ? 'Visa Approved' : 'Visado Garantizado', tone: 'accent' }]} title={t.heroTitle} description={t.heroSubtitle} primaryAction={{ label: t.ctaButton, onClick: handleStartQuoting }} secondaryAction={{ label: t.callAdvisor, href: 'tel:+34900839240' }} highlights={[isEnglish ? 'Certificate in 24 hours' : 'Certificado en 24 horas', isEnglish ? 'Repatriation included' : 'Repatriación incluida']}>
+      <ProductHero badges={[{ label: t.heroTag, icon: <GraduationCap className="h-4 w-4" /> }, { label: isEnglish ? '100% Visa Approved' : '100% Homologado', tone: 'accent' }]} title={t.heroTitle} description={t.heroSubtitle} primaryAction={{ label: t.ctaButton, onClick: handleStartQuoting }} secondaryAction={{ label: t.callAdvisor, href: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Estudiantes%20Extranjeros.' }} highlights={[isEnglish ? 'Official Certificate in 24h' : 'Certificado oficial en 24h', isEnglish ? 'Repatriation included' : 'Repatriación incluida']}>
         <QuoteEstimator title={isEnglish ? 'Student Price Estimator' : 'Tarificador de Estudiante'} description={isEnglish ? 'Calculate your monthly quote with zero copays.' : 'Calcula tu cuota mensual sin copagos de forma inmediata.'} initialAge={22} maxAge={35} options={[{ id: 'undergrad', label: isEnglish ? 'University' : 'Grado/Uni' }, { id: 'master', label: isEnglish ? 'Master/PhD' : 'Máster/Doc' }, { id: 'language', label: isEnglish ? 'Language' : 'Idiomas' }]} initialOption="undergrad" calculatePrice={() => 'Personalizado'} personalizedPriceLabel={isEnglish ? 'Personalized price' : 'Precio personalizado'} priceLabel={isEnglish ? 'Estimated Quote:' : 'Cuota Estimada:'} submitLabel={isEnglish ? 'Start Online Application' : 'Iniciar Contratación Online'} onSubmit={handleStartQuoting} />
       </ProductHero>
 
@@ -451,26 +507,27 @@ export const StudentInsurance: React.FC = () => {
       <ProviderLogoBar
         eyebrow={isEnglish ? 'Approved official insurance companies' : 'Aseguradoras oficiales homologadas'}
         providers={[
+          { name: 'ASISA', logoSrc: '/images/logo-asisa.png' },
           { name: 'Sanitas', logoSrc: '/images/logo-sanitas.svg' },
           { name: 'Adeslas', logoSrc: '/images/logo-adeslas.svg' },
         ]}
       />
 
       <CoverageGrid
-        eyebrow={isEnglish ? 'Required Conditions' : 'Condiciones Exigidas'}
-        title={isEnglish ? 'Official Insurance Guarantees' : 'Garantías Oficiales del Seguro'}
+        eyebrow={isEnglish ? 'Consular Requirements' : 'Requisitos Consulares'}
+        title={isEnglish ? 'Official Health Insurance Requirements' : 'Requisitos Oficiales del Seguro Médico'}
         description={isEnglish ? 'All our selected policies strictly comply with the Spanish immigration law for your absolute peace of mind.' : 'Todas nuestras pólizas seleccionadas cumplen estrictamente la ley de extranjería española para tu absoluta tranquilidad.'}
         items={coverages.map(({ title, desc, illustration }) => ({ title, description: desc, illustration }))}
       />
 
       {/* Plans List section */}
       <PlanComparisonSection
-        eyebrow={isEnglish ? 'Available Options' : 'Opciones Disponibles'}
-        title={isEnglish ? 'Compare student health insurances' : 'Compara seguros para estudiantes'}
+        eyebrow={isEnglish ? 'Multi-Brand Comparison' : 'Comparativa Multimarca'}
+        title={isEnglish ? 'Compare Official Student Health Insurances: ASISA vs Sanitas vs Adeslas' : 'Comparativa de Pólizas Oficiales: ASISA vs Sanitas vs Adeslas'}
         plans={plansList}
         onPlanAction={handleStartQuoting}
         actionLabel={isEnglish ? 'Compare this policy' : 'Comparar esta póliza'}
-        columns={2}
+        columns={3}
       />
 
       {/* Transparency section */}
