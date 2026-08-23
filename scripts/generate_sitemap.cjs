@@ -11,7 +11,9 @@ const registry = fs.readFileSync(registryPath, 'utf8');
 const blogData = fs.readFileSync(blogPath, 'utf8');
 const existingSitemap = fs.readFileSync(sitemapPath, 'utf8');
 
-const canonicalRoutes = [...registry.matchAll(/canonical\('([^']+)'/g)].map((match) => match[1]);
+const canonicalRoutes = [...registry.matchAll(/canonical\('([^']+)',\s*\{([\s\S]*?)\}\)/g)]
+  .filter(([, , options]) => !/sitemap:\s*false/.test(options))
+  .map(([, path]) => path);
 const blogSlugs = [...blogData.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
 const routes = [...new Set([
   ...canonicalRoutes,
