@@ -261,12 +261,14 @@ export const DocumentViewer: React.FC<{
             }`}
             style={{
               transform: `translate3d(${pan.x}px, ${pan.y}px, 0px) rotate(${rotation}deg) scale(${zoom})`,
+              maxWidth: viewportSize.width ? `${viewportSize.width - 32}px` : '100%',
+              maxHeight: viewportSize.height ? `${viewportSize.height - 32}px` : '100%',
             }}
           >
             {/* Si estamos arrastrando, evitamos interferencias del iframe con pointer-events */}
             {isDragging && <div className="absolute inset-0 z-30" />}
 
-            <div className="relative inline-block">
+            <div className="relative inline-block max-h-full max-w-full">
               {isPdf ? (
                 <canvas ref={pdfCanvasRef} aria-label={file?.name ?? 'Documento PDF'} className="block rounded-lg bg-white shadow-sm" />
               ) : (
@@ -274,7 +276,11 @@ export const DocumentViewer: React.FC<{
                   src={previewUrl}
                   alt={file?.name ?? 'Documento'}
                   draggable={false}
-                  className="max-h-full max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
+                  className="block h-auto w-auto max-h-[calc(100vh-280px)] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none"
+                  style={{
+                    maxHeight: viewportSize.height ? `${Math.max(viewportSize.height - 40, 200)}px` : '500px',
+                    maxWidth: viewportSize.width ? `${Math.max(viewportSize.width - 40, 200)}px` : '100%',
+                  }}
                 />
               )}
               <BoundingBoxOverlay
