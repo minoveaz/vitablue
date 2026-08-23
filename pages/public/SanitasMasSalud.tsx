@@ -170,7 +170,7 @@ export const SanitasMasSalud: React.FC = () => {
         }
       },
       {
-        "@type": "Product",
+        "@type": "FinancialProduct",
         "@id": `${canonicalUrl}#producto`,
         "name": "Sanitas Más Salud",
         "description": "Seguro médico privado con Hospitalización, urgencias 24/7, red propia de hospitales Sanitas y servicios digitales Blua.",
@@ -178,12 +178,8 @@ export const SanitasMasSalud: React.FC = () => {
           "@type": "Brand",
           "name": "Sanitas"
         },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": canonicalUrl
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
         },
         "aggregateRating": {
           "@type": "AggregateRating",

@@ -303,7 +303,7 @@ export const StudentInsurance: React.FC = () => {
         }
       },
       {
-        "@type": "Product",
+        "@type": "FinancialProduct",
         "@id": `${canonicalUrl}#producto`,
         "name": "Sanitas International Students",
         "description": "Seguro médico diseñado para estudiantes extranjeros en España válido para visado. Cobertura sin copagos y sin carencias.",
@@ -311,12 +311,8 @@ export const StudentInsurance: React.FC = () => {
           "@type": "Brand",
           "name": "Sanitas"
         },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": canonicalUrl
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
