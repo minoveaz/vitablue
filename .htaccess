@@ -39,15 +39,6 @@
   RewriteEngine On
   RewriteBase /
 
-  # ---------------------------------------------------------------
-  # FIX CRÍTICO 1: Eliminar trailing slash en URLs canónicas.
-  # DirectorySlash Off no funciona en Hostinger porque su CDN (hcdn)
-  # aplica el redirect /page → /page/ antes de llegar a Apache.
-  # La solución es una regla explícita que elimina el slash final
-  # en todas las rutas excepto la raíz (/), que sí debe mantenerse.
-  # ---------------------------------------------------------------
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.*)/$ /$1 [R=301,L,NE]
 
   # ---------------------------------------------------------------
   # FIX CRÍTICO 2: Redirigir HTTP y/o sin-www a HTTPS + www.
