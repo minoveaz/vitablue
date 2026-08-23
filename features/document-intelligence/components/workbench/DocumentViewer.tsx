@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
 import {
   ExternalLink,
   Move,
@@ -12,10 +13,10 @@ import type { DocumentBoundingBoxes } from '../../types';
 import type { FieldKey } from '../../fieldLabels';
 import { BoundingBoxOverlay } from './BoundingBoxOverlay';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.mjs',
-  import.meta.url,
-).toString();
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    pdfWorkerUrl || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+}
 
 export const DocumentViewer: React.FC<{
   file: File | null;
@@ -129,28 +130,46 @@ export const DocumentViewer: React.FC<{
     if (!isPdf || !previewUrl || !pdfCanvasRef.current || !viewportSize.width || !viewportSize.height) return;
     let cancelled = false;
     const render = async () => {
-      const pdf = await pdfjsLib.getDocument({ url: previewUrl }).promise;
-      const page = await pdf.getPage(1);
-      const canvas = pdfCanvasRef.current;
-      if (!canvas || cancelled) return;
-      const base = page.getViewport({ scale: 1 });
-      const scale = Math.min(
-        Math.max(viewportSize.width - 32, 1) / base.width,
-        Math.max(viewportSize.height - 32, 1) / base.height,
-      );
-      const viewport = page.getViewport({ scale: Math.max(scale, 0.1) });
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.ceil(viewport.width * dpr);
-      canvas.height = Math.ceil(viewport.height * dpr);
-      canvas.style.width = `${viewport.width}px`;
-      canvas.style.height = `${viewport.height}px`;
-      await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport, transform: [dpr, 0, 0, dpr, 0, 0] }).promise;
+      try {
+        let pdfData: { data: ArrayBuffer } | { url: string };
+        if (file) {
+          const buffer = await file.arrayBuffer();
+          pdfData = { data: buffer };
+        } else {
+          pdfData = { url: previewUrl };
+        }
+
+        const loadingTask = pdfjsLib.getDocument(pdfData);
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        const canvas = pdfCanvasRef.current;
+        if (!canvas || cancelled) return;
+        const base = page.getViewport({ scale: 1 });
+        const scale = Math.min(
+          Math.max(viewportSize.width - 32, 1) / base.width,
+          Math.max(viewportSize.height - 32, 1) / base.height,
+        );
+        const viewport = page.getViewport({ scale: Math.max(scale, 0.1) });
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.ceil(viewport.width * dpr);
+        canvas.height = Math.ceil(viewport.height * dpr);
+        canvas.style.width = `${viewport.width}px`;
+        canvas.style.height = `${viewport.height}px`;
+        await page.render({
+          canvas,
+          canvasContext: canvas.getContext('2d')!,
+          viewport,
+          transform: [dpr, 0, 0, dpr, 0, 0],
+        }).promise;
+      } catch (err) {
+        console.warn('[DocumentViewer] Error rendering PDF page:', err);
+      }
     };
     void render();
     return () => {
       cancelled = true;
     };
-  }, [isPdf, previewUrl, viewportSize]);
+  }, [file, isPdf, previewUrl, viewportSize]);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-100 select-none">
