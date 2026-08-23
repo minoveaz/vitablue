@@ -133,9 +133,9 @@ export const ReviewView: React.FC<{
   warning,
   issueCount,
 }) => (
-  <section className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2 gap-5 items-start overflow-y-auto pb-4">
+  <section className="grid h-full min-h-0 flex-1 grid-cols-1 gap-5 overflow-hidden pb-4 lg:grid-cols-2 lg:items-stretch">
     {/* Columna Izquierda: Visor de documento */}
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+    <div className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5">
         <div className="flex items-center gap-2">
           <FileScan className="size-4 text-primary" />
@@ -175,7 +175,7 @@ export const ReviewView: React.FC<{
           )}
         </div>
       </div>
-      <div className="p-3 bg-slate-50">{viewer}</div>
+      <div className="flex min-h-0 flex-1 bg-slate-50 p-3">{viewer}</div>
     </div>
 
     {/* Columna Derecha: Formulario estructurado en 3 bloques semánticos */}
