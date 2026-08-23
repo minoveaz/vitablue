@@ -418,9 +418,9 @@ export const StudentInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
         <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-student-visa-spain" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
