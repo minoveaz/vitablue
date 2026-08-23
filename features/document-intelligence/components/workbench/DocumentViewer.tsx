@@ -126,9 +126,13 @@ export const DocumentViewer: React.FC<{
     return () => observer.disconnect();
   }, []);
 
+  const [pdfRenderError, setPdfRenderError] = useState(false);
+
   useEffect(() => {
     if (!isPdf || !previewUrl || !pdfCanvasRef.current || !viewportSize.width || !viewportSize.height) return;
     let cancelled = false;
+    setPdfRenderError(false);
+
     const render = async () => {
       try {
         let pdfData: { data: ArrayBuffer } | { url: string };
@@ -139,7 +143,12 @@ export const DocumentViewer: React.FC<{
           pdfData = { url: previewUrl };
         }
 
-        const loadingTask = pdfjsLib.getDocument(pdfData);
+        const loadingTask = pdfjsLib.getDocument({
+          ...pdfData,
+          cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@legacy/cmaps/',
+          cMapPacked: true,
+        });
+
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(1);
         const canvas = pdfCanvasRef.current;
@@ -162,7 +171,8 @@ export const DocumentViewer: React.FC<{
           transform: [dpr, 0, 0, dpr, 0, 0],
         }).promise;
       } catch (err) {
-        console.warn('[DocumentViewer] Error rendering PDF page:', err);
+        console.warn('[DocumentViewer] PDF.js canvas render failed, switching to native PDF preview:', err);
+        if (!cancelled) setPdfRenderError(true);
       }
     };
     void render();
@@ -289,7 +299,19 @@ export const DocumentViewer: React.FC<{
 
             <div className="relative inline-block max-h-full max-w-full">
               {isPdf ? (
-                <canvas ref={pdfCanvasRef} aria-label={file?.name ?? 'Documento PDF'} className="block rounded-lg bg-white shadow-sm" />
+                pdfRenderError ? (
+                  <iframe
+                    src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                    title={file?.name ?? 'Documento PDF'}
+                    className="block h-[500px] w-[380px] max-h-[calc(100vh-280px)] max-w-full rounded-lg bg-white shadow-sm border border-slate-200"
+                    style={{
+                      width: viewportSize.width ? `${Math.min(viewportSize.width - 40, 500)}px` : '380px',
+                      height: viewportSize.height ? `${Math.min(viewportSize.height - 40, 650)}px` : '500px',
+                    }}
+                  />
+                ) : (
+                  <canvas ref={pdfCanvasRef} aria-label={file?.name ?? 'Documento PDF'} className="block rounded-lg bg-white shadow-sm" />
+                )
               ) : (
                 <img
                   src={previewUrl}
