@@ -33,7 +33,11 @@ const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
 const ToolsHome = lazy(() => import('@/pages/backoffice/ToolsHome'));
 const ProductCatalog = lazy(() => import('@/pages/backoffice/ProductCatalog'));
-const DocumentIntelligence = lazy(() => import('@/pages/backoffice/DocumentIntelligence'));
+const DocumentIntelligence = lazy(() => import('@/pages/backoffice/DocumentIntelligenceHub'));
+const DocumentIntelligenceRules = lazy(() => import('@/pages/backoffice/DocumentIntelligenceRules'));
+const DocumentIntelligenceProfiles = lazy(() => import('@/pages/backoffice/DocumentIntelligenceProfiles'));
+const DocumentIntelligenceExtractions = lazy(() => import('@/pages/backoffice/DocumentIntelligenceExtractions'));
+const DocumentIntelligenceExtraction = lazy(() => import('@/pages/backoffice/DocumentIntelligenceExtraction'));
 const MarketingRedirect = lazy(() => import('@/pages/public/MarketingRedirect'));
 const ImageStudio = lazy(() => import('@/marketing-studio/ImageStudio'));
 
@@ -51,6 +55,15 @@ const generatedBackofficeRoutes = [...privateRoutes, ...dynamicRoutes]
         ? ProductCatalog
         : route.path === '/backoffice/tools/document-intelligence'
           ? DocumentIntelligence
+          : route.path === '/backoffice/tools/document-intelligence/reglas'
+            ? DocumentIntelligenceRules
+            : route.path === '/backoffice/tools/document-intelligence/perfiles'
+              ? DocumentIntelligenceProfiles
+              : route.path === '/backoffice/tools/document-intelligence/extraccion'
+                ? DocumentIntelligenceExtractions
+                : route.path === '/backoffice/tools/document-intelligence/extraccion/new'
+                  || route.path === '/backoffice/tools/document-intelligence/extraccion/:extractionId'
+                  ? DocumentIntelligenceExtraction
           : route.path === '/backoffice/marketing-studio/image-studio' || route.path === '/backoffice/marketing-studio/creative-studio/image-editor'
             ? ImageStudio
             : MarketingStudio;

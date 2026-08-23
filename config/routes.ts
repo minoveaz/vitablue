@@ -75,6 +75,7 @@ export const canonicalRoutes: RouteDefinition[] = [
 export const dynamicRoutes: RouteDefinition[] = [
   { path: '/blog/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/en/blog/:slug', kind: 'dynamic', locale: 'en', indexable: true, prerender: true, sitemap: true },
+  { path: '/backoffice/tools/document-intelligence/extraccion/:extractionId', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/r/:slug', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];
@@ -113,6 +114,10 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/backoffice/document-intelligence', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/backoffice/tools/document-intelligence' },
   { path: '/backoffice/tools', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/tools/document-intelligence', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/tools/document-intelligence/reglas', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/tools/document-intelligence/perfiles', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/tools/document-intelligence/extraccion', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+  { path: '/backoffice/tools/document-intelligence/extraccion/new', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/marketing-studio/login', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/login' },
   { path: '/cotizador.html', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
   { path: '/wizard', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
