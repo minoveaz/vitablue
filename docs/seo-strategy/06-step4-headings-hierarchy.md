@@ -13,7 +13,10 @@
 2. **Competidor 2: `miotroseguro.com`**
    * **Lo que hace bien**: Explica la diferencia crítica entre *seguro de viaje* vs *seguro médico de salud* para consulados estrictos (México, Bogotá, Lima).
    * **Lo que le falta**: Código Joomla saturado de scripts antiguos (más de 4.400 líneas), diseño confuso y nula optimización para IA.
-3. **Competidor 3: `c1brokers.es`**
+3. **Competidor 3: `polizamedica.es` (Póliza Médica Estudiantes)**
+   * **Lo que hace bien**: Gran autoridad de dominio en España y listado exhaustivo de mutuas (Adeslas, Asisa, DKV, Sanitas).
+   * **Lo que le falta**: Experiencia comercial agresiva (obligan a llamada telefónica de telemarketing, sin contratación 100% online ni soporte en WhatsApp).
+4. **Competidor 4: `c1brokers.es`**
    * **Lo que hace bien**: Enfoque de autoridad en trámites de extranjería y Golden Visa.
    * **Lo que le falta**: No tiene cotizador interactivo transparente ni opciones mobile-first rápidas.
 
