@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { generateProfileSvg, generateCoverSvg, downloadSvgAsPng } from '@/utils/svgGenerator';
 import {
   Check,
@@ -18,6 +18,7 @@ import {
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '@/components/atoms/Logo';
 import SocialGenerator from '@/marketing-studio/SocialGenerator';
+import MarketingStudioShell from '@/marketing-studio/MarketingStudioShell';
 import { 
   getSocialProfiles, 
   saveSocialProfiles, 
@@ -47,9 +48,9 @@ import {
 } from '@/marketing-studio/utils/connections';
 import BrandIdentityPanel from '@/marketing-studio/components/BrandIdentityPanel';
 import MarketingLinks from '@/marketing-studio/MarketingLinks';
-import BackofficeShell from '@/components/layouts/BackofficeShell';
+import AssetManagement from '@/marketing-studio/AssetManagement';
 
-type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content';
+type StudioSection = 'identity' | 'profiles' | 'campaigns' | 'links' | 'connections' | 'content' | 'assets';
 type PlatformId = SocialPlatformId;
 type SocialAssetType = 'profile' | 'cover';
 
@@ -109,6 +110,8 @@ const MarketingStudio: React.FC = () => {
     section = 'links';
   } else if (pathname.includes('/conexiones')) {
     section = 'connections';
+  } else if (pathname.includes('/assets')) {
+    section = 'assets';
   } else if (pathname.includes('/generador-contenido') || pathname.includes('/dam/video/new')) {
     section = 'content';
   }
@@ -137,7 +140,9 @@ const MarketingStudio: React.FC = () => {
         ? 'Planificador de Campañas Multicanal'
         : section === 'connections'
           ? 'Configuración de Conexiones de API'
-          : 'Generador Automático de Contenido';
+          : section === 'assets'
+            ? 'Gestión de Assets & Kits de Vídeo'
+            : 'Generador Automático de Contenido';
   
   const coverDimensions = selectedPlatform.coverSize ?? { width: 1640, height: 624 };
   const coverLogoSize = coverDimensions.width >= 2000 ? 220 : 150;
@@ -249,8 +254,18 @@ const MarketingStudio: React.FC = () => {
     }
   };
 
+  if (section === 'assets') {
+    return <AssetManagement />;
+  }
+
+  if (section === 'content') {
+    return <SocialGenerator />;
+  }
+
+  const StudioShell = MarketingStudioShell;
+
   return (
-    <BackofficeShell title={studioTitle}>
+    <StudioShell title={studioTitle} mode="overview">
       {/* SIDEBAR NAVIGATION */}
       <aside className="hidden">
         <div className="p-6">
@@ -275,7 +290,7 @@ const MarketingStudio: React.FC = () => {
             <Link to="/marketing-studio/conexiones" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'connections' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
               <Globe size={16} className="shrink-0" /> Conexiones API
             </Link>
-            <Link to="/marketing-studio/generador-contenido" className={`flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${section === 'content' ? 'bg-[#005F73] text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-slate-800/60'}`}>
+            <Link to="/marketing-studio/generador-contenido" className="flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
               <Sparkles size={16} /> Generador de contenido
             </Link>
           </nav>
@@ -307,7 +322,6 @@ const MarketingStudio: React.FC = () => {
               {section === 'campaigns' && 'Planificador de Campañas Multicanal'}
               {section === 'links' && 'Enlaces de campaña'}
               {section === 'connections' && 'Configuración de Conexiones de API'}
-              {section === 'content' && 'Generador Automático de Contenido'}
             </h2>
           </div>
 
@@ -1021,32 +1035,6 @@ const MarketingStudio: React.FC = () => {
         )}
 
         {section === 'links' && <MarketingLinks />}
-
-        {/* CONTENT GENERATOR MODULE */}
-        {section === 'content' && (
-          <div className="animate-fadeIn">
-            <div className="flex min-h-[min(62vh,34rem)] items-center justify-center rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center md:hidden">
-              <div className="max-w-sm">
-                <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#EBF7F4] text-primary">
-                  <Sparkles className="size-7" aria-hidden="true" />
-                </div>
-                <h2 className="mt-5 font-display text-2xl font-black text-slate-900">
-                  Generador de contenido
-                </h2>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  Esta herramienta todavía está en construcción para pantallas móviles.
-                  Ábrela desde un ordenador para trabajar con el editor completo.
-                </p>
-                <span className="mt-5 inline-flex rounded-full border border-brand-cyan/30 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary">
-                  Disponible en escritorio
-                </span>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <SocialGenerator />
-            </div>
-          </div>
-        )}
         <ConfirmModal
           open={Boolean(pendingDisconnect)}
           variant="danger"
@@ -1069,7 +1057,7 @@ const MarketingStudio: React.FC = () => {
           }}
         />
       </div>
-    </BackofficeShell>
+    </StudioShell>
   );
 };
 

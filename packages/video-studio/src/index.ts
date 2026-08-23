@@ -10,5 +10,6 @@ export * from './engine/templateLibrary';
 export * from './engine/renderJobs';
 export * from './engine/renderHttpClient';
 export * from './compositions/SceneRenderer';
+export * from './motion-kit';
 
 registerRoot(Root);

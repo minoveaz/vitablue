@@ -1,5 +1,14 @@
-import type React from 'react';
+export * from './contracts';
+export * from './PlatformHeader';
+export * from './SuiteSidebar';
+export * from './SuiteCanvas';
+export * from './ModuleHeader';
+export * from './ModuleContextSidebar';
+export * from './ModuleContextPanel';
+export * from './SuiteShell';
+export * from './SuiteRuntime';
 
+// Compatibilidad hacia atrás con el adapter legacy
 export type BackofficeShellMode = 'standard' | 'full-bleed';
 export type BackofficeModuleState = 'saved' | 'saving' | 'unsaved' | 'error';
 export type BackofficeSidebarMode = 'suite' | 'context' | 'none';
@@ -21,8 +30,8 @@ export interface BackofficeModuleConfig {
 
 export interface BackofficeShellProps {
   children: React.ReactNode;
-  navigation: React.ReactNode;
-  header: React.ReactNode;
+  navigation?: React.ReactNode;
+  header?: React.ReactNode;
   context?: React.ReactNode;
   overlay?: React.ReactNode;
   mode?: BackofficeShellMode;

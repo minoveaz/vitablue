@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
 import {
   ExternalLink,
   Move,
@@ -10,6 +11,11 @@ import {
 import type { DocumentBoundingBoxes } from '../../types';
 import type { FieldKey } from '../../fieldLabels';
 import { BoundingBoxOverlay } from './BoundingBoxOverlay';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.mjs',
+  import.meta.url,
+).toString();
 
 export const DocumentViewer: React.FC<{
   file: File | null;
@@ -44,6 +50,9 @@ export const DocumentViewer: React.FC<{
 }) => {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const pdfCanvasRef = useRef<HTMLCanvasElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const dragOrigin = useRef({ startX: 0, startY: 0, panX: 0, panY: 0 });
 
   // Reset pan when resetting zoom or changing file
@@ -104,6 +113,44 @@ export const DocumentViewer: React.FC<{
   };
 
   const effectiveBoundingBoxes = boundingBoxes ?? null;
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setViewportSize({ width, height });
+    });
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isPdf || !previewUrl || !pdfCanvasRef.current || !viewportSize.width || !viewportSize.height) return;
+    let cancelled = false;
+    const render = async () => {
+      const pdf = await pdfjsLib.getDocument({ url: previewUrl }).promise;
+      const page = await pdf.getPage(1);
+      const canvas = pdfCanvasRef.current;
+      if (!canvas || cancelled) return;
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(
+        Math.max(viewportSize.width - 32, 1) / base.width,
+        Math.max(viewportSize.height - 32, 1) / base.height,
+      );
+      const viewport = page.getViewport({ scale: Math.max(scale, 0.1) });
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.ceil(viewport.width * dpr);
+      canvas.height = Math.ceil(viewport.height * dpr);
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
+      await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport, transform: [dpr, 0, 0, dpr, 0, 0] }).promise;
+    };
+    void render();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPdf, previewUrl, viewportSize]);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-100 select-none">
@@ -190,6 +237,7 @@ export const DocumentViewer: React.FC<{
 
       {/* Canvas del Documento con Soporte de Arrastre (Mouse Drag / Pan) */}
       <div
+        ref={viewportRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -197,7 +245,7 @@ export const DocumentViewer: React.FC<{
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`relative flex flex-1 min-h-[380px] max-h-[520px] w-full items-center justify-center overflow-hidden bg-slate-100 p-4 ${
+        className={`relative flex min-h-0 flex-1 w-full items-center justify-center overflow-hidden bg-slate-100 p-4 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >
@@ -220,19 +268,13 @@ export const DocumentViewer: React.FC<{
 
             <div className="relative inline-block">
               {isPdf ? (
-                <iframe
-                  src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`}
-                  title={file?.name ?? 'Documento PDF'}
-                  className={`h-[460px] w-[340px] sm:w-[480px] md:w-[560px] border-0 rounded-lg bg-white shadow-sm ${
-                    isDragging ? 'pointer-events-none' : 'pointer-events-auto'
-                  }`}
-                />
+                <canvas ref={pdfCanvasRef} aria-label={file?.name ?? 'Documento PDF'} className="block rounded-lg bg-white shadow-sm" />
               ) : (
                 <img
                   src={previewUrl}
                   alt={file?.name ?? 'Documento'}
                   draggable={false}
-                  className="max-h-[460px] max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
+                  className="max-h-full max-w-full object-contain rounded-lg shadow-sm pointer-events-none select-none block"
                 />
               )}
               <BoundingBoxOverlay

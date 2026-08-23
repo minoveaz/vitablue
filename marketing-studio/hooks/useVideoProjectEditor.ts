@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type { Layer, LayerType, Scene, SceneTemplateId } from '../../packages/video-studio/src/domain/videoProject';
+import type { Layer, LayerType, Scene, SceneTemplateId, ShapeLayer, SubtitleLayer, TextLayer, ComponentLayer } from '../../packages/video-studio/src/domain/videoProject';
 import { defaultVisaRejectionProject } from '../../packages/video-studio/src/domain/defaultProject';
 import { getVideoSceneWarnings } from './videoSceneValidation';
+import { DEFAULT_LAYER_LAYOUT_CONSTRAINTS } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 const createSceneId = (scenes: Scene[]): string => {
   const usedIds = new Set(scenes.map((scene) => scene.id));
@@ -36,21 +37,86 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
     )));
   };
 
-  const addLayer = (sceneId: string, type: Exclude<LayerType, 'shape' | 'component'>) => {
+  const addLayer = (sceneId: string, type: LayerType) => {
     setScenes((current) => current.map((scene) => {
       if (scene.id !== sceneId) return scene;
       const id = `${scene.id}-${type}-${scene.layers.length + 1}`;
       const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
-      const layer: Layer = type === 'text'
-        ? { id, type, text: 'Nuevo texto', timing }
-        : type === 'audio'
-          ? { id, type, src: '', timing, volume: 1 }
-          : { id, type, asset: { src: '', alt: '' }, timing };
-      return { ...scene, layers: [...scene.layers, layer] };
+
+      let layer: Layer;
+      switch (type) {
+        case 'text':
+          layer = { id, type: 'text', text: 'Nuevo titular', timing, fontSize: 48, color: '#ffffff', position: 'center' } as TextLayer;
+          break;
+        case 'subtitle':
+          layer = { id, type: 'subtitle', text: 'Subtítulo del vídeo', timing, stylePreset: 'viral-yellow', fontSize: 44, position: 'bottom' } as SubtitleLayer;
+          break;
+        case 'shape':
+          layer = { id, type: 'shape', shape: 'pill', color: 'rgba(0, 95, 115, 0.4)', timing, width: 320, height: 80, position: 'center' } as ShapeLayer;
+          break;
+        case 'component':
+          layer = { id, type: 'component', componentId: 'AdvisorCard', props: { name: 'Asesor VitaBlue', role: 'Especialista en Visados', cta: 'WhatsApp' }, timing, position: 'center' } as ComponentLayer;
+          break;
+        case 'audio':
+          layer = { id, type: 'audio', src: '', timing, volume: 1 };
+          break;
+        case 'image':
+        case 'video':
+        default:
+          layer = { id, type: type as 'image' | 'video', asset: { src: '', alt: '' }, timing };
+          break;
+      }
+
+      return {
+        ...scene,
+        layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }],
+      };
     }));
   };
 
-  const addTextLayer = (sceneId: string) => addLayer(sceneId, 'text');
+  const addTextLayer = (sceneId: string, customText = 'Nuevo texto') => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const id = `${scene.id}-text-${scene.layers.length + 1}`;
+      const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
+      const layer: TextLayer = { id, type: 'text', text: customText, timing, fontSize: 48, color: '#ffffff', position: 'center' };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
+    }));
+  };
+
+  const addSubtitleLayer = (sceneId: string, customText = 'Subtítulo dinámico') => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const id = `${scene.id}-sub-${scene.layers.length + 1}`;
+      const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
+      const layer: SubtitleLayer = { id, type: 'subtitle', text: customText, timing, stylePreset: 'viral-yellow', fontSize: 44, position: 'bottom' };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
+    }));
+  };
+
+  const addComponentLayer = (sceneId: string, componentId: string, props: Record<string, unknown> = {}) => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const id = `${scene.id}-comp-${scene.layers.length + 1}`;
+      const timing = { startFrame: 0, durationInFrames: scene.durationInFrames };
+      
+      let initialProps = props;
+      if (Object.keys(props).length === 0) {
+        if (componentId === 'MotionAdvisorCard' || componentId === 'AdvisorCard') {
+          initialProps = { name: 'Sofía', role: 'Asesora Especialista en Visados', badge: 'ASESORA ASIGNADA · EN DIRECTO', whatsAppText: 'Pregúntanos por WhatsApp' };
+        } else if (componentId === 'MotionTrustBadge') {
+          initialProps = { title: 'PÓLIZA 100% VÁLIDA PARA VISADO', subtitle: 'Sin Copagos · Cobertura Completa · Repatriación Incluida', highlight: 'GARANTÍA CONSULAR', verifiedLabel: 'VERIFICADO' };
+        } else if (componentId === 'MotionProviderGrid') {
+          initialProps = { title: 'COMPAÑÍAS LÍDERES AUTORIZADAS', subtitle: 'Aceptadas oficialmente por Extranjería y Consulados' };
+        } else if (componentId === 'MotionComparisonCard') {
+          initialProps = { title: '¿SEGURO DE VIAJE O SEGURO DE VISADO?', wrongOptionTitle: 'Seguro de Viaje Común', wrongOptionDesc: '❌ Denegación inmediata: no cumple requisitos de Extranjería ni tiene red médica completa en España.', correctOptionTitle: 'Seguro VitaBlue Extranjería', correctOptionDesc: '✅ Aprobación garantizada: sin copagos, cobertura total y repatriación incluida.' };
+        }
+      }
+
+      const layer: ComponentLayer = { id, type: 'component', componentId, props: initialProps, timing, position: 'center' };
+      return { ...scene, layers: [...scene.layers, { ...layer, constraints: { ...DEFAULT_LAYER_LAYOUT_CONSTRAINTS } }] };
+    }));
+  };
 
   const removeLayer = (sceneId: string, layerId: string) => {
     setScenes((current) => current.map((scene) => (
@@ -58,6 +124,19 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
         ? { ...scene, layers: scene.layers.filter((layer) => layer.id !== layerId) }
         : scene
     )));
+  };
+
+  const duplicateLayer = (sceneId: string, layerId: string) => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const layer = scene.layers.find((l) => l.id === layerId);
+      if (!layer) return scene;
+      const duplicate: Layer = {
+        ...layer,
+        id: `${scene.id}-${layer.type}-${Date.now()}`,
+      };
+      return { ...scene, layers: [...scene.layers, duplicate] };
+    }));
   };
 
   const updateLayer = (sceneId: string, layerId: string, changes: Partial<Layer>) => {
@@ -101,40 +180,88 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
   };
 
   const removeScene = (sceneId: string) => {
-    setScenes((current) => current.length > 1
-      ? current.filter((scene) => scene.id !== sceneId)
-      : current);
+    setScenes((current) => current.filter((scene) => scene.id !== sceneId));
+  };
+
+  const splitScene = (sceneId: string, splitLocalFrame: number) => {
+    setScenes((current) => {
+      const index = current.findIndex((scene) => scene.id === sceneId);
+      if (index < 0) return current;
+
+      const source = current[index];
+      if (splitLocalFrame <= 15 || splitLocalFrame >= source.durationInFrames - 15) {
+        return current; // Evitar splits demasiado pequeños
+      }
+
+      const firstPart: Scene = {
+        ...source,
+        durationInFrames: splitLocalFrame,
+      };
+
+      const secondPart: Scene = {
+        ...source,
+        id: createSceneId(current),
+        durationInFrames: source.durationInFrames - splitLocalFrame,
+        content: { ...source.content },
+        layers: source.layers.map((l) => ({ ...l, id: `${l.id}-split` })),
+      };
+
+      return [...current.slice(0, index), firstPart, secondPart, ...current.slice(index + 1)];
+    });
   };
 
   const moveScene = (sceneId: string, direction: 'up' | 'down') => {
     setScenes((current) => {
       const index = current.findIndex((scene) => scene.id === sceneId);
-      const targetIndex = direction === 'up' ? index - 1 : index + 1;
-      if (index < 0 || targetIndex < 0 || targetIndex >= current.length) return current;
+      if (index < 0) return current;
 
-      const next = [...current];
-      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
-      return next;
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= current.length) return current;
+
+      const updated = [...current];
+      const [moved] = updated.splice(index, 1);
+      updated.splice(targetIndex, 0, moved);
+      return updated;
     });
   };
 
   const moveSceneToIndex = (sceneId: string, targetIndex: number) => {
     setScenes((current) => {
-      const sourceIndex = current.findIndex((scene) => scene.id === sceneId);
-      if (sourceIndex < 0 || targetIndex < 0 || targetIndex >= current.length || sourceIndex === targetIndex) {
+      const index = current.findIndex((scene) => scene.id === sceneId);
+      if (index < 0 || targetIndex < 0 || targetIndex >= current.length || index === targetIndex) {
         return current;
       }
 
-      const next = [...current];
-      const [scene] = next.splice(sourceIndex, 1);
-      next.splice(targetIndex, 0, scene);
-      return next;
+      const updated = [...current];
+      const [moved] = updated.splice(index, 1);
+      updated.splice(targetIndex, 0, moved);
+      return updated;
     });
   };
 
+  const updateLayerPosition = (sceneId: string, layerId: string, position: { x: number; y: number }) => {
+    updateLayer(sceneId, layerId, { position });
+  };
+
+  const reorderLayer = (sceneId: string, layerId: string, direction: 'up' | 'down') => {
+    setScenes((current) => current.map((scene) => {
+      if (scene.id !== sceneId) return scene;
+      const index = scene.layers.findIndex((l) => l.id === layerId);
+      if (index < 0) return scene;
+      const targetIndex = direction === 'up' ? index + 1 : index - 1;
+      if (targetIndex < 0 || targetIndex >= scene.layers.length) return scene;
+
+      const layers = [...scene.layers];
+      const [moved] = layers.splice(index, 1);
+      layers.splice(targetIndex, 0, moved);
+      return { ...scene, layers };
+    }));
+  };
+
   const getSceneWarnings = (sceneId: string) => {
-    const scene = scenes.find((item) => item.id === sceneId);
-    return scene ? getVideoSceneWarnings(scene) : [];
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (!scene) return [];
+    return getVideoSceneWarnings(scene);
   };
 
   return {
@@ -142,15 +269,21 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
     setScenes,
     updateScene,
     updateSceneContent,
-    addTextLayer,
-    addLayer,
-    removeLayer,
-    updateLayer,
     addScene,
     duplicateScene,
     removeScene,
+    splitScene,
     moveScene,
     moveSceneToIndex,
+    addLayer,
+    addTextLayer,
+    addSubtitleLayer,
+    addComponentLayer,
+    duplicateLayer,
+    removeLayer,
+    updateLayer,
+    updateLayerPosition,
+    reorderLayer,
     getSceneWarnings,
     loadPreset,
   };

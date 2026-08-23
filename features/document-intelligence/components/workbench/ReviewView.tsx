@@ -133,9 +133,9 @@ export const ReviewView: React.FC<{
   warning,
   issueCount,
 }) => (
-  <section className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2 gap-5 items-start overflow-y-auto pb-4">
+  <section className="grid h-full min-h-0 flex-1 grid-cols-1 gap-5 overflow-hidden pb-4 lg:grid-cols-2 lg:items-stretch">
     {/* Columna Izquierda: Visor de documento */}
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+    <div className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-4 py-2.5">
         <div className="flex items-center gap-2">
           <FileScan className="size-4 text-primary" />
@@ -175,11 +175,11 @@ export const ReviewView: React.FC<{
           )}
         </div>
       </div>
-      <div className="p-3 bg-slate-50">{viewer}</div>
+      <div className="flex min-h-0 flex-1 bg-slate-50 p-3">{viewer}</div>
     </div>
 
     {/* Columna Derecha: Formulario estructurado en 3 bloques semánticos */}
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+    <div className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
       {/* Header del formulario con Selector de Perfil y Copia masiva */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3 bg-slate-50/60">
         <div>
@@ -265,7 +265,7 @@ export const ReviewView: React.FC<{
       )}
 
       {/* Contenedor del Formulario con 3 Secciones Semánticas y Transición con Blur Blanco */}
-      <div className="relative overflow-hidden min-h-[420px]">
+      <div className="relative min-h-0 flex-1 overflow-y-auto">
         {isSwitchingProfile && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/85 backdrop-blur-md transition-all duration-300">
             <div className="flex items-center gap-2.5 rounded-full bg-white px-4 py-2 shadow-lg border border-slate-200/80 ring-1 ring-slate-100">
@@ -279,7 +279,7 @@ export const ReviewView: React.FC<{
           </div>
         )}
         <div
-          className={`flex flex-col gap-4 p-5 overflow-y-auto transition-all duration-300 ease-out ${
+          className={`flex flex-col gap-4 p-5 transition-all duration-300 ease-out ${
             isSwitchingProfile
               ? 'opacity-15 scale-[0.99] filter blur-sm select-none pointer-events-none'
               : 'opacity-100 scale-100 filter blur-0'

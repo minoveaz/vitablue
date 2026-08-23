@@ -159,9 +159,12 @@ export const PreparationView: React.FC<{
   const backInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <section className="mx-auto grid w-full max-w-5xl flex-1 grid-cols-1 items-start gap-6 overflow-y-auto pb-4 lg:grid-cols-12">
+    <section
+      className="mx-auto grid h-full min-h-0 w-full max-w-none flex-1 items-stretch gap-6 overflow-hidden pb-4 max-lg:h-auto max-lg:grid-cols-1"
+      style={{ gridTemplateColumns: 'minmax(0, 3fr) minmax(18rem, 1fr)' }}
+    >
       {/* Columna Principal: Carga / Visor Unificado */}
-      <div className="flex flex-col gap-4 lg:col-span-8">
+      <div className="col-span-1 flex min-h-0 min-w-0 flex-col gap-4">
         {!file && !backFile ? (
           /* Estado 1: Dropzone Inteligente Universal (1 o 2 archivos) */
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -177,7 +180,7 @@ export const PreparationView: React.FC<{
           </div>
         ) : (
           /* Estado 2: Tarjeta de Archivos Cargados y Visor Interactivo */
-          <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             {/* Header con resumen de archivos y acciones rápidas */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -335,7 +338,7 @@ export const PreparationView: React.FC<{
             )}
 
             {/* Visor interactivo */}
-            <div className="p-3 bg-slate-50">{viewer}</div>
+            <div className="flex min-h-0 flex-1 bg-slate-50 p-3">{viewer}</div>
 
             {/* CTA Primario */}
             <div className="border-t border-slate-200 bg-white p-4">
@@ -356,7 +359,7 @@ export const PreparationView: React.FC<{
       </div>
 
       {/* Columna Lateral (35%): Guía Inicial o Metadata Predictiva tras la subida */}
-      <div className="flex flex-col gap-4 lg:col-span-4">
+      <div className="col-span-1 flex min-h-0 min-w-0 flex-col gap-4">
         {file ? (
           /* Estado Activo: Metadata predictiva y Checklist de pre-vuelo */
           <>

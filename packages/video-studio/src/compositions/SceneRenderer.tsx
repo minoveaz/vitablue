@@ -18,46 +18,46 @@ interface SceneRendererProps {
 type TemplateRenderer = React.FC<SceneRendererProps>;
 
 const TextHookRenderer: TemplateRenderer = ({ scene }) => (
-  <div>
-    <h1 style={{ fontSize: '72px', lineHeight: 1.25, fontWeight: 800, margin: 0 }}>
+  <div style={{ textAlign: 'center', padding: '0 20px' }}>
+    <h1 style={{ fontSize: '64px', lineHeight: 1.25, fontWeight: 900, margin: 0, textShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
       {getText(scene.content, 'text')}
     </h1>
   </div>
 );
 
-const ProviderLogosRenderer: TemplateRenderer = ({ scene }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-    <h1 style={{ fontSize: '60px', lineHeight: 1.3, fontWeight: 800, margin: 0 }}>
-      {getText(scene.content, 'text')}
-    </h1>
-    <div style={{ display: 'flex', gap: '20px', fontSize: '24px', opacity: 0.6, fontWeight: 'bold', marginTop: '20px' }}>
-      <span>SANITAS</span> · <span>ADESLAS</span> · <span>ASISA</span>
-    </div>
+const ProviderLogosRenderer: TemplateRenderer = ({ scene, brandAdapter }) => (
+  <div style={{ width: '100%' }}>
+    <brandAdapter.ProviderGrid
+      title={getText(scene.content, 'text') || 'COMPAÑÍAS LÍDERES AUTORIZADAS'}
+      tokens={brandAdapter.brandTokens}
+    />
   </div>
 );
 
-const RequirementsListRenderer: TemplateRenderer = ({ scene }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-    <h2 style={{ fontSize: '48px', color: '#94D2BD', fontWeight: 800 }}>
-      {getText(scene.content, 'title') || 'Requisitos'}
+const RequirementsListRenderer: TemplateRenderer = ({ scene, brandAdapter }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%', maxWidth: '860px', margin: '0 auto' }}>
+    <h2 style={{ fontSize: '48px', color: brandAdapter.brandTokens?.mintColor ?? '#94D2BD', fontWeight: 900, margin: '0 0 8px 0', textAlign: 'center' }}>
+      {getText(scene.content, 'title') || 'Requisitos Obligatorios'}
     </h2>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
       {getItems(scene.content).map((requirement) => (
         <div
           key={requirement}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '24px',
-            fontSize: '42px',
+            gap: '20px',
+            fontSize: '36px',
             fontWeight: 700,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '24px 32px',
+            backgroundColor: 'rgba(0, 18, 25, 0.8)',
+            backdropFilter: 'blur(20px)',
+            padding: '24px 30px',
             borderRadius: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '2px solid rgba(148, 210, 189, 0.25)',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
           }}
         >
-          <span style={{ color: '#EE9B00', fontSize: '48px' }}>✓</span>
+          <span style={{ color: brandAdapter.brandTokens?.accentColor ?? '#EE9B00', fontSize: '42px', fontWeight: 900 }}>✓</span>
           <span>{requirement}</span>
         </div>
       ))}
@@ -66,11 +66,13 @@ const RequirementsListRenderer: TemplateRenderer = ({ scene }) => (
 );
 
 const AdvisorCtaRenderer: TemplateRenderer = ({ scene, brandAdapter }) => (
-  <div style={{ transform: 'scale(1.6)', transformOrigin: 'center' }}>
+  <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
     <brandAdapter.AdvisorCard
-      name={getText(scene.content, 'advisorName')}
-      role={getText(scene.content, 'role')}
-      whatsAppText={getText(scene.content, 'cta')}
+      name={getText(scene.content, 'advisorName') || 'Sofía'}
+      role={getText(scene.content, 'role') || 'Asesora Especialista'}
+      whatsAppText={getText(scene.content, 'cta') || 'Pregúntanos por WhatsApp'}
+      tokens={brandAdapter.brandTokens}
+      className="max-w-[760px] p-10 text-xl"
     />
   </div>
 );
