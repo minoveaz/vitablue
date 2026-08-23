@@ -159,7 +159,7 @@ export const PreparationView: React.FC<{
   const backInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-2 items-start gap-6 overflow-y-auto pb-4 max-[640px]:grid-cols-1">
+    <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-[minmax(0,3fr)_minmax(240px,1fr)] items-start gap-6 overflow-y-auto pb-4 max-[640px]:grid-cols-1">
       {/* Columna Principal: Carga / Visor Unificado */}
       <div className="col-span-1 flex min-w-0 flex-col gap-4">
         {!file && !backFile ? (
