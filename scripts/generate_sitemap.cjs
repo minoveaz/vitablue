@@ -119,26 +119,39 @@ const routes = [...new Set([...canonicalRoutes, ...blogRoutes])];
 
 const today = new Date().toISOString().slice(0, 10);
 
+/**
+ * Normaliza cualquier ruta añadiendo trailing slash, excepto la raíz "/".
+ * Hostinger (hcdn) redirige /page → /page/ automáticamente a nivel de CDN,
+ * por lo que el sitemap y los canonical tags deben declarar la versión con
+ * slash para que Google encuentre un 200 directo sin pasar por un 301.
+ */
+const withSlash = (route) => (route === '/' ? route : `${route}/`);
+
 const createBlock = (route) => {
   const isBlogPost = route.startsWith('/blog/') || route.startsWith('/en/blog/');
   const priority = isBlogPost ? '0.60' : route === '/' || route === '/en' ? '1.00' : '0.80';
-  const changefreq = isBlogPost ? 'weekly' : route === '/' || route === '/en' ? 'weekly' : 'weekly';
+  const changefreq = 'weekly';
   const alternate = alternatesMap.get(route);
   const currentLocale = routeLocales.get(route) || (route.startsWith('/en') ? 'en' : 'es');
   const alternateLocale = currentLocale === 'en' ? 'es' : 'en';
   const lastmod = routeLastmods.get(route) || today;
 
+  // URLs con trailing slash para que Hostinger CDN sirva 200 directamente
+  const routeUrl  = withSlash(route);
+  const altUrl    = alternate ? withSlash(alternate) : null;
+  const defaultUrl = alternate
+    ? withSlash(currentLocale === 'es' ? route : alternate)
+    : null;
+
   const lines = [
     '  <url>',
-    `    <loc>https://www.vitablue.es${route}</loc>`,
+    `    <loc>https://www.vitablue.es${routeUrl}</loc>`,
   ];
 
-  if (alternate) {
-    // Hreflang cruzado
-    lines.push(`    <xhtml:link rel="alternate" hreflang="${currentLocale}" href="https://www.vitablue.es${route}" />`);
-    lines.push(`    <xhtml:link rel="alternate" hreflang="${alternateLocale}" href="https://www.vitablue.es${alternate}" />`);
-    const defaultHref = currentLocale === 'es' ? route : alternate;
-    lines.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es${defaultHref}" />`);
+  if (altUrl) {
+    lines.push(`    <xhtml:link rel="alternate" hreflang="${currentLocale}" href="https://www.vitablue.es${routeUrl}" />`);
+    lines.push(`    <xhtml:link rel="alternate" hreflang="${alternateLocale}" href="https://www.vitablue.es${altUrl}" />`);
+    lines.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es${defaultUrl}" />`);
   }
 
   lines.push(`    <lastmod>${lastmod}</lastmod>`);

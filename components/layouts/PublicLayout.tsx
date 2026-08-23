@@ -13,9 +13,14 @@ const PublicRouteSeo: React.FC = () => {
     ?? routeRegistry.find((route) => route.path.includes(':') && pathname.startsWith(route.path.split('/:')[0]));
   if (!definition?.indexable || typeof window === 'undefined') return null;
 
+  // Hostinger CDN añade trailing slash a todas las rutas (excecto "/").
+  // Normalizamos canonical y alternate para que coincidan con la URL real
+  // que sirve el servidor (200 OK) y Google no detecte un redirect.
+  const withSlash = (p: string) => (p === '/' ? p : `${p}/`);
+
   const origin = window.location.origin;
-  const canonicalPath = definition.canonical ?? pathname;
-  const alternatePath = definition.alternate;
+  const canonicalPath = withSlash(definition.canonical ?? pathname);
+  const alternatePath = definition.alternate ? withSlash(definition.alternate) : undefined;
   return (
     <Helmet>
       <link rel="canonical" href={`${origin}${canonicalPath}`} />
