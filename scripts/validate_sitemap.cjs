@@ -42,18 +42,19 @@ if (forbiddenFound.length > 0) {
   forbiddenFound.forEach((route) => console.error(`  - ${route}`));
 }
 
-if (missing.length > 0) {
-  console.log(`\nMissing from sitemap (${missing.length}):`);
-  missing.forEach((route) => console.log(`- ${route}`));
+const hasXhtmlNamespace = sitemap.includes('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+const alternateLinksCount = [...sitemap.matchAll(/<xhtml:link\s+rel="alternate"/g)].length;
+
+if (!hasXhtmlNamespace) {
+  console.error('\n❌ Error: Sitemap is missing xmlns:xhtml namespace for hreflang links.');
 }
 
-if (unexpected.length > 0) {
-  console.log(`\nNot present in canonical registry (${unexpected.length}):`);
-  unexpected.forEach((route) => console.log(`- ${route}`));
+if (alternateLinksCount === 0) {
+  console.error('\n❌ Error: Sitemap has no <xhtml:link rel="alternate"> tags for multilingual SEO.');
 }
 
-if (missing.length === 0 && unexpected.length === 0 && forbiddenFound.length === 0) {
-  console.log('\n✅ Sitemap matches the canonical registry and excludes thin legal content.');
+if (missing.length === 0 && unexpected.length === 0 && forbiddenFound.length === 0 && hasXhtmlNamespace && alternateLinksCount > 0) {
+  console.log(`\n✅ Sitemap matches canonical registry, excludes thin legal content, and includes ${alternateLinksCount} hreflang alternate links.`);
 } else {
   process.exitCode = 1;
 }

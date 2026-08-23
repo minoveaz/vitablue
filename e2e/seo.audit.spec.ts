@@ -418,4 +418,15 @@ test.describe('🛡️ Páginas Legales — Noindex y Exclusión de Sitemap', ()
       ).not.toContain(`<loc>https://www.vitablue.es${route.path}</loc>`);
     }
   });
+
+  test('El sitemap.xml incluye namespace xhtml y enlaces hreflang alternativos para páginas multilingües', async ({ request }) => {
+    const response = await request.get('/sitemap.xml');
+    expect(response.status()).toBe(200);
+    const sitemapText = await response.text();
+
+    expect(sitemapText).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />');
+  });
 });
