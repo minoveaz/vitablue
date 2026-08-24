@@ -49,12 +49,15 @@
 ---
 
 ### Fase 3: Validador Interactivo de Requisitos Consulares (Lead Magnet)
-- [ ] **Motor de Diagnóstico (`utils/consularValidator.ts`)**:
-  - Validación paso a paso de los 4 pilares legales: Aseguradora autorizada DGSFP, Sin copagos, Sin carencias, Repatriación sanitaria.
-- [ ] **Componente Interactivo (`components/molecules/ConsularRequirementsValidator.tsx`)**:
-  - UI fluida mobile-first con selección de país/consulado y tipo de trámite.
-  - Generación de diagnóstico en pantalla con semáforo (Verde: Cumple / Rojo: En riesgo de denegación).
-  - CTA de contacto con asesor de WhatsApp con referencia automática `[Ref: VALIDADOR-PAIS]`.
+- [x] **Motor de Diagnóstico (`utils/consularValidator.ts`)**:
+  - [x] Validación paso a paso de los 4 pilares legales: Aseguradora autorizada DGSFP, Sin copagos, Sin carencias, Repatriación sanitaria.
+- [x] **Componente Interactivo (`components/molecules/ConsularRequirementsValidator.tsx`)**:
+  - [x] UI fluida mobile-first con selección de país/consulado y tipo de trámite.
+  - [x] Generación de diagnóstico en pantalla con semáforo (Verde: Cumple / Rojo: En riesgo de denegación).
+  - [x] CTA de contacto con asesor de WhatsApp con referencia automática `[Ref: VALIDADOR-PAIS]`.
+- [x] **Página Dedicada Canónica (`/validador-visado`)**:
+  - [x] Ruta canónica, SSG pre-renderizado, schema JSON-LD `WebApplication` + `FAQPage` y banners de llamada a la acción en páginas consulares.
+
 
 ---
 

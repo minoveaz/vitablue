@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   ShieldCheck,
@@ -11,7 +11,9 @@ import {
   Calendar,
   CheckCircle2,
   Building2,
+  ArrowRight,
 } from 'lucide-react';
+
 import ProductHero from '@/components/organisms/ProductHero';
 import ProductBreadcrumbBar from '@/components/organisms/ProductBreadcrumbBar';
 import ProductTrustBar from '@/components/organisms/ProductTrustBar';
@@ -513,9 +515,34 @@ export const ConsulateVisaInsurance: React.FC = () => {
         ]}
       />
 
+      {/* Interactive Consular Validator Callout Banner */}
+      <section className="py-8 px-4 sm:px-6 md:px-8 bg-slate-50 border-y border-slate-150">
+        <div className="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-primary-dark via-primary to-primary-dark p-6 sm:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="space-y-2 text-left">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/20 border border-accent/40 px-3 py-0.5 text-xs font-bold text-accent">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Herramienta Gratuita
+            </span>
+            <h3 className="text-h3 font-display font-black text-white">
+              ¿Ya tienes una póliza y dudas si el consulado la aceptará?
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-200 font-medium max-w-xl">
+              Diagnostica gratis en 30 segundos si tu seguro médico cumple con los 4 pilares obligatorios de Extranjería antes de tu cita en {consulate.city}.
+            </p>
+          </div>
+          <Link
+            to="/validador-visado"
+            className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-6 py-3.5 text-sm font-bold text-primary-dark shadow-md shadow-accent/20 hover:brightness-105 transition-all text-center whitespace-nowrap"
+          >
+            Abrir Validador Gratis
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
 
       {/* FAQs Section */}
       <FaqSection
+
         eyebrow="Dudas Frecuentes"
         title={`Preguntas Frecuentes sobre el Seguro para el Consulado de España en ${consulate.city}`}
         items={consulate.faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}

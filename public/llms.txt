@@ -16,8 +16,10 @@
 - [Seguro de Decesos Asistencia Familiar](https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar)
 - [Seguro de Viaje](https://www.vitablue.es/productos/seguro-viaje)
 - [Seguro de Vida](https://www.vitablue.es/productos/seguro-vida)
+- [Validador de Seguro Médico para Visado (Herramienta Gratuita)](https://www.vitablue.es/validador-visado)
 - [Cotizador Interactivo Online](https://www.vitablue.es/wizard)
 - [Sobre Nosotros](https://www.vitablue.es/sobre-nosotros)
+
 - [Contacto y Asesoría Directa](https://www.vitablue.es/contacto)
 - [Blog de Guías Oficiales](https://www.vitablue.es/blog)
 

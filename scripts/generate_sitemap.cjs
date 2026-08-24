@@ -90,7 +90,9 @@ const canonicalPageDates = {
   '/productos/seguro-para-decesos/asistencia-familiar': '2026-08-15',
   '/productos/seguro-viaje': '2026-08-15',
   '/productos/seguro-vida': '2026-08-15',
+  '/validador-visado': '2026-08-24',
 };
+
 
 for (const [route, date] of Object.entries(canonicalPageDates)) {
   routeLastmods.set(route, date);

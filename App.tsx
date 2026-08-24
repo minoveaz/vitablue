@@ -30,7 +30,9 @@ const LegalNotice = lazy(() => import('@/pages/public/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/public/BlogList'));
 const BlogPost = lazy(() => import('@/pages/public/BlogPost'));
 const ConsulateVisaInsurance = lazy(() => import('@/pages/public/ConsulateVisaInsurance'));
+const ConsularValidatorPage = lazy(() => import('@/pages/public/ConsularValidatorPage'));
 const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'));
+
 
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
@@ -213,7 +215,11 @@ const AppLayout: React.FC = () => {
             {/* Seguro de Vida (Silo Independiente) */}
             <Route path="/productos/seguro-vida" element={<LifeInsurance />} />
 
+            {/* Validador de Requisitos Consulares (Lead Magnet) */}
+            <Route path="/validador-visado" element={<ConsularValidatorPage />} />
+
             {/* Redirecciones y URLs de Compatibilidad (Legacy) */}
+
             <Route path="/productos/seguros-salud/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguro-medico-estudiantes-extranjeros-espana.html" element={<StudentInsurance />} />
             <Route path="/productos/international-students.html" element={<StudentInsurance />} />

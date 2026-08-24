@@ -74,7 +74,9 @@ export const canonicalRoutes: RouteDefinition[] = [
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/peru', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/peru', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/argentina', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/argentina', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/ecuador', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/ecuador', indexable: true, prerender: true, sitemap: true }),
+  canonical('/validador-visado', { locale: 'es', canonical: '/validador-visado', indexable: true, prerender: true, sitemap: true }),
 ];
+
 
 /** Dynamic routes require content data to generate concrete SSG entries. */
 export const dynamicRoutes: RouteDefinition[] = [

@@ -212,6 +212,12 @@
     <priority>0.80</priority>
   </url>
   <url>
+    <loc>https://www.vitablue.es/validador-visado/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
     <loc>https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" />
