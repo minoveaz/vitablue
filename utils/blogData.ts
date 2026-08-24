@@ -35,7 +35,120 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
+    title: 'Periodos de Carencia en el Embarazo: Qué Pólizas Cubren Parto en 2026',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Estás planificando un embarazo o esperando un bebé? Analizamos los periodos de carencia para el parto en España, cómo eliminar las carencias si vienes de otra aseguradora y qué ventajas ofrece la red de maternidad de Asisa y Sanitas.',
+    featuredImage: 'https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'La llegada de un nuevo miembro a la familia es una de las etapas más especiales y emocionantes de la vida. Para vivir el embarazo con total tranquilidad, cada vez más futuras madres optan por la sanidad privada en España en busca de <strong>elección de ginecólogo para todo el proceso, ecografías de alta definición sin esperas y habitación individual para la madre y su acompañante durante el parto</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'No obstante, el factor más importante a tener en cuenta al contratar o revisar tu póliza de salud es el <strong>periodo de carencia para la asistencia al parto</strong>. En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> te explicamos con total transparencia cómo funcionan los plazos, cómo eliminar las carencias si vienes de otra compañía y qué coberturas incluye el seguro de maternidad.'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Cómo funcionan las carencias de maternidad y parto?'
+      },
+      {
+        type: 'paragraph',
+        text: 'En el seguro médico privado en España se debe distinguir con claridad entre el seguimiento ordinario del embarazo y el momento del parto:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Seguimiento del embarazo (Sin carencia o carencia de 0 a 3 meses)</strong>: Las consultas ginecológicas periódicas, analíticas de sangre y orina, ecografías obstétricas rutinarias y revisiones se pueden utilizar de forma casi inmediata desde la contratación.',
+          '<strong>Pruebas diagnósticas de alta resolución (6 meses de carencia)</strong>: Pruebas avanzadas como el test prenatal no invasivo en sangre materna (ADN fetal) o amniocentesis suelen requerir 6 meses de permanencia previa.',
+          '<strong>Asistencia al parto, cesárea y estancia hospitalaria (8 meses de carencia)</strong>: En las principales aseguradoras (como Asisa y Sanitas), la cobertura de la hospitalización obstétrica, anestesia epidural, quirófano de cesárea y cuidados del recién nacido exige haber estado de alta en la póliza al menos <strong>8 meses antes de la fecha del alumbramiento</strong>.'
+        ]
+      },
+      {
+        type: 'table',
+        tableHeader: ['Prestación de Maternidad', 'Periodo de Carencia Habitual', 'Asisa Salud (Grupo HLA)', 'Sanitas Más Salud'],
+        tableRows: [
+          ['Consultas de ginecología y obstetricia', '0 meses (Acceso inmediato)', 'Incluidas sin esperas en cuadro médico', 'Incluidas sin esperas'],
+          ['Ecografías obstétricas rutinarias', '0 a 3 meses', 'Incluidas en clínicas HLA y centros concertados', 'Incluidas en red Sanitas'],
+          ['Preparación al parto (Psicoprofilaxis)', '6 meses', 'Incluida con matronas especializadas', 'Incluida en centros propios'],
+          ['Test Prenatal No Invasivo (ADN fetal)', '6 meses', 'Incluido según prescripción médica', 'Incluido con copago reducido'],
+          ['Parto natural, cesárea y habitación individual', '8 meses', 'Cubierto 100% en hospitales HLA y concertados', 'Cubierto 100% en hospitales Sanitas']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Planificación Familiar 2026',
+        ctaTitle: '¿Planeas un embarazo y quieres calcular tu seguro médico?',
+        ctaDescription: 'Calcula tu presupuesto de seguro de salud con cobertura de maternidad completa. Si ya vienes de otra aseguradora, te ayudamos a eliminar todas las carencias sin coste.',
+        ctaButtonText: 'Calcular seguro de maternidad',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Es posible cubrir el parto sin carencias si ya estás embarazada?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Esta es una de las preguntas más frecuentes que recibimos en nuestra asesoría. Existen tres situaciones posibles:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Situación 1: Vienes de otra compañía de salud (Eliminación total de carencias)</strong>: Si ya contabas con un seguro médico privado en otra aseguradora con antigüedad mínima de 8 o 10 meses antes de quedarte embarazada, al cambiarte a <strong>Asisa</strong> se eliminan todos los periodos de carencia aportando el certificado de cobertura y el último recibo.',
+          '<strong>Situación 2: Póliza colectiva de empresa</strong>: Muchos seguros médicos corporativos ofrecidos como beneficio laboral por las empresas no aplican periodos de carencia para el parto desde el primer día de alta del empleado.',
+          '<strong>Situación 3: Primera contratación particular estando ya en gestación</strong>: Si contratas un seguro privado por primera vez cuando ya estás embarazada, la póliza te cubrirá las consultas con el ginecólogo y las ecografías para tu tranquilidad, pero los gastos hospitalarios del parto en clínica privada no estarán cubiertos por no cumplir los 8 meses previos.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Excepción de Emergencia por Parto Prematuro</strong>: Si tu bebé nace antes de tiempo debido a un parto prematuro sobrevenido y ya estabas asegurada antes del inicio del embarazo, las compañías de primer nivel cubren el parto y la incubadora hospitalaria considerándolo una urgencia médica vital.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Ventajas de la atención a la maternidad en la red HLA de Asisa'
+      },
+      {
+        type: 'paragraph',
+        text: 'En VitaBlue recomendamos especialmente las pólizas de <strong>Asisa</strong> para la maternidad debido a la calidad de las unidades materno-infantiles de su red propia <strong>Grupo HLA</strong> (con centros de referencia como el Hospital HLA Universitario Moncloa en Madrid o HLA Vistahermosa en Alicante):'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Habitación suite individual garantizada</strong> con cama articulada para el acompañante y baño privado.',
+          '<strong>UCI Neonatal avanzada</strong> y servicio de guardia ginecológica y pediátrica presencial las 24 horas del día.',
+          '<strong>Cobertura gratuita para el recién nacido</strong>: El bebé queda automáticamente protegido bajo la póliza de la madre durante sus primeros 30 días de vida sin coste adicional.',
+          '<strong>Talleres de lactancia y recuperación posparto</strong>: Acceso a fisioterapia de suelo pélvico para una recuperación rápida y segura tras el parto.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Seguro en el Embarazo (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Qué pasa con los copagos durante el parto?</strong>: Si contratas una póliza en modalidad sin copagos (como <em>Asisa Salud</em> o <em>Sanitas Más Salud</em>), todo el parto, la anestesia epidural, el quirófano y los días de estancia hospitalaria están incluidos al 100% sin ningún gasto añadido. Revisa nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>¿Con cuánta antelación debo contratar el seguro antes de buscar el embarazo?</strong>: Lo ideal es contratar la póliza entre 2 y 3 meses antes de empezar a buscar el embarazo para asegurar que el parto se produzca con holgura tras superar los 8 meses de carencia.',
+          '<strong>¿Puedo consultar más información sobre las carencias generales?</strong>: Puedes revisar nuestro artículo especializado sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro de salud</a>.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'seguro-salud-mayores-65-anos-espana-precios',
+
     title: 'Seguro de Salud para Mayores de 65 Años en España: Precios y Límites (Guía 2026)',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
