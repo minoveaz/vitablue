@@ -7,6 +7,7 @@ import ArticleHeader from '@/components/molecules/ArticleHeader';
 import ArticleToc from '@/components/molecules/ArticleToc';
 import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
 import BlogAdvisorCta from '@/components/molecules/BlogAdvisorCta';
+import BlogConsularValidatorCallout from '@/components/molecules/BlogConsularValidatorCallout';
 
 const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
 export const BlogPost: React.FC = () => {
@@ -134,6 +135,7 @@ export const BlogPost: React.FC = () => {
           </article>
           <aside className="space-y-8 sticky top-28 hidden lg:block">
             <ArticleToc items={tocItems} isEnglish={isEnglish} />
+            <BlogConsularValidatorCallout variant="sidebar" isEnglish={isEnglish} />
             <BlogAdvisorCta
               variant="sidebar"
               isEnglish={isEnglish}

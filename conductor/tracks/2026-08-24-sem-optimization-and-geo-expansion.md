@@ -34,32 +34,32 @@
 ---
 
 ### Fase 2: Expansión Geo-Consular Estratégica (Chile & EE.UU.)
-- [ ] **Modelado de Datos Consulares (`utils/consulatesData.ts`)**:
-  - [ ] 🇨🇱 **Chile (Santiago de Chile)**: Divisa CLP, requisitos del Consulado General de España en Santiago, convenios bilaterales, causas frecuentes de requerimiento.
-  - [ ] 🇺🇸 **Estados Unidos (Consulados Generales & Programa NALCAP)**: Divisa USD, particularidades de los consulados en Miami, NY, LA, Chicago, Houston, San Francisco y Boston, requisitos específicos de los auxiliares de conversación NALCAP y estudiantes de máster.
-- [ ] **Pruebas Unitarias de Datos Consulares (`utils/consulatesData.test.ts`)**:
-  - [ ] Pruebas unitarias para validar moneda, requisitos, FAQ y estructura de datos de Chile y EE.UU.
-- [ ] **Rutas y Silos Canónicos**:
-  - [ ] Registrar `/productos/seguros-salud/seguro-medico-estudiantes/chile` en `config/routes.ts` y `App.tsx`.
-  - [ ] Registrar `/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos` (y versión bilingüe) en `config/routes.ts` y `App.tsx`.
+- [x] **Modelado de Datos Consulares (`utils/consulatesData.ts`)**:
+  - [x] 🇨🇱 **Chile (Santiago de Chile)**: Divisa CLP, requisitos del Consulado General de España en Santiago, convenios bilaterales, causas frecuentes de requerimiento.
+  - [x] 🇺🇸 **Estados Unidos (Consulados Generales & Programa NALCAP)**: Divisa USD, particularidades de los consulados en Miami, NY, LA, Chicago, Houston, San Francisco y Boston, requisitos específicos de los auxiliares de conversación NALCAP y estudiantes de máster.
+- [x] **Pruebas Unitarias de Datos Consulares (`utils/consulatesData.test.ts`)**:
+  - [x] Pruebas unitarias para validar moneda, requisitos, FAQ y estructura de datos de Chile y EE.UU.
+- [x] **Rutas y Silos Canónicos**:
+  - [x] Registrar `/productos/seguros-salud/seguro-medico-estudiantes/chile` en `config/routes.ts` y `App.tsx`.
+  - [x] Registrar `/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos` (y versión bilingüe) en `config/routes.ts` y `App.tsx`.
 
 ---
 
 ### Fase 3: Integración del Validador Consular en Artículos del Blog
-- [ ] **Componente / CTA de Diagnóstico Rápido (`components/molecules/BlogConsularValidatorCallout.tsx`)**:
-  - [ ] Widget contextual mobile-first con selector interactivo y botón de auditoría directa hacia `/validador-visado`.
-- [ ] **Inyección en Artículos Estratégicos (`utils/blogData.ts`)**:
-  - [ ] Insertar el widget interactivo en las guías de visados y requisitos en español e inglés.
+- [x] **Componente / CTA de Diagnóstico Rápido (`components/molecules/BlogConsularValidatorCallout.tsx`)**:
+  - [x] Widget contextual mobile-first con selector interactivo y botón de auditoría directa hacia `/validador-visado`.
+- [x] **Inyección en Artículos Estratégicos (`utils/blogData.ts`)**:
+  - [x] Insertar el widget interactivo en las guías de visados y requisitos en español e inglés y en la barra lateral de los artículos.
 
 ---
 
 ### Fase 4: Sincronización SSG, `sitemap.xml`, `llms.txt` y Pruebas E2E
-- [ ] **Generación de Sitemap & SSG**:
-  - [ ] Ejecutar `npm run sync-blog` para registrar las nuevas URLs canónicas y enlaces `hreflang`.
-  - [ ] Actualizar `public/llms.txt` con la cobertura de Chile y EE.UU.
-- [ ] **Auditoría Automatizada**:
-  - [ ] Actualizar y ejecutar la suite E2E de Playwright (`test:e2e:seo`).
-  - [ ] Verificar pre-rendering estático con Puppeteer (`npm run build`).
+- [x] **Generación de Sitemap & SSG**:
+  - [x] Ejecutar `npm run sync-blog` para registrar las 55 URLs canónicas y enlaces `hreflang`.
+  - [x] Actualizar `public/llms.txt` con la cobertura de Chile y EE.UU.
+- [x] **Auditoría Automatizada**:
+  - [x] Actualizar y ejecutar la suite E2E de Playwright (`test:e2e:seo`, 62/62 tests en verde).
+  - [x] Verificar pre-rendering estático con Puppeteer (`npm run build` con 96 rutas pre-renderizadas).
 
 ---
 
