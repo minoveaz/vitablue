@@ -35,7 +35,118 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'certificado-seguro-medico-visado-estudiante-consulado',
+    title: 'Cómo Tramitar el Certificado del Seguro Médico para el Visado en 24h (Guía 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '6 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Tienes cita en el consulado o en Extranjería y necesitas tu certificado oficial de seguro médico? Te explicamos paso a paso cómo obtener el documento homologado con firma electrónica válida en menos de 24 horas.',
+    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Uno de los momentos de mayor estrés al tramitar el visado de estancia por estudios o la autorización de residencia en España es la preparación del expediente para la cita consular. Entre todos los documentos solicitados, el <strong>Certificado Oficial de Cobertura Sanitaria</strong> es el que genera más dudas y denegaciones si no contiene las cláusulas exactas exigidas por la legislación española.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Es fundamental entender que para las autoridades de Extranjería y los consulados de España en el exterior <strong>no sirve una simple factura de pago, un folleto comercial ni el condicionado general de una póliza</strong>. Es obligatorio presentar un certificado oficial nominal y bilingüe emitido por una aseguradora autorizada en España (como Sanitas) que detalle punto por punto el cumplimiento de la normativa.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Las 5 cláusulas obligatorias que debe certificar la aseguradora'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para que el cónsul o el funcionario de Extranjería valide tu seguro sin emitir un requerimiento de subsanación, el certificado debe hacer constar de forma expresa las siguientes condiciones técnicas:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Identificación completa del estudiante</strong>: Nombre completo, fecha de nacimiento y número de pasaporte internacional idéntico al documento con el que se solicita el visado.',
+          '<strong>Cláusula explícita "Sin Copagos"</strong>: El documento debe certificar literalmente que el asegurado no debe realizar ningún copago ni abonar franquicias por el uso de servicios médicos, pruebas diagnósticas o urgencias hospitalarias.',
+          '<strong>Cláusula "Sin Periodos de Carencia"</strong>: Debe constar que todas las coberturas y prestaciones sanitarias están plenamente activas y disponibles desde el primer día de vigencia.',
+          '<strong>Cobertura completa análoga a la sanidad pública</strong>: Inclusión ilimitada de medicina general, especialidades, hospitalización médica y quirúrgica y urgencias las 24 horas.',
+          '<strong>Repatriación sanitaria y funeraria ilimitada</strong>: Cobertura completa del traslado sanitario en caso de accidente grave o de repatriación de restos mortales hasta el país de origen del estudiante.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Emisión Express en 24 Horas',
+        ctaTitle: '¿Necesitas tu certificado oficial para una cita próxima?',
+        ctaDescription: 'Calcula tu póliza de Sanitas International Students y obtén tu certificado oficial con firma electrónica y sellos consulares en menos de 24h laborables.',
+        ctaButtonText: 'Tramitar mi certificado oficial',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: 'Paso a paso: Cómo obtener el certificado oficial en menos de 24 horas'
+      },
+      {
+        type: 'paragraph',
+        text: 'A través de VitaBlue, el proceso de solicitud y emisión del certificado consular está totalmente digitalizado y simplificado para evitar demoras:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Paso 1: Cotización rápida</strong>: Introduce tu edad y fecha prevista de llegada a España en nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>.',
+          '<strong>Paso 2: Datos del pasaporte y cuestionario médico</strong>: Rellena los datos de tu pasaporte y completa el breve cuestionario de salud oficial de Sanitas.',
+          '<strong>Paso 3: Validación y pago seguro</strong>: Tramita la prima oficial garantizada mediante tarjeta bancaria o transferencia.',
+          '<strong>Paso 4: Recepción del Certificado PDF</strong>: En menos de 24 horas laborables recibirás en tu correo electrónico el certificado oficial en formato PDF de alta resolución, firmado digitalmente por los apoderados legales de Sanitas.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Validez jurídica de la Firma Electrónica ante Consulados y MERCURIO'
+      },
+      {
+        type: 'paragraph',
+        text: 'Una pregunta muy frecuente es si es necesario disponer del documento en papel firmado a mano con tinta húmeda. La respuesta es <strong>no</strong>: todos los consulados españoles y las delegaciones de gobierno a través de la plataforma telemática MERCURIO admiten los certificados con <strong>Firma Electrónica Reconocida y Código Seguro de Verificación (CSV)</strong> emitidos por Sanitas.'
+      },
+      {
+        type: 'paragraph',
+        text: 'El código CSV permite al cónsul verificar en tiempo real la autenticidad e integridad del certificado directamente contra los servidores oficiales de la aseguradora, lo que agiliza notablemente la resolución del visado.'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Qué ocurre si cambia la fecha de inicio de mi curso o me deniegan el visado?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al contratar tu seguro <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> con VitaBlue cuentas con dos protecciones contractuales esenciales:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Modificación gratuita de fechas</strong>: Si tu embajada tarda más de lo previsto y necesitas retrasar la fecha de inicio del seguro para que coincida con tu nueva fecha de vuelo, cambiamos las fechas y te reemitimos el certificado sin ningún coste.',
+          '<strong>Garantía de reembolso del 100%</strong>: Si por causas oficiales ajenas a ti el consulado rechaza tu visado, te reembolsamos íntegramente el 100% del dinero abonado presentando la carta formal de denegación antes del inicio de vigencia de la póliza.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Certificado Consular (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿El certificado viene en español y en inglés?</strong>: Sí. El certificado oficial de Sanitas se emite en formato bilingüe (español e inglés en el mismo documento) para que sea válido tanto en consulados de habla hispana como en embajadas internacionales.',
+          '<strong>¿Puedo consultar los precios antes de tramitar el certificado?</strong>: Sí. Puedes revisar todas las tarifas desglosadas por edades en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">guía de precios del seguro de estudiante 2026</a>.',
+          '<strong>¿Tengo que traducir el certificado ante notario?</strong>: No. Al estar emitido legalmente en España por una compañía española y redactado en castellano, tiene plena validez jurídica directa sin necesidad de apostilla de La Haya ni traducción jurada.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'precios-seguro-medico-visado-estudiante-espana',
+
     title: 'Precios del Seguro Médico para Visado de Estudiante en España (Guía Oficial 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',

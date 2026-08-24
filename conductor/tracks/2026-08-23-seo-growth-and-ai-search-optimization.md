@@ -36,8 +36,7 @@
   - [x] *Preexistencias Médicas en el Seguro de Salud*.
 - [ ] **Nuevos Artículos de Expansión de Clusters**:
   - [x] *Guía de Precios Reales: Seguro Médico para Visado de Estudiante 2026*.
-  - [ ] *Cómo tramitar el Certificado de Cobertura Oficial en 24h para el Consulado*.
-
+  - [x] *Cómo tramitar el Certificado de Cobertura Oficial en 24h para el Consulado*.
   - [ ] *Seguro de Salud para Nómadas Digitales: Requisitos UGE y Teletrabajo*.
   - [ ] *Sanitas vs Adeslas vs DKV: ¿Cuál es el mejor seguro médico en España?*.
   - [ ] *Seguro de salud para mayores de 65 años: precios y límites de contratación*.
