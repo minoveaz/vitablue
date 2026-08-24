@@ -75,10 +75,11 @@ Este módulo se integra de forma limpia y no intrusiva sobre la arquitectura exi
 - [x] Integración de estado y modal en `ImageStudio.tsx`.
 
 ### Fase 4: Motor de Exportación Multi-Slide (ZIP / PDF / Tira)
-- [ ] Crear la utilidad de corte y compresión `marketing-studio/utils/carouselExporter.ts`.
-- [ ] Integración de exportación ZIP con nombres secuenciales (`slide_01.png`...) a resolución nativa.
-- [ ] Integración de exportación PDF multi-página para LinkedIn.
-- [ ] Añadir modal de opciones de descarga específico para carruseles en `ImageStudioInspector.tsx`.
+- [x] Crear la utilidad de corte y compresión `marketing-studio/utils/carouselExporter.ts`.
+- [x] Integración de exportación ZIP con nombres secuenciales (`slide_01.png`...) a resolución nativa sin dependencias externas.
+- [x] Integración de exportación PDF multi-página para LinkedIn Document.
+- [x] Añadir opciones de descarga de carrusel al menú de exportación en `ImageEditorToolbar.tsx`.
+- [x] Conexión de callbacks en `ImageStudio.tsx`.
 
 ### Fase 5: Plantillas de Marca y Puntos de Entrada
 - [ ] Añadir selector de "Crear Carrusel" en el Hub y en `ImageCanvasFormatsModal` con selector de plataforma y número de slides.

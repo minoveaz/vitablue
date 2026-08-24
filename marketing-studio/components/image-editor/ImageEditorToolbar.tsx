@@ -39,6 +39,7 @@ export interface ImageEditorToolbarProps {
   onSetPreset?: (preset: ImageFormatPreset) => void;
   onCopyToClipboard?: () => void;
   onExport: (format: 'png' | 'jpeg' | 'svg') => void;
+  onExportCarousel?: (format: 'zip' | 'pdf' | 'full') => void;
   onSaveToDam: () => void;
   onSendToVideoStudio?: () => void;
 }
@@ -275,40 +276,83 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </button>
 
           {isExportMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white">
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('png');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar PNG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-brand-cyan">1080p</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('jpeg');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar JPEG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Web</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('svg');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar SVG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Vector</span>
-              </button>
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white">
+              {project.preset.isCarousel ? (
+                <>
+                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-cyan border-b border-slate-800/80 mb-1">
+                    Exportación de Carrusel
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExportCarousel ? onExportCarousel('zip') : onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Pack de Diapositivas (ZIP)</span>
+                    <span className="rounded bg-brand-cyan/20 text-brand-cyan px-1.5 py-0.5 text-[9px] font-mono font-bold">1-Click</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExportCarousel ? onExportCarousel('pdf') : onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Documento LinkedIn (PDF)</span>
+                    <span className="rounded bg-blue-500/20 text-blue-300 px-1.5 py-0.5 text-[9px] font-mono font-bold">Doc</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExportCarousel ? onExportCarousel('full') : onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Tira Panorámica Completa</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">PNG</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar PNG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-brand-cyan">1080p</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('jpeg');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar JPEG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Web</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('svg');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar SVG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Vector</span>
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

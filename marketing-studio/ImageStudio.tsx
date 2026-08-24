@@ -9,6 +9,7 @@ import { ImageStudioInspector } from './components/image-editor/ImageStudioInspe
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
+import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import {
@@ -190,6 +191,18 @@ export const ImageStudio: React.FC = () => {
     showToast(`Exportando ${format.toUpperCase()}...`);
   };
 
+  const handleExportCarousel = async (format: 'zip' | 'pdf' | 'full') => {
+    if (!canvasRef.current) return;
+    try {
+      showToast(format === 'pdf' ? 'Compilando documento PDF...' : format === 'zip' ? 'Cortando diapositivas y generando ZIP...' : 'Descargando tira continua...');
+      await exportCarouselSlices(canvasRef.current, editor.project, format);
+      showToast('¡Descarga completada!');
+    } catch (err) {
+      console.error('Error exporting carousel:', err);
+      showToast('Error al exportar el carrusel');
+    }
+  };
+
   const handleCopyToClipboard = async () => {
     const success = await editor.copyToClipboard(canvasRef.current);
     if (success) {
@@ -317,6 +330,7 @@ export const ImageStudio: React.FC = () => {
           onSetPreset={editor.setPreset}
           onCopyToClipboard={handleCopyToClipboard}
           onExport={handleExport}
+          onExportCarousel={handleExportCarousel}
           onSaveToDam={handleSaveToDam}
           onSendToVideoStudio={() => {
             saveImageVideoHandoff(editor.project);
