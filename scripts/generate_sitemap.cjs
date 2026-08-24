@@ -28,14 +28,15 @@ for (const [, routePath, options] of canonicalMatches) {
   }
 }
 
-// Extraer posts del blog con sus alternateSlug mediante regex
-const postBlocks = [...blogData.matchAll(/\{\s*slug:\s*'([^']+)'([\s\S]*?)\n\s*\}/g)];
-const blogPostsRaw = postBlocks.map(([, slug, block]) => {
+// Extraer posts del blog con sus alternateSlug
+const postEntries = blogData.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
+const blogPostsRaw = postEntries.map((block) => {
+  const slug = block.split("'")[0];
   const alternateMatch = block.match(/alternateSlug:\s*'([^']+)'/);
   const langMatch = block.match(/lang:\s*'([^']+)'/);
   const dateMatch = block.match(/date:\s*'([^']+)'/);
   const updatedAtMatch = block.match(/updatedAt:\s*'([^']+)'/);
-  const isEn = langMatch ? langMatch[1] === 'en' : (slug.startsWith('student-visa-') || slug.startsWith('health-insurance-'));
+  const isEn = langMatch ? langMatch[1] === 'en' : false;
   
   // Parse Spanish and English textual dates to YYYY-MM-DD
   let isoDate = '2026-08-03';
@@ -63,6 +64,7 @@ const blogPostsRaw = postBlocks.map(([, slug, block]) => {
     lastmod: isoDate,
   };
 });
+
 
 const routeLastmods = new Map();
 // Fechas de última actualización canónica para páginas de producto y landings clave
