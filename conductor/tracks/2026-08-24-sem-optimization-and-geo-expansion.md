@@ -22,13 +22,14 @@
 ## 🗺️ Fases de Ejecución
 
 ### Fase 1: Suite de Optimización SEM (Google Ads Negativas & Extensiones)
-- [ ] **Inventario de Palabras Clave Negativas**:
-  - [ ] Crear documento/inventario con más de 60 palabras clave negativas categorizadas (Seguridad Social, citas previas, bajas de pólizas, reclamos a aseguradoras, ofertas de empleo, etc.).
-- [ ] **Pack de Extensiones de Anuncio**:
-  - [ ] Textos destacados (*Callout Extensions*) optimizados para CTR.
-  - [ ] Fragmentos estructurados (*Structured Snippets*) de coberturas y servicios.
-- [ ] **Guía de Enrutamiento por Calidad**:
-  - [ ] Mapeo de URLs finales por país para Quality Score 10/10.
+- [x] **Inventario de Palabras Clave Negativas**:
+  - [x] Crear documento/inventario con más de 60 palabras clave negativas categorizadas (`docs/sem-strategy/01-google-ads-negative-keywords-inventory.md`).
+- [x] **Pack de Extensiones de Anuncio**:
+  - [x] Textos destacados (*Callout Extensions*) optimizados para CTR (`docs/sem-strategy/02-google-ads-extensions-and-routing-playbook.md`).
+  - [x] Fragmentos estructurados (*Structured Snippets*) de coberturas y servicios.
+- [x] **Guía de Enrutamiento por Calidad**:
+  - [x] Mapeo de URLs finales por país para Quality Score 10/10.
+
 
 ---
 
