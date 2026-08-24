@@ -261,7 +261,7 @@ export const ExpatInsurance: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -273,6 +273,13 @@ export const ExpatInsurance: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "120",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       },
       {
@@ -286,30 +293,7 @@ export const ExpatInsurance: React.FC = () => {
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "120",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "John D."
-            },
-            "datePublished": "2025-11-05",
-            "reviewBody": "El seguro perfecto para mi Golden Visa. Sin copagos y con todo incluido, la embajada lo aceptó sin ninguna objeción.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          }
-        ]
+        }
       },
       {
         "@type": "BreadcrumbList",

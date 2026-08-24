@@ -78,7 +78,7 @@ export const ForeignerInsurance: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -90,23 +90,6 @@ export const ForeignerInsurance: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
-        }
-      },
-      {
-        "@type": "Product",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros#producto",
-        "name": "Seguro de Salud para Extranjeros en España",
-        "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
-        "brand": {
-          "@type": "Brand",
-          "name": "VitaBlue"
-        },
-        "offers": {
-          "@type": "Offer",
-          "price": "Consultar precio",
-          "priceCurrency": "EUR",
-          "availability": "https://schema.org/InStock",
-          "url": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
@@ -114,23 +97,20 @@ export const ForeignerInsurance: React.FC = () => {
           "reviewCount": "64",
           "bestRating": "5",
           "worstRating": "1"
+        }
+      },
+      {
+        "@type": "FinancialProduct",
+        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros#producto",
+        "name": "Seguro de Salud para Extranjeros en España",
+        "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
+        "brand": {
+          "@type": "Brand",
+          "name": "VitaBlue"
         },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Elena S."
-            },
-            "datePublished": "2025-11-20",
-            "reviewBody": "Soporte excelente. Todo el trámite fue rápido y el certificado de seguro sin copagos fue aceptado en mi trámite de extranjería sin problemas.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          }
-        ]
+        "provider": {
+          "@id": "https://www.vitablue.es/#organization"
+        }
       },
       {
         "@type": "BreadcrumbList",
