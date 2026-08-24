@@ -41,9 +41,26 @@
 - [ ] Ejecutar `npm run sync-blog` para regenerar rutas SSG, `vite.config.ts` y `sitemap.xml`.
 - [ ] Validar con Playwright E2E y suites de SEO (`npm run typecheck`, `npm run validate-sitemap`).
 
+### Fase 4: Sinergia SEM/Google Ads & Atribución de Leads (Growth)
+- [x] **Seguimiento Global de Conversiones Google Ads**:
+  - Implementación del evento `conversion_event_contact` en `utils/analytics.ts` compatible con `gtag` y `dataLayer`.
+  - Captura automática de clics salientes a WhatsApp (`wa.me`), teléfonos (`tel:`) y correos en toda la web.
+  - Integración en formulario de contacto, cotizador `/wizard`, resultados y hero conversacional.
+- [ ] **Atribución Inteligente en WhatsApp (Growth + SEM)**:
+  - Guardar parámetros de campaña (`gclid`, `utm_source`, `utm_campaign`) en `sessionStorage`.
+  - Incorporar etiqueta de atribución discreta en el mensaje inicial de WhatsApp (ej: `[Ref: GADS-EST]` o `[Ref: WEB-ORG]`).
+- [ ] **Optimización de Quality Score en Landings de Silos**:
+  - Alinear H1/H2 y schemas FAQPage en `/estudiantes`, `/expatriados`, `/nomadas` con keywords de alta intención de compra.
+- [ ] **CTAs Interactivos de Conversión en Artículos de Blog**:
+  - Componentes de llamada a la acción contextuales que conecten las dudas del artículo con el cotizador `/wizard`.
+- [ ] **Conversiones Mejoradas de Google Ads (Enhanced Conversions)**:
+  - Anonimización/hashing SHA-256 de datos de contacto para mejorar la atribución en iOS/Safari.
+
 ---
 
 ## 📈 Métricas de Éxito
 - Crecimiento sostenido de páginas indexadas en Google Search Console (>50 URLs válidas).
 - Incremento de impresiones y clics en términos long-tail ("seguro visado estudiante espana precio", "seguro nomada digital espana").
+- Registro del 100% de conversiones de contacto y cotización en Google Ads y GA4.
 - Indexación y citación activa en motores de IA (Perplexity, ChatGPT).
+
