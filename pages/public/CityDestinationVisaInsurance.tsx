@@ -388,11 +388,12 @@ export const CityDestinationVisaInsurance: React.FC = () => {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-700 transition-colors whitespace-nowrap"
+                className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-800 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-900 transition-colors whitespace-nowrap"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
                 WhatsApp
               </a>
+
             </div>
           </div>
         </div>

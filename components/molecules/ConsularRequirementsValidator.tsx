@@ -226,11 +226,13 @@ export const ConsularRequirementsValidator: React.FC<ConsularRequirementsValidat
                 </div>
 
                 <div className="pt-2">
-                  <label className="block text-xs font-black uppercase tracking-wider text-text-secondary mb-2 flex items-center gap-1.5">
+                  <label htmlFor="consulate-origin-select" className="text-xs font-black uppercase tracking-wider text-text-secondary mb-2 flex items-center gap-1.5">
                     <Globe className="h-4 w-4 text-primary" />
                     País y Oficina Consular de Origen
                   </label>
                   <select
+                    id="consulate-origin-select"
+                    aria-label="País y Oficina Consular de Origen"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     className="w-full rounded-2xl border-2 border-slate-200 bg-slate-50/70 p-3.5 text-sm font-bold text-text-main focus:border-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
@@ -242,6 +244,7 @@ export const ConsularRequirementsValidator: React.FC<ConsularRequirementsValidat
                     ))}
                   </select>
                 </div>
+
               </motion.div>
             )}
 

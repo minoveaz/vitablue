@@ -342,8 +342,9 @@ export const ConsulateVisaInsurance: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-16">
         <div className="mx-auto max-w-6xl space-y-10">
           <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-accent">Tipos de Visado</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Tipos de Visado</span>
             <h2 className="text-h2 font-display font-bold text-text-main">
+
               Trámites de Visado que Exigen Seguro Médico en {consulate.city}
             </h2>
             <p className="text-body-reg text-text-secondary">
@@ -428,7 +429,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50 border-y border-slate-200/60">
         <div className="mx-auto max-w-5xl space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-accent">Evita Errores Frecuentes</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Evita Errores Frecuentes</span>
             <h2 className="text-h2 font-display font-bold text-text-main">
               Motivos de Denegación de Seguro en el Consulado de {consulate.city}
             </h2>
@@ -481,9 +482,10 @@ export const ConsulateVisaInsurance: React.FC = () => {
           </div>
 
           <div className="rounded-2xl bg-white/15 p-5 border-2 border-accent/60 backdrop-blur-sm relative shadow-md">
-            <span className="text-xs font-extrabold text-accent uppercase tracking-wider block mb-1">
+            <span className="text-xs font-extrabold text-brand-cyan uppercase tracking-wider block mb-1">
               Año Académico Completo (9 a 12 meses)
             </span>
+
             <p className="text-2xl font-display font-black text-white mb-2">Desde 35€ / mes</p>
             <p className="text-xs text-slate-200 font-medium">
               La tarifa más contratada para grados universitarios, másteres oficiales y visados de nómada digital.
