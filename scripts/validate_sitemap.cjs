@@ -10,12 +10,20 @@ const registryCanonicalRoutes = [...registry.matchAll(/canonical\('([^']+)',\s*\
   .filter(([, , options]) => !/sitemap:\s*false/.test(options))
   .map(([, path]) => path);
 
-const blogSlugs = [...blogData.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
+const postEntries = blogData.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
+const blogExpectedRoutes = postEntries.map((block) => {
+  const slug = block.split("'")[0];
+  const langMatch = block.match(/lang:\s*'([^']+)'/);
+  const isEn = langMatch ? langMatch[1] === 'en' : false;
+  return `${isEn ? '/en' : ''}/blog/${slug}`;
+});
+
 const expectedRoutes = [
   ...registryCanonicalRoutes,
-  ...blogSlugs.map((slug) => `${slug.startsWith('student-visa-') || slug.startsWith('health-insurance-') ? '/en' : ''}/blog/${slug}`),
+  ...blogExpectedRoutes,
 ];
 const actualRoutes = [...sitemap.matchAll(/<loc>https?:\/\/[^<]+?(\/[^<]*)<\/loc>/g)].map((match) => match[1] || '/');
+
 
 // Normaliza trailing slash para comparar: /page y /page/ son equivalentes
 const stripSlash = (r) => (r === '/' ? r : r.replace(/\/$/, ''));
