@@ -49,8 +49,9 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: '¿Estás planificando un embarazo o esperando un bebé? Analizamos los periodos de carencia para el parto en España, cómo eliminar las carencias si vienes de otra aseguradora y qué ventajas ofrece la red de maternidad de Asisa y Sanitas.',
-    featuredImage: 'https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
+
     sections: [
       {
         type: 'paragraph',
