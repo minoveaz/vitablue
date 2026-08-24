@@ -306,8 +306,14 @@ export const trackContactConversion = (
     setEnhancedUserData(userData);
   }
 
-  // 1. Primary standard Google Tag conversion event
+  // 1. Primary standard Google Tag conversion events
   trackConversion('conversion_event_contact', {
+    contact_method: method,
+    ...details,
+  });
+
+  // Google Ads auto-created alias (conversion_event_contact_1)
+  trackConversion('conversion_event_contact_1', {
     contact_method: method,
     ...details,
   });
