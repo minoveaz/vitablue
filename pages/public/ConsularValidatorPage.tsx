@@ -137,11 +137,28 @@ export const ConsularValidatorPage: React.FC = () => {
       <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 md:px-8 -mt-8 relative z-20 pb-16">
         <ConsularRequirementsValidator />
 
+        {/* Trust Badges */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-6 text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-emerald-500"></span>
+            100% Gratuito y Sin Registro Previo
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Normativa Consular RD 557/2011 y Ley 28/2022
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            Válido para Extranjería y BLS International
+          </span>
+        </div>
+
         {/* Educational Content & Guidelines */}
-        <div className="mt-12 bg-white rounded-3xl border border-slate-150 p-6 sm:p-10 shadow-sm space-y-8 text-left">
+        <div className="mt-10 bg-white rounded-3xl border border-slate-150 p-6 sm:p-10 shadow-sm space-y-8 text-left">
           <div>
             <span className="text-xs font-black uppercase tracking-wider text-primary">Marco Jurídico Oficial</span>
             <h2 className="text-h2 font-display font-black text-text-main mt-1">
+
               ¿Qué exige la ley española para autorizar tu seguro médico?
             </h2>
             <p className="text-body-reg text-text-secondary mt-2 leading-relaxed">
