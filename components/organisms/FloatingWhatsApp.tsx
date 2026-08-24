@@ -1,10 +1,17 @@
 import React from 'react';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
+import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
 
 export const FloatingWhatsApp: React.FC = () => {
   const handleClick = () => {
-    window.open('https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud.', '_blank');
+    const url = buildAttributedWhatsAppUrl(
+      '34694583452',
+      'Hola! Vengo de la web de VitaBlue. Necesito asesoramiento sobre seguros de salud.',
+      'WIDGET-FLOAT'
+    );
+    window.open(url, '_blank');
   };
+
 
   return (
     <div className="whatsapp-float-widget fixed bottom-6 right-6 z-[190] flex items-center gap-3 group">

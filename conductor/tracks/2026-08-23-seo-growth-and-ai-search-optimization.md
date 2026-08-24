@@ -56,15 +56,16 @@
   - Implementación del evento `conversion_event_contact` en `utils/analytics.ts` compatible con `gtag` y `dataLayer`.
   - Captura automática de clics salientes a WhatsApp (`wa.me`), teléfonos (`tel:`) y correos en toda la web.
   - Integración en formulario de contacto, cotizador `/wizard`, resultados y hero conversacional.
-- [ ] **Atribución Inteligente en WhatsApp (Growth + SEM)**:
-  - Guardar parámetros de campaña (`gclid`, `utm_source`, `utm_campaign`) en `sessionStorage`.
-  - Incorporar etiqueta de atribución discreta en el mensaje inicial de WhatsApp (ej: `[Ref: GADS-EST]` o `[Ref: WEB-ORG]`).
-- [ ] **Optimización de Quality Score en Landings de Silos**:
+- [x] **Atribución Inteligente en WhatsApp (Growth + SEM)**:
+  - Guardar parámetros de campaña (`gclid`, `gbraid`, `wbraid`, `utm_source`, `utm_campaign`) en `sessionStorage` y `localStorage`.
+  - Incorporar etiqueta de atribución discreta en el mensaje inicial de WhatsApp (ej: `[Ref: GADS-EST-c49x]` o `[Ref: WEB-ESTUDIANTES]`).
+- [x] **Optimización de Quality Score en Landings de Silos**:
   - Alinear H1/H2 y schemas FAQPage en `/estudiantes`, `/expatriados`, `/nomadas` con keywords de alta intención de compra.
-- [ ] **CTAs Interactivos de Conversión en Artículos de Blog**:
-  - Componentes de llamada a la acción contextuales que conecten las dudas del artículo con el cotizador `/wizard`.
-- [ ] **Conversiones Mejoradas de Google Ads (Enhanced Conversions)**:
-  - Anonimización/hashing SHA-256 de datos de contacto para mejorar la atribución en iOS/Safari.
+- [x] **CTAs Interactivos de Conversión en Artículos de Blog**:
+  - Componentes de llamada a la acción contextuales que conecten las dudas del artículo con el cotizador `/wizard` (`cta-wizard` y `BlogAdvisorCta`).
+- [x] **Conversiones Mejoradas de Google Ads (Enhanced Conversions)**:
+  - Normalización de datos de contacto (`user_data` con email y teléfono E.164) en envíos de formulario de contacto y cotizaciones.
+
 
 
 ---

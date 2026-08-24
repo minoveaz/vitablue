@@ -1,3 +1,5 @@
+import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
+
 export interface RedirectState {
   profile: 'student' | 'expat' | 'nomad' | 'individual' | 'pet' | null;
   ageRange: '18_24' | '25_30' | '31_40' | 'plus_40' | null;
@@ -39,5 +41,6 @@ export const getWhatsAppLink = (state: RedirectState): string => {
     message = `Hola! Acabo de cotizar un seguro para nómada digital en VitaBlue. Tengo ${ageText || 'edad de nómada'} años${nationalityText} y busco cobertura médica flexible para España y viajes. ¿Me pasáis precios?`;
   }
 
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  return buildAttributedWhatsAppUrl(phone, message, state.profile || 'COTIZADOR');
 };
+
