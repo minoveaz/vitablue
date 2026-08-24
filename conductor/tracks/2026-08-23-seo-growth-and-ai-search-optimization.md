@@ -47,8 +47,9 @@
 ### Fase 3: Enlazado Interno y Automatización SSG
 - [x] Enlazado interno de artículos base con landings y `/wizard`.
 - [x] Automatización de sincronización (`npm run sync-blog`) con `vite.config.ts` y `sitemap.xml`.
-- [ ] Integrar nuevos artículos del cluster en `utils/blogData.ts` y sincronizar SSG.
-- [ ] Validar con Playwright E2E y suites de SEO (`npm run typecheck`, `npm run validate-sitemap`).
+- [x] Integrar nuevos artículos del cluster en `utils/blogData.ts` y sincronizar SSG.
+- [x] Validar con Playwright E2E y suites de SEO (`npm run typecheck`, `npm run validate-sitemap`, `npm run build`).
+
 
 ### Fase 4: Sinergia SEM/Google Ads & Atribución de Leads (Growth)
 - [x] **Seguimiento Global de Conversiones Google Ads**:
