@@ -49,8 +49,9 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: '¿Tienes cita en el consulado o en Extranjería y necesitas tu certificado oficial de seguro médico? Te explicamos paso a paso cómo obtener el documento homologado con firma electrónica válida en menos de 24 horas.',
-    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
+
     sections: [
       {
         type: 'paragraph',
