@@ -1,7 +1,7 @@
 # Track: SEM Optimization Suite, Geo-Expansión (Chile & EE.UU. NALCAP) & Blog Lead Magnet Ingestion (2026)
 
-> **Estado**: 🟡 **EN PROGRESO**  
-> **Rama**: `feat/sem-optimization-geo-expansion-chile-usa` (ramificada desde `develop` actualizado)  
+> **Estado**: 🟢 **COMPLETADO & EN PRODUCCIÓN (MERGED TO MAIN)**  
+> **PRs Asociados**: PR #85, PR #86, PR #87, PR #88  
 > **Contexto & Objetivo**: Maximizar el retorno de inversión (ROI) publicitario de Google Ads y expandir la captación orgánica y conversión de VitaBlue mediante 4 iniciativas complementarias:
 > 1. **Suite de Optimización SEM**: Blindaje de palabras clave negativas, textos destacados (*callouts*) y fragmentos estructurados para elevar el Quality Score a 10/10.
 > 2. **Expansión Geo-Consular Estratégica**: Landings y datos consulares para **Chile 🇨🇱** (Santiago) y **Estados Unidos 🇺🇸** (NALCAP, Miami, NY, LA, Houston, Chicago en español e inglés).
