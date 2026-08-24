@@ -17,22 +17,26 @@ export const BlogPost: React.FC = () => {
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
   const blogPath = isEnglish ? '/en/blog' : '/blog';
   const alternatePost = post.alternateSlug ? blogPosts.find((item) => item.slug === post.alternateSlug) : undefined;
-  const alternateSlug = alternatePost?.slug;
+  const resolvedImageUrl = post.featuredImage.startsWith('http')
+    ? post.featuredImage
+    : `https://www.vitablue.es${post.featuredImage}`;
+
   useEffect(() => {
-    [['og:title', post.title], ['og:description', post.excerpt], ['og:image', `https://www.vitablue.es${post.featuredImage}`]].forEach(([property, content]) => {
+    [['og:title', post.title], ['og:description', post.excerpt], ['og:image', resolvedImageUrl]].forEach(([property, content]) => {
       let tag = document.head.querySelector(`meta[property="${property}"]`);
       if (!tag) { tag = document.createElement('meta'); tag.setAttribute('property', property); document.head.appendChild(tag); }
       tag.setAttribute('content', content);
     });
-  }, [post]);
+  }, [post, resolvedImageUrl]);
   const jsonLdArticle = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    image: `https://www.vitablue.es${post.featuredImage}`,
+    image: resolvedImageUrl,
     datePublished: post.date,
     dateModified: post.date,
+
     inLanguage: isEnglish ? 'en-US' : 'es-ES',
     mainEntityOfPage: {
       '@type': 'WebPage',

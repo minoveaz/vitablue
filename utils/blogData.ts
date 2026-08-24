@@ -49,8 +49,9 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: '¿Cuánto cuesta el seguro médico obligatorio para estudiar en España? Descubre las tarifas reales mensuales y anuales de pólizas homologadas sin copagos (Sanitas), factores que influyen en el coste y cómo evitar denegaciones consulares.',
-    featuredImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
+
     sections: [
       {
         type: 'paragraph',
