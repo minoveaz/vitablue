@@ -219,7 +219,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
       >
         <QuoteEstimator
           title={`Tarificador ${consulate.country}`}
-          description={`Calcula tu cuota oficial sin copagos en ${consulate.currencyCode} (${consulate.priceFromLocal}).`}
+          description={`Calcula tu cuota oficial sin copagos en ${consulate.currencyDisplay} (${consulate.priceFromLocal}).`}
           initialAge={22}
           maxAge={35}
           options={[
@@ -228,7 +228,8 @@ export const ConsulateVisaInsurance: React.FC = () => {
             { id: 'nomada', label: 'Nómada / Remoto' },
           ]}
           initialOption="grado"
-          priceSuffix={`${consulate.currencyCode}/mes`}
+          priceSuffix={`${consulate.currencyDisplay}/mes`}
+
           calculatePrice={(age, option) => {
             let eur = consulate.priceFromEur;
             if (option === 'master') eur += 3;

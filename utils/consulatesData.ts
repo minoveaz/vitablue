@@ -21,6 +21,7 @@ export interface ConsulateData {
   appointmentLeadTime: string;
   priceFromEur: number;
   currencyCode: string;
+  currencyDisplay: string;
   rateEurToLocal: number;
   priceFromLocal: string;
   whatsappTag: string;
@@ -63,8 +64,10 @@ export const consulatesList: ConsulateData[] = [
     appointmentLeadTime: '20 a 30 días hábiles',
     priceFromEur: 35,
     currencyCode: 'COP',
+    currencyDisplay: 'COP',
     rateEurToLocal: 4300,
     priceFromLocal: 'Aprox. 150.000 COP / mes',
+
     whatsappTag: 'CONS-BOGOTA',
     whatsappMessage: 'Hola! Solicito visado para España en el Consulado de Bogotá (Colombia). Necesito asesoramiento para contratar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
@@ -165,9 +168,11 @@ export const consulatesList: ConsulateData[] = [
     appointmentLeadTime: '15 a 25 días hábiles',
     priceFromEur: 35,
     currencyCode: 'MXN',
+    currencyDisplay: 'MXN',
     rateEurToLocal: 21.5,
     priceFromLocal: 'Aprox. 750 MXN / mes',
     whatsappTag: 'CONS-MEXICO',
+
     whatsappMessage: 'Hola! Tramito visado en el Consulado de España en México. Quiero información y cotización del seguro médico sin copagos para visado con certificado oficial.',
     specificNotices: [
       'El Consulado en CDMX y BLS México verifican rigurosamente que la póliza no tenga deducible en dólares ni copago en euros.',
@@ -254,8 +259,9 @@ export const consulatesList: ConsulateData[] = [
     appointmentLeadTime: '20 a 30 días hábiles',
     priceFromEur: 35,
     currencyCode: 'PEN',
+    currencyDisplay: 'Soles',
     rateEurToLocal: 4.0,
-    priceFromLocal: 'Aprox. 140 PEN / mes',
+    priceFromLocal: 'Aprox. 140 Soles (S/) / mes',
     whatsappTag: 'CONS-PERU',
     whatsappMessage: 'Hola! Tramito visado en el Consulado de España en Lima (Perú). Necesito asesoramiento para el seguro médico oficial sin copagos con certificado consular.',
     specificNotices: [
@@ -339,6 +345,7 @@ export const consulatesList: ConsulateData[] = [
     appointmentLeadTime: '15 a 30 días hábiles',
     priceFromEur: 35,
     currencyCode: 'ARS',
+    currencyDisplay: 'ARS',
     rateEurToLocal: 1150,
     priceFromLocal: 'Aprox. 40.000 ARS / mes',
     whatsappTag: 'CONS-ARGENTINA',
@@ -424,8 +431,10 @@ export const consulatesList: ConsulateData[] = [
     appointmentLeadTime: '15 a 25 días hábiles',
     priceFromEur: 35,
     currencyCode: 'USD',
+    currencyDisplay: 'USD',
     rateEurToLocal: 1.08,
     priceFromLocal: 'Aprox. 38 USD / mes',
+
     whatsappTag: 'CONS-ECUADOR',
     whatsappMessage: 'Hola! Tramito visado para España en los Consulados de Quito/Guayaquil (Ecuador). Necesito cotizar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
