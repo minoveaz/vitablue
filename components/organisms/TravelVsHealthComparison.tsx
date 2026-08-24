@@ -50,8 +50,8 @@ export const TravelVsHealthComparison: React.FC<TravelVsHealthComparisonProps> =
           {/* Travel Insurance Card */}
           <div className="flex flex-col justify-between rounded-3xl border border-red-100 bg-white p-6 shadow-sm sm:p-8">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-caption font-bold text-red-600 border border-red-200">
-                <XCircle className="h-4 w-4" />
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-caption font-bold text-red-700 border border-red-200">
+                <XCircle className="h-4 w-4 text-red-700" />
                 {travelLabel}
               </div>
               <h3 className="text-h3 font-display font-bold text-text-main mb-6">
