@@ -41,7 +41,7 @@ jobs:
     name: 🔎 Detect changed surfaces
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
+      public_frontend: ${{ steps.filter.outputs.public_frontend }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -55,18 +55,11 @@ jobs:
               - 'App.tsx'
               - 'index.html'
               - 'index.css'
-              - 'components/atoms/**'
-              - 'components/molecules/**'
-              - 'components/organisms/**'
-              - 'components/layouts/Navbar.tsx'
-              - 'components/layouts/Footer.tsx'
-              - 'pages/public/**'
-              - 'pages/Home.tsx'
-              - 'pages/StudentInsurance.tsx'
-              - 'pages/Wizard.tsx'
-              - 'pages/Results.tsx'
+              - 'components/**'
+              - 'pages/**'
               - 'public/**'
               - 'e2e/**'
+              - '.github/workflows/ci.yml'
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 1: Build estático pre-renderizado (SSG)
