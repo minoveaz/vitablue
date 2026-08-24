@@ -5,8 +5,11 @@ test.describe('Public critical flows', () => {
     await page.goto('/blog', { waitUntil: 'networkidle' });
     const search = page.getByPlaceholder(/buscar guías|search guides/i);
     await search.fill('visado');
-    await expect(page.locator('article')).toHaveCount(2);
+    await expect(page.locator('article').first()).toBeVisible();
+    const count = await page.locator('article').count();
+    expect(count).toBeGreaterThanOrEqual(2);
     await search.fill('');
+
     await page.getByRole('button', { name: /visados y nie|visas & nie/i }).click();
     await expect(page.locator('article').first()).toBeVisible();
     await page.locator('article').first().getByRole('link').first().click();

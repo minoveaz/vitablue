@@ -1,10 +1,16 @@
 export interface BlogSection {
-  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table';
+  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table' | 'cta-wizard';
   text?: string;
   items?: string[];
   tableHeader?: string[];
   tableRows?: string[][];
+  ctaTitle?: string;
+  ctaDescription?: string;
+  ctaButtonText?: string;
+  ctaLink?: string;
+  ctaBadge?: string;
 }
+
 
 export interface BlogPostData {
   slug: string;
@@ -29,8 +35,703 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
+    title: 'Periodos de Carencia en el Embarazo: Qué Pólizas Cubren Parto en 2026',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Estás planificando un embarazo o esperando un bebé? Analizamos los periodos de carencia para el parto en España, cómo eliminar las carencias si vienes de otra aseguradora y qué ventajas ofrece la red de maternidad de Asisa y Sanitas.',
+    featuredImage: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'La llegada de un nuevo miembro a la familia es una de las etapas más especiales y emocionantes de la vida. Para vivir el embarazo con total tranquilidad, cada vez más futuras madres optan por la sanidad privada en España en busca de <strong>elección de ginecólogo para todo el proceso, ecografías de alta definición sin esperas y habitación individual para la madre y su acompañante durante el parto</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'No obstante, el factor más importante a tener en cuenta al contratar o revisar tu póliza de salud es el <strong>periodo de carencia para la asistencia al parto</strong>. En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> te explicamos con total transparencia cómo funcionan los plazos, cómo eliminar las carencias si vienes de otra compañía y qué coberturas incluye el seguro de maternidad.'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Cómo funcionan las carencias de maternidad y parto?'
+      },
+      {
+        type: 'paragraph',
+        text: 'En el seguro médico privado en España se debe distinguir con claridad entre el seguimiento ordinario del embarazo y el momento del parto:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Seguimiento del embarazo (Sin carencia o carencia de 0 a 3 meses)</strong>: Las consultas ginecológicas periódicas, analíticas de sangre y orina, ecografías obstétricas rutinarias y revisiones se pueden utilizar de forma casi inmediata desde la contratación.',
+          '<strong>Pruebas diagnósticas de alta resolución (6 meses de carencia)</strong>: Pruebas avanzadas como el test prenatal no invasivo en sangre materna (ADN fetal) o amniocentesis suelen requerir 6 meses de permanencia previa.',
+          '<strong>Asistencia al parto, cesárea y estancia hospitalaria (8 meses de carencia)</strong>: En las principales aseguradoras (como Asisa y Sanitas), la cobertura de la hospitalización obstétrica, anestesia epidural, quirófano de cesárea y cuidados del recién nacido exige haber estado de alta en la póliza al menos <strong>8 meses antes de la fecha del alumbramiento</strong>.'
+        ]
+      },
+      {
+        type: 'table',
+        tableHeader: ['Prestación de Maternidad', 'Periodo de Carencia Habitual', 'Asisa Salud (Grupo HLA)', 'Sanitas Más Salud'],
+        tableRows: [
+          ['Consultas de ginecología y obstetricia', '0 meses (Acceso inmediato)', 'Incluidas sin esperas en cuadro médico', 'Incluidas sin esperas'],
+          ['Ecografías obstétricas rutinarias', '0 a 3 meses', 'Incluidas en clínicas HLA y centros concertados', 'Incluidas en red Sanitas'],
+          ['Preparación al parto (Psicoprofilaxis)', '6 meses', 'Incluida con matronas especializadas', 'Incluida en centros propios'],
+          ['Test Prenatal No Invasivo (ADN fetal)', '6 meses', 'Incluido según prescripción médica', 'Incluido con copago reducido'],
+          ['Parto natural, cesárea y habitación individual', '8 meses', 'Cubierto 100% en hospitales HLA y concertados', 'Cubierto 100% en hospitales Sanitas']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Planificación Familiar 2026',
+        ctaTitle: '¿Planeas un embarazo y quieres calcular tu seguro médico?',
+        ctaDescription: 'Calcula tu presupuesto de seguro de salud con cobertura de maternidad completa. Si ya vienes de otra aseguradora, te ayudamos a eliminar todas las carencias sin coste.',
+        ctaButtonText: 'Calcular seguro de maternidad',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Es posible cubrir el parto sin carencias si ya estás embarazada?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Esta es una de las preguntas más frecuentes que recibimos en nuestra asesoría. Existen tres situaciones posibles:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Situación 1: Vienes de otra compañía de salud (Eliminación total de carencias)</strong>: Si ya contabas con un seguro médico privado en otra aseguradora con antigüedad mínima de 8 o 10 meses antes de quedarte embarazada, al cambiarte a <strong>Asisa</strong> se eliminan todos los periodos de carencia aportando el certificado de cobertura y el último recibo.',
+          '<strong>Situación 2: Póliza colectiva de empresa</strong>: Muchos seguros médicos corporativos ofrecidos como beneficio laboral por las empresas no aplican periodos de carencia para el parto desde el primer día de alta del empleado.',
+          '<strong>Situación 3: Primera contratación particular estando ya en gestación</strong>: Si contratas un seguro privado por primera vez cuando ya estás embarazada, la póliza te cubrirá las consultas con el ginecólogo y las ecografías para tu tranquilidad, pero los gastos hospitalarios del parto en clínica privada no estarán cubiertos por no cumplir los 8 meses previos.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Excepción de Emergencia por Parto Prematuro</strong>: Si tu bebé nace antes de tiempo debido a un parto prematuro sobrevenido y ya estabas asegurada antes del inicio del embarazo, las compañías de primer nivel cubren el parto y la incubadora hospitalaria considerándolo una urgencia médica vital.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Ventajas de la atención a la maternidad en la red HLA de Asisa'
+      },
+      {
+        type: 'paragraph',
+        text: 'En VitaBlue recomendamos especialmente las pólizas de <strong>Asisa</strong> para la maternidad debido a la calidad de las unidades materno-infantiles de su red propia <strong>Grupo HLA</strong> (con centros de referencia como el Hospital HLA Universitario Moncloa en Madrid o HLA Vistahermosa en Alicante):'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Habitación suite individual garantizada</strong> con cama articulada para el acompañante y baño privado.',
+          '<strong>UCI Neonatal avanzada</strong> y servicio de guardia ginecológica y pediátrica presencial las 24 horas del día.',
+          '<strong>Cobertura gratuita para el recién nacido</strong>: El bebé queda automáticamente protegido bajo la póliza de la madre durante sus primeros 30 días de vida sin coste adicional.',
+          '<strong>Talleres de lactancia y recuperación posparto</strong>: Acceso a fisioterapia de suelo pélvico para una recuperación rápida y segura tras el parto.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Seguro en el Embarazo (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Qué pasa con los copagos durante el parto?</strong>: Si contratas una póliza en modalidad sin copagos (como <em>Asisa Salud</em> o <em>Sanitas Más Salud</em>), todo el parto, la anestesia epidural, el quirófano y los días de estancia hospitalaria están incluidos al 100% sin ningún gasto añadido. Revisa nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>¿Con cuánta antelación debo contratar el seguro antes de buscar el embarazo?</strong>: Lo ideal es contratar la póliza entre 2 y 3 meses antes de empezar a buscar el embarazo para asegurar que el parto se produzca con holgura tras superar los 8 meses de carencia.',
+          '<strong>¿Puedo consultar más información sobre las carencias generales?</strong>: Puedes revisar nuestro artículo especializado sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro de salud</a>.'
+        ]
+      }
+    ]
+  },
+  {
+    slug: 'seguro-salud-mayores-65-anos-espana-precios',
+
+    title: 'Seguro de Salud para Mayores de 65 Años en España: Precios y Límites (Guía 2026)',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Es posible contratar un seguro médico privado a partir de los 65 o 70 años? Analizamos los límites máximos de edad, precios mensuales reales, coberturas senior y las mejores opciones en Asisa y Sanitas.',
+    featuredImage: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Encontrar un seguro médico privado en España a partir de los 65 años solía ser un desafío complejo debido a las restricciones de edad impuestas por muchas entidades tradicionales, que cerraban la contratación a los 64 años. Sin embargo, en 2026 el panorama ha cambiado radicalmente gracias a la aparición de <strong>pólizas de salud senior especializadas</strong> diseñadas para ofrecer atención médica rápida, sin listas de espera y con coberturas adaptadas a la madurez.'
+      },
+      {
+        type: 'paragraph',
+        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> asesoramos a cientos de personas jubiladas y a familias que buscan la mejor protección sanitaria para sus padres. Te explicamos los precios reales del mercado, los límites de contratación y por qué <strong>Asisa y Sanitas</strong> son las dos compañías líderes en este segmento.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Límites de edad para contratar seguro de salud en España'
+      },
+      {
+        type: 'paragraph',
+        text: 'En el sector asegurador español existen dos conceptos clave que es fundamental diferenciar:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Edad máxima de contratación inicial</strong>: Es la edad límite en la que una persona puede contratar una nueva póliza por primera vez. En pólizas convencionales suele fijarse entre los 64 y 69 años, mientras que en productos senior especializados (como Asisa Senior o Sanitas Senior) el límite se amplía habitualmente hasta los <strong>75 u 84 años</strong>.',
+          '<strong>Garantía de permanencia vitalicia</strong>: Una vez suscrita la póliza, la ley de contrato de seguro en España y las condiciones de las principales aseguradoras garantizan que la compañía <strong>no puede cancelar tu seguro unilateralmente por razones de edad</strong>. Podrás mantener tu seguro médico de forma vitalicia independientemente de los años que cumplas.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Precios reales del seguro médico para mayores en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'Las primas de los seguros para mayores de 65 años varían en función de la edad exacta y de si se prefiere una modalidad sin copagos o con copagos reducidos con techo de gasto anual para abaratar la cuota mensual:'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tramo de Edad', 'Modalidad Recomendada', 'Precio Estimado Mensual', 'Hospitalización & Cirugía', 'Urgencias y Especialistas'],
+        tableRows: [
+          ['65 a 69 años', 'Asisa Salud / Sanitas Más Salud (Sin Copago)', '85€ - 125€ / mes', 'Incluida 100% (Habitación individual)', 'Acceso directo sin listas de espera'],
+          ['70 a 74 años', 'Asisa Senior / Póliza Modular Especializada', '120€ - 165€ / mes', 'Incluida en centros concertados/HLA', 'Consultas, analíticas y pruebas complejas'],
+          ['75 a 79 años', 'Póliza Senior con Copago Reducido', '150€ - 210€ / mes', 'Cobertura completa según cuestionario', 'Especialidades geriátricas y cardiología'],
+          ['Mayores de 80 años', 'Pólizas de Asistencia Ambulatoria y Chequeos', 'Consultar según historial médico', 'Acceso a cuadro médico con tarifas preferentes', 'Telemedicina 24/7 y videoconsultas']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Calculadora Senior 2026',
+        ctaTitle: '¿Buscas seguro médico para ti o para tus padres mayores?',
+        ctaDescription: 'Calcula en 30 segundos las opciones de seguro disponibles para mayores de 65 años con las mejores aseguradoras de España.',
+        ctaButtonText: 'Calcular precio seguro senior',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué Asisa es la opción más recomendada para mayores de 65 años?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Entre todas las opciones del mercado español, <strong>Asisa es la aseguradora más recomendada por nuestros asesores para el segmento senior</strong> por tres ventajas determinantes:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Primas más estables</strong>: Al pertenecer a la cooperativa médica Lavinia, Asisa no aplica incrementos abusivos de prima en las renovaciones de usuarios de edad avanzada.',
+          '<strong>Red hospitalaria propia Grupo HLA</strong>: Con 18 hospitales propios de primer nivel (como el Hospital HLA Universitario Moncloa en Madrid o HLA Vistahermosa en Alicante), garantiza habitaciones individuales para el paciente y su acompañante sin esperas.',
+          '<strong>Coberturas geriátricas de alto valor</strong>: Incluye sesiones de podología preventiva, fisioterapia para rehabilitación osteoarticular, revisiones cardiológicas periódicas y servicio de urgencias médicas a domicilio.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Cuestionario de salud y enfermedades preexistentes'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al solicitar un seguro a partir de los 65 años, la compañía solicitará cumplimentar una declaración de salud. Es importante saber que condiciones médicas habituales y bien controladas como la <em>hipertensión leve o el colesterol</em> no impiden la contratación en la mayoría de los casos.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para patologías más complejas, la compañía puede aplicar una exclusión de cobertura específica sobre dicha dolencia manteniendo el resto del cuerpo 100% asegurado. Conoce todos los detalles en nuestro artículo sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre Seguros para Mayores (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Puedo contratar el seguro para un familiar extranjero mayor de 65 años que viene a residir a España?</strong>: Sí. Para trámites de residencia no lucrativa o reagrupación familiar, disponemos de pólizas anuales sin copagos aceptadas por Extranjería. Consulta nuestra guía sobre <a href="/blog/seguro-medico-residencia-no-lucrativa-espana" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
+          '<strong>¿Se pueden eliminar los periodos de carencia si ya vengo de otro seguro?</strong>: Sí. Si el asegurado ya disponía de seguro de salud en otra compañía durante al menos 12 meses, Asisa y Sanitas eliminan las carencias en la nueva póliza aportando el certificado de antigüedad.',
+          '<strong>¿Incluye asistencia médica en viajes al extranjero?</strong>: Sí. Todas las pólizas completas incorporan cobertura de urgencias médicas en el extranjero de hasta 12.000€ o 15.000€ por viaje.'
+        ]
+      }
+    ]
+  },
+  {
+    slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
+
+    title: 'Sanitas vs Adeslas vs Asisa vs DKV: ¿Cuál es el mejor seguro médico en España en 2026?',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '8 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Comparativa exhaustiva entre las 4 grandes aseguradoras de salud en España: Sanitas, Adeslas, Asisa y DKV. Analizamos cuadros médicos, copagos, precios, hospitales y tecnología digital para ayudarte a elegir la mejor opción.',
+    featuredImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Elegir un seguro de salud privado en España puede resultar abrumador ante la gran cantidad de ofertas y coberturas disponibles en el mercado. Cuatro compañías lideran el sector asegurador de salud concentrando más del 70% de las pólizas suscritas: <strong>Asisa, Sanitas, Adeslas y DKV</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Como correduría independiente y comparador multimarca, en <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> analizamos los puntos fuertes y débiles de cada entidad de forma exhaustiva. En 2026, <strong>Asisa se consolida como la aseguradora más equilibrada y recomendada del mercado español</strong> gracias a su modelo cooperativo médico único, su extensa red hospitalaria propia (Grupo HLA) y la mejor relación calidad-precio real sin subidas abusivas en las renovaciones.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Tabla comparativa general: Asisa vs Sanitas vs Adeslas vs DKV (2026)'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Criterio de Evaluación', '🏆 Asisa (Grupo HLA)', 'Sanitas (Grupo Bupa)', 'Adeslas (SegurCaixa)', 'DKV (Grupo ERGO)'],
+        tableRows: [
+          ['Modelo Asistencial', 'Cooperativa Médica (Médicos propietarios - Máxima vocación asistencial)', 'Grupo asegurador multinacional', 'Banca-seguros (CaixaBank)', 'Grupo asegurador multinacional'],
+          ['Red de Hospitales Propios', '18 hospitales propios y 36 centros médicos (Grupo HLA)', '4 hospitales propios de alta complejidad', 'Clínicas concertadas y centros médicos', 'Red de clínicas concertadas'],
+          ['Relación Calidad / Precio', '⭐⭐⭐⭐⭐ La mejor del mercado (Primas estables y transparentes)', '⭐⭐⭐ Primas premium (Coste más elevado)', '⭐⭐⭐⭐ Competitiva en zonas rurales', '⭐⭐⭐⭐ Primas intermedias'],
+          ['Cuadro Médico Nacional', '+40.000 facultativos en toda España', '+50.000 profesionales concertados', '+45.000 profesionales concertados', '+40.000 profesionales concertados'],
+          ['Telemedicina & App', 'App Asisa Live (Videoconsulta, chat médico y urgencias 24/7)', 'App Mi Sanitas y BluaU', 'App digital y videoconsultas concertadas', 'App Quiero Cuidarme Más'],
+          ['Pólizas Familiares & Copagos', 'Descuentos familiares muy altos y límite anual de copagos muy bajo', 'Descuentos familiares estándar', 'Copagos modulares variables', 'Opciones modulares']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Mejor Calidad-Precio 2026',
+        ctaTitle: '¿Quieres calcular el precio de Asisa y compararlo con otras aseguradoras?',
+        ctaDescription: 'Calcula tu presupuesto oficial de Asisa en 30 segundos. Compara coberturas con Sanitas y Adeslas con asesoramiento 100% gratuito y sin llamadas comerciales.',
+        ctaButtonText: 'Calcular seguro Asisa online',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: 'Análisis detallado de cada aseguradora médica'
+      },
+      {
+        type: 'heading-3',
+        text: '1. Asisa: La ganadora en equilibrio, estabilidad de precio y red hospitalaria HLA'
+      },
+      {
+        type: 'paragraph',
+        text: 'Asisa destaca notablemente sobre sus competidores por su estructura de propiedad: pertenece a la cooperativa médica <strong>Lavinia</strong> (formada por más de 10.000 médicos españoles). Al no depender de fondos de inversión que buscan maximizar el margen financiero a corto plazo, reinvierte sus beneficios directamente en equipamiento clínico y en mantener las cuotas más accesibles para las familias.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Cuenta con la <strong>segunda red de hospitales propios más importante de España (Grupo HLA)</strong>, lo que garantiza una atención preferente y sin demoras en intervenciones quirúrgicas, pruebas de alta resolución y partos. Sus pólizas <em>Asisa Salud</em> y <em>Asisa Momento</em> son las opciones más eficientes del mercado para quienes buscan protección médica total sin pagar sobrecostes innecesarios.'
+      },
+      {
+        type: 'heading-3',
+        text: '2. Sanitas: Enfoque tecnológico y procesos para visados'
+      },
+      {
+        type: 'paragraph',
+        text: 'Sanitas, integrada en el grupo multinacional Bupa, destaca en la digitalización de servicios a través de su plataforma BluaU y en pólizas para estudiantes extranjeros como <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>. No obstante, sus primas mensuales suelen situarse entre un 15% y un 30% por encima de las tarifas de Asisa.'
+      },
+      {
+        type: 'heading-3',
+        text: '3. Adeslas: Amplia red geográfica y centros en provincias'
+      },
+      {
+        type: 'paragraph',
+        text: 'Adeslas (SegurCaixa Adeslas) cuenta con un volumen muy elevado de facultativos concertados en pequeñas poblaciones. Sin embargo, en ciudades principales suele tener mayores tiempos de espera para ciertas especialidades frente a la red HLA de Asisa.'
+      },
+      {
+        type: 'heading-3',
+        text: '4. DKV: Enfoque en prevención y salud mental'
+      },
+      {
+        type: 'paragraph',
+        text: 'DKV se especializa en medicina preventiva y programas de psicología, siendo una opción a considerar para usuarios que buscan específicamente sesiones de terapia psicológica continuada.'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué Asisa es la opción recomendada por los asesores de VitaBlue en 2026?'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Máxima estabilidad de precio</strong>: Asisa es la aseguradora con menor índice de subidas agresivas de prima en las renovaciones anuales.',
+          '<strong>Hospitales propios sin intermediarios</strong>: Con 18 hospitales del Grupo HLA (como el Hospital HLA Universitario Moncloa en Madrid o HLA El Ángel en Málaga), el asegurado accede directamente a quirófanos y camas individuales de máxima calidad.',
+          '<strong>Flexibilidad para toda la familia</strong>: Sus pólizas permiten adaptar copagos bajos con techos anuales para que nunca pagues de más ante un imprevisto de salud.',
+          '<strong>Trato humano y vocación médica</strong>: Al estar gestionada por facultativos, los criterios de autorización de pruebas complejas y tratamientos son sustancialmente más ágiles y cercanos al paciente.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Diferencias clave en copagos y tiempos de carencia'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al comparar precios entre aseguradoras, es fundamental contrastar si el presupuesto ofrecido corresponde a una modalidad <em>con copago</em> o <em>sin copago</em>. Para conocer los importes habituales de cada visita médica, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Asimismo, si ya cuentas con un seguro de salud en otra compañía y decides cambiarte a Asisa, puedes solicitar la eliminación de los periodos de carencia aportando tu antigüedad. Revisa todos los detalles en nuestro artículo sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro médico</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Comparativa de Aseguradoras (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Qué ventajas tiene contratar Asisa a través de VitaBlue?</strong>: En VitaBlue gestionamos tu alta de forma rápida y gratuita, aplicamos las promociones vigentes de Asisa y te acompañamos como asesor independiente durante toda la vida de tu póliza.',
+          '<strong>¿Asisa incluye cobertura dental?</strong>: Sí. Asisa dispone de una amplia red de Clínicas Asisa Dental propias que incluyen revisiones, limpiezas de boca, radiografías y extracciones sin coste.',
+          '<strong>¿Puedo contratar el seguro si tengo alguna enfermedad previa?</strong>: Sí, declarándola con honestidad en el cuestionario de salud. Te invitamos a leer nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>.'
+        ]
+      }
+    ]
+  },
+
+  {
+    slug: 'seguro-salud-nomadas-digitales-espana-requisitos',
+
+    title: 'Seguro de Salud para Nómadas Digitales en España: Requisitos UGE (Guía 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Vas a solicitar la Visa de Nómada Digital en España? Te explicamos los requisitos exactos del seguro médico exigidos por la UGE (Unidad de Grandes Empresas), coberturas internacionales y opciones recomendadas.',
+    featuredImage: 'https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'La aprobación de la <em>Ley de Startups (Ley 28/2022)</em> convirtió a España en uno de los destinos más atractivos del mundo para teletrabajadores internacionales y autónomos remotos gracias a la creación del <strong>Visado y Autorización de Residencia para Nómadas Digitales (Teletrabajo de Carácter Internacional)</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Sin embargo, tanto si tramitas la solicitud a través del consulado español en tu país como si la presentas directamente desde España ante la <strong>UGE (Unidad de Grandes Empresas y Colectivos Estratégicos)</strong>, uno de los requisitos documentales más estrictos es acreditar la disposición de un <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">seguro médico privado para nómadas digitales en España</a> que cumpla con los estándares de cobertura total de la sanidad española.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Requisitos obligatorios del seguro de salud exigidos por la UGE'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para que la UGE no emita un requerimiento de subsanación o deniegue tu expediente de residencia de teletrabajo, el seguro privado debe cumplir con las siguientes condiciones indispensables:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Entidad autorizada para operar en España</strong>: La aseguradora debe estar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) de España (como Sanitas). Los seguros internacionales basados en otros países o con sede offshore no suelen ser admitidos si no tienen sucursal autorizada en España.',
+          '<strong>Totalmente Sin Copagos ni Franquicias</strong>: No se aceptan pólizas donde el asegurado deba abonar dinero por acudir a consultas médicas o realizarse pruebas. Para entender la importancia de este criterio, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Sin Periodos de Carencia</strong>: La cobertura debe ser inmediata desde el día 1 en hospitalizaciones, pruebas diagnósticas y cirugías.',
+          '<strong>Cobertura integral equivalente a la sanidad pública</strong>: Debe cubrir medicina general, especialistas, analíticas, resonancias, hospitalización quirúrgica y urgencias las 24 horas.',
+          '<strong>Repatriación sanitaria y de restos</strong>: Cobertura obligatoria de traslado sanitario o de restos mortales al país de origen.'
+        ]
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tipo de Cobertura', 'Póliza Homologada en España (Sanitas)', 'Seguro Nómada Internacional Genérico (SafetyWing, etc.)'],
+        tableRows: [
+          ['Validez directa ante la UGE / Extranjería', '100% Aceptada (Entidad DGSFP)', 'Riesgo alto de rechazo por operar fuera de España'],
+          ['Copagos por consulta médica en España', '0€ (Sin copagos)', 'Aplica franquicias de 250$ o copagos por visita'],
+          ['Pago directo a hospitales en España', 'Sí (Presentando tarjeta digital Sanitas)', 'No (El usuario debe pagar y pedir reembolso)'],
+          ['Cobertura en viajes por Europa / Mundo', 'Incluida hasta 12.000€/año en urgencias', 'Incluida en el extranjero'],
+          ['Telemedicina y receta electrónica en farmacias', 'Sí (App oficial Sanitas con videoconsulta 24/7)', 'Limitada o en inglés']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Homologado para la UGE',
+        ctaTitle: '¿Vas a solicitar tu Visa de Nómada Digital en España?',
+        ctaDescription: 'Calcula en 30 segundos el precio de tu seguro oficial de Sanitas homologado para la UGE con cobertura en España y asistencia en viajes internacionales.',
+        ctaButtonText: 'Cotizar seguro para nómadas digitales',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué los seguros nómadas genéricos suelen dar problemas con la UGE?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Muchos nómadas digitales que viajan habitualmente contratan seguros de suscripción mensual tipo <em>SafetyWing, Genki o World Nomads</em>. Aunque son excelentes opciones para mochileros o viajes de ocio, <strong>la Unidad de Grandes Empresas (UGE) rechaza habitualmente estas pólizas</strong> para la concesión de la residencia en España por tres razones técnicas:'
+      },
+      {
+        type: 'list',
+        items: [
+          'No son entidades aseguradoras domiciliadas y supervisadas en España por la DGSFP.',
+          'Operan mediante franquicias (el asegurado asume los primeros 250$ de cualquier gasto médico), lo que incumple la exigencia legal de "seguro sin copagos".',
+          'Excluyen el tratamiento continuado de dolencias preexistentes o crónicas y no brindan acceso a la red médica española mediante pago directo.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '💡 <strong>La Solución Ideal</strong>: Para los nómadas digitales en España, la póliza recomendada es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> o <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">Sanitas International</a>, que combina un cuadro médico completo de primer nivel en España con cobertura de urgencias en viajes internacionales.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Precios estimados del seguro médico para nómadas digitales en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'El coste de una póliza homologada para nómadas digitales oscila generalmente entre <strong>45€ y 75€ al mes</strong> (según la edad del profesional y si se contrata individualmente o con pareja/familia).'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si vas a tramitar la solicitud de residencia de 3 años ante la UGE desde dentro de España, la aseguradora te permite abonar la póliza de forma mensual o anual según tus preferencias fiscales. Si deseas saber cómo influyen las condiciones médicas en el precio, puedes leer sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Visa de Nómada Digital (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Si me doy de alta como autónomo en la Seguridad Social española necesito seguro privado?</strong>: Para la concesión inicial de la residencia ante la UGE, se exige presentar el seguro privado si la empresa extranjera no cotiza en España o si existe un periodo de transición hasta el alta en el RETA. Muchos nómadas conservan además el seguro privado por la rapidez en especialistas y telemedicina.',
+          '<strong>¿Puedo incluir a mi cónyuge e hijos en la misma póliza?</strong>: Sí. Los familiares que te acompañen en el visado de nómada digital pueden incluirse en la misma póliza familiar de Sanitas, beneficiándose de descuentos por número de asegurados.',
+          '<strong>¿Cuánto tiempo tarda la emisión del certificado para la UGE?</strong>: Al tramitarlo a través de VitaBlue, el certificado oficial con firma electrónica se emite en menos de 24 horas laborables.'
+        ]
+      }
+    ]
+  },
+  {
+    slug: 'certificado-seguro-medico-visado-estudiante-consulado',
+
+    title: 'Cómo Tramitar el Certificado del Seguro Médico para el Visado en 24h (Guía 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '6 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Tienes cita en el consulado o en Extranjería y necesitas tu certificado oficial de seguro médico? Te explicamos paso a paso cómo obtener el documento homologado con firma electrónica válida en menos de 24 horas.',
+    featuredImage: 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Uno de los momentos de mayor estrés al tramitar el visado de estancia por estudios o la autorización de residencia en España es la preparación del expediente para la cita consular. Entre todos los documentos solicitados, el <strong>Certificado Oficial de Cobertura Sanitaria</strong> es el que genera más dudas y denegaciones si no contiene las cláusulas exactas exigidas por la legislación española.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Es fundamental entender que para las autoridades de Extranjería y los consulados de España en el exterior <strong>no sirve una simple factura de pago, un folleto comercial ni el condicionado general de una póliza</strong>. Es obligatorio presentar un certificado oficial nominal y bilingüe emitido por una aseguradora autorizada en España (como Sanitas) que detalle punto por punto el cumplimiento de la normativa.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Las 5 cláusulas obligatorias que debe certificar la aseguradora'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para que el cónsul o el funcionario de Extranjería valide tu seguro sin emitir un requerimiento de subsanación, el certificado debe hacer constar de forma expresa las siguientes condiciones técnicas:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Identificación completa del estudiante</strong>: Nombre completo, fecha de nacimiento y número de pasaporte internacional idéntico al documento con el que se solicita el visado.',
+          '<strong>Cláusula explícita "Sin Copagos"</strong>: El documento debe certificar literalmente que el asegurado no debe realizar ningún copago ni abonar franquicias por el uso de servicios médicos, pruebas diagnósticas o urgencias hospitalarias.',
+          '<strong>Cláusula "Sin Periodos de Carencia"</strong>: Debe constar que todas las coberturas y prestaciones sanitarias están plenamente activas y disponibles desde el primer día de vigencia.',
+          '<strong>Cobertura completa análoga a la sanidad pública</strong>: Inclusión ilimitada de medicina general, especialidades, hospitalización médica y quirúrgica y urgencias las 24 horas.',
+          '<strong>Repatriación sanitaria y funeraria ilimitada</strong>: Cobertura completa del traslado sanitario en caso de accidente grave o de repatriación de restos mortales hasta el país de origen del estudiante.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Emisión Express en 24 Horas',
+        ctaTitle: '¿Necesitas tu certificado oficial para una cita próxima?',
+        ctaDescription: 'Calcula tu póliza de Sanitas International Students y obtén tu certificado oficial con firma electrónica y sellos consulares en menos de 24h laborables.',
+        ctaButtonText: 'Tramitar mi certificado oficial',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: 'Paso a paso: Cómo obtener el certificado oficial en menos de 24 horas'
+      },
+      {
+        type: 'paragraph',
+        text: 'A través de VitaBlue, el proceso de solicitud y emisión del certificado consular está totalmente digitalizado y simplificado para evitar demoras:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Paso 1: Cotización rápida</strong>: Introduce tu edad y fecha prevista de llegada a España en nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>.',
+          '<strong>Paso 2: Datos del pasaporte y cuestionario médico</strong>: Rellena los datos de tu pasaporte y completa el breve cuestionario de salud oficial de Sanitas.',
+          '<strong>Paso 3: Validación y pago seguro</strong>: Tramita la prima oficial garantizada mediante tarjeta bancaria o transferencia.',
+          '<strong>Paso 4: Recepción del Certificado PDF</strong>: En menos de 24 horas laborables recibirás en tu correo electrónico el certificado oficial en formato PDF de alta resolución, firmado digitalmente por los apoderados legales de Sanitas.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Validez jurídica de la Firma Electrónica ante Consulados y MERCURIO'
+      },
+      {
+        type: 'paragraph',
+        text: 'Una pregunta muy frecuente es si es necesario disponer del documento en papel firmado a mano con tinta húmeda. La respuesta es <strong>no</strong>: todos los consulados españoles y las delegaciones de gobierno a través de la plataforma telemática MERCURIO admiten los certificados con <strong>Firma Electrónica Reconocida y Código Seguro de Verificación (CSV)</strong> emitidos por Sanitas.'
+      },
+      {
+        type: 'paragraph',
+        text: 'El código CSV permite al cónsul verificar en tiempo real la autenticidad e integridad del certificado directamente contra los servidores oficiales de la aseguradora, lo que agiliza notablemente la resolución del visado.'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Qué ocurre si cambia la fecha de inicio de mi curso o me deniegan el visado?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al contratar tu seguro <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> con VitaBlue cuentas con dos protecciones contractuales esenciales:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Modificación gratuita de fechas</strong>: Si tu embajada tarda más de lo previsto y necesitas retrasar la fecha de inicio del seguro para que coincida con tu nueva fecha de vuelo, cambiamos las fechas y te reemitimos el certificado sin ningún coste.',
+          '<strong>Garantía de reembolso del 100%</strong>: Si por causas oficiales ajenas a ti el consulado rechaza tu visado, te reembolsamos íntegramente el 100% del dinero abonado presentando la carta formal de denegación antes del inicio de vigencia de la póliza.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Certificado Consular (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿El certificado viene en español y en inglés?</strong>: Sí. El certificado oficial de Sanitas se emite en formato bilingüe (español e inglés en el mismo documento) para que sea válido tanto en consulados de habla hispana como en embajadas internacionales.',
+          '<strong>¿Puedo consultar los precios antes de tramitar el certificado?</strong>: Sí. Puedes revisar todas las tarifas desglosadas por edades en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">guía de precios del seguro de estudiante 2026</a>.',
+          '<strong>¿Tengo que traducir el certificado ante notario?</strong>: No. Al estar emitido legalmente en España por una compañía española y redactado en castellano, tiene plena validez jurídica directa sin necesidad de apostilla de La Haya ni traducción jurada.'
+        ]
+      }
+    ]
+  },
+  {
+    slug: 'precios-seguro-medico-visado-estudiante-espana',
+
+    title: 'Precios del Seguro Médico para Visado de Estudiante en España (Guía Oficial 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Cuánto cuesta el seguro médico obligatorio para estudiar en España? Descubre las tarifas reales mensuales y anuales de pólizas homologadas sin copagos (Sanitas), factores que influyen en el coste y cómo evitar denegaciones consulares.',
+    featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Una de las dudas más frecuentes al planificar una estancia académica en España para realizar un grado universitario, máster, doctorado o curso de idiomas es: <strong>¿cuánto cuesta realmente el seguro médico obligatorio para el visado de estudiante?</strong>'
+      },
+      {
+        type: 'paragraph',
+        text: 'El seguro de salud no es un simple trámite administrativo opcional; es un requisito legal ineludible estipulado en el <em>Real Decreto 557/2011</em> de la normativa de extranjería española. Para que el consulado o la oficina de Extranjería apruebe tu expediente, la póliza debe ser emitida por una compañía autorizada en España, no tener copagos, carecer de periodos de carencia e incluir repatriación ilimitada. La póliza de referencia que cumple el 100% de estas directrices es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Rango de precios reales del seguro médico de estudiante en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'El coste promedio de un seguro médico privado homologado para visado de estudiante en España oscila habitualmente entre <strong>35€ y 65€ al mes</strong> (equivalente a un rango anual de entre <strong>420€ y 780€ al año</strong>), dependiendo principalmente del tramo de edad del solicitante y de la duración exacta del curso académico.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tramo de Edad', 'Precio Mensual Estimado', 'Coste Anual (12 Meses)', 'Copagos & Carencias', 'Repatriación'],
+        tableRows: [
+          ['18 a 24 años (Universitarios / Grado)', '35€ - 45€ / mes', '420€ - 540€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['25 a 30 años (Máster / Posgrado)', '40€ - 52€ / mes', '480€ - 624€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['31 a 40 años (Doctorado / Investigadores)', '50€ - 68€ / mes', '600€ - 816€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['Mayores de 40 años (Cursos Especiales)', '65€ - 95€ / mes', '780€ - 1.140€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Calculadora Oficial 2026',
+        ctaTitle: '¿Quieres conocer el precio exacto para tu edad y estancia?',
+        ctaDescription: 'Calcula tu presupuesto oficial de Sanitas International Students en 30 segundos. Sin registrar tu teléfono, sin spam comercial y con certificado consular en 24h.',
+        ctaButtonText: 'Calcular mi precio de seguro',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: 'Los 4 factores que determinan el precio final de tu póliza'
+      },
+      {
+        type: 'paragraph',
+        text: 'Aunque las aseguradoras manejan tarifas estandarizadas para estudiantes extranjeros, el precio final de tu contrato se calcula en función de cuatro elementos técnicos fundamentales:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Edad del estudiante</strong>: Como en cualquier seguro de salud privado en España, el riesgo médico aumenta con la edad. Los tramos jóvenes (18-30 años) disfrutan de las primas más económicas y accesibles.',
+          '<strong>Duración exacta de la estancia</strong>: Si tu curso académico dura 9 o 10 meses, puedes contratar la póliza ajustada por ese periodo específico o contratar la anualidad completa de 12 meses si planeas quedarte durante las vacaciones de verano en España.',
+          '<strong>Forma de pago exigida por el consulado</strong>: Si tramitas el visado desde tu país de origen (consulados de España en Colombia, México, EE. UU., Perú, Argentina, etc.), las autoridades exigen el justificante de <strong>pago anual único por adelantado</strong>. No se admiten pagos fraccionados mensuales para visados iniciales.',
+          '<strong>Coberturas consulares obligatorias</strong>: La póliza debe incluir de serie la cobertura completa de repatriación sanitaria y de restos (traslado funerario hasta tu país de origen) sin límites económicos restrictivos.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué contratar un seguro de viaje barato (15€/mes) sale muy caro?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Muchos estudiantes caen en la trampa de contratar pólizas de asistencia en viaje genéricas (como IATI, Chapka, Assist Card o pólizas básicas de aerolíneas) atraídos por precios de 15€ o 20€ al mes. Sin embargo, <strong>estas pólizas son denegadas de forma sistemática por las oficinas de Extranjería y consulados</strong> por los siguientes motivos:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Operan por reembolso con topes muy bajos</strong>: Solo cubren gastos de urgencia hasta 30.000€ o 50.000€, mientras que Extranjería exige cobertura completa equivalente a la sanidad pública española sin límite de gasto.',
+          '<strong>Aplican franquicias y copagos encubiertos</strong>: Para entender cómo funcionan estos cobros y por qué los consulados los prohíben, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Excluyen revisiones rutinarias y enfermedades comunes</strong>: No te permiten acudir a consultas de medicina general, ginecología, dermatología o traumatología si no se trata de un accidente puntual de viaje.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Riesgo Económico Real</strong>: Una denegación de visado por seguro no conforme implica la pérdida de las tasas consulares (80€ a 120€), retrasos de meses en tu matrícula universitaria e incluso la pérdida de billetes de avión.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Garantía de reembolso total: Protege tu dinero ante denegaciones'
+      },
+      {
+        type: 'paragraph',
+        text: 'Una de las mayores preocupaciones al pagar una póliza anual antes de tener el visado aprobado es el riesgo de perder el dinero si el consulado rechaza la solicitud. Con <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> contratado a través de VitaBlue, cuentas con una <strong>cláusula contractual de garantía de reembolso del 100%</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si por cualquier motivo oficial ajeno a tu control tu visado no es concedido, basta con presentar la carta formal de denegación consular antes de la fecha de inicio de vigencia de la póliza para recibir la devolución íntegra de la prima abonada.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Precio del Seguro (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿El precio del certificado oficial tiene algún costo extra?</strong>: No. El certificado oficial bilingüe con firma digital autorizada para el consulado se emite de forma 100% gratuita tras la confirmación de la póliza.',
+          '<strong>¿VitaBlue cobra alguna comisión sobre el precio de Sanitas?</strong>: Ninguna. Nuestros precios son exactamente los oficiales de Sanitas (o con descuentos especiales por volumen). La asesoría personalizada y el soporte durante tu estancia son totalmente gratuitos.',
+          '<strong>¿Qué incluye la cobertura dental?</strong>: Incluye el programa Sanitas Dental 21 básico con revisiones, limpiezas anuales, consultas de urgencia dental y extracciones simples sin coste adicional.',
+          '<strong>¿Puedo renovar el seguro al mismo precio el segundo año de carrera?</strong>: Sí. Al renovar tu estancia o tramitar la prórroga de estancia por estudios (TIE), podrás renovar tu póliza manteniendo las condiciones de cobertura homologada.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'requisitos-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-requirements',
+
     title: 'Requisitos del Seguro Médico para Visado de Estudiante en España (Guía 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
@@ -52,7 +753,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. La póliza líder del mercado homologada para este trámite es <a href="/productos/seguros-salud/seguros-sanitas/international-students" class="text-primary hover:underline font-bold">Sanitas International Students</a>, diseñada en estricta conformidad con las directrices consulares españolas.'
+        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. La póliza líder del mercado homologada para este trámite es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>, diseñada en estricta conformidad con las directrices consulares españolas.'
       },
       {
         type: 'heading-2',
@@ -318,7 +1019,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguros-sanitas/international-students" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
+        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
       }
     ]
   },
