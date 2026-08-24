@@ -19,6 +19,8 @@ import {
 import { useWizard } from '@/context/WizardContext';
 import { getRecommendations } from '@/utils/recommendationEngine';
 import { getWhatsAppLink } from '@/utils/whatsappRedirect';
+import { trackContactConversion } from '@/utils/analytics';
+
 import ProductCard from '@/components/molecules/ProductCard';
 import AdvisorCard from '@/components/molecules/AdvisorCard';
 import ProductTransparencySection from '@/components/organisms/ProductTransparencySection';
@@ -51,8 +53,15 @@ const Results: React.FC = () => {
   }, [hasSession, profile, visaRequired, duration, ageRange, travelFrequency, residencyType, continents]);
 
   const handleWhatsAppRedirect = () => {
+    trackContactConversion('whatsapp', {
+      source_page: 'results',
+      profile: profile || 'unknown',
+      residency_type: residencyType || 'none',
+      visa_required: visaRequired || 'none',
+    });
     window.open(getWhatsAppLink(state), '_blank', 'noopener,noreferrer');
   };
+
 
   const handleRecalculate = () => {
     resetWizard();
