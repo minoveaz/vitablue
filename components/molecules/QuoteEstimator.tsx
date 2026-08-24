@@ -17,6 +17,7 @@ export interface QuoteEstimatorProps {
   options: QuoteEstimatorOption[];
   initialOption?: string;
   calculatePrice: (age: number, option: string) => string;
+  calculateSecondaryPrice?: (age: number, option: string) => string;
   priceLabel?: string;
   priceSuffix?: string;
   personalizedPriceLabel?: string;
@@ -35,6 +36,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   options,
   initialOption,
   calculatePrice,
+  calculateSecondaryPrice,
   priceLabel = 'Cuota Estimada:',
   priceSuffix = '€/mes',
   personalizedPriceLabel = 'Precio personalizado',
@@ -44,6 +46,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   const [age, setAge] = useState(initialAge);
   const [selectedOption, setSelectedOption] = useState(initialOption ?? options[0]?.id ?? '');
   const price = calculatePrice(age, selectedOption);
+  const secondaryPrice = calculateSecondaryPrice ? calculateSecondaryPrice(age, selectedOption) : undefined;
 
   return (
     <div className="flex flex-col gap-6 rounded-3xl border border-slate-100 bg-white p-6 text-left text-text-main shadow-xl sm:p-8">
@@ -94,13 +97,19 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
           ) : price === 'Personalizado' ? (
             <span className="text-sm font-black text-primary">{personalizedPriceLabel}</span>
           ) : (
-            <div className="flex items-baseline gap-0.5">
-              <span className="text-2xl font-sans font-black text-text-main">Desde {price}</span>
-              <span className="text-[10px] font-bold text-text-secondary">{priceSuffix}</span>
+            <div className="flex flex-col items-end">
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-sans font-black text-text-main">Desde {price}</span>
+                <span className="text-[10px] font-bold text-text-secondary">{priceSuffix}</span>
+              </div>
+              {secondaryPrice && (
+                <span className="text-[11px] font-semibold text-primary/90 mt-0.5">{secondaryPrice}</span>
+              )}
             </div>
           )}
         </div>
       </div>
+
 
       <Button variant="accent" className="w-full whitespace-nowrap font-bold shadow-md shadow-accent/15" onClick={() => onSubmit?.(age, selectedOption)}>
         {submitLabel}

@@ -218,7 +218,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
       >
         <QuoteEstimator
           title={`Tarificador ${consulate.country}`}
-          description={`Calcula tu cuota oficial sin copagos (${consulate.priceFromLocal}).`}
+          description={`Calcula tu cuota oficial sin copagos en ${consulate.currencyCode} (${consulate.priceFromLocal}).`}
           initialAge={22}
           maxAge={35}
           options={[
@@ -226,13 +226,30 @@ export const ConsulateVisaInsurance: React.FC = () => {
             { id: 'master', label: 'Máster / PhD' },
             { id: 'nomada', label: 'Nómada / Remoto' },
           ]}
-          initialOption="master"
-          calculatePrice={() => `${consulate.priceFromEur}€`}
+          initialOption="grado"
+          priceSuffix={`${consulate.currencyCode}/mes`}
+          calculatePrice={(age, option) => {
+            let eur = consulate.priceFromEur;
+            if (option === 'master') eur += 3;
+            if (option === 'nomada') eur += 10;
+            if (age > 26) eur += Math.floor((age - 26) * 0.8);
+            const local = Math.round(eur * consulate.rateEurToLocal);
+            return local.toLocaleString('es-ES');
+          }}
+          calculateSecondaryPrice={(age, option) => {
+            let eur = consulate.priceFromEur;
+            if (option === 'master') eur += 3;
+            if (option === 'nomada') eur += 10;
+            if (age > 26) eur += Math.floor((age - 26) * 0.8);
+            return `(Aprox. ${eur} €/mes)`;
+          }}
           personalizedPriceLabel="Tarifa homologada"
           priceLabel="Cuota Estimada:"
           submitLabel="Iniciar Contratación Online"
           onSubmit={handleStartQuoting}
         />
+
+
       </ProductHero>
 
       {/* Trust & Guarantee Bar */}

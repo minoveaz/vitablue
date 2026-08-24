@@ -18,6 +18,8 @@ export interface ConsulateData {
   heroSubtitle: string;
   appointmentLeadTime: string;
   priceFromEur: number;
+  currencyCode: string;
+  rateEurToLocal: number;
   priceFromLocal: string;
   whatsappTag: string;
   whatsappMessage: string;
@@ -58,7 +60,10 @@ export const consulatesList: ConsulateData[] = [
     heroSubtitle: 'Cumple al 100% las exigencias del Consulado de España en Bogotá y BLS International Colombia. Pólizas autorizadas con Asisa, Sanitas y Adeslas.',
     appointmentLeadTime: '20 a 30 días hábiles',
     priceFromEur: 35,
+    currencyCode: 'COP',
+    rateEurToLocal: 4300,
     priceFromLocal: 'Aprox. 150.000 COP / mes',
+
     whatsappTag: 'CONS-BOGOTA',
     whatsappMessage: 'Hola! Solicito visado para España en el Consulado de Bogotá. Necesito asesoramiento para contratar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
@@ -158,8 +163,11 @@ export const consulatesList: ConsulateData[] = [
     heroSubtitle: 'Pólizas de salud oficiales para el visado de estudiante, nómada digital y residencia en España tramitados en México. Aprobación 100% garantizada.',
     appointmentLeadTime: '15 a 25 días hábiles',
     priceFromEur: 35,
+    currencyCode: 'MXN',
+    rateEurToLocal: 21.5,
     priceFromLocal: 'Aprox. 750 MXN / mes',
     whatsappTag: 'CONS-MEXICO',
+
     whatsappMessage: 'Hola! Tramito visado en el Consulado de España en México. Quiero información y cotización del seguro médico sin copagos para visado con certificado oficial.',
     specificNotices: [
       'El Consulado en CDMX y BLS México verifican rigurosamente que la póliza no tenga deducible en dólares ni copago en euros.',
@@ -245,8 +253,11 @@ export const consulatesList: ConsulateData[] = [
     heroSubtitle: 'Pólizas homologadas para visados de estudios, residencia y nómadas digitales en el Consulado de España en San Isidro (Lima). 100% aceptado.',
     appointmentLeadTime: '20 a 30 días hábiles',
     priceFromEur: 35,
+    currencyCode: 'PEN',
+    rateEurToLocal: 4.0,
     priceFromLocal: 'Aprox. 140 PEN / mes',
     whatsappTag: 'CONS-PERU',
+
     whatsappMessage: 'Hola! Tramito visado en el Consulado de España en Lima. Necesito asesoramiento para el seguro médico oficial sin copagos con certificado consular.',
     specificNotices: [
       'El Consulado de España en Lima exige seguro médico con cobertura total en España equivalente a las prestaciones de la Seguridad Social española.',
@@ -328,6 +339,8 @@ export const consulatesList: ConsulateData[] = [
     heroSubtitle: 'Pólizas de seguro médico autorizadas para visados de estudios, no lucrativa y nómadas digitales en el Consulado de España en Recoleta (Buenos Aires).',
     appointmentLeadTime: '15 a 30 días hábiles',
     priceFromEur: 35,
+    currencyCode: 'ARS',
+    rateEurToLocal: 1150,
     priceFromLocal: 'Aprox. 40.000 ARS / mes',
     whatsappTag: 'CONS-ARGENTINA',
     whatsappMessage: 'Hola! Tramito mi visado de España en el Consulado de Buenos Aires. Necesito asesoramiento para el seguro de salud sin copagos obligatorio.',
@@ -411,7 +424,10 @@ export const consulatesList: ConsulateData[] = [
     heroSubtitle: 'Seguro médico oficial homologado para visados de estudios, residencia y nómadas digitales en Ecuador. Aceptación consular 100% garantizada.',
     appointmentLeadTime: '15 a 25 días hábiles',
     priceFromEur: 35,
+    currencyCode: 'USD',
+    rateEurToLocal: 1.08,
     priceFromLocal: 'Aprox. 38 USD / mes',
+
     whatsappTag: 'CONS-ECUADOR',
     whatsappMessage: 'Hola! Tramito visado para España en los Consulados de Quito/Guayaquil (Ecuador). Necesito cotizar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
