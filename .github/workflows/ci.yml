@@ -41,7 +41,7 @@ jobs:
     name: 🔎 Detect changed surfaces
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
+      public_frontend: ${{ steps.filter.outputs.public_frontend }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
