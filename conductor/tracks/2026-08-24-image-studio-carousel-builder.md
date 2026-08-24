@@ -82,13 +82,9 @@ Este módulo se integra de forma limpia y no intrusiva sobre la arquitectura exi
 - [x] Conexión de callbacks en `ImageStudio.tsx`.
 
 ### Fase 5: Plantillas de Marca y Puntos de Entrada
-- [ ] Añadir selector de "Crear Carrusel" en el Hub y en `ImageCanvasFormatsModal` con selector de plataforma y número de slides.
-- [ ] Añadir sección de Carruseles en `ImageStudioTemplatesDrawer.tsx`.
-- [ ] Crear plantillas base de carrusel con la identidad de marca (Ocean Teal, Amber Gold, Midnight Blue, Mint Green):
-  - *Instagram / LinkedIn Educativo / How-To (5 slides - 4:5)*
-  - *TikTok Viral Photo Mode / Guía Rápida (5 slides - 9:16)*
-  - *Comparativa / Mitos vs Realidades (4 slides - 4:5 / 1:1)*
-  - *Storytelling / CTA Conversión (5 slides - 4:5)*
+- [x] Añadir selector de "Crear Carrusel" en el Hub y en `ImageCanvasFormatsModal` con selector de plataforma y número de slides.
+- [x] Añadir sección y templates de Carruseles en `ImageStudioTemplatesDrawer.tsx` y `templateCatalog.ts`.
+- [x] Crear plantilla base de carrusel panorámico oficial con identidad de marca VitaBlue (`seamless-educational-carousel` 5 slides con hook, coberturas, comparativa y CTA) en `imageTemplates.ts`.
 
 ---
 

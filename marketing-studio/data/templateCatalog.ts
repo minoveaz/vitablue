@@ -33,4 +33,5 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
   { id: 'trust-post', projectId: 'vitablue-trust-post', name: 'Post de confianza VitaBlue', scope: 'organization', category: 'Confianza', aspectRatio: '1:1' },
   { id: 'providers-carousel', projectId: 'vitablue-providers-carousel', name: 'Carrusel de aseguradoras', scope: 'organization', category: 'Seguros', aspectRatio: '1:1' },
   { id: 'campaign-cover', projectId: 'vitablue-campaign-cover', name: 'Portada de campaña', scope: 'organization', category: 'Campañas', aspectRatio: '16:9' },
+  { id: 'seamless-educational-carousel', projectId: 'vitablue-seamless-educational-carousel', name: 'Carrusel Panorámico: Guía 5 Pasos', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1' },
 ];

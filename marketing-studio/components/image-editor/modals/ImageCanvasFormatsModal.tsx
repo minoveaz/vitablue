@@ -38,6 +38,7 @@ export const ImageCanvasFormatsModal: React.FC<ImageCanvasFormatsModalProps> = (
 
   const categories = [
     { id: 'all', name: '✨ Todos', count: IMAGE_FORMAT_PRESETS.length },
+    { id: 'carousel', name: '🎠 Carruseles Multi-Slide', count: 5 },
     { id: 'social', name: '📱 Redes & Ads', count: 6 },
     { id: 'email_marketing', name: '✉️ Email Marketing', count: 4 },
     { id: 'documents', name: '📄 Docs Word & PDF', count: 3 },

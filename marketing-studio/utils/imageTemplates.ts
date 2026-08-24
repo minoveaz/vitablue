@@ -603,12 +603,14 @@ export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
  * compositions here (rather than deriving them in the drawer) means every
  * catalog item has its own editable layers, preset and background.
  */
-const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9') => {
+const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1' | '9:16 (Multi)') => {
   const presetId = {
     '1:1': 'instagram-square',
     '4:5': 'instagram-portrait',
     '9:16': 'story-vertical',
     '16:9': 'landscape-banner',
+    '4:1': 'instagram-carousel-portrait',
+    '9:16 (Multi)': 'tiktok-carousel-photo',
   }[aspectRatio];
   return IMAGE_FORMAT_PRESETS.find((preset) => preset.id === presetId) ?? IMAGE_FORMAT_PRESETS[0];
 };
@@ -825,6 +827,13 @@ export const EMPRESA_IMAGE_TEMPLATES: ImageProject[] = [
   createCompanyProject('campaign-cover', 'Portada de campaña VitaBlue', '16:9', 'linear-gradient(110deg, rgba(0, 95, 115, 0.95), #001219 82%)', [
     companyBlockLayer('vitablue-campaign-cover', 'hero', 'Portada de campaña', 'InsuranceProductHero', { x: 38, y: 50 }, { badges: ['CAMPAÑA VITABLUE', 'SEGUROS 2026'], title: 'Tu próxima decisión, más clara', description: 'Compara seguros y cuenta con una asesora cuando lo necesites.', primaryAction: 'Empezar ahora', secondaryAction: 'Conocer VitaBlue', highlights: ['Opciones comparables', 'Atención personalizada'] }, 900, 620, 2),
     companyBlockLayer('vitablue-campaign-cover', 'providers', 'Proveedores de campaña', 'InsuranceProviderBar', { x: 82, y: 51 }, { eyebrow: 'NUESTRAS OPCIONES', providers: ['Sanitas', 'Adeslas', 'DKV'] }, 500, 300, 3),
+  ]),
+  createCompanyProject('seamless-educational-carousel', 'Carrusel Oficial: Guía 5 Pasos Visado', '4:1', 'linear-gradient(90deg, #001219 0%, #005F73 50%, #001219 100%)', [
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide1', 'Slide 1: Hook Portada', 'InsuranceProductHero', { x: 10, y: 50 }, { badges: ['GUÍA OFICIAL 2026'], title: 'Requisitos de Seguro para Visados', description: 'Todo lo que Extranjería exige para aprobar tu expediente.', primaryAction: 'Desliza para ver los 5 pasos 👉' }, 900, 600, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide2', 'Slide 2: Coberturas Clave', 'InsuranceCoverageGrid', { x: 30, y: 50 }, { eyebrow: 'PASO 1 & 2', title: 'Sin Copagos y Sin Carencias', items: [{ title: '0€ Copago', description: 'Acceso ilimitado sin pagos extra.' }, { title: 'Día 1', description: 'Válido desde la llegada a España.' }] }, 900, 500, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide3', 'Slide 3: Comparativa', 'InsurancePlanComparison', { x: 50, y: 50 }, { eyebrow: 'PASO 3', title: 'Opciones de Aseguradoras', description: 'Aprobadas por Consulados y Extranjería.', plans: [{ name: 'Sanitas', subtitle: 'Estudiantes', description: 'Certificado directo visado.' }, { name: 'Adeslas', subtitle: 'Nómadas', description: 'Cobertura completa.' }] }, 900, 550, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide4', 'Slide 4: Confianza y Repatriación', 'InsuranceTrustBar', { x: 70, y: 50 }, { items: [{ title: 'Repatriación 100%', description: 'Incluida obligatoria.' }, { title: '30.000€ Mínimo', description: 'Cumple normativa Schengen.' }] }, 900, 300, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide5', 'Slide 5: CTA Final', 'InsuranceAdvisorCta', { x: 90, y: 50 }, { title: '¿Dudas con tu visado?', description: 'Calcula tu precio o habla con una asesora experta.', ctaText: 'Calcular Seguro en 1 Minuto' }, 900, 480, 2),
   ]),
 ];
 

@@ -212,6 +212,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
           {[
             { id: 'all', label: 'Todos los formatos' },
+            { id: 'carousel', label: '🎠 Carruseles (Multi)' },
             { id: '4:5', label: '4:5 (Post)' },
             { id: '1:1', label: '1:1 (Cuadrado)' },
             { id: '9:16', label: '9:16 (Story/Reel)' },
@@ -428,6 +429,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 no-scrollbar">
                       {[
                         { id: 'all', label: 'Todos' },
+                        { id: 'carousel', label: '🎠 Carruseles' },
                         { id: 'instagram', label: '📸 Instagram' },
                         { id: 'tiktok', label: '🎵 TikTok' },
                         { id: 'linkedin', label: '💼 LinkedIn' },
