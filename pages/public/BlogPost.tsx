@@ -17,9 +17,11 @@ export const BlogPost: React.FC = () => {
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
   const blogPath = isEnglish ? '/en/blog' : '/blog';
   const alternatePost = post.alternateSlug ? blogPosts.find((item) => item.slug === post.alternateSlug) : undefined;
+  const alternateSlug = alternatePost?.slug;
   const resolvedImageUrl = post.featuredImage.startsWith('http')
     ? post.featuredImage
     : `https://www.vitablue.es${post.featuredImage}`;
+
 
   useEffect(() => {
     [['og:title', post.title], ['og:description', post.excerpt], ['og:image', resolvedImageUrl]].forEach(([property, content]) => {
