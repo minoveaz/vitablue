@@ -75,7 +75,12 @@ export const canonicalRoutes: RouteDefinition[] = [
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/argentina', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/argentina', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/ecuador', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/ecuador', indexable: true, prerender: true, sitemap: true }),
   canonical('/validador-visado', { locale: 'es', canonical: '/validador-visado', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/madrid', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/madrid', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/barcelona', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/barcelona', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/valencia', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/valencia', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/malaga', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/malaga', indexable: true, prerender: true, sitemap: true }),
 ];
+
 
 
 /** Dynamic routes require content data to generate concrete SSG entries. */
@@ -124,7 +129,12 @@ export const legacyRoutes: RouteDefinition[] = [
   legacy('/productos/asistencia-familiar-iplus.html', '/productos/seguro-para-decesos/asistencia-familiar'),
   legacy('/privacidad.html', '/privacidad'),
   legacy('/politica-cookies.html', '/politica-cookies'),
+  legacy('/seguro-medico-estudiantes/madrid', '/productos/seguros-salud/seguro-medico-estudiantes/madrid'),
+  legacy('/seguro-medico-estudiantes/barcelona', '/productos/seguros-salud/seguro-medico-estudiantes/barcelona'),
+  legacy('/seguro-medico-estudiantes/valencia', '/productos/seguros-salud/seguro-medico-estudiantes/valencia'),
+  legacy('/seguro-medico-estudiantes/malaga', '/productos/seguros-salud/seguro-medico-estudiantes/malaga'),
 ];
+
 
 /** Functional routes that must remain out of search indexes. */
 export const privateRoutes: RouteDefinition[] = [

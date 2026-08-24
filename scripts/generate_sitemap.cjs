@@ -88,10 +88,14 @@ const canonicalPageDates = {
   '/productos/seguros-salud/seguros-sanitas/international-students': '2026-08-22',
   '/productos/seguro-mascotas/sanitas-mascotas': '2026-08-15',
   '/productos/seguro-para-decesos/asistencia-familiar': '2026-08-15',
-  '/productos/seguro-viaje': '2026-08-15',
   '/productos/seguro-vida': '2026-08-15',
   '/validador-visado': '2026-08-24',
+  '/productos/seguros-salud/seguro-medico-estudiantes/madrid': '2026-08-24',
+  '/productos/seguros-salud/seguro-medico-estudiantes/barcelona': '2026-08-24',
+  '/productos/seguros-salud/seguro-medico-estudiantes/valencia': '2026-08-24',
+  '/productos/seguros-salud/seguro-medico-estudiantes/malaga': '2026-08-24',
 };
+
 
 
 for (const [route, date] of Object.entries(canonicalPageDates)) {

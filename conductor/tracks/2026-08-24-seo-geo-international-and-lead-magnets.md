@@ -62,20 +62,21 @@
 ---
 
 ### Fase 4: SEO Local por Ciudades de Destino (Hubs Universitarios & Expat)
-- [ ] **Base de Datos de Red Hospitalaria Local (`utils/localHospitalNetworks.ts`)**:
-  - Hospitales y clínicas concertadas de Asisa (HLA), Sanitas y Adeslas por ciudad.
-- [ ] **Landings Locales Optimizadas**:
-  - [ ] *Seguro Médico Estudiantes y Extranjeros en Madrid* (`/seguro-medico-estudiantes/madrid`).
-  - [ ] *Seguro Médico Estudiantes y Extranjeros en Barcelona* (`/seguro-medico-estudiantes/barcelona`).
-  - [ ] *Seguro Médico Estudiantes y Nómadas en Valencia* (`/seguro-medico-estudiantes/valencia`).
-  - [ ] *Seguro Médico Estudiantes y Nómadas en Málaga* (`/seguro-medico-estudiantes/malaga`).
+- [x] **Base de Datos de Red Hospitalaria Local (`utils/destinationCitiesData.ts`)**:
+  - [x] Hospitales y clínicas concertadas de Asisa (HLA), Sanitas y Adeslas por ciudad (Madrid, Barcelona, Valencia, Málaga).
+- [x] **Landings Locales Optimizadas bajo el Silo de Estudiantes**:
+  - [x] *Seguro Médico Estudiantes y Extranjeros en Madrid* (`/productos/seguros-salud/seguro-medico-estudiantes/madrid`).
+  - [x] *Seguro Médico Estudiantes y Extranjeros en Barcelona* (`/productos/seguros-salud/seguro-medico-estudiantes/barcelona`).
+  - [x] *Seguro Médico Estudiantes y Nómadas en Valencia* (`/productos/seguros-salud/seguro-medico-estudiantes/valencia`).
+  - [x] *Seguro Médico Estudiantes y Nómadas en Málaga* (`/productos/seguros-salud/seguro-medico-estudiantes/malaga`).
 
 ---
 
 ### Fase 5: Sincronización SSG, `llms.txt`, Sitemap & Playwright E2E
-- [ ] Actualizar rutas en `vite.config.ts`, `public/sitemap.xml` y `public/llms.txt`.
-- [ ] Ejecutar suites completas de Playwright (`test:e2e:seo`, `test:e2e:desktop`).
-- [ ] Validar compilación SSG con Puppeteer (`npm run build`).
+- [x] Actualizar rutas canónicas en `config/routes.ts`, `public/sitemap.xml` y `public/llms.txt`.
+- [x] Ejecutar suites completas de Playwright (`test:e2e:seo`, 60/60 tests en verde).
+- [x] Validar compilación SSG con Puppeteer (`npm run build` con 94 rutas pre-renderizadas).
+
 
 ---
 

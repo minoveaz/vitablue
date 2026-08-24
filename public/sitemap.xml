@@ -153,7 +153,7 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/productos/seguro-viaje/</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
@@ -213,6 +213,30 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/validador-visado/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/madrid/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/barcelona/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/valencia/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/malaga/</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>

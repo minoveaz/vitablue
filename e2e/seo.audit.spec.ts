@@ -79,9 +79,13 @@ const prerenderedKeywords: Record<string, string> = {
   '/productos/seguros-salud/seguro-medico-estudiantes/mexico': 'México',
   '/productos/seguros-salud/seguro-medico-estudiantes/peru': 'Lima',
   '/productos/seguros-salud/seguro-medico-estudiantes/argentina': 'Buenos Aires',
-  '/productos/seguros-salud/seguro-medico-estudiantes/ecuador': 'Ecuador',
   '/validador-visado': 'Validador',
+  '/productos/seguros-salud/seguro-medico-estudiantes/madrid': 'Madrid',
+  '/productos/seguros-salud/seguro-medico-estudiantes/barcelona': 'Barcelona',
+  '/productos/seguros-salud/seguro-medico-estudiantes/valencia': 'Valencia',
+  '/productos/seguros-salud/seguro-medico-estudiantes/malaga': 'Málaga',
 };
+
 
 
 
