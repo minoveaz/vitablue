@@ -35,7 +35,117 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'seguro-salud-mayores-65-anos-espana-precios',
+    title: 'Seguro de Salud para Mayores de 65 Años en España: Precios y Límites (Guía 2026)',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Es posible contratar un seguro médico privado a partir de los 65 o 70 años? Analizamos los límites máximos de edad, precios mensuales reales, coberturas senior y las mejores opciones en Asisa y Sanitas.',
+    featuredImage: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Encontrar un seguro médico privado en España a partir de los 65 años solía ser un desafío complejo debido a las restricciones de edad impuestas por muchas entidades tradicionales, que cerraban la contratación a los 64 años. Sin embargo, en 2026 el panorama ha cambiado radicalmente gracias a la aparición de <strong>pólizas de salud senior especializadas</strong> diseñadas para ofrecer atención médica rápida, sin listas de espera y con coberturas adaptadas a la madurez.'
+      },
+      {
+        type: 'paragraph',
+        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> asesoramos a cientos de personas jubiladas y a familias que buscan la mejor protección sanitaria para sus padres. Te explicamos los precios reales del mercado, los límites de contratación y por qué <strong>Asisa y Sanitas</strong> son las dos compañías líderes en este segmento.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Límites de edad para contratar seguro de salud en España'
+      },
+      {
+        type: 'paragraph',
+        text: 'En el sector asegurador español existen dos conceptos clave que es fundamental diferenciar:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Edad máxima de contratación inicial</strong>: Es la edad límite en la que una persona puede contratar una nueva póliza por primera vez. En pólizas convencionales suele fijarse entre los 64 y 69 años, mientras que en productos senior especializados (como Asisa Senior o Sanitas Senior) el límite se amplía habitualmente hasta los <strong>75 u 84 años</strong>.',
+          '<strong>Garantía de permanencia vitalicia</strong>: Una vez suscrita la póliza, la ley de contrato de seguro en España y las condiciones de las principales aseguradoras garantizan que la compañía <strong>no puede cancelar tu seguro unilateralmente por razones de edad</strong>. Podrás mantener tu seguro médico de forma vitalicia independientemente de los años que cumplas.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Precios reales del seguro médico para mayores en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'Las primas de los seguros para mayores de 65 años varían en función de la edad exacta y de si se prefiere una modalidad sin copagos o con copagos reducidos con techo de gasto anual para abaratar la cuota mensual:'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tramo de Edad', 'Modalidad Recomendada', 'Precio Estimado Mensual', 'Hospitalización & Cirugía', 'Urgencias y Especialistas'],
+        tableRows: [
+          ['65 a 69 años', 'Asisa Salud / Sanitas Más Salud (Sin Copago)', '85€ - 125€ / mes', 'Incluida 100% (Habitación individual)', 'Acceso directo sin listas de espera'],
+          ['70 a 74 años', 'Asisa Senior / Póliza Modular Especializada', '120€ - 165€ / mes', 'Incluida en centros concertados/HLA', 'Consultas, analíticas y pruebas complejas'],
+          ['75 a 79 años', 'Póliza Senior con Copago Reducido', '150€ - 210€ / mes', 'Cobertura completa según cuestionario', 'Especialidades geriátricas y cardiología'],
+          ['Mayores de 80 años', 'Pólizas de Asistencia Ambulatoria y Chequeos', 'Consultar según historial médico', 'Acceso a cuadro médico con tarifas preferentes', 'Telemedicina 24/7 y videoconsultas']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Calculadora Senior 2026',
+        ctaTitle: '¿Buscas seguro médico para ti o para tus padres mayores?',
+        ctaDescription: 'Calcula en 30 segundos las opciones de seguro disponibles para mayores de 65 años con las mejores aseguradoras de España.',
+        ctaButtonText: 'Calcular precio seguro senior',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué Asisa es la opción más recomendada para mayores de 65 años?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Entre todas las opciones del mercado español, <strong>Asisa es la aseguradora más recomendada por nuestros asesores para el segmento senior</strong> por tres ventajas determinantes:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Primas más estables</strong>: Al pertenecer a la cooperativa médica Lavinia, Asisa no aplica incrementos abusivos de prima en las renovaciones de usuarios de edad avanzada.',
+          '<strong>Red hospitalaria propia Grupo HLA</strong>: Con 18 hospitales propios de primer nivel (como el Hospital HLA Universitario Moncloa en Madrid o HLA Vistahermosa en Alicante), garantiza habitaciones individuales para el paciente y su acompañante sin esperas.',
+          '<strong>Coberturas geriátricas de alto valor</strong>: Incluye sesiones de podología preventiva, fisioterapia para rehabilitación osteoarticular, revisiones cardiológicas periódicas y servicio de urgencias médicas a domicilio.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Cuestionario de salud y enfermedades preexistentes'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al solicitar un seguro a partir de los 65 años, la compañía solicitará cumplimentar una declaración de salud. Es importante saber que condiciones médicas habituales y bien controladas como la <em>hipertensión leve o el colesterol</em> no impiden la contratación en la mayoría de los casos.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para patologías más complejas, la compañía puede aplicar una exclusión de cobertura específica sobre dicha dolencia manteniendo el resto del cuerpo 100% asegurado. Conoce todos los detalles en nuestro artículo sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre Seguros para Mayores (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Puedo contratar el seguro para un familiar extranjero mayor de 65 años que viene a residir a España?</strong>: Sí. Para trámites de residencia no lucrativa o reagrupación familiar, disponemos de pólizas anuales sin copagos aceptadas por Extranjería. Consulta nuestra guía sobre <a href="/blog/seguro-medico-residencia-no-lucrativa-espana" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
+          '<strong>¿Se pueden eliminar los periodos de carencia si ya vengo de otro seguro?</strong>: Sí. Si el asegurado ya disponía de seguro de salud en otra compañía durante al menos 12 meses, Asisa y Sanitas eliminan las carencias en la nueva póliza aportando el certificado de antigüedad.',
+          '<strong>¿Incluye asistencia médica en viajes al extranjero?</strong>: Sí. Todas las pólizas completas incorporan cobertura de urgencias médicas en el extranjero de hasta 12.000€ o 15.000€ por viaje.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
+
     title: 'Sanitas vs Adeslas vs Asisa vs DKV: ¿Cuál es el mejor seguro médico en España en 2026?',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',

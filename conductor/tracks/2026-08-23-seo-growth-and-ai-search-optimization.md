@@ -39,8 +39,9 @@
   - [x] *Cómo tramitar el Certificado de Cobertura Oficial en 24h para el Consulado*.
   - [x] *Seguro de Salud para Nómadas Digitales: Requisitos UGE y Teletrabajo*.
   - [x] *Sanitas vs Adeslas vs Asisa vs DKV: ¿Cuál es el mejor seguro médico en España?*.
-  - [ ] *Seguro de salud para mayores de 65 años: precios y límites de contratación*.
+  - [x] *Seguro de salud para mayores de 65 años: precios y límites de contratación*.
   - [ ] *Periodos de carencia en el embarazo: qué pólizas cubren parto desde el primer día*.
+
 
 ### Fase 3: Enlazado Interno y Automatización SSG
 - [x] Enlazado interno de artículos base con landings y `/wizard`.
