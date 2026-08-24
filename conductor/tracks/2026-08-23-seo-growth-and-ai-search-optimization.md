@@ -20,25 +20,31 @@
 ## 🗺️ Fases de Ejecución
 
 ### Fase 1: Optimización GEO / AI Search & LLMs Knowledge Base
-- [ ] Actualizar URLs canónicas (con trailing slash) en `public/llms.txt` y `public/llms-full.txt`.
+- [x] Crear y estructurar base de datos inicial en `public/llms.txt` y `public/llms-full.txt`.
+- [ ] Actualizar URLs canónicas (con trailing slash y rutas jerárquicas finales) en `public/llms.txt` y `public/llms-full.txt`.
 - [ ] Incorporar descripciones detalladas de productos (Sanitas International Students, Expatriados, Más Salud, Mascotas, etc.) con sus coberturas clave en `llms-full.txt`.
 - [ ] Añadir metadatos de entidad (`InsuranceAgency` / Correduría de Seguros) para facilitar la citación por modelos de lenguaje.
 
 ### Fase 2: Estrategia de Topic Clusters (Contenido Long-Tail)
-- [ ] **Cluster 1: Visados y Trámites de Extranjería en España**
-  - *Guía de Precios Reales: Seguro Médico para Visado de Estudiante 2026*.
-  - *Cómo tramitar el Certificado de Cobertura Oficial en 24h para el Consulado*.
-  - *Seguro de Salud para Nómadas Digitales: Requisitos UGE y Teletrabajo*.
-  - *Seguro Sin Copagos vs Con Copagos: Exigencias de Extranjería*.
-- [ ] **Cluster 2: Comparativas y Salud Familiar**
-  - *Sanitas vs Adeslas vs DKV: ¿Cuál es el mejor seguro médico en España?*.
-  - *Seguro de salud para mayores de 65 años: precios y límites de contratación*.
-  - *Periodos de carencia en el embarazo: qué pólizas cubren parto desde el primer día*.
+- [x] **Artículos Base de Cluster de Visados y Salud**:
+  - [x] *Requisitos del Seguro Médico para Visado de Estudiante en España*.
+  - [x] *Seguro Médico para Residencia No Lucrativa en España*.
+  - [x] *Guía del Seguro de Salud para Pareja de Hecho y NIE*.
+  - [x] *¿Qué es el Copago en un Seguro de Salud?*.
+  - [x] *¿Qué son los Periodos de Carencia en un Seguro Médico?*.
+  - [x] *Preexistencias Médicas en el Seguro de Salud*.
+- [ ] **Nuevos Artículos de Expansión de Clusters**:
+  - [ ] *Guía de Precios Reales: Seguro Médico para Visado de Estudiante 2026*.
+  - [ ] *Cómo tramitar el Certificado de Cobertura Oficial en 24h para el Consulado*.
+  - [ ] *Seguro de Salud para Nómadas Digitales: Requisitos UGE y Teletrabajo*.
+  - [ ] *Sanitas vs Adeslas vs DKV: ¿Cuál es el mejor seguro médico en España?*.
+  - [ ] *Seguro de salud para mayores de 65 años: precios y límites de contratación*.
+  - [ ] *Periodos de carencia en el embarazo: qué pólizas cubren parto desde el primer día*.
 
 ### Fase 3: Enlazado Interno y Automatización SSG
-- [ ] Enlazar cada nuevo artículo a su respectiva página de producto y al wizard de cotización.
-- [ ] Actualizar base de datos de contenido en `utils/blogData.ts`.
-- [ ] Ejecutar `npm run sync-blog` para regenerar rutas SSG, `vite.config.ts` y `sitemap.xml`.
+- [x] Enlazado interno de artículos base con landings y `/wizard`.
+- [x] Automatización de sincronización (`npm run sync-blog`) con `vite.config.ts` y `sitemap.xml`.
+- [ ] Integrar nuevos artículos del cluster en `utils/blogData.ts` y sincronizar SSG.
 - [ ] Validar con Playwright E2E y suites de SEO (`npm run typecheck`, `npm run validate-sitemap`).
 
 ### Fase 4: Sinergia SEM/Google Ads & Atribución de Leads (Growth)
@@ -55,6 +61,7 @@
   - Componentes de llamada a la acción contextuales que conecten las dudas del artículo con el cotizador `/wizard`.
 - [ ] **Conversiones Mejoradas de Google Ads (Enhanced Conversions)**:
   - Anonimización/hashing SHA-256 de datos de contacto para mejorar la atribución en iOS/Safari.
+
 
 ---
 
