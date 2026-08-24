@@ -7,13 +7,12 @@ import {
   Clock, 
   Award, 
   MapPin, 
-  Building2, 
   GraduationCap, 
   PhoneCall, 
   ArrowRight,
-  CheckCircle2,
   AlertCircle
 } from 'lucide-react';
+
 import ProductBreadcrumbBar from '@/components/organisms/ProductBreadcrumbBar';
 import ProductTrustBar from '@/components/organisms/ProductTrustBar';
 import CoverageGrid from '@/components/organisms/CoverageGrid';
