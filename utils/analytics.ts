@@ -306,11 +306,30 @@ export const trackContactConversion = (
     setEnhancedUserData(userData);
   }
 
+  // 1. Primary standard Google Tag conversion event
   trackConversion('conversion_event_contact', {
     contact_method: method,
     ...details,
   });
+
+  // 2. Specific GA4 imported events for Google Ads exact-match syncing
+  if (method === 'whatsapp') {
+    trackConversion('click_whatsapp', {
+      contact_method: method,
+      ...details,
+    });
+    trackConversion('CONTACT', {
+      contact_method: method,
+      ...details,
+    });
+  } else {
+    trackConversion('CONTACT', {
+      contact_method: method,
+      ...details,
+    });
+  }
 };
+
 
 /**
  * Global click listener that attaches to document to intercept all WhatsApp, Phone and Email
