@@ -12,9 +12,10 @@ export interface CoverageGridProps {
   title?: string;
   description?: string;
   items: CoverageGridItem[];
+  columns?: 2 | 3;
 }
 
-const CoverageGrid: React.FC<CoverageGridProps> = ({ eyebrow, title, description, items }) => (
+const CoverageGrid: React.FC<CoverageGridProps> = ({ eyebrow, title, description, items, columns = 3 }) => (
   <section className="w-full bg-white py-16 text-left sm:py-20">
     {(eyebrow || title || description) && (
       <div className="mx-auto mb-12 max-w-6xl px-6 text-center sm:px-8">
@@ -24,10 +25,15 @@ const CoverageGrid: React.FC<CoverageGridProps> = ({ eyebrow, title, description
       </div>
     )}
 
-    <div className="mx-auto grid max-w-6xl gap-6 px-6 sm:px-8 md:grid-cols-2 lg:grid-cols-3">
+    <div className={`mx-auto grid gap-6 px-6 sm:px-8 ${
+      columns === 2 
+        ? 'max-w-5xl md:grid-cols-2' 
+        : 'max-w-6xl md:grid-cols-2 lg:grid-cols-3'
+    }`}>
       {items.map((item) => <CoverageCard key={item.title} {...item} />)}
     </div>
   </section>
 );
+
 
 export default CoverageGrid;
