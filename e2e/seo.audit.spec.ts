@@ -70,12 +70,13 @@ const prerenderedKeywords: Record<string, string> = {
   '/blog/periodos-de-carencia-embarazo-parto-seguro-medico': 'embarazo',
   '/en/blog/student-visa-spain-health-insurance-requirements': 'visa',
   '/en/blog/health-insurance-spain-non-lucrative-visa-requirements': 'non-lucrative',
-  '/seguro-medico-visado-espana/colombia-bogota': 'Bogotá',
-  '/seguro-medico-visado-espana/mexico-cdmx': 'México',
-  '/seguro-medico-visado-espana/peru-lima': 'Lima',
-  '/seguro-medico-visado-espana/argentina-buenos-aires': 'Buenos Aires',
-  '/seguro-medico-visado-espana/ecuador-quito-guayaquil': 'Ecuador',
+  '/productos/seguros-salud/seguro-medico-estudiantes/colombia': 'Bogotá',
+  '/productos/seguros-salud/seguro-medico-estudiantes/mexico': 'México',
+  '/productos/seguros-salud/seguro-medico-estudiantes/peru': 'Lima',
+  '/productos/seguros-salud/seguro-medico-estudiantes/argentina': 'Buenos Aires',
+  '/productos/seguros-salud/seguro-medico-estudiantes/ecuador': 'Ecuador',
 };
+
 
 
 const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({

@@ -69,18 +69,18 @@ export const canonicalRoutes: RouteDefinition[] = [
   canonical('/cookies', { locale: 'es', canonical: '/cookies', indexable: false, prerender: true, sitemap: false }),
   canonical('/blog', { locale: 'es', canonical: '/blog', alternate: '/en/blog', indexable: true, prerender: true, sitemap: true }),
   canonical('/en/blog', { locale: 'en', canonical: '/en/blog', alternate: '/blog', indexable: true, prerender: true, sitemap: true }),
-  canonical('/seguro-medico-visado-espana/colombia-bogota', { locale: 'es', canonical: '/seguro-medico-visado-espana/colombia-bogota', indexable: true, prerender: true, sitemap: true }),
-  canonical('/seguro-medico-visado-espana/mexico-cdmx', { locale: 'es', canonical: '/seguro-medico-visado-espana/mexico-cdmx', indexable: true, prerender: true, sitemap: true }),
-  canonical('/seguro-medico-visado-espana/peru-lima', { locale: 'es', canonical: '/seguro-medico-visado-espana/peru-lima', indexable: true, prerender: true, sitemap: true }),
-  canonical('/seguro-medico-visado-espana/argentina-buenos-aires', { locale: 'es', canonical: '/seguro-medico-visado-espana/argentina-buenos-aires', indexable: true, prerender: true, sitemap: true }),
-  canonical('/seguro-medico-visado-espana/ecuador-quito-guayaquil', { locale: 'es', canonical: '/seguro-medico-visado-espana/ecuador-quito-guayaquil', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/colombia', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/colombia', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/mexico', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/mexico', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/peru', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/peru', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/argentina', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/argentina', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/ecuador', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/ecuador', indexable: true, prerender: true, sitemap: true }),
 ];
 
 /** Dynamic routes require content data to generate concrete SSG entries. */
 export const dynamicRoutes: RouteDefinition[] = [
   { path: '/blog/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/en/blog/:slug', kind: 'dynamic', locale: 'en', indexable: true, prerender: true, sitemap: true },
-  { path: '/seguro-medico-visado-espana/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
+  { path: '/productos/seguros-salud/seguro-medico-estudiantes/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/backoffice/tools/document-intelligence/extraccion/:extractionId', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 
   { path: '/backoffice/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
@@ -93,7 +93,18 @@ export const dynamicRoutes: RouteDefinition[] = [
  */
 export const legacyRoutes: RouteDefinition[] = [
   legacy('/estudiantes', '/productos/seguros-salud/seguro-medico-estudiantes'),
+  legacy('/seguro-medico-visado-espana/colombia-bogota', '/productos/seguros-salud/seguro-medico-estudiantes/colombia'),
+  legacy('/seguro-medico-visado-espana/mexico-cdmx', '/productos/seguros-salud/seguro-medico-estudiantes/mexico'),
+  legacy('/seguro-medico-visado-espana/peru-lima', '/productos/seguros-salud/seguro-medico-estudiantes/peru'),
+  legacy('/seguro-medico-visado-espana/argentina-buenos-aires', '/productos/seguros-salud/seguro-medico-estudiantes/argentina'),
+  legacy('/seguro-medico-visado-espana/ecuador-quito-guayaquil', '/productos/seguros-salud/seguro-medico-estudiantes/ecuador'),
+  legacy('/productos/seguros-salud/seguro-medico-estudiantes/colombia-bogota', '/productos/seguros-salud/seguro-medico-estudiantes/colombia'),
+  legacy('/productos/seguros-salud/seguro-medico-estudiantes/mexico-cdmx', '/productos/seguros-salud/seguro-medico-estudiantes/mexico'),
+  legacy('/productos/seguros-salud/seguro-medico-estudiantes/peru-lima', '/productos/seguros-salud/seguro-medico-estudiantes/peru'),
+  legacy('/productos/seguros-salud/seguro-medico-estudiantes/argentina-buenos-aires', '/productos/seguros-salud/seguro-medico-estudiantes/argentina'),
+  legacy('/productos/seguros-salud/seguro-medico-estudiantes/ecuador-quito-guayaquil', '/productos/seguros-salud/seguro-medico-estudiantes/ecuador'),
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html', '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud'),
+
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html', '/productos/seguro-mascotas/sanitas-mascotas'),
   legacy('/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html', '/productos/seguro-para-decesos/asistencia-familiar'),
   legacy('/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguros-sanitas/international-students'),

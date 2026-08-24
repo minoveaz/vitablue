@@ -175,15 +175,23 @@ const AppLayout: React.FC = () => {
             <Route path="/en/digital-nomad-insurance-spain" element={<NomadInsurance />} />
             <Route path="/productos/seguros-salud/seguro-salud-extranjeros" element={<ForeignerInsurance />} />
 
-            {/* Silo Consular / Países */}
-            <Route path="/seguro-medico-visado-espana/:slug" element={<ConsulateVisaInsurance />} />
-            <Route path="/seguro-medico-visado-espana/colombia-bogota" element={<ConsulateVisaInsurance />} />
-            <Route path="/seguro-medico-visado-espana/mexico-cdmx" element={<ConsulateVisaInsurance />} />
-            <Route path="/seguro-medico-visado-espana/peru-lima" element={<ConsulateVisaInsurance />} />
-            <Route path="/seguro-medico-visado-espana/argentina-buenos-aires" element={<ConsulateVisaInsurance />} />
-            <Route path="/seguro-medico-visado-espana/ecuador-quito-guayaquil" element={<ConsulateVisaInsurance />} />
+            {/* Silo Consular / Países bajo Seguro Médico Estudiantes */}
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/:slug" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/colombia" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/mexico" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/peru" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/argentina" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/ecuador" element={<ConsulateVisaInsurance />} />
+
+            {/* Compatibilidad legacy con redirección */}
+            <Route path="/seguro-medico-visado-espana/colombia-bogota" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/colombia" replace />} />
+            <Route path="/seguro-medico-visado-espana/mexico-cdmx" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/mexico" replace />} />
+            <Route path="/seguro-medico-visado-espana/peru-lima" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/peru" replace />} />
+            <Route path="/seguro-medico-visado-espana/argentina-buenos-aires" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/argentina" replace />} />
+            <Route path="/seguro-medico-visado-espana/ecuador-quito-guayaquil" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/ecuador" replace />} />
             
             {/* Sub-silo: Seguros de Salud de Sanitas */}
+
 
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />

@@ -1,6 +1,8 @@
 /**
  * Official Consulates and Visa Insurance Data Specification
  * Comprehensive legal and procedural data for Spanish Consulates in Latin America.
+ * All URLs strictly follow the hierarchical Silo architecture:
+ * /productos/seguros-salud/seguro-medico-estudiantes/:country
  */
 
 export interface ConsulateData {
@@ -46,13 +48,13 @@ export interface ConsulateData {
 
 export const consulatesList: ConsulateData[] = [
   {
-    slug: 'colombia-bogota',
+    slug: 'colombia',
     country: 'Colombia',
     city: 'Bogotá',
     flag: '🇨🇴',
-    title: 'Seguro Médico para Visado de España en el Consulado de Bogotá (2026)',
+    title: 'Seguro Médico para Visado de España en Colombia (Consulado de Bogotá 2026)',
     metaDescription: 'Seguro médico 100% homologado para visado en el Consulado de España en Bogotá y BLS Colombia. Sin copagos, sin carencias, repatriación y certificado en 24h.',
-    canonicalPath: '/seguro-medico-visado-espana/colombia-bogota',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/colombia',
     consulateName: 'Consulado General de España en Bogotá',
     consulateAddress: 'Calle 94 A N.º 11A-70, Bogotá D.C., Colombia',
     consulateJurisdiction: 'Toda la República de Colombia',
@@ -63,9 +65,8 @@ export const consulatesList: ConsulateData[] = [
     currencyCode: 'COP',
     rateEurToLocal: 4300,
     priceFromLocal: 'Aprox. 150.000 COP / mes',
-
     whatsappTag: 'CONS-BOGOTA',
-    whatsappMessage: 'Hola! Solicito visado para España en el Consulado de Bogotá. Necesito asesoramiento para contratar el seguro médico homologado sin copagos con certificado consular.',
+    whatsappMessage: 'Hola! Solicito visado para España en el Consulado de Bogotá (Colombia). Necesito asesoramiento para contratar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
       'El Consulado de España en Bogotá exige obligatoriamente certificado en castellano emitido por aseguradora autorizada en España.',
       'BLS Bogotá no admite seguros de asistencia al viajero con reembolso diferido ni pólizas colombianas locales.',
@@ -149,13 +150,13 @@ export const consulatesList: ConsulateData[] = [
     ],
   },
   {
-    slug: 'mexico-cdmx',
+    slug: 'mexico',
     country: 'México',
     city: 'Ciudad de México',
     flag: '🇲🇽',
-    title: 'Seguro Médico para Visado de España en el Consulado de México (CDMX 2026)',
+    title: 'Seguro Médico para Visado de España en México (CDMX, Guadalajara y Monterrey 2026)',
     metaDescription: 'Seguro médico para visado en el Consulado de España en CDMX, Guadalajara y Monterrey. Sin copagos, hospitalización ilimitada, repatriación y certificado en 24h.',
-    canonicalPath: '/seguro-medico-visado-espana/mexico-cdmx',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/mexico',
     consulateName: 'Consulado General de España en Ciudad de México',
     consulateAddress: 'Calle Galileo 114 (esq. Horacio), Colonia Polanco, Miguel Hidalgo, 11560 CDMX, México',
     consulateJurisdiction: 'Estados Unidos Mexicanos (incluyendo sedes en Guadalajara y Monterrey)',
@@ -167,7 +168,6 @@ export const consulatesList: ConsulateData[] = [
     rateEurToLocal: 21.5,
     priceFromLocal: 'Aprox. 750 MXN / mes',
     whatsappTag: 'CONS-MEXICO',
-
     whatsappMessage: 'Hola! Tramito visado en el Consulado de España en México. Quiero información y cotización del seguro médico sin copagos para visado con certificado oficial.',
     specificNotices: [
       'El Consulado en CDMX y BLS México verifican rigurosamente que la póliza no tenga deducible en dólares ni copago en euros.',
@@ -239,13 +239,13 @@ export const consulatesList: ConsulateData[] = [
     ],
   },
   {
-    slug: 'peru-lima',
+    slug: 'peru',
     country: 'Perú',
     city: 'Lima',
     flag: '🇵🇪',
-    title: 'Seguro Médico para Visado de España en el Consulado de Lima (Perú 2026)',
+    title: 'Seguro Médico para Visado de España en Perú (Consulado de Lima 2026)',
     metaDescription: 'Seguro médico para visado en el Consulado de España en Lima y BLS Perú. Sin copagos, sin carencias, repatriación sanitaria y certificado en 24h.',
-    canonicalPath: '/seguro-medico-visado-espana/peru-lima',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/peru',
     consulateName: 'Consulado General de España en Lima',
     consulateAddress: 'Calle Los Ficus 241, San Isidro, Lima 27, Perú',
     consulateJurisdiction: 'Todo el territorio de la República del Perú',
@@ -257,8 +257,7 @@ export const consulatesList: ConsulateData[] = [
     rateEurToLocal: 4.0,
     priceFromLocal: 'Aprox. 140 PEN / mes',
     whatsappTag: 'CONS-PERU',
-
-    whatsappMessage: 'Hola! Tramito visado en el Consulado de España en Lima. Necesito asesoramiento para el seguro médico oficial sin copagos con certificado consular.',
+    whatsappMessage: 'Hola! Tramito visado en el Consulado de España en Lima (Perú). Necesito asesoramiento para el seguro médico oficial sin copagos con certificado consular.',
     specificNotices: [
       'El Consulado de España en Lima exige seguro médico con cobertura total en España equivalente a las prestaciones de la Seguridad Social española.',
       'BLS Lima exige documento oficial en original digital sellado por la aseguradora en España.',
@@ -325,13 +324,13 @@ export const consulatesList: ConsulateData[] = [
     ],
   },
   {
-    slug: 'argentina-buenos-aires',
+    slug: 'argentina',
     country: 'Argentina',
     city: 'Buenos Aires',
     flag: '🇦🇷',
-    title: 'Seguro Médico para Visado de España en el Consulado de Buenos Aires (2026)',
+    title: 'Seguro Médico para Visado de España en Argentina (Consulado de Buenos Aires 2026)',
     metaDescription: 'Seguro médico para visado en el Consulado de España en Buenos Aires, Córdoba, Rosario y Mendoza. Sin copagos, repatriación y certificado oficial 24h.',
-    canonicalPath: '/seguro-medico-visado-espana/argentina-buenos-aires',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/argentina',
     consulateName: 'Consulado General de España en Buenos Aires',
     consulateAddress: 'Calle Guido 1770, Recoleta, C1016AAE Buenos Aires, Argentina',
     consulateJurisdiction: 'Ciudad Autónoma de Buenos Aires y provincia de Buenos Aires (con consulados en Córdoba, Rosario, Bahía Blanca y Mendoza)',
@@ -343,7 +342,7 @@ export const consulatesList: ConsulateData[] = [
     rateEurToLocal: 1150,
     priceFromLocal: 'Aprox. 40.000 ARS / mes',
     whatsappTag: 'CONS-ARGENTINA',
-    whatsappMessage: 'Hola! Tramito mi visado de España en el Consulado de Buenos Aires. Necesito asesoramiento para el seguro de salud sin copagos obligatorio.',
+    whatsappMessage: 'Hola! Tramito mi visado de España en el Consulado de Buenos Aires (Argentina). Necesito asesoramiento para el seguro de salud sin copagos obligatorio.',
     specificNotices: [
       'El Consulado de Recoleta exige seguro médico privado de cobertura completa sin copagos emitido por aseguradora autorizada en España.',
       'Las obras sociales y prepagas argentinas (OSDE, Swiss Medical) no son admitidas por el consulado para visados de larga duración.',
@@ -410,13 +409,13 @@ export const consulatesList: ConsulateData[] = [
     ],
   },
   {
-    slug: 'ecuador-quito-guayaquil',
+    slug: 'ecuador',
     country: 'Ecuador',
     city: 'Quito y Guayaquil',
     flag: '🇪🇨',
     title: 'Seguro Médico para Visado de España en Ecuador (Quito y Guayaquil 2026)',
     metaDescription: 'Seguro médico para visado en los Consulados de España en Quito y Guayaquil (BLS Ecuador). Sin copagos, sin carencias, repatriación y certificado oficial en 24h.',
-    canonicalPath: '/seguro-medico-visado-espana/ecuador-quito-guayaquil',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/ecuador',
     consulateName: 'Consulados Generales de España en Quito y Guayaquil',
     consulateAddress: 'Quito: Calle Francisco Salazar E12-73 | Guayaquil: Calle Tungurahua y Av. 9 de Octubre',
     consulateJurisdiction: 'Toda la República del Ecuador',
@@ -427,11 +426,9 @@ export const consulatesList: ConsulateData[] = [
     currencyCode: 'USD',
     rateEurToLocal: 1.08,
     priceFromLocal: 'Aprox. 38 USD / mes',
-
     whatsappTag: 'CONS-ECUADOR',
     whatsappMessage: 'Hola! Tramito visado para España en los Consulados de Quito/Guayaquil (Ecuador). Necesito cotizar el seguro médico homologado sin copagos con certificado consular.',
     specificNotices: [
-
       'Tanto el Consulado en Quito como el de Guayaquil exigen póliza completa sin copagos emitida en España.',
       'Los seguros de viaje de agencias de turismo no son válidos para visados de estancia por estudios ni residencia.',
       'Garantía de reembolso total del 100% de la prima en caso de denegación consular.',
@@ -499,5 +496,10 @@ export const consulatesList: ConsulateData[] = [
 ];
 
 export const getConsulateBySlug = (slug: string): ConsulateData | undefined => {
-  return consulatesList.find((c) => c.slug === slug);
+  const normalized = slug.toLowerCase();
+  return consulatesList.find((c) => 
+    c.slug === normalized || 
+    normalized.includes(c.slug) ||
+    c.slug.includes(normalized)
+  );
 };

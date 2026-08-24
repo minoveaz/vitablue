@@ -33,11 +33,12 @@
 
 ## Guías por Consulado y País (Consulate Visa Insurance)
 
-- [Seguro Médico Visado España - Consulado de Bogotá (Colombia)](https://www.vitablue.es/seguro-medico-visado-espana/colombia-bogota)
-- [Seguro Médico Visado España - Consulado de CDMX (México)](https://www.vitablue.es/seguro-medico-visado-espana/mexico-cdmx)
-- [Seguro Médico Visado España - Consulado de Lima (Perú)](https://www.vitablue.es/seguro-medico-visado-espana/peru-lima)
-- [Seguro Médico Visado España - Consulado de Buenos Aires (Argentina)](https://www.vitablue.es/seguro-medico-visado-espana/argentina-buenos-aires)
-- [Seguro Médico Visado España - Consulados de Quito y Guayaquil (Ecuador)](https://www.vitablue.es/seguro-medico-visado-espana/ecuador-quito-guayaquil)
+- [Seguro Médico Visado España - Colombia (Bogotá)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/colombia)
+- [Seguro Médico Visado España - México (CDMX)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/mexico)
+- [Seguro Médico Visado España - Perú (Lima)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/peru)
+- [Seguro Médico Visado España - Argentina (Buenos Aires)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/argentina)
+- [Seguro Médico Visado España - Ecuador (Quito y Guayaquil)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ecuador)
+
 
 ## Guías del Blog (Blog Guides)
 
