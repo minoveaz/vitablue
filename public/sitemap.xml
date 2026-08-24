@@ -312,7 +312,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana/" />
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
@@ -321,7 +321,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/certificado-seguro-medico-visado-estudiante-consulado/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
@@ -339,15 +348,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-prices/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
-    <lastmod>2026-08-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.60</priority>
-  </url>
-  <url>
-    <loc>https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/certificado-seguro-medico-visado-estudiante-consulado/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
