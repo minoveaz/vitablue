@@ -668,7 +668,7 @@ const Styleguide = () => {
               <ComponentReference name="AdvisorCard" path="components/molecules/AdvisorCard.tsx" />
               <AdvisorCard 
                 onWhatsAppClick={() => alert('Contacto WhatsApp con Lucía')}
-                onPhoneClick={() => alert('Llamando gratis al 900 839 240')}
+                onPhoneClick={() => alert('Llamando gratis al +34 694 58 34 52')}
               />
             </div>
 
@@ -752,7 +752,7 @@ const Styleguide = () => {
                 title="Encuentra una cobertura que cumple con tu visado"
                 description="Una composición de producto con contexto, beneficios principales, doble acción y un panel de cálculo en el mismo recorrido."
                 primaryAction={{ label: 'Calcular mi seguro', href: '/wizard' }}
-                secondaryAction={{ label: 'Hablar con un asesor', href: 'tel:+34900839240' }}
+                secondaryAction={{ label: 'Hablar con un asesor', href: 'tel:+34694583452' }}
                 highlights={['Certificado en 24 horas', 'Repatriación incluida']}
               >
                 <div className="flex flex-col gap-3">
@@ -787,7 +787,7 @@ const Styleguide = () => {
                 title="Seguro de Vida Familiar"
                 description="Asegura la tranquilidad y el futuro financiero de tus seres queridos. Cubre préstamos, hipotecas y garantiza la estabilidad familiar con cuotas mínimas mensuales."
                 primaryAction={{ label: 'Calcular Seguro Online', href: '/wizard' }}
-                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
                 highlights={['Sin reconocimientos médicos', 'Cobertura de invalidez']}
               >
                 <QuoteEstimator
@@ -816,7 +816,7 @@ const Styleguide = () => {
                 title="Asistencia Familiar Iplus"
                 description="Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar."
                 primaryAction={{ label: 'Calcular Cuota Familiar', href: '/wizard' }}
-                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
                 highlights={['Testamento online gratis', 'Trámites de herencia']}
               >
                 <QuoteEstimator
@@ -846,7 +846,7 @@ const Styleguide = () => {
                 title="Seguro de Viaje Internacional"
                 description="Viaja protegido ante cualquier imprevisto de salud, equipaje o vuelos. Cobertura de gastos médicos internacionales de urgencia y repatriación con soporte continuo."
                 primaryAction={{ label: 'Calcular Seguro Online', href: '/wizard' }}
-                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
                 highlights={['Cobertura de equipaje', 'Opción de anulación']}
               >
                 <QuoteEstimator
@@ -876,7 +876,7 @@ const Styleguide = () => {
                 title="Sanitas Mascotas"
                 description="Cuidado integral veterinario para tu perro o gato. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
                 primaryAction={{ label: 'Calcular Póliza Online', href: '/wizard' }}
-                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+                secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
                 highlights={['Limpieza dental anual gratis', 'Urgencias 24h']}
               >
                 <QuoteEstimator

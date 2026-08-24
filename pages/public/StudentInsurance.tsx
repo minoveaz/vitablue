@@ -7,6 +7,8 @@ import {
   ShieldCheck, Clock, Award, GraduationCap
 } from 'lucide-react';
 import TravelVsHealthComparison from '../../components/organisms/TravelVsHealthComparison';
+import ProductPromotionSection from '../../components/organisms/ProductPromotionSection';
+import GuaranteeRefundSection from '../../components/organisms/GuaranteeRefundSection';
 import ProductProcessSection from '../../components/organisms/ProductProcessSection';
 import { useWizard } from '../../context/WizardContext';
 import ProductBreadcrumbBar from '../../components/organisms/ProductBreadcrumbBar';
@@ -151,7 +153,6 @@ export const StudentInsurance: React.FC = () => {
       desc: 'The #1 choice for student visas in Spain. Full coverage with zero copays and zero wait times. Ultra-fast certificate emission in less than 24 hours.',
       priceDetail: 'Official Consular PDF in <24h · From €38/mo',
       tag: 'Best Value',
-      badgeColor: 'bg-accent/10 text-accent border border-accent/20',
       isFeatured: true
     },
     {
@@ -160,7 +161,6 @@ export const StudentInsurance: React.FC = () => {
       desc: 'The preferred choice for student visas. Includes the Blua telemedicine module free forever, unlimited video consults, and immediate official certificate.',
       priceDetail: 'Consular PDF certificate instantly · From €45/mo',
       tag: 'Recommended',
-      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: false
     },
     {
@@ -169,7 +169,14 @@ export const StudentInsurance: React.FC = () => {
       desc: 'Excellent national medical coverage from Adeslas with zero copays. Includes repatriation and international reimbursement for emergencies outside Spain.',
       priceDetail: 'Large network of private hospitals · From €49/mo',
       tag: 'Alternative',
-      badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
+      isFeatured: false
+    },
+    {
+      name: 'DKV Integral Estudiantes',
+      subtitle: 'Eco Health & International Care',
+      desc: 'Comprehensive coverage with top eco-friendly digital prevention tools and emergency cover when traveling in Schengen Europe.',
+      priceDetail: 'Digital certificate in 48h · From €48/mo',
+      tag: 'Alternative',
       isFeatured: false
     }
   ] : [
@@ -179,7 +186,6 @@ export const StudentInsurance: React.FC = () => {
       desc: 'Nuestra opción #1 más recomendada para visados de estudiantes. Cobertura médica completa 100% homologada sin copagos ni carencias. Emisión de certificado express en menos de 24h.',
       priceDetail: 'Certificado consular en <24h · Desde 38€/mes',
       tag: 'Mejor Precio',
-      badgeColor: 'bg-accent/10 text-accent border border-accent/20',
       isFeatured: true
     },
     {
@@ -188,7 +194,6 @@ export const StudentInsurance: React.FC = () => {
       desc: 'La opción predilecta para el visado de estudiantes. Incluye el módulo Blua de telemedicina gratis para siempre, videoconsultas ilimitadas y certificado oficial inmediato.',
       priceDetail: 'Certificado consular en PDF al instante · Desde 45€/mes',
       tag: 'Recomendado',
-      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
       isFeatured: false
     },
     {
@@ -197,7 +202,14 @@ export const StudentInsurance: React.FC = () => {
       desc: 'Excelente cobertura médica nacional de Adeslas sin copagos. Incluye repatriación y asistencia en viajes fuera de España para periodos vacacionales.',
       priceDetail: 'Gran red de clínicas concertadas · Desde 49€/mes',
       tag: 'Alternativa',
-      badgeColor: 'bg-slate-100 text-text-secondary border border-slate-200',
+      isFeatured: false
+    },
+    {
+      name: 'DKV Integral Estudiantes',
+      subtitle: 'Salud Digital y Sostenible',
+      desc: 'Póliza médica completa sin copagos con cuadro concertado de primer nivel y asistencia de urgencias para viajes por países del espacio Schengen.',
+      priceDetail: 'Certificado digital en 48h · Desde 48€/mes',
+      tag: 'Alternativa',
       isFeatured: false
     }
   ];
@@ -516,8 +528,8 @@ export const StudentInsurance: React.FC = () => {
 
       <CoverageGrid
         eyebrow={isEnglish ? 'Consular Requirements' : 'Requisitos Consulares'}
-        title={isEnglish ? 'Official Health Insurance Requirements' : 'Requisitos Oficiales del Seguro Médico que Exige el Consulado y Extranjería'}
-        description={isEnglish ? 'All our selected policies strictly comply with the Spanish immigration law (RD 557/2011) for your absolute peace of mind.' : 'En VitaBlue todas nuestras pólizas están preconfiguradas para cumplir estrictamente la ley de extranjería (RD 557/2011) y asegurar la aprobación de tu visado.'}
+        title={isEnglish ? 'Official Health Insurance Requirements Mandated by Consulates & Immigration' : 'Requisitos Oficiales del Seguro Médico que Exige el Consulado y Extranjería'}
+        description={isEnglish ? 'To successfully process your student visa or student residence card (TIE / NIE) in Spain, the Ministry of Inclusion, Social Security and Migration strictly requires your private health insurance to meet 4 legal conditions. At VitaBlue all our policies are pre-configured to 100% meet these requirements:' : 'Para tramitar con éxito tu visado de estancia por estudios o tu tarjeta de estudiante (TIE / NIE) en España, el Ministerio de Inclusión, Seguridad Social y Migraciones exige que tu seguro médico privado cumpla estrictamente con 4 condiciones legales. En VitaBlue todas nuestras pólizas están preconfiguradas para cumplir el 100% de estos requisitos:'}
         items={coverages.map(({ title, desc, illustration }) => ({ title, description: desc, illustration }))}
       />
 
@@ -542,15 +554,70 @@ export const StudentInsurance: React.FC = () => {
         ]}
       />
 
-      {/* Plans List section */}
+      {/* Section 4: Standard Design System Plan Comparison */}
       <PlanComparisonSection
         eyebrow={isEnglish ? 'Multi-Brand Comparison' : 'Comparativa Multimarca'}
-        title={isEnglish ? 'Compare Official Student Health Insurances: ASISA vs Sanitas vs Adeslas' : 'Comparativa de Pólizas Oficiales: ASISA vs Sanitas vs Adeslas'}
+        title={isEnglish ? 'Compare Official Student Health Insurances: ASISA vs Sanitas vs Adeslas vs DKV' : 'Comparativa de Pólizas Oficiales: ASISA vs Sanitas vs Adeslas vs DKV'}
+        description={isEnglish ? 'We compare the leading authorized insurers in Spain so you can choose the fastest certificate and best price with 100% visa approval guarantee.' : 'Comparamos las mejores aseguradoras de España para que elijas la póliza con emisión más rápida y mejor precio con total garantía consular.'}
         plans={plansList}
         onPlanAction={handleStartQuoting}
         actionLabel={isEnglish ? 'Compare this policy' : 'Comparar esta póliza'}
-        columns={3}
+        columns={4}
       />
+
+      {/* Section 5: Transparent Pricing Banner (Structured Grid & Bullets) */}
+      <ProductPromotionSection
+        badges={[
+          <span key="1" className="inline-block rounded-full bg-accent text-primary-dark px-3 py-1 text-caption font-extrabold uppercase tracking-wider">
+            {isEnglish ? 'Transparent Pricing' : 'Precios Transparentes'}
+          </span>,
+          <span key="2" className="inline-block rounded-full bg-white/20 text-white px-3 py-1 text-caption font-semibold">
+            {isEnglish ? 'No Hidden Fees' : 'Sin Letra Pequeña ni Comisiones Ocultas'}
+          </span>
+        ]}
+        title={isEnglish ? 'Health Insurance Prices for International Students in Spain' : 'Precios del Seguro Médico para Estudiantes Extranjeros en España'}
+        description={isEnglish 
+          ? 'Clear and fixed rates without surprises. Price depends on your age and the total duration of your academic stay in Spain:'
+          : 'Sin letra pequeña ni sorpresas de última hora. Las tarifas para estudiantes varían principalmente según tu edad y la duración de tu estancia académica:'}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+          <div className="rounded-2xl bg-white/10 p-5 border border-white/15 backdrop-blur-sm">
+            <span className="text-xs font-extrabold text-brand-cyan uppercase tracking-wider block mb-1">
+              {isEnglish ? 'Short Stays (3 - 6 mos)' : 'Estancias Cortas (3 a 6 meses)'}
+            </span>
+            <p className="text-2xl font-display font-black text-white mb-2">
+              {isEnglish ? 'From €120 - €240' : 'Desde 120€ - 240€'}
+            </p>
+            <p className="text-xs text-slate-200 font-medium">
+              {isEnglish ? 'Ideal for language courses, Erasmus, and intensive short programs.' : 'Ideal para cursos de idiomas, Erasmus y programas intensivos.'}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/15 p-5 border-2 border-accent/60 backdrop-blur-sm relative shadow-md">
+            <span className="text-xs font-extrabold text-accent uppercase tracking-wider block mb-1">
+              {isEnglish ? 'Full Academic Year (9 - 12 mos)' : 'Año Completo (9 a 12 meses)'}
+            </span>
+            <p className="text-2xl font-display font-black text-white mb-2">
+              {isEnglish ? 'From €450 - €530' : 'Desde 450€ - 530€'}
+            </p>
+            <p className="text-xs text-slate-200 font-medium">
+              {isEnglish ? 'For Bachelor, Master, PhD degrees, with full consular coverage.' : 'Para Grados, Másteres y Doctorados con certificado oficial incluido.'}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/10 p-5 border border-white/15 backdrop-blur-sm">
+            <span className="text-xs font-extrabold text-brand-cyan uppercase tracking-wider block mb-1">
+              {isEnglish ? 'TIE / NIE Renewals' : 'Prórroga de Estancia / NIE'}
+            </span>
+            <p className="text-2xl font-display font-black text-white mb-2">
+              {isEnglish ? 'Same Preferential Rates' : 'Mismas Condiciones'}
+            </p>
+            <p className="text-xs text-slate-200 font-medium">
+              {isEnglish ? 'Without surcharges or penalties for continuing your second year.' : 'Sin recargos ni penalizaciones para renovar tu tarjeta en Extranjería.'}
+            </p>
+          </div>
+        </div>
+      </ProductPromotionSection>
 
       {/* Transparency section */}
       <ProductTransparencyPanel eyebrow={isEnglish ? 'Radical Transparency' : 'Transparencia Radical'} title={isEnglish ? 'What exactly are you buying?' : '¿Qué estás contratando exactamente?'} description={isEnglish ? 'We show you upfront the legally required inclusions and standard exclusions to avoid surprises when applying for your visa.' : 'Te mostramos sin rodeos las inclusiones requeridas legalmente y las exclusiones estándar para evitar sorpresas al solicitar tu visado.'} inclusions={inclusions} exclusions={exclusions} />
@@ -577,6 +644,25 @@ export const StudentInsurance: React.FC = () => {
             title: isEnglish ? 'Step 4: Download your consular PDF certificate' : 'Paso 4: Descarga tu certificado consular en PDF',
             description: isEnglish ? 'Receive your official certificate in PDF in <24 hours in your inbox and WhatsApp, ready for the consulate.' : 'Recibe en menos de 24 horas tu certificado oficial firmado en PDF en tu correo y WhatsApp, listo para el visado.'
           }
+        ]}
+      />
+
+      {/* Section 7: Risk-Free Guarantee & Total Refund */}
+      <GuaranteeRefundSection
+        eyebrow={isEnglish ? 'Risk-Free Guarantee' : 'Garantía Antirriesgo'}
+        title={isEnglish ? '100% Money-Back Guarantee for Visa Rejection' : 'Garantía de Reembolso Total por Denegación de Visado'}
+        subtitle={isEnglish ? 'We know how stressful the student visa application process can be. At VitaBlue you enjoy a 100% risk-free guarantee:' : 'Sabemos lo estresante que puede ser el proceso de solicitud de visado. Por eso, en VitaBlue cuentas con garantía de cancelación sin riesgo:'}
+        description={isEnglish 
+          ? 'If for any unforeseen reason the Spanish Consulate or Immigration Office rejects your student visa, we refund 100% of the money paid for your health insurance policy upon sending the official consular rejection letter.'
+          : 'Si por cualquier motivo de fuerza mayor el consulado o Extranjería deniega tu solicitud de visado, te reembolsamos el 100% del importe abonado por tu seguro médico. Solo tendrás que enviarnos la copia de la resolución consular oficial.'}
+        steps={isEnglish ? [
+          { title: '1. Official Rejection Letter', desc: 'Forward the official rejection notification issued by the Spanish consulate.' },
+          { title: '2. Express Validation', desc: 'We validate the document with the insurer in under 24 business hours.' },
+          { title: '3. 100% Refund', desc: 'You receive the full reimbursement directly to your original payment card.' }
+        ] : [
+          { title: '1. Notificación Oficial', desc: 'Envíanos la carta o resolución de denegación emitida por el consulado.' },
+          { title: '2. Verificación Express', desc: 'Validamos el documento con la aseguradora en menos de 24 horas laborables.' },
+          { title: '3. Reembolso del 100%', desc: 'Recibes la devolución íntegra en la misma tarjeta o cuenta de pago.' }
         ]}
       />
 

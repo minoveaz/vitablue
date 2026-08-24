@@ -293,7 +293,7 @@ export const SanitasMasSalud: React.FC = () => {
         title="Sanitas Más Salud"
         description="La póliza integral de Sanitas más contratada en España. Cuadro médico de excelencia, hospitalización completa en habitación individual y videoconsultas en 5 minutos."
         primaryAction={{ label: 'Comparar Precios Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
         highlights={['Sin límite de permanencia', 'Acceso a Hospitales Sanitas']}
       >
         <QuoteEstimator

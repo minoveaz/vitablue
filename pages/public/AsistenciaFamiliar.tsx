@@ -340,7 +340,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         title="Asistencia Familiar Iplus"
         description="Protección y tranquilidad total para ti y los tuyos ante cualquier imprevisto. Nos encargamos de todos los trámites legales, sepelio y apoyo psicológico familiar."
         primaryAction={{ label: 'Calcular Cuota Familiar', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
         highlights={['Testamento online gratis', 'Trámites de herencia']}
       >
         <QuoteEstimator
