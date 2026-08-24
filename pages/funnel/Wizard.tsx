@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ShieldCheck, Lock } from 'lucide-react';
 import { useWizard } from '../../context/WizardContext';
 import QuotationWizard, { type QuotationData } from '../../components/organisms/QuotationWizard';
+import { trackContactConversion } from '@/utils/analytics';
 
 export const Wizard: React.FC = () => {
   const navigate = useNavigate();
@@ -16,9 +17,17 @@ export const Wizard: React.FC = () => {
     if (data.visaRequired) setVisaRequired(data.visaRequired);
     if (data.residencyType) setResidencyType(data.residencyType);
 
+    // Track conversion for completing quote request
+    trackContactConversion('wizard', {
+      profile: data.profile || 'unknown',
+      age_range: data.ageRange || 'unknown',
+      visa_required: data.visaRequired || 'unknown',
+    });
+
     // Redirect to the comparative results screen
     navigate('/resultados');
   };
+
 
   return (
     <div className="min-h-[80vh] py-12 px-4 sm:px-6 bg-slate-50/50 flex justify-center items-center">

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ArrowRight, Shield, ChevronDown } from 'lucide-react';
 import Button from '@/components/atoms/Button';
+import { trackContactConversion } from '@/utils/analytics';
+
 
 interface ConversationalHeroProps {
   onSearch?: (data: { age: number; needType: string; insuranceType: string; nationality: string }) => void;
@@ -20,6 +22,11 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    trackContactConversion('wizard', {
+      source_page: 'conversational_hero',
+      age: parseInt(age) || 25,
+      need_type: needType,
+    });
     if (onSearch) {
       onSearch({
         age: parseInt(age) || 25,
@@ -29,6 +36,7 @@ export const ConversationalHero: React.FC<ConversationalHeroProps> = ({
       });
     }
   };
+
 
   const inputClasses = "mx-1.5 sm:mx-2 border-b-[3px] border-slate-200 focus:border-primary bg-transparent text-primary font-extrabold focus:outline-none transition-colors text-center cursor-pointer pb-0.5";
 
