@@ -259,7 +259,7 @@ export const LifeInsurance: React.FC = () => {
         title="Seguro de Vida Familiar"
         description="Asegura la tranquilidad y el futuro financiero de tus seres queridos. Cubre préstamos, hipotecas y garantiza la estabilidad familiar con cuotas mínimas mensuales."
         primaryAction={{ label: 'Calcular Seguro Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
         highlights={['Sin reconocimientos médicos', 'Cobertura de invalidez']}
       >
         <QuoteEstimator

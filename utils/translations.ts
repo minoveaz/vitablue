@@ -62,27 +62,27 @@ export const navbarTranslations: Record<'es' | 'en', NavigationTranslations> = {
 export const studentTranslations: Record<'es' | 'en', StudentTranslations> = {
   es: {
     heroTag: 'Seguro Médico Estudiantes',
-    heroTitle: 'El seguro médico que exige Extranjería para tu Visado',
-    heroSubtitle: 'Consigue tu certificado de cobertura completa en menos de 24 horas. Póliza 100% homologada sin copagos ni carencias.',
+    heroTitle: 'Seguro Médico para Visado de Estudiante en España',
+    heroSubtitle: 'Pólizas 100% homologadas sin copagos, sin carencias y con repatriación incluida. Recibe tu certificado consular oficial en PDF en menos de 24 horas.',
     ctaButton: 'Calcular Seguro Online',
-    callAdvisor: 'Llamar Gratis',
-    featuresTitle: 'Ventajas de Sanitas International Students',
-    reqTitle: 'Requisitos Obligatorios del Visado de Estudios',
-    reqSubtitle: 'El consulado de España exige que tu seguro médico cumpla estrictamente con las siguientes directrices:',
-    cardSanitasTitle: 'Sanitas International Students',
-    cardSanitasPrice: 'Desde 39€/mes'
+    callAdvisor: 'Asesoría WhatsApp',
+    featuresTitle: 'Garantías Oficiales del Seguro de Estudiantes',
+    reqTitle: 'Requisitos Oficiales del Seguro Médico que Exige el Consulado y Extranjería',
+    reqSubtitle: 'El consulado de España y las delegaciones de Extranjería exigen que tu póliza médica cumpla estrictamente con estas 4 directrices legales:',
+    cardSanitasTitle: 'ASISA Salud Estudiantes',
+    cardSanitasPrice: 'Desde 38€/mes'
   },
   en: {
     heroTag: 'Student Health Insurance',
-    heroTitle: 'The Health Insurance Required by Spanish Consulates',
-    heroSubtitle: 'Get your full coverage certificate in less than 24 hours. 100% compliant policy with zero copays and zero waiting periods.',
+    heroTitle: 'Health Insurance for Student Visa in Spain',
+    heroSubtitle: '100% approved policies with zero copays, zero wait times, and repatriation included. Get your official consular PDF certificate in under 24 hours.',
     ctaButton: 'Calculate Insurance Online',
-    callAdvisor: 'Call Toll-Free',
-    featuresTitle: 'Advantages of Sanitas International Students',
-    reqTitle: 'Mandatory Student Visa Requirements',
-    reqSubtitle: 'The Spanish consulate requires your health insurance to strictly comply with these guidelines:',
-    cardSanitasTitle: 'Sanitas International Students',
-    cardSanitasPrice: 'From 39€/month'
+    callAdvisor: 'WhatsApp Advice',
+    featuresTitle: 'Official Student Insurance Guarantees',
+    reqTitle: 'Official Health Insurance Requirements for Student Visas',
+    reqSubtitle: 'The Spanish consulate and immigration offices require your health insurance to strictly comply with these 4 legal guidelines:',
+    cardSanitasTitle: 'ASISA Health Students',
+    cardSanitasPrice: 'From 38€/month'
   }
 };
 

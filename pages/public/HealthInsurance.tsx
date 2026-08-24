@@ -442,7 +442,7 @@ export const HealthInsurance: React.FC = () => {
                 <Button size="lg" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
                   Comparar Precios Online
                 </Button>
-                <a href="tel:+34900839240" className="inline-flex items-center justify-center">
+                <a href="tel:+34694583452" className="inline-flex items-center justify-center">
                   <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     Llamar Gratis
                   </Button>

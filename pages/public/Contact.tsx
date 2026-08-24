@@ -66,6 +66,8 @@ const Contact: React.FC = () => {
         <title>{content.title}</title>
         <meta name="description" content={content.description} />
         <meta property="og:title" content={content.title} />
+        <meta property="og:description" content={content.description} />
+        <meta property="og:image" content="https://www.vitablue.es/assets/vitablue-share.jpg" />
         <link rel="canonical" href={`https://www.vitablue.es${content.contactPath}`} />
         <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/contacto" />
         <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/contact" />

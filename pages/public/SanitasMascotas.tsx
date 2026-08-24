@@ -262,7 +262,7 @@ export const SanitasMascotas: React.FC = () => {
         title="Sanitas Mascotas"
         description="Cuidado integral veterinario para tu perro o gato. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
         primaryAction={{ label: 'Calcular Póliza Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
         highlights={['Limpieza dental anual gratis', 'Urgencias 24h']}
       >
         <QuoteEstimator
