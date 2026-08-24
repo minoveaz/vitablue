@@ -164,7 +164,7 @@ export const AsistenciaFamiliar: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -176,6 +176,13 @@ export const AsistenciaFamiliar: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "76",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       },
       {
@@ -189,58 +196,7 @@ export const AsistenciaFamiliar: React.FC = () => {
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "76",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Ana B."
-            },
-            "datePublished": "2025-11-15",
-            "reviewBody": "En un momento muy difícil, el servicio fue impecable. Gestionaron todo y nos ayudaron con el traslado internacional.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Roberto C."
-            },
-            "datePublished": "2025-10-08",
-            "reviewBody": "Excelente cobertura funeraria y el apoyo emocional fue muy valioso. Totalmente recomendable.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Isabel M."
-            },
-            "datePublished": "2025-09-25",
-            "reviewBody": "Contratación sencilla y tranquilidad para toda la familia. El coaseguro con Santalucía es una garantía.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          }
-        ]
+        }
       },
       {
         "@type": "BreadcrumbList",

@@ -128,7 +128,7 @@ export const TravelInsurance: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -140,6 +140,13 @@ export const TravelInsurance: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.7",
+          "reviewCount": "104",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       },
       {
@@ -153,30 +160,7 @@ export const TravelInsurance: React.FC = () => {
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.7",
-          "reviewCount": "104",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "María T."
-            },
-            "datePublished": "2025-11-14",
-            "reviewBody": "Contraté el seguro de viaje Estrella y tuve que usarlo en Nueva York por una otitis. La asistencia fue rápida y pagaron todo directamente al hospital.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          }
-        ]
+        }
       },
       {
         "@type": "BreadcrumbList",

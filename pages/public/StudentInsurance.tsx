@@ -375,7 +375,7 @@ export const StudentInsurance: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -387,6 +387,13 @@ export const StudentInsurance: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "94",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       },
       {
@@ -400,44 +407,7 @@ export const StudentInsurance: React.FC = () => {
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "94",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "David L."
-            },
-            "datePublished": "2025-11-10",
-            "reviewBody": "El certificado para el visado de estudiante llegó súper rápido. Todo el trámite fue online y sin complicaciones.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Sophie M."
-            },
-            "datePublished": "2025-10-22",
-            "reviewBody": "No copay and full medical coverage, perfect for my Erasmus semester in Madrid. Very helpful support in English.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          }
-        ]
+        }
       },
       {
         "@type": "BreadcrumbList",
