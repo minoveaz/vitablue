@@ -74,6 +74,8 @@ export const canonicalRoutes: RouteDefinition[] = [
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/peru', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/peru', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/argentina', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/argentina', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/ecuador', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/ecuador', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/chile', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/chile', indexable: true, prerender: true, sitemap: true }),
+  canonical('/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos', indexable: true, prerender: true, sitemap: true }),
   canonical('/validador-visado', { locale: 'es', canonical: '/validador-visado', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/madrid', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/madrid', indexable: true, prerender: true, sitemap: true }),
   canonical('/productos/seguros-salud/seguro-medico-estudiantes/barcelona', { locale: 'es', canonical: '/productos/seguros-salud/seguro-medico-estudiantes/barcelona', indexable: true, prerender: true, sitemap: true }),

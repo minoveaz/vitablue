@@ -502,6 +502,187 @@ export const consulatesList: ConsulateData[] = [
       },
     ],
   },
+  {
+    slug: 'chile',
+    country: 'Chile',
+    city: 'Santiago de Chile',
+    flag: '🇨🇱',
+    title: 'Seguro Médico para Visado de España en Chile (Consulado Santiago 2026)',
+    metaDescription: 'Seguro médico homologado para visados de estudios y residencia en el Consulado General de España en Santiago de Chile y BLS. 0€ copagos, sin carencias y certificado en 24h.',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/chile',
+    consulateName: 'Consulado General de España en Santiago de Chile',
+    consulateAddress: 'Av. Once de Septiembre / Av. Nueva Providencia 2353, Providencia, Santiago, Chile',
+    consulateJurisdiction: 'Todo el territorio de la República de Chile',
+    blsCenter: 'Centro de Visados BLS International Santiago (Av. Vitacura / Providencia)',
+    heroSubtitle: 'Póliza oficial admitida por el Consulado General de España en Santiago y centros BLS Chile. Sin copagos, cobertura médica total en España y certificado oficial en 24h.',
+    appointmentLeadTime: 'Recomendamos contratar 2 a 4 semanas antes de tu cita consular en Santiago.',
+    priceFromEur: 45,
+    currencyCode: 'CLP',
+    currencyDisplay: 'Pesos Chilenos (CLP)',
+    rateEurToLocal: 1040,
+    priceFromLocal: '46.800 CLP/mes',
+    whatsappTag: '[GADS-CHILE]',
+    whatsappMessage: '¡Hola! Estoy tramitando mi visado de España en el Consulado de Santiago de Chile y necesito cotizar el seguro médico obligatorio sin copagos.',
+    specificNotices: [
+      'El Consulado de España en Santiago exige de forma estricta que la póliza esté emitida por una aseguradora autorizada en España (DGSFP) con cobertura integral idéntica al Sistema Nacional de Salud.',
+      'No se admiten seguros de viaje con topes de cobertura en UF o dólares ni pólizas chilenas (Isapres/Fonasa) que operen solo por reembolso tardío.',
+      'La vigencia de la póliza debe cubrir la totalidad de la estancia académica o el primer año de residencia.',
+    ],
+    visaTypes: [
+      {
+        name: 'Visado de Estancia por Estudios (Grado, Máster, Doctorado)',
+        description: 'Para estudiantes chilenos matriculados en universidades, escuelas de negocios o centros de formación en España.',
+        validity: 'Periodo completo del curso académico',
+      },
+      {
+        name: 'Visado de Nómada Digital (Teletrabajo Internacional)',
+        description: 'Para profesionales y autónomos chilenos que trabajan en remoto para empresas fuera de España.',
+        validity: '1 año en consulado / 3 años en España',
+      },
+      {
+        name: 'Visado de Residencia No Lucrativa y Reagrupación Familiar',
+        description: 'Para vivir en España demostrando fondos suficientes sin realizar actividad laboral en el país.',
+        validity: '1 año renovable',
+      },
+    ],
+    mandatoryRequirements: [
+      {
+        title: 'Aseguradora Autorizada DGSFP en España',
+        description: 'Entidad aseguradora autorizada e inscrita en el registro oficial español (Sanitas / Asisa).',
+        badge: 'Aseguradora Española DGSFP',
+      },
+      {
+        title: 'Totalmente Sin Copagos ni Deducibles',
+        description: 'El asegurado no debe abonar ningún copago ni deducible por consultas, analíticas o cirugías.',
+        badge: '0€ Copagos / 0 Deducible',
+      },
+      {
+        title: 'Sin Periodos de Carencia',
+        description: 'Todas las prestaciones sanitarias, urgencias e internación cubiertas desde el primer día.',
+        badge: 'Cobertura Inmediata Día 1',
+      },
+      {
+        title: 'Repatriación Sanitaria a Chile',
+        description: 'Traslado sanitario urgente o repatriación de restos mortales hasta territorio chileno.',
+        badge: 'Repatriación a Chile',
+      },
+    ],
+    commonRejectionReasons: [
+      {
+        reason: 'Presentar cobertura de Isapre chilena con asistencia en viaje de tarjeta de crédito (límite $30.000 USD).',
+        solution: 'El consulado en Santiago rechaza topes en dólares. Exige seguro de salud español con cobertura hospitalaria ilimitada.',
+      },
+      {
+        reason: 'Seguros con deducible o copagos por atención médica.',
+        solution: 'Nuestras pólizas de Sanitas International Students y Más Salud cuentan con cláusula expresa de 0€ copagos.',
+      },
+    ],
+    faqs: [
+      {
+        q: '¿Cómo se paga desde Chile y en qué moneda se procesa?',
+        a: 'Puedes pagar de forma 100% segura con cualquier tarjeta de crédito o débito chilena (Visa, Mastercard). Tu banco procesa la conversión automática a Pesos Chilenos (CLP) sin comisiones extra.',
+      },
+      {
+        q: '¿Qué validez tiene el certificado digital ante el Consulado de España en Santiago?',
+        a: 'El certificado emitido cuenta con Firma Electrónica Reconocida y Código Seguro de Verificación (CSV) oficial de la aseguradora, 100% admitido por el consulado y por BLS Santiago.',
+      },
+    ],
+  },
+  {
+    slug: 'estados-unidos',
+    country: 'Estados Unidos',
+    city: 'Miami, New York, Los Angeles, Chicago & Houston',
+    flag: '🇺🇸',
+    title: 'Health Insurance for Spain Visa in USA & NALCAP (Official 2026 Guide)',
+    metaDescription: 'Official health insurance for Spain Student Visa, NALCAP language assistants, Digital Nomad & Non-Lucrative Visa at Spanish Consulates across USA (Miami, NYC, LA, Houston, Chicago). $0 copay & 24h certificate.',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos',
+    consulateName: 'Consulados Generales de España en EE. UU. (BLS Centers)',
+    consulateAddress: 'Miami (Coral Gables), New York, Los Angeles, Chicago, Houston, San Francisco, Washington D.C., Boston',
+    consulateJurisdiction: 'All 50 US States & Puerto Rico',
+    blsCenter: 'BLS Spain Visa Application Centers USA (Miami, NYC, LA, Chicago, Houston, SF, DC, Boston)',
+    heroSubtitle: 'Official health insurance approved by Spanish Consulates across the US and BLS centers for Study Abroad, NALCAP Language Assistants, Digital Nomads and Non-Lucrative visas.',
+    appointmentLeadTime: 'We recommend securing your policy 3 to 6 weeks before your BLS appointment.',
+    priceFromEur: 45,
+    currencyCode: 'USD',
+    currencyDisplay: 'US Dollars (USD)',
+    rateEurToLocal: 1.09,
+    priceFromLocal: '$49 USD/mo',
+    whatsappTag: '[GADS-USA]',
+    whatsappMessage: 'Hello! I am applying for a Spanish visa in the US (Student/NALCAP/Nomad/Non-Lucrative) and need a compliant health insurance quote with 0 copay.',
+    specificNotices: [
+      'Spanish Consulates across the USA (Miami, NY, LA, Houston, Chicago, SF, DC) strictly reject US health plans (BlueCross, Aetna, Cigna Global, UnitedHealthcare) because they operate through deductibles/copays and out-of-network reimbursements.',
+      'For the NALCAP program (North American Language and Culture Assistants), if your regional placement does not include private insurance or for your initial visa processing, you must present a DGSFP-authorized policy with 0€ copay.',
+      'The insurance certificate must explicitly state: No copayments, No deductibles, No waiting periods, and full Repatriation of remains to the USA.',
+    ],
+    visaTypes: [
+      {
+        name: 'Student Visa & Study Abroad / Master Degrees',
+        description: 'For American university students enrolled in semester abroad programs, universities or graduate schools in Spain.',
+        validity: 'Full academic year or semester duration',
+      },
+      {
+        name: 'NALCAP Language & Culture Assistants',
+        description: 'For North American assistants teaching English in Spain through the Ministry of Education program.',
+        validity: 'Academic year (October - May/June)',
+      },
+      {
+        name: 'Digital Nomad Visa (Telework / Remote Workers)',
+        description: 'For US remote employees and freelancers working for American clients from Spain.',
+        validity: '1 year at consulate / 3 years residency in Spain',
+      },
+      {
+        name: 'Non-Lucrative Residence Visa (Retirees & Expats)',
+        description: 'For Americans moving to Spain without conducting local employment activities.',
+        validity: '1 year renewable',
+      },
+    ],
+    mandatoryRequirements: [
+      {
+        title: 'DGSFP-Authorized Spanish Insurer',
+        description: 'The insurance provider must be licensed and regulated in Spain by the DGSFP (Sanitas / Asisa).',
+        badge: 'Authorized Spanish Provider',
+      },
+      {
+        title: '$0 Deductibles & Zero Copays',
+        description: 'Zero out-of-pocket costs for doctor visits, emergency room, diagnostic tests and hospitalization.',
+        badge: 'Zero Copay / No Deductible',
+      },
+      {
+        title: 'Zero Waiting Periods (Immediate Coverage)',
+        description: 'Full medical and surgical coverage effective from day 1 upon arrival in Spain.',
+        badge: 'No Waiting Periods',
+      },
+      {
+        title: 'Repatriation of Remains & Medical Evacuation to USA',
+        description: 'Complete coverage for medical transport or repatriation of mortal remains to the United States.',
+        badge: 'Full Repatriation to USA',
+      },
+    ],
+    commonRejectionReasons: [
+      {
+        reason: 'Submitting US domestic insurance (BlueCross/Kaiser/Aetna) or travel insurance with high deductibles (e.g. $500 - $2,500 deductible).',
+        solution: 'Consulates reject all deductibles. VitaBlue provides Sanitas International Students with strict 0€ copay certificate.',
+      },
+      {
+        reason: 'Travel policies with capped limits (e.g. $50,000 USD maximum).',
+        solution: 'Spain requires comprehensive healthcare coverage equivalent to the Spanish National Health System without monetary caps on medical treatment.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why does the Spanish consulate reject my US health insurance (BlueCross, Aetna, Cigna)?',
+        a: 'Spanish immigration law requires the insurer to be authorized in Spain (DGSFP) and offer direct billing to hospitals without copays, deductibles, or reimbursement paperwork. US health plans do not meet these legal criteria.',
+      },
+      {
+        q: 'How fast do I receive the official certificate for my BLS appointment in the US?',
+        a: 'Through VitaBlue, your official bilingual certificate signed digitally by Sanitas is issued within 24 business hours via email and WhatsApp.',
+      },
+      {
+        q: 'Can I pay with a US credit or debit card?',
+        a: 'Yes. You can pay securely with any US credit card (Visa, Mastercard, Amex). Your bank automatically processes the transaction at the official exchange rate.',
+      },
+    ],
+  },
 ];
 
 export const getConsulateBySlug = (slug: string): ConsulateData | undefined => {

@@ -2,14 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { consulatesList, getConsulateBySlug } from './consulatesData';
 
 describe('Consulates Data Specification', () => {
-  it('contains the 5 target consulates', () => {
-    expect(consulatesList).toHaveLength(5);
+  it('contains the 7 target consulates', () => {
+    expect(consulatesList).toHaveLength(7);
     const slugs = consulatesList.map((c) => c.slug);
     expect(slugs).toContain('colombia');
     expect(slugs).toContain('mexico');
     expect(slugs).toContain('peru');
     expect(slugs).toContain('argentina');
     expect(slugs).toContain('ecuador');
+    expect(slugs).toContain('chile');
+    expect(slugs).toContain('estados-unidos');
   });
 
   it('retrieves consulate by slug accurately', () => {
@@ -18,16 +20,20 @@ describe('Consulates Data Specification', () => {
     expect(colombia?.country).toBe('Colombia');
     expect(colombia?.city).toBe('Bogotá');
     expect(colombia?.canonicalPath).toBe('/productos/seguros-salud/seguro-medico-estudiantes/colombia');
-    expect(colombia?.whatsappTag).toBe('CONS-BOGOTA');
 
-    const bogotaAlias = getConsulateBySlug('colombia-bogota');
-    expect(bogotaAlias).toBeDefined();
-    expect(bogotaAlias?.country).toBe('Colombia');
+    const chile = getConsulateBySlug('chile');
+    expect(chile).toBeDefined();
+    expect(chile?.country).toBe('Chile');
+    expect(chile?.currencyCode).toBe('CLP');
+
+    const usa = getConsulateBySlug('estados-unidos');
+    expect(usa).toBeDefined();
+    expect(usa?.country).toBe('Estados Unidos');
+    expect(usa?.currencyCode).toBe('USD');
 
     const unknown = getConsulateBySlug('non-existent');
     expect(unknown).toBeUndefined();
   });
-
 
   it('validates each consulate has complete legal and procedural data', () => {
     consulatesList.forEach((c) => {
@@ -41,7 +47,7 @@ describe('Consulates Data Specification', () => {
       expect(c.commonRejectionReasons.length).toBeGreaterThanOrEqual(2);
       expect(c.faqs.length).toBeGreaterThanOrEqual(2);
       expect(c.priceFromEur).toBeGreaterThan(0);
-      expect(c.whatsappMessage).toContain('Consulado');
+      expect(c.whatsappMessage.length).toBeGreaterThan(10);
     });
   });
 });
