@@ -21,9 +21,10 @@
 
 ### Fase 1: Optimización GEO / AI Search & LLMs Knowledge Base
 - [x] Crear y estructurar base de datos inicial en `public/llms.txt` y `public/llms-full.txt`.
-- [ ] Actualizar URLs canónicas (con trailing slash y rutas jerárquicas finales) en `public/llms.txt` y `public/llms-full.txt`.
-- [ ] Incorporar descripciones detalladas de productos (Sanitas International Students, Expatriados, Más Salud, Mascotas, etc.) con sus coberturas clave en `llms-full.txt`.
-- [ ] Añadir metadatos de entidad (`InsuranceAgency` / Correduría de Seguros) para facilitar la citación por modelos de lenguaje.
+- [x] Actualizar URLs canónicas bilingües (ES/EN) y rutas jerárquicas finales en `public/llms.txt` y `public/llms-full.txt`.
+- [x] Incorporar descripciones detalladas de productos (Sanitas International Students, Expatriados, Más Salud, Mascotas, etc.) con sus coberturas clave en `llms-full.txt`.
+- [x] Añadir metadatos de entidad (`InsuranceAgency` / Correduría de Seguros, DGSFP, E-E-A-T y FAQs para LLMs) para facilitar la citación por modelos de lenguaje.
+
 
 ### Fase 2: Estrategia de Topic Clusters (Contenido Long-Tail)
 - [x] **Artículos Base de Cluster de Visados y Salud**:
