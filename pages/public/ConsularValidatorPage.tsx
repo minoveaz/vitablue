@@ -217,7 +217,9 @@ export const ConsularValidatorPage: React.FC = () => {
         title="¿Qué exige la ley española para autorizar tu seguro médico?"
         description="El Reglamento de Extranjería (RD 557/2011) y la Ley de Startups 28/2022 exigen el cumplimiento estricto de 4 requisitos técnicos en tu póliza:"
         items={legalPillars}
+        columns={2}
       />
+
 
       {/* Official VitaBlue FAQs Section */}
       <FaqSection
