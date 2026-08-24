@@ -241,8 +241,9 @@ export const ConsulateVisaInsurance: React.FC = () => {
             if (option === 'master') eur += 3;
             if (option === 'nomada') eur += 10;
             if (age > 26) eur += Math.floor((age - 26) * 0.8);
-            return `(Aprox. ${eur} €/mes)`;
+            return `~${eur} € / mes`;
           }}
+
           personalizedPriceLabel="Tarifa homologada"
           priceLabel="Cuota Estimada:"
           submitLabel="Iniciar Contratación Online"
