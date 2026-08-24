@@ -1,10 +1,16 @@
 export interface BlogSection {
-  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table';
+  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table' | 'cta-wizard';
   text?: string;
   items?: string[];
   tableHeader?: string[];
   tableRows?: string[][];
+  ctaTitle?: string;
+  ctaDescription?: string;
+  ctaButtonText?: string;
+  ctaLink?: string;
+  ctaBadge?: string;
 }
+
 
 export interface BlogPostData {
   slug: string;
@@ -29,8 +35,125 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'precios-seguro-medico-visado-estudiante-espana',
+    title: 'Precios del Seguro Médico para Visado de Estudiante en España (Guía Oficial 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Cuánto cuesta el seguro médico obligatorio para estudiar en España? Descubre las tarifas reales mensuales y anuales de pólizas homologadas sin copagos (Sanitas), factores que influyen en el coste y cómo evitar denegaciones consulares.',
+    featuredImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Una de las dudas más frecuentes al planificar una estancia académica en España para realizar un grado universitario, máster, doctorado o curso de idiomas es: <strong>¿cuánto cuesta realmente el seguro médico obligatorio para el visado de estudiante?</strong>'
+      },
+      {
+        type: 'paragraph',
+        text: 'El seguro de salud no es un simple trámite administrativo opcional; es un requisito legal ineludible estipulado en el <em>Real Decreto 557/2011</em> de la normativa de extranjería española. Para que el consulado o la oficina de Extranjería apruebe tu expediente, la póliza debe ser emitida por una compañía autorizada en España, no tener copagos, carecer de periodos de carencia e incluir repatriación ilimitada. La póliza de referencia que cumple el 100% de estas directrices es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Rango de precios reales del seguro médico de estudiante en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'El coste promedio de un seguro médico privado homologado para visado de estudiante en España oscila habitualmente entre <strong>35€ y 65€ al mes</strong> (equivalente a un rango anual de entre <strong>420€ y 780€ al año</strong>), dependiendo principalmente del tramo de edad del solicitante y de la duración exacta del curso académico.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tramo de Edad', 'Precio Mensual Estimado', 'Coste Anual (12 Meses)', 'Copagos & Carencias', 'Repatriación'],
+        tableRows: [
+          ['18 a 24 años (Universitarios / Grado)', '35€ - 45€ / mes', '420€ - 540€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['25 a 30 años (Máster / Posgrado)', '40€ - 52€ / mes', '480€ - 624€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['31 a 40 años (Doctorado / Investigadores)', '50€ - 68€ / mes', '600€ - 816€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada'],
+          ['Mayores de 40 años (Cursos Especiales)', '65€ - 95€ / mes', '780€ - 1.140€ / año', '0€ (Sin copagos / Sin carencias)', 'Incluida ilimitada']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Calculadora Oficial 2026',
+        ctaTitle: '¿Quieres conocer el precio exacto para tu edad y estancia?',
+        ctaDescription: 'Calcula tu presupuesto oficial de Sanitas International Students en 30 segundos. Sin registrar tu teléfono, sin spam comercial y con certificado consular en 24h.',
+        ctaButtonText: 'Calcular mi precio de seguro',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: 'Los 4 factores que determinan el precio final de tu póliza'
+      },
+      {
+        type: 'paragraph',
+        text: 'Aunque las aseguradoras manejan tarifas estandarizadas para estudiantes extranjeros, el precio final de tu contrato se calcula en función de cuatro elementos técnicos fundamentales:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Edad del estudiante</strong>: Como en cualquier seguro de salud privado en España, el riesgo médico aumenta con la edad. Los tramos jóvenes (18-30 años) disfrutan de las primas más económicas y accesibles.',
+          '<strong>Duración exacta de la estancia</strong>: Si tu curso académico dura 9 o 10 meses, puedes contratar la póliza ajustada por ese periodo específico o contratar la anualidad completa de 12 meses si planeas quedarte durante las vacaciones de verano en España.',
+          '<strong>Forma de pago exigida por el consulado</strong>: Si tramitas el visado desde tu país de origen (consulados de España en Colombia, México, EE. UU., Perú, Argentina, etc.), las autoridades exigen el justificante de <strong>pago anual único por adelantado</strong>. No se admiten pagos fraccionados mensuales para visados iniciales.',
+          '<strong>Coberturas consulares obligatorias</strong>: La póliza debe incluir de serie la cobertura completa de repatriación sanitaria y de restos (traslado funerario hasta tu país de origen) sin límites económicos restrictivos.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué contratar un seguro de viaje barato (15€/mes) sale muy caro?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Muchos estudiantes caen en la trampa de contratar pólizas de asistencia en viaje genéricas (como IATI, Chapka, Assist Card o pólizas básicas de aerolíneas) atraídos por precios de 15€ o 20€ al mes. Sin embargo, <strong>estas pólizas son denegadas de forma sistemática por las oficinas de Extranjería y consulados</strong> por los siguientes motivos:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Operan por reembolso con topes muy bajos</strong>: Solo cubren gastos de urgencia hasta 30.000€ o 50.000€, mientras que Extranjería exige cobertura completa equivalente a la sanidad pública española sin límite de gasto.',
+          '<strong>Aplican franquicias y copagos encubiertos</strong>: Para entender cómo funcionan estos cobros y por qué los consulados los prohíben, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Excluyen revisiones rutinarias y enfermedades comunes</strong>: No te permiten acudir a consultas de medicina general, ginecología, dermatología o traumatología si no se trata de un accidente puntual de viaje.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Riesgo Económico Real</strong>: Una denegación de visado por seguro no conforme implica la pérdida de las tasas consulares (80€ a 120€), retrasos de meses en tu matrícula universitaria e incluso la pérdida de billetes de avión.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Garantía de reembolso total: Protege tu dinero ante denegaciones'
+      },
+      {
+        type: 'paragraph',
+        text: 'Una de las mayores preocupaciones al pagar una póliza anual antes de tener el visado aprobado es el riesgo de perder el dinero si el consulado rechaza la solicitud. Con <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> contratado a través de VitaBlue, cuentas con una <strong>cláusula contractual de garantía de reembolso del 100%</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si por cualquier motivo oficial ajeno a tu control tu visado no es concedido, basta con presentar la carta formal de denegación consular antes de la fecha de inicio de vigencia de la póliza para recibir la devolución íntegra de la prima abonada.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Precio del Seguro (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿El precio del certificado oficial tiene algún costo extra?</strong>: No. El certificado oficial bilingüe con firma digital autorizada para el consulado se emite de forma 100% gratuita tras la confirmación de la póliza.',
+          '<strong>¿VitaBlue cobra alguna comisión sobre el precio de Sanitas?</strong>: Ninguna. Nuestros precios son exactamente los oficiales de Sanitas (o con descuentos especiales por volumen). La asesoría personalizada y el soporte durante tu estancia son totalmente gratuitos.',
+          '<strong>¿Qué incluye la cobertura dental?</strong>: Incluye el programa Sanitas Dental 21 básico con revisiones, limpiezas anuales, consultas de urgencia dental y extracciones simples sin coste adicional.',
+          '<strong>¿Puedo renovar el seguro al mismo precio el segundo año de carrera?</strong>: Sí. Al renovar tu estancia o tramitar la prórroga de estancia por estudios (TIE), podrás renovar tu póliza manteniendo las condiciones de cobertura homologada.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'requisitos-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-requirements',
+
     title: 'Requisitos del Seguro Médico para Visado de Estudiante en España (Guía 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
@@ -52,7 +175,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. La póliza líder del mercado homologada para este trámite es <a href="/productos/seguros-salud/seguros-sanitas/international-students" class="text-primary hover:underline font-bold">Sanitas International Students</a>, diseñada en estricta conformidad con las directrices consulares españolas.'
+        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. La póliza líder del mercado homologada para este trámite es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>, diseñada en estricta conformidad con las directrices consulares españolas.'
       },
       {
         type: 'heading-2',
@@ -318,7 +441,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguros-sanitas/international-students" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
+        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
       }
     ]
   },
