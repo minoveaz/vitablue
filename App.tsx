@@ -29,7 +29,14 @@ const CookiesPolicy = lazy(() => import('@/pages/public/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/public/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/public/BlogList'));
 const BlogPost = lazy(() => import('@/pages/public/BlogPost'));
+const ConsulateVisaInsurance = lazy(() => import('@/pages/public/ConsulateVisaInsurance'));
+const CityDestinationVisaInsurance = lazy(() => import('@/pages/public/CityDestinationVisaInsurance'));
+const ConsularValidatorPage = lazy(() => import('@/pages/public/ConsularValidatorPage'));
 const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'));
+
+
+
+
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
 const ToolsHome = lazy(() => import('@/pages/backoffice/ToolsHome'));
@@ -172,8 +179,39 @@ const AppLayout: React.FC = () => {
             <Route path="/productos/seguros-salud/seguro-nomadas-digitales" element={<NomadInsurance />} />
             <Route path="/en/digital-nomad-insurance-spain" element={<NomadInsurance />} />
             <Route path="/productos/seguros-salud/seguro-salud-extranjeros" element={<ForeignerInsurance />} />
+
+            {/* Silo Consular / Países bajo Seguro Médico Estudiantes */}
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/colombia" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/mexico" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/peru" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/argentina" element={<ConsulateVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/ecuador" element={<ConsulateVisaInsurance />} />
+
+            {/* Silo Ciudades de Destino bajo Seguro Médico Estudiantes */}
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/madrid" element={<CityDestinationVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/barcelona" element={<CityDestinationVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/valencia" element={<CityDestinationVisaInsurance />} />
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/malaga" element={<CityDestinationVisaInsurance />} />
+
+            <Route path="/productos/seguros-salud/seguro-medico-estudiantes/:slug" element={<ConsulateVisaInsurance />} />
+
+            {/* Compatibilidad legacy con redirección (Países) */}
+            <Route path="/seguro-medico-visado-espana/colombia-bogota" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/colombia" replace />} />
+            <Route path="/seguro-medico-visado-espana/mexico-cdmx" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/mexico" replace />} />
+            <Route path="/seguro-medico-visado-espana/peru-lima" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/peru" replace />} />
+            <Route path="/seguro-medico-visado-espana/argentina-buenos-aires" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/argentina" replace />} />
+            <Route path="/seguro-medico-visado-espana/ecuador-quito-guayaquil" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/ecuador" replace />} />
+
+            {/* Compatibilidad legacy con redirección (Ciudades) */}
+            <Route path="/seguro-medico-estudiantes/madrid" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/madrid" replace />} />
+            <Route path="/seguro-medico-estudiantes/barcelona" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/barcelona" replace />} />
+            <Route path="/seguro-medico-estudiantes/valencia" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/valencia" replace />} />
+            <Route path="/seguro-medico-estudiantes/malaga" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/malaga" replace />} />
             
             {/* Sub-silo: Seguros de Salud de Sanitas */}
+
+
+
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
@@ -194,7 +232,11 @@ const AppLayout: React.FC = () => {
             {/* Seguro de Vida (Silo Independiente) */}
             <Route path="/productos/seguro-vida" element={<LifeInsurance />} />
 
+            {/* Validador de Requisitos Consulares (Lead Magnet) */}
+            <Route path="/validador-visado" element={<ConsularValidatorPage />} />
+
             {/* Redirecciones y URLs de Compatibilidad (Legacy) */}
+
             <Route path="/productos/seguros-salud/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguro-medico-estudiantes-extranjeros-espana.html" element={<StudentInsurance />} />
             <Route path="/productos/international-students.html" element={<StudentInsurance />} />

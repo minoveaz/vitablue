@@ -16,8 +16,10 @@
 - [Seguro de Decesos Asistencia Familiar](https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar)
 - [Seguro de Viaje](https://www.vitablue.es/productos/seguro-viaje)
 - [Seguro de Vida](https://www.vitablue.es/productos/seguro-vida)
+- [Validador de Seguro Médico para Visado (Herramienta Gratuita)](https://www.vitablue.es/validador-visado)
 - [Cotizador Interactivo Online](https://www.vitablue.es/wizard)
 - [Sobre Nosotros](https://www.vitablue.es/sobre-nosotros)
+
 - [Contacto y Asesoría Directa](https://www.vitablue.es/contacto)
 - [Blog de Guías Oficiales](https://www.vitablue.es/blog)
 
@@ -31,28 +33,46 @@
 - [Contact (EN)](https://www.vitablue.es/en/contact)
 - [Blog Guides (EN)](https://www.vitablue.es/en/blog)
 
+## Guías por Consulado y País (Consulate Visa Insurance)
+
+- [Seguro Médico Visado España - Colombia (Bogotá)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/colombia)
+- [Seguro Médico Visado España - México (CDMX)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/mexico)
+- [Seguro Médico Visado España - Perú (Lima)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/peru)
+- [Seguro Médico Visado España - Argentina (Buenos Aires)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/argentina)
+- [Seguro Médico Visado España - Ecuador (Quito y Guayaquil)](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ecuador)
+
+## Guías por Ciudad de Destino en España (Destination Cities Hubs)
+
+- [Seguro Médico Estudiantes y Extranjeros en Madrid](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/madrid)
+- [Seguro Médico Estudiantes y Extranjeros en Barcelona](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/barcelona)
+- [Seguro Médico Estudiantes y Nómadas en Valencia](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/valencia)
+- [Seguro Médico Estudiantes y Nómadas en Málaga](https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/malaga)
+
+
+
 ## Guías del Blog (Blog Guides)
 
 - [Periodos de Carencia en el Embarazo y Parto (ES)](https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico)
+- [Pregnancy & Maternity Waiting Periods in Spain (EN)](https://www.vitablue.es/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain)
 - [Seguro de Salud para Mayores de 65 Años (ES)](https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios)
-
+- [Health Insurance for Seniors & Expats Over 65 (EN)](https://www.vitablue.es/en/blog/health-insurance-spain-seniors-over-65-prices)
 - [Sanitas vs Adeslas vs Asisa vs DKV: Comparativa (ES)](https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud)
-
+- [Sanitas vs Adeslas vs Asisa vs DKV: Comparison (EN)](https://www.vitablue.es/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain)
 - [Seguro de Salud para Nómadas Digitales (ES)](https://www.vitablue.es/blog/seguro-salud-nomadas-digitales-espana-requisitos)
-
+- [Digital Nomad Health Insurance Spain Requirements (EN)](https://www.vitablue.es/en/blog/digital-nomad-health-insurance-spain-requirements)
 - [Certificado de Seguro Médico para el Consulado (ES)](https://www.vitablue.es/blog/certificado-seguro-medico-visado-estudiante-consulado)
-
+- [Consular Health Insurance Certificate for Spain Visa (EN)](https://www.vitablue.es/en/blog/consular-health-insurance-certificate-spain-visa)
 - [Precios del Seguro Médico para Visado de Estudiante (ES)](https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana)
-
+- [Student Visa Health Insurance Prices in Spain (EN)](https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-prices)
 - [Requisitos Seguro Visado de Estudiante (ES)](https://www.vitablue.es/blog/requisitos-seguro-medico-visado-estudiante-espana)
-
 - [Student Visa Insurance Requirements (EN)](https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements)
 - [Seguro Residencia No Lucrativa (ES)](https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana)
 - [Non-Lucrative Visa Insurance Requirements (EN)](https://www.vitablue.es/en/blog/health-insurance-spain-non-lucrative-visa-requirements)
-- [Seguro Pareja de Hecho y NIE](https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie)
-- [¿Qué es el Copago en Seguros de Salud?](https://www.vitablue.es/blog/que-es-el-copago-seguro-salud)
-- [Periodos de Carencia en Seguros Médicos](https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico)
-- [Preexistencias Médicas en Seguros de Salud](https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud)
+- [Seguro Pareja de Hecho y NIE (ES)](https://www.vitablue.es/blog/seguro-de-salud-pareja-de-hecho-nie)
+- [¿Qué es el Copago en Seguros de Salud? (ES)](https://www.vitablue.es/blog/que-es-el-copago-seguro-salud)
+- [Periodos de Carencia en Seguros Médicos (ES)](https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico)
+- [Preexistencias Médicas en Seguros de Salud (ES)](https://www.vitablue.es/blog/preexistencias-medicas-seguro-salud)
+
 
 ## Especificaciones Detalladas para IA
 

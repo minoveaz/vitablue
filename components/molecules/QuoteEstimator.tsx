@@ -17,6 +17,7 @@ export interface QuoteEstimatorProps {
   options: QuoteEstimatorOption[];
   initialOption?: string;
   calculatePrice: (age: number, option: string) => string;
+  calculateSecondaryPrice?: (age: number, option: string) => string;
   priceLabel?: string;
   priceSuffix?: string;
   personalizedPriceLabel?: string;
@@ -35,6 +36,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   options,
   initialOption,
   calculatePrice,
+  calculateSecondaryPrice,
   priceLabel = 'Cuota Estimada:',
   priceSuffix = '€/mes',
   personalizedPriceLabel = 'Precio personalizado',
@@ -44,6 +46,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   const [age, setAge] = useState(initialAge);
   const [selectedOption, setSelectedOption] = useState(initialOption ?? options[0]?.id ?? '');
   const price = calculatePrice(age, selectedOption);
+  const secondaryPrice = calculateSecondaryPrice ? calculateSecondaryPrice(age, selectedOption) : undefined;
 
   return (
     <div className="flex flex-col gap-6 rounded-3xl border border-slate-100 bg-white p-6 text-left text-text-main shadow-xl sm:p-8">
@@ -86,21 +89,38 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 p-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">{priceLabel}</span>
-        <div className="text-right">
+      <div className="rounded-2xl border border-slate-100 bg-slate-50/90 p-4 sm:p-4.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+            {priceLabel}
+          </span>
+          {secondaryPrice && (
+            <span className="rounded-md bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold text-primary">
+              {secondaryPrice}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-2.5 flex items-baseline">
           {price === 'Consultar' ? (
-            <span className="text-sm font-black text-primary">Consultar asesor</span>
+            <span className="text-base font-black text-primary">Consultar asesor</span>
           ) : price === 'Personalizado' ? (
-            <span className="text-sm font-black text-primary">{personalizedPriceLabel}</span>
+            <span className="text-base font-black text-primary">{personalizedPriceLabel}</span>
           ) : (
-            <div className="flex items-baseline gap-0.5">
-              <span className="text-2xl font-sans font-black text-text-main">Desde {price}</span>
-              <span className="text-[10px] font-bold text-text-secondary">{priceSuffix}</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xs font-bold text-text-secondary">Desde</span>
+              <span className="text-2xl sm:text-3xl font-sans font-black text-text-main tracking-tight">
+                {price}
+              </span>
+              <span className="text-xs font-bold text-text-secondary">
+                {priceSuffix}
+              </span>
             </div>
           )}
         </div>
       </div>
+
+
 
       <Button variant="accent" className="w-full whitespace-nowrap font-bold shadow-md shadow-accent/15" onClick={() => onSubmit?.(age, selectedOption)}>
         {submitLabel}
