@@ -8,7 +8,7 @@ export interface AdvisorHelpSectionProps {
   phoneUrl?: string;
 }
 
-const AdvisorHelpSection: React.FC<AdvisorHelpSectionProps> = ({ title, description, whatsappUrl, phoneUrl = 'tel:+34900839240' }) => (
+const AdvisorHelpSection: React.FC<AdvisorHelpSectionProps> = ({ title, description, whatsappUrl, phoneUrl = 'tel:+34694583452' }) => (
   <section className="w-full border-t border-slate-100 bg-slate-50 py-16">
     <div className="mx-auto max-w-4xl space-y-8 px-6 text-left sm:px-8">
       <div className="space-y-1">

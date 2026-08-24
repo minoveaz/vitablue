@@ -32,7 +32,8 @@ test-results/
 # misc
 *.local
 
-# analytics exports (Search Console, etc.)
+# analytics & ads exports (Search Console, Google Ads, etc.)
+SEO & SEM/
 Search Console/
 
 playwright/.auth/

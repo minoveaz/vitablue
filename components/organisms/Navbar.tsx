@@ -675,7 +675,7 @@ export const Navbar: React.FC = () => {
               </a>
               
               <a 
-                href="tel:+34900839240"
+                href="tel:+34694583452"
                 onClick={() => setIsOpen(false)}
                 className="w-full"
               >
@@ -688,7 +688,7 @@ export const Navbar: React.FC = () => {
             
             <div className="text-center">
               <span className="text-[10px] font-bold text-text-secondary/60 uppercase tracking-widest leading-none">
-                +34 900 839 240
+                +34 694 58 34 52
               </span>
             </div>
           </div>

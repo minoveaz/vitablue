@@ -52,6 +52,10 @@ const prerenderedKeywords: Record<string, string> = {
   '/productos/seguro-para-decesos/asistencia-familiar': 'familiar',
   '/productos/seguro-viaje': 'viaje',
   '/productos/seguro-vida': 'vida',
+  '/sobre-nosotros': 'nosotros',
+  '/en/about-us': 'about',
+  '/contacto': 'contacto',
+  '/en/contact': 'contact',
   '/blog/requisitos-seguro-medico-visado-estudiante-espana': 'visado',
   '/blog/seguro-medico-residencia-no-lucrativa-espana': 'residencia',
   '/blog/seguro-de-salud-pareja-de-hecho-nie': 'NIE',
@@ -426,7 +430,7 @@ test.describe('🛡️ Páginas Legales — Noindex y Exclusión de Sitemap', ()
 
     expect(sitemapText).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
     expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/" />');
-    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en" />');
+    expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/" />');
     expect(sitemapText).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/" />');
   });
 });

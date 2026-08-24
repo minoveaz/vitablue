@@ -19,7 +19,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
   avatarUrl = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200',
   onWhatsAppClick,
   onPhoneClick,
-  phoneText = '+34 900 839 240',
+  phoneText = '+34 694 58 34 52',
   whatsAppText = 'Preguntar por WhatsApp'
 }) => {
   return (

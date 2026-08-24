@@ -302,7 +302,7 @@ const Results: React.FC = () => {
               </div>
 
               <div className="w-full">
-                <AdvisorCard onWhatsAppClick={handleWhatsAppRedirect} onPhoneClick={() => window.open('tel:+34900839240')} />
+                <AdvisorCard onWhatsAppClick={handleWhatsAppRedirect} onPhoneClick={() => window.open('tel:+34694583452')} />
               </div>
             </div>
           </div>

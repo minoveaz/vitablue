@@ -260,7 +260,7 @@ export const TravelInsurance: React.FC = () => {
         title="Seguro de Viaje Internacional"
         description="Viaja protegido ante cualquier imprevisto de salud, equipaje o vuelos. Cobertura de gastos médicos internacionales de urgencia y repatriación con soporte continuo."
         primaryAction={{ label: 'Calcular Seguro Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34900839240' }}
+        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
         highlights={['Cobertura de equipaje', 'Opción de anulación']}
       >
         <QuoteEstimator
