@@ -62,6 +62,12 @@ const prerenderedKeywords: Record<string, string> = {
   '/blog/que-es-el-copago-seguro-salud': 'copago',
   '/blog/periodos-de-carencia-seguro-medico': 'carencia',
   '/blog/preexistencias-medicas-seguro-salud': 'preexistencia',
+  '/blog/precios-seguro-medico-visado-estudiante-espana': 'precio',
+  '/blog/certificado-seguro-medico-visado-estudiante-consulado': 'certificado',
+  '/blog/seguro-salud-nomadas-digitales-espana-requisitos': 'nómada',
+  '/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud': 'Asisa',
+  '/blog/seguro-salud-mayores-65-anos-espana-precios': 'mayores',
+  '/blog/periodos-de-carencia-embarazo-parto-seguro-medico': 'embarazo',
   '/en/blog/student-visa-spain-health-insurance-requirements': 'visa',
   '/en/blog/health-insurance-spain-non-lucrative-visa-requirements': 'non-lucrative',
 };
@@ -69,9 +75,10 @@ const prerenderedKeywords: Record<string, string> = {
 const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({
   name: route.name,
   path: route.path,
-  prerenderedKeyword: prerenderedKeywords[route.path] ?? (route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.replace(/-/g, ' ') || 'VitaBlue'),
+  prerenderedKeyword: prerenderedKeywords[route.path] ?? (route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.split('-')[0] || 'VitaBlue'),
   expectedCanonical: route.expectedCanonical,
 }));
+
 
 /*
   {
