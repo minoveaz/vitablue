@@ -67,15 +67,21 @@ const prerenderedKeywords: Record<string, string> = {
   '/blog/seguro-salud-nomadas-digitales-espana-requisitos': 'nómada',
   '/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud': 'Asisa',
   '/blog/seguro-salud-mayores-65-anos-espana-precios': 'mayores',
-  '/blog/periodos-de-carencia-embarazo-parto-seguro-medico': 'embarazo',
   '/en/blog/student-visa-spain-health-insurance-requirements': 'visa',
   '/en/blog/health-insurance-spain-non-lucrative-visa-requirements': 'non-lucrative',
+  '/en/blog/digital-nomad-health-insurance-spain-requirements': 'Nomad',
+  '/en/blog/student-visa-spain-health-insurance-prices': 'Prices',
+  '/en/blog/consular-health-insurance-certificate-spain-visa': 'Certificate',
+  '/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain': 'Sanitas',
+  '/en/blog/health-insurance-spain-seniors-over-65-prices': 'Seniors',
+  '/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain': 'Maternity',
   '/productos/seguros-salud/seguro-medico-estudiantes/colombia': 'Bogotá',
   '/productos/seguros-salud/seguro-medico-estudiantes/mexico': 'México',
   '/productos/seguros-salud/seguro-medico-estudiantes/peru': 'Lima',
   '/productos/seguros-salud/seguro-medico-estudiantes/argentina': 'Buenos Aires',
   '/productos/seguros-salud/seguro-medico-estudiantes/ecuador': 'Ecuador',
 };
+
 
 
 

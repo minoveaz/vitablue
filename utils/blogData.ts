@@ -36,6 +36,7 @@ export interface BlogPostData {
 export const blogPosts: BlogPostData[] = [
   {
     slug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
+    alternateSlug: 'pregnancy-maternity-waiting-periods-health-insurance-spain',
     title: 'Periodos de Carencia en el Embarazo: Qué Pólizas Cubren Parto en 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
@@ -149,6 +150,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'seguro-salud-mayores-65-anos-espana-precios',
+    alternateSlug: 'health-insurance-spain-seniors-over-65-prices',
 
     title: 'Seguro de Salud para Mayores de 65 Años en España: Precios y Límites (Guía 2026)',
     category: 'salud',
@@ -259,6 +261,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
+    alternateSlug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain',
 
     title: 'Sanitas vs Adeslas vs Asisa vs DKV: ¿Cuál es el mejor seguro médico en España en 2026?',
     category: 'salud',
@@ -390,6 +393,7 @@ export const blogPosts: BlogPostData[] = [
 
   {
     slug: 'seguro-salud-nomadas-digitales-espana-requisitos',
+    alternateSlug: 'digital-nomad-health-insurance-spain-requirements',
 
     title: 'Seguro de Salud para Nómadas Digitales en España: Requisitos UGE (Guía 2026)',
     category: 'visados',
@@ -500,6 +504,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'certificado-seguro-medico-visado-estudiante-consulado',
+    alternateSlug: 'consular-health-insurance-certificate-spain-visa',
 
     title: 'Cómo Tramitar el Certificado del Seguro Médico para el Visado en 24h (Guía 2026)',
     category: 'visados',
@@ -612,6 +617,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'precios-seguro-medico-visado-estudiante-espana',
+    alternateSlug: 'student-visa-spain-health-insurance-prices',
 
     title: 'Precios del Seguro Médico para Visado de Estudiante en España (Guía Oficial 2026)',
     category: 'visados',
@@ -1286,4 +1292,395 @@ export const blogPosts: BlogPostData[] = [
       }
     ]
   }
+,
+  {
+    slug: 'digital-nomad-health-insurance-spain-requirements',
+    alternateSlug: 'seguro-salud-nomadas-digitales-espana-requisitos',
+    title: 'Digital Nomad Health Insurance Spain 2026: UGE & Telework Visa Requirements',
+    category: 'visados',
+    categoryLabel: 'Digital Nomads & Visas',
+    readTime: '7 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Complete guide for remote workers & freelancers applying for the Spanish Digital Nomad Visa under the Startup Act (UGE-CE). Learn the 4 mandatory health insurance criteria: 0€ copays, full hospitalization, zero waiting periods, and repatriation.',
+    featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'The Spanish Digital Nomad Visa (created under the pioneering <em>Startup Act / Ley de Startups 28/2022</em>) has positioned Spain as Europe\'s top destination for remote workers, tech professionals, and international freelancers. Whether applying at a Spanish Consulate in your home country (1-year visa) or directly within Spain before the <strong>Large Business and Strategic Collectives Unit (UGE-CE)</strong> for a 3-year residence permit, health insurance is one of the most rigorously examined legal requirements.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Spanish immigration authorities will promptly issue a <em>Requerimiento de Subsanación</em> (formal notice of defect) if your insurance policy contains copays, deductibles, or reimbursement caps. In this official guide by <a href="/en" class="text-primary hover:underline font-bold">VitaBlue</a>, we detail the 4 mandatory conditions your private health insurance must meet to guarantee 100% approval.'
+      },
+      {
+        type: 'heading-2',
+        text: 'The 4 Mandatory Health Insurance Requirements for the Digital Nomad Visa'
+      },
+      {
+        type: 'paragraph',
+        text: 'To be accepted by both the UGE-CE in Madrid and Spanish Consulates abroad, your private health insurance certificate must explicitly certify the following four standards:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Licensed Insurer in Spain (DGSFP)</strong>: The insurance company must be officially registered with the Directorate-General for Insurance (DGSFP) and operate directly within the Spanish healthcare framework (such as ASISA, Sanitas, or Adeslas).',
+          '<strong>Zero Copays & Zero Deductibles (Sin Copagos)</strong>: You cannot have any out-of-pocket costs per doctor visit, specialist consultation, diagnostic test, or emergency intervention.',
+          '<strong>No Waiting Periods (Sin Carencias)</strong>: Full access to primary care, high-resolution diagnostic imaging, surgery, and unlimited hospitalization from day one.',
+          '<strong>Sanitary Repatriation & Remains Evacuation</strong>: Comprehensive coverage for medical transport or repatriation of mortal remains to your home country in the event of death or severe illness.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Important Warning</strong>: International travel insurance policies (e.g. SafetyWing, World Nomads, Allianz Travel) or US health insurance plans with international riders are <strong>systematically rejected</strong> by Spanish immigration officers because they operate under reimbursement limits rather than direct hospital admission.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Application Routes: Consulates vs. In-Country UGE-CE'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Application Route', 'Processing Authority', 'Permit Duration', 'Insurance Duration Required'],
+        tableRows: [
+          ['Applying from Home Country', 'Spanish Consulate / BLS', '1 Year (Visa)', '1 Full Year upfront paid'],
+          ['Applying Inside Spain (Tourist)', 'UGE-CE (Madrid)', '3 Years (Residence)', '1 Year with annual renewal certificate'],
+          ['Visa Renewal in Spain', 'Extranjería / UGE', '2 Additional Years', 'Active continuous coverage']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Top Health Insurance Providers for Digital Nomads in Spain'
+      },
+      {
+        type: 'paragraph',
+        text: 'Based on immigration approval rates and digital expat support, the two leading options are:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>ASISA Internacional</strong>: The most cost-effective full-coverage policy for remote workers (from €35/month). Includes HLA hospital network access, unlimited GP visits, and 24h certified English/Spanish consular documentation.',
+          '<strong>Sanitas Más Salud / International</strong>: Features the award-winning <em>Blua</em> telemedicine app with English-speaking doctors, digital prescriptions valid across Spanish pharmacies, and immediate PDF certificate generation.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaTitle: 'Get Your Pre-Approved Digital Nomad Insurance in 24 Hours',
+        ctaDescription: 'Calculate your personalized quote without copays and receive your official consular certificate signed and stamped for UGE or embassy submission.',
+        ctaButtonText: 'Calculate Nomad Insurance Online →',
+        ctaLink: '/productos/seguros-salud/seguro-nomadas-digitales',
+        ctaBadge: '100% Visa Approved'
+      }
+    ]
+  },
+  {
+    slug: 'student-visa-spain-health-insurance-prices',
+    alternateSlug: 'precios-seguro-medico-visado-estudiante-espana',
+    title: 'Student Visa Health Insurance Prices in Spain: 2026 Official Cost Guide',
+    category: 'visados',
+    categoryLabel: 'Visas & NIE',
+    readTime: '6 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'How much does consular-approved health insurance cost in Spain for international students? Real price breakdown: Asisa from 35€/mo, Sanitas from 45€/mo, Adeslas from 49€/mo with zero copays and immediate official PDF certificate.',
+    featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'One of the most frequent questions from international students moving to Spain for an undergraduate degree, Master\'s, PhD, or language academy is: <strong>how much does official health insurance for a Spanish student visa actually cost in 2026?</strong>'
+      },
+      {
+        type: 'paragraph',
+        text: 'The price of a student health insurance policy in Spain typically ranges between <strong>€35 and €55 per month</strong> (or €420 to €660 for a full academic year). The final cost depends on your age, the insurance provider, and whether you pay monthly or as a single annual lump sum required by your local consulate.'
+      },
+      {
+        type: 'heading-2',
+        text: '2026 Real Price Comparison for Spanish Student Visas'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Insurance Company & Plan', 'Monthly Price', 'Annual Cost', 'Consular Certificate Delivery', 'Key Highlight'],
+        tableRows: [
+          ['ASISA Internacional (No Copay)', 'From €35/mo', 'From €420/yr', 'Instant (under 24h)', 'Best price-to-coverage ratio in Spain'],
+          ['Sanitas International Students', 'From €45/mo', 'From €540/yr', 'Instant in PDF', 'English-speaking doctors on Blua app'],
+          ['Adeslas Extranjeros Completo', 'From €49/mo', 'From €588/yr', '24 to 48 hours', 'Largest clinic & hospital network'],
+          ['DKV Integral Estudiantes', 'From €48/mo', 'From €576/yr', '24 to 48 hours', 'Schengen travel emergency coverage']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Why Travel Insurance Ends Up Costing You More'
+      },
+      {
+        type: 'paragraph',
+        text: 'Some students attempt to purchase cheap travel insurance (€150–€200) only to have their visa rejected at the consulate or BLS center. Reapplying requires paying new consular appointment fees, translating documents again, and experiencing weeks of delay. Purchasing a 100% compliant private healthcare plan from day one is the only reliable way to guarantee visa approval.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Zero Copays</strong>: Unlike travel policies with €50-€100 deductibles, our student plans have 0€ copays.',
+          '<strong>Direct Billing to Hospitals</strong>: You do not need to pay thousands of euros out of pocket and request a claim later.',
+          '<strong>100% Money-Back Guarantee</strong>: If your visa is rejected for any administrative reason, VitaBlue provides a full refund upon presenting the consular resolution letter.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaTitle: 'Calculate Your Student Visa Health Insurance in 30 Seconds',
+        ctaDescription: 'Compare official rates from ASISA, Sanitas, and Adeslas with 0€ copays and consular acceptance guarantee.',
+        ctaButtonText: 'Calculate Student Quote Online →',
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes',
+        ctaBadge: 'From 35€/month'
+      }
+    ]
+  },
+  {
+    slug: 'consular-health-insurance-certificate-spain-visa',
+    alternateSlug: 'certificado-seguro-medico-visado-estudiante-consulado',
+    title: 'How to Get the Official 24h Consular Health Insurance Certificate for Spain',
+    category: 'tramites',
+    categoryLabel: 'Visa Procedures',
+    readTime: '5 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Discover how to obtain the official consular insurance certificate in English & Spanish required by BLS International and Spanish Consulates. Avoid visa rejection due to wrong clauses or travel insurance policies.',
+    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'When preparing your visa file for the Spanish Consulate or BLS International visa processing center, presenting a generic insurance receipt is the most common reason for consular delay. Consular officers specifically demand the <strong>Certificado Oficial de Cobertura para Visado y Extranjería</strong> (Official Certificate of Coverage for Visas and Immigration).'
+      },
+      {
+        type: 'paragraph',
+        text: 'This legal document, issued directly by the Spanish insurance provider, certifies in clear legal terms that your policy meets every requirement under Royal Decree 557/2011 and Organic Law 4/2000 on the rights and freedoms of foreigners in Spain.'
+      },
+      {
+        type: 'heading-2',
+        text: 'The 5 Essential Legal Clauses on the Certificate'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Policy Identification</strong>: Full insured name, passport/NIE number, policy number, and exact period of validity matching your stay.',
+          '<strong>Zero Copayment Clause</strong>: Explicit text stating: <em>"Póliza sin copagos ni franquicias a cargo del asegurado"</em>.',
+          '<strong>No Waiting Periods</strong>: Affirmation that emergency, surgical, and diagnostic coverages are active without waiting periods (<em>"Sin periodos de carencia"</em>).',
+          '<strong>Equivalent Public Healthcare Standard</strong>: Confirmation of comprehensive inpatient, outpatient, and specialty medical coverage across all Spanish autonomous communities.',
+          '<strong>Repatriation Guarantee</strong>: Unlimited or €30,000+ coverage for medical evacuation and mortal remains repatriation.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'How to Obtain Your Certificate in 3 Simple Steps'
+      },
+      {
+        type: 'paragraph',
+        text: 'Through VitaBlue\'s digital portal, getting your official certificate takes less than 24 business hours:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>1. Select Your Policy Online</strong>: Choose your preferred provider (ASISA, Sanitas, or Adeslas) with 0€ copays.',
+          '<strong>2. Enter Visa Dates & Details</strong>: Set the policy start date to match your estimated arrival flight to Spain.',
+          '<strong>3. Download Signed PDF Certificate</strong>: Receive your digitally signed and stamped certificate with a verification barcode ready for direct consular submission.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '💡 <strong>Pro-Tip for Consulate Appointments</strong>: Print two physical copies of your certificate in color. Consular agents at BLS International will retain one original stamped copy for your official file.'
+      }
+    ]
+  },
+  {
+    slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain',
+    alternateSlug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
+    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Best Spanish Health Insurance Comparison (2026)',
+    category: 'salud',
+    categoryLabel: 'Insurance Comparison',
+    readTime: '8 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Direct head-to-head comparison of Spain\'s top 4 private health insurance companies. We analyze medical networks, english-speaking customer support, digital apps (Blua/Adeslas Salud), and visa acceptance rates.',
+    featuredImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Choosing the right private health insurance in Spain can feel overwhelming with so many established brands. Spain\'s private healthcare market is dominated by four industry leaders: <strong>ASISA, Sanitas (Bupa Group), Adeslas (CaixaBank), and DKV (ERGO Group)</strong>. Each offers unique strengths depending on your budget, medical needs, and whether you require consular visa certificates.'
+      },
+      {
+        type: 'heading-2',
+        text: 'At-a-Glance 2026 Head-to-Head Comparison'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Criteria', 'ASISA', 'Sanitas', 'Adeslas', 'DKV'],
+        tableRows: [
+          ['Starting Price (No Copay)', 'From €35 - €42/mo', 'From €45 - €55/mo', 'From €49 - €58/mo', 'From €48 - €56/mo'],
+          ['Medical Network (Clinics)', '16 HLA Hospitals + 40,000 Drs', '4 Own Hospitals + 45,000 Drs', '43,000 Drs & 1,200 Centers', '40,000 Drs & Partners'],
+          ['English-Speaking Support', 'Good (Consular Dept)', 'Excellent (Native Bupa App)', 'Good (Phone & Offices)', 'Very Good (Digital Chat)'],
+          ['Telemedicine App', 'ASISA LIVE Video App', 'Blua (Instant Video Consults)', 'Adeslas Salud y Bienestar', 'Quiero Cuidarme Más'],
+          ['Visa Acceptance Rate', '100% (Consulates & UGE)', '100% (Consulates & UGE)', '100% (Consulates & UGE)', '100% (Consulates & UGE)']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Which Provider Should You Choose?'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Pick ASISA if</strong>: You want the most competitive premium without sacrificing hospital quality. ASISA\'s HLA network is Spain\'s second-largest hospital group, delivering outstanding emergency and surgical care.',
+          '<strong>Pick Sanitas if</strong>: You value a seamless English-speaking experience, intuitive digital tools (Blua app allows you to see a doctor via video in under 10 minutes), and comprehensive expat services.',
+          '<strong>Pick Adeslas if</strong>: You live in smaller Spanish towns or rural areas where Adeslas has unmatched local clinic coverage.',
+          '<strong>Pick DKV if</strong>: You prioritize holistic wellness, natural therapies (acupuncture/homeopathy), and certified eco-friendly healthcare.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaTitle: 'Compare All 4 Providers Side-by-Side in Real Time',
+        ctaDescription: 'Find the ideal balance of coverage, price, and hospital network for your lifestyle in Spain.',
+        ctaButtonText: 'Start Multi-Brand Comparison →',
+        ctaLink: '/productos/seguros-salud',
+        ctaBadge: 'Free & Transparent'
+      }
+    ]
+  },
+  {
+    slug: 'health-insurance-spain-seniors-over-65-prices',
+    alternateSlug: 'seguro-salud-mayores-65-anos-espana-precios',
+    title: 'Health Insurance in Spain for Expats & Seniors Over 65: Prices and Rules (2026)',
+    category: 'salud',
+    categoryLabel: 'Senior & Expat Care',
+    readTime: '7 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Comprehensive guide for retirees and expats over 65 moving to Spain. Learn maximum age limits, medical questionnaire underwriting, non-lucrative visa compliance, and specialist health plans for senior citizens.',
+    featuredImage: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Spain is renowned as one of the world\'s best retirement havens, boasting pleasant year-round weather, the Mediterranean diet, and world-class healthcare. However, for expats aged 65 and older who are applying for the <strong>Non-Lucrative Visa (NLV) or Golden Visa</strong>, contracting private health insurance can present unique underwriting hurdles.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Most Spanish insurers set maximum age limits for new policyholders (usually between 64 and 69 years old). Fortunately, dedicated senior healthcare policies exist that accommodate applicants up to 75 or even 80 years old.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Maximum Age Limits by Major Spanish Insurers'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Standard Policies (No Copay)</strong>: Usually admit new policyholders up to age 64. Some exceptions allow entry up to age 67 with special medical approval.',
+          '<strong>Specialized Senior Plans (e.g. Sanitas Más Salud Senior / Asisa Senior)</strong>: Accept new enrollees between ages 65 and 75 or 80, with tailor-made geriatric care and specialized health advisors.',
+          '<strong>Pre-Existing Conditions</strong>: Chronic conditions (e.g. hypertension, diabetes) must be declared on the medical questionnaire. Some insurers will cover routine maintenance while excluding specific pre-existing acute treatments.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Estimated Cost Benchmarks for Seniors in Spain (2026)'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Age Bracket', 'Average Monthly Cost', 'Average Annual Cost', 'Visa Compliance'],
+        tableRows: [
+          ['Ages 60 - 64', '€75 - €110 / month', '€900 - €1,320 / year', '100% Compliant (No Copays)'],
+          ['Ages 65 - 69', '€120 - €175 / month', '€1,440 - €2,100 / year', '100% Compliant (Senior Plans)'],
+          ['Ages 70 - 75', '€180 - €260 / month', '€2,160 - €3,120 / year', 'Compliant under specialized underwriting'],
+          ['Ages 75+', 'Custom Quote', 'Custom Quote', 'Consultation required with broker']
+        ]
+      },
+      {
+        type: 'callout',
+        text: '💡 <strong>Retirement Planning Tip</strong>: If you are approaching age 64, contracting your policy before your 65th birthday unlocks standard lifetime renewal rights at significantly lower premium brackets.'
+      }
+    ]
+  },
+  {
+    slug: 'pregnancy-maternity-waiting-periods-health-insurance-spain',
+    alternateSlug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
+    title: 'Pregnancy & Maternity Waiting Periods in Spanish Health Insurance (2026 Guide)',
+    category: 'salud',
+    categoryLabel: 'Maternity & Family Care',
+    readTime: '7 min read',
+    date: '24 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Planning a pregnancy or relocating to Spain while expecting? Understand private health insurance maternity waiting periods (8-10 months), delivery coverage, private single hospital rooms, and how to waive waiting periods from previous providers.',
+    featuredImage: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Welcoming a new baby in Spain through private healthcare offers exceptional advantages: choice of OB-GYN throughout your entire pregnancy, high-definition 4D/5D ultrasound scans without waitlists, and a private single room with a companion bed during labor and postpartum recovery.'
+      },
+      {
+        type: 'paragraph',
+        text: 'However, the single most critical factor to evaluate when contracting private health insurance in Spain is the <strong>waiting period (periodo de carencia) for childbirth and delivery assistance</strong>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'How Maternity Waiting Periods Work in Spain'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Prenatal Monitoring (0 to 3 months waiting period)</strong>: Routine OB-GYN checkups, regular blood and urine tests, and standard prenatal ultrasounds are covered almost immediately upon policy activation.',
+          '<strong>High-Resolution Prenatal Testing (6 months waiting period)</strong>: Non-invasive prenatal testing (NIPT / fetal DNA in maternal blood) and amniocentesis generally require 6 months of continuous policy membership.',
+          '<strong>Labor, Delivery & C-Section (8 to 10 months waiting period)</strong>: Major insurers (including ASISA and Sanitas) require you to be enrolled for at least <strong>8 months prior to the delivery date</strong> for hospital stay, epidural anesthesia, delivery room, and neonatal care to be fully covered.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'How to Waive Waiting Periods If You Switch Insurers'
+      },
+      {
+        type: 'paragraph',
+        text: 'If you already have private health insurance with another provider in Spain (or an eligible international policy with continuous coverage for at least 12 months), you can <strong>completely eliminate all waiting periods</strong>, including childbirth. Simply provide your previous policy certificate and recent payment receipt during signup.'
+      },
+      {
+        type: 'callout',
+        text: '👶 <strong>Newborn Baby Coverage</strong>: In Spain, all private maternity policies include complete medical care for the newborn during the first 30 days of life, allowing you to add your baby to the family policy seamlessly.'
+      }
+    ]
+  }
+
 ];

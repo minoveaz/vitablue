@@ -36,14 +36,15 @@
 ---
 
 ### Fase 2: Expansión del Topic Cluster en Inglés (`/en/blog/...`)
-- [ ] **Traducción y Adaptación Cultural de las 6 Guías**:
-  - [ ] *Digital Nomad Health Insurance Spain 2026: UGE & Telework Visa Requirements* (`/en/blog/digital-nomad-health-insurance-spain-requirements`).
-  - [ ] *Student Visa Health Insurance Prices in Spain (2026 Official Guide)* (`/en/blog/student-visa-spain-health-insurance-prices`).
-  - [ ] *How to Get the Official 24h Consular Health Insurance Certificate* (`/en/blog/consular-health-insurance-certificate-spain-visa`).
-  - [ ] *Sanitas vs Adeslas vs Asisa vs DKV: Best Spanish Health Insurance Comparison 2026* (`/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain`).
-  - [ ] *Health Insurance in Spain for Seniors & Expats Over 65 (Prices & Limits)* (`/en/blog/health-insurance-spain-seniors-over-65-prices`).
-  - [ ] *Waiting Periods for Pregnancy & Maternity in Spanish Health Insurance* (`/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain`).
-- [ ] **Sincronización `hreflang` bilingüe** cruzada entre versiones en español e inglés.
+- [x] **Traducción y Adaptación Cultural de las 6 Guías**:
+  - [x] *Digital Nomad Health Insurance Spain 2026: UGE & Telework Visa Requirements* (`/en/blog/digital-nomad-health-insurance-spain-requirements`).
+  - [x] *Student Visa Health Insurance Prices in Spain (2026 Official Guide)* (`/en/blog/student-visa-spain-health-insurance-prices`).
+  - [x] *How to Get the Official 24h Consular Health Insurance Certificate* (`/en/blog/consular-health-insurance-certificate-spain-visa`).
+  - [x] *Sanitas vs Adeslas vs Asisa vs DKV: Best Spanish Health Insurance Comparison 2026* (`/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain`).
+  - [x] *Health Insurance in Spain for Seniors & Expats Over 65 (Prices & Limits)* (`/en/blog/health-insurance-spain-seniors-over-65-prices`).
+  - [x] *Waiting Periods for Pregnancy & Maternity in Spanish Health Insurance* (`/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain`).
+- [x] **Sincronización `hreflang` bilingüe** cruzada entre versiones en español e inglés.
+
 
 ---
 

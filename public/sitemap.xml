@@ -213,36 +213,54 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-seniors-over-65-prices/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/seguro-salud-nomadas-digitales-espana-requisitos/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-salud-nomadas-digitales-espana-requisitos/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/digital-nomad-health-insurance-spain-requirements/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-salud-nomadas-digitales-espana-requisitos/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/certificado-seguro-medico-visado-estudiante-consulado/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/certificado-seguro-medico-visado-estudiante-consulado/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/consular-health-insurance-certificate-spain-visa/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/certificado-seguro-medico-visado-estudiante-consulado/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-prices/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
@@ -304,6 +322,60 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-residencia-no-lucrativa-espana/" />
     <lastmod>2026-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/blog/digital-nomad-health-insurance-spain-requirements/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/digital-nomad-health-insurance-spain-requirements/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/seguro-salud-nomadas-digitales-espana-requisitos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/digital-nomad-health-insurance-spain-requirements/" />
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-prices/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-prices/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/precios-seguro-medico-visado-estudiante-espana/" />
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/certificado-seguro-medico-visado-estudiante-consulado/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/consular-health-insurance-certificate-spain-visa/" />
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/" />
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/health-insurance-spain-seniors-over-65-prices/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/health-insurance-spain-seniors-over-65-prices/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-salud-mayores-65-anos-espana-precios/" />
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/periodos-de-carencia-embarazo-parto-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" />
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
