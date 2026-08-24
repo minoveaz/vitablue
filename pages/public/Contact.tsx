@@ -57,17 +57,29 @@ const Contact: React.FC = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const subject = encodeURIComponent(content.emailSubject);
-    const body = encodeURIComponent(`Nombre: ${data.get('name')}\nEmail: ${data.get('email')}\n\n${data.get('message')}`);
-    
-    // Google Ads conversion tracking
-    trackContactConversion('form', {
-      form_name: 'contact_page',
-      language: isEnglish ? 'en' : 'es',
-    });
+    const nameStr = String(data.get('name') || '');
+    const emailStr = String(data.get('email') || '');
+
+    // Google Ads conversion tracking with Enhanced Conversions
+    trackContactConversion(
+      'form',
+      {
+        form_name: 'contact_page',
+        language: isEnglish ? 'en' : 'es',
+      },
+      {
+        email: emailStr,
+        firstName: nameStr,
+      }
+    );
+
+    const body = encodeURIComponent(`Nombre: ${nameStr}\nEmail: ${emailStr}\n\n${data.get('message')}`);
 
     window.location.href = `mailto:info@vitablue.es?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
+
+
 
 
   return (
