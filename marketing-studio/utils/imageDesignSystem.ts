@@ -55,6 +55,10 @@ const pctInsets = (
 });
 
 export const resolvePlatformGuideId = (preset: ImageFormatPreset): ImagePlatformGuideId => {
+  if (preset.id === 'instagram-carousel-portrait' || preset.id === 'instagram-carousel-square') return 'instagram-carousel';
+  if (preset.id === 'tiktok-carousel-photo') return 'tiktok-photo';
+  if (preset.id === 'linkedin-carousel-doc') return 'linkedin-document';
+  if (preset.isCarousel) return 'instagram-carousel';
   if (preset.id === 'story-vertical') return 'meta-story';
   if (preset.id === 'facebook-cover') return 'facebook-cover';
   if (preset.category === 'instagram' || preset.category === 'facebook') return 'meta-feed';
@@ -76,6 +80,33 @@ export const getPlatformGuideProfile = (
   const common = { id, margins: margin };
 
   switch (id) {
+    case 'instagram-carousel':
+      return {
+        ...common,
+        label: 'Carrusel de Instagram / Meta',
+        description: 'Safe zones para carruseles de Instagram con recorte 1:1 en portada y paginador.',
+        safeInsets: pctInsets(preset, 0.08, 0.04, 0.12, 0.04),
+        columns: preset.defaultSlideCount ? preset.defaultSlideCount * 4 : 20,
+        columnGap: Math.round((preset.slideWidth ?? 1080) * 0.02),
+      };
+    case 'tiktok-photo':
+      return {
+        ...common,
+        label: 'TikTok Photo Mode',
+        description: 'Protege contenido del carrusel frente al panel de interacción y footer de audio.',
+        safeInsets: pctInsets(preset, 0.08, 0.12, 0.22, 0.056),
+        columns: preset.defaultSlideCount ? preset.defaultSlideCount * 4 : 20,
+        columnGap: Math.round((preset.slideWidth ?? 1080) * 0.02),
+      };
+    case 'linkedin-document':
+      return {
+        ...common,
+        label: 'Carrusel de LinkedIn (Doc)',
+        description: 'Protege áreas superior e inferior del visor de documentos interactivos de LinkedIn.',
+        safeInsets: pctInsets(preset, 0.06, 0.05, 0.08, 0.05),
+        columns: preset.defaultSlideCount ? preset.defaultSlideCount * 4 : 20,
+        columnGap: Math.round((preset.slideWidth ?? 1080) * 0.018),
+      };
     case 'meta-story':
       return {
         ...common,

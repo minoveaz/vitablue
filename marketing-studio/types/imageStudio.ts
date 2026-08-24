@@ -4,20 +4,52 @@ import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packag
 export interface ImageFormatPreset {
   id: string;
   name: string;
-  category: 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter' | 'youtube' | 'email_marketing' | 'documents' | 'sheets' | 'web_marketing' | 'custom';
+  category: 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter' | 'youtube' | 'email_marketing' | 'documents' | 'sheets' | 'web_marketing' | 'carousel' | 'custom';
   width: number;
   height: number;
   aspectRatio: string;
   description: string;
   iconName: string;
   recommendedFor: string;
+  isCarousel?: boolean;
+  defaultSlideCount?: number;
+  slideWidth?: number;
+  slideHeight?: number;
+  carouselPlatform?: CarouselPlatform;
+}
+
+export type CarouselPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter';
+
+export type CarouselSlideRole = 'hook' | 'content' | 'comparison' | 'proof' | 'cta';
+
+export interface CarouselSlideMetadata {
+  index: number;
+  title: string;
+  role: CarouselSlideRole;
+  notes?: string;
+}
+
+export interface CarouselConfig {
+  enabled: boolean;
+  platform: CarouselPlatform;
+  slideCount: number;
+  slideWidth: number;
+  slideHeight: number;
+  currentSlideIndex: number;
+  slides: CarouselSlideMetadata[];
+  showSlideDividers: boolean;
+  showSlideNumbers: boolean;
+  autoSnapToSlides: boolean;
 }
 
 export type ImagePlatformGuideId =
   | 'meta-feed'
   | 'meta-story'
+  | 'instagram-carousel'
   | 'tiktok'
+  | 'tiktok-photo'
   | 'linkedin'
+  | 'linkedin-document'
   | 'x'
   | 'facebook-cover'
   | 'youtube'
@@ -49,6 +81,88 @@ export interface ImageTextFit {
 }
 
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
+  // 0. CARRUSELES MULTIPLATAFORMA (PANORÁMICOS / SEAMLESS)
+  {
+    id: 'instagram-carousel-portrait',
+    name: 'Carrusel Instagram / Meta (4:5)',
+    category: 'carousel',
+    width: 5400,
+    height: 1350,
+    aspectRatio: '4:1',
+    description: 'Carrusel panorámico continuo de 5 slides (1080x1350 c/u). Máximo alcance y retención',
+    iconName: 'Layers',
+    recommendedFor: 'Guías paso a paso, carruseles continuos y anuncios en carrusel',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1350,
+    carouselPlatform: 'instagram',
+  },
+  {
+    id: 'tiktok-carousel-photo',
+    name: 'Carrusel TikTok Photo Mode (9:16)',
+    category: 'carousel',
+    width: 5400,
+    height: 1920,
+    aspectRatio: '9:16 (Multi)',
+    description: 'Modo Foto vertical interactivo de 5 slides (1080x1920 c/u) con swipe fullscreen',
+    iconName: 'Smartphone',
+    recommendedFor: 'Contenido viral educativo, storyboards y Photo Mode en TikTok',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1920,
+    carouselPlatform: 'tiktok',
+  },
+  {
+    id: 'linkedin-carousel-doc',
+    name: 'Carrusel de LinkedIn (PDF Doc)',
+    category: 'carousel',
+    width: 5400,
+    height: 1350,
+    aspectRatio: '4:5 (Multi)',
+    description: 'Documento interactivo deslizable para LinkedIn. Exportación optimizada en PDF',
+    iconName: 'Linkedin',
+    recommendedFor: 'Contenido B2B, infografías profesionales y resúmenes ejecutivos',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1350,
+    carouselPlatform: 'linkedin',
+  },
+  {
+    id: 'instagram-carousel-square',
+    name: 'Carrusel Cuadrado (1:1)',
+    category: 'carousel',
+    width: 5400,
+    height: 1080,
+    aspectRatio: '5:1',
+    description: 'Carrusel continuo clásico de 5 slides cuadrados (1080x1080 c/u) para Instagram y FB',
+    iconName: 'Square',
+    recommendedFor: 'Catálogo de productos, comparativas y galerías cuadradas',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1080,
+    carouselPlatform: 'instagram',
+  },
+  {
+    id: 'twitter-carousel-pack',
+    name: 'Pack Multi-Foto X / Twitter (4 Slides)',
+    category: 'carousel',
+    width: 4320,
+    height: 1080,
+    aspectRatio: '4:1',
+    description: 'Pack de 4 fotos contiguas (1080x1080 c/u) optimizadas para publicaciones en X',
+    iconName: 'Twitter',
+    recommendedFor: 'Hilos visuales resumidos en 4 imágenes',
+    isCarousel: true,
+    defaultSlideCount: 4,
+    slideWidth: 1080,
+    slideHeight: 1080,
+    carouselPlatform: 'twitter',
+  },
+
   // 1. REDES SOCIALES & ADS
   {
     id: 'instagram-portrait',
@@ -423,6 +537,7 @@ export interface ImageProject {
   layout?: LayoutProjectMetadata;
   carouselPages?: number;
   currentSlide?: number;
+  carouselConfig?: CarouselConfig;
   createdAt: string;
   updatedAt: string;
 }

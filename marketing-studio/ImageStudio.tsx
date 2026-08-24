@@ -8,6 +8,7 @@ import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAs
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
+import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
 import { getStoredImageProjects } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import {
@@ -31,6 +32,7 @@ export const ImageStudio: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [activeToolId, setActiveToolId] = useState<string | null>('text');
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isCarouselSimulatorOpen, setIsCarouselSimulatorOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Load project by assetId from localStorage if present
@@ -308,6 +310,7 @@ export const ImageStudio: React.FC = () => {
           onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
           onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
+          onOpenCarouselSimulator={() => setIsCarouselSimulatorOpen(true)}
           onUndo={editor.undo}
           onRedo={editor.redo}
           onUpdateTitle={editor.updateTitle}
@@ -398,6 +401,14 @@ export const ImageStudio: React.FC = () => {
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
+        />
+
+        {/* CAROUSEL MOBILE INTERACTIVE SIMULATOR MODAL */}
+        <CarouselMobileSimulator
+          isOpen={isCarouselSimulatorOpen}
+          onClose={() => setIsCarouselSimulatorOpen(false)}
+          project={editor.project}
+          canvasRef={canvasRef}
         />
 
         {/* TOAST NOTIFICATION */}

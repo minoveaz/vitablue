@@ -17,6 +17,7 @@ import {
   Check,
   Pencil,
   MoreHorizontal,
+  Smartphone,
 } from 'lucide-react';
 import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
 
@@ -31,6 +32,7 @@ export interface ImageEditorToolbarProps {
   onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
+  onOpenCarouselSimulator?: () => void;
   onUndo: () => void;
   onRedo: () => void;
   onUpdateTitle: (title: string) => void;
@@ -166,6 +168,19 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         >
           <ShieldAlert className="size-3.5" />
         </button>
+
+        {/* VISTA PREVIA MÓVIL (SIMULADOR DE SWIPE) SI ES CARRUSEL */}
+        {project.preset.isCarousel && onOpenCarouselSimulator && (
+          <button
+            type="button"
+            onClick={onOpenCarouselSimulator}
+            className="flex items-center gap-1.5 rounded-lg border border-brand-cyan/40 bg-brand-cyan/15 px-2.5 py-1 text-xs font-bold text-brand-cyan hover:bg-brand-cyan/25 transition-all shadow-xs"
+            title="Abrir simulador móvil interactivo para probar el deslizamiento (swipe)"
+          >
+            <Smartphone className="size-3.5" />
+            <span className="hidden sm:inline">Vista Previa Móvil</span>
+          </button>
+        )}
       </div>
 
       {/* 3. SECCIÓN DERECHA: HERRAMIENTAS, COPIAR Y DESCARGAR */}
