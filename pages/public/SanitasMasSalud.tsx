@@ -155,7 +155,7 @@ export const SanitasMasSalud: React.FC = () => {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": "InsuranceAgency",
         "@id": "https://www.vitablue.es/#organization",
         "name": "VitaBlue",
         "url": "https://www.vitablue.es/",
@@ -167,6 +167,13 @@ export const SanitasMasSalud: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.6",
+          "reviewCount": "142",
+          "bestRating": "5",
+          "worstRating": "1"
         }
       },
       {
@@ -180,58 +187,7 @@ export const SanitasMasSalud: React.FC = () => {
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.6",
-          "reviewCount": "142",
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": [
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Carlos M."
-            },
-            "datePublished": "2025-11-20",
-            "reviewBody": "Excelente cobertura hospitalaria. La atención en urgencias fue rápida y el servicio digital Blua es muy práctico.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "Laura S."
-            },
-            "datePublished": "2025-10-05",
-            "reviewBody": "Contratación sencilla y acceso inmediato a médicos especialistas. Totalmente recomendable.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "5",
-              "bestRating": "5"
-            }
-          },
-          {
-            "@type": "Review",
-            "author": {
-              "@type": "Person",
-              "name": "José R."
-            },
-            "datePublished": "2025-09-18",
-            "reviewBody": "Buena relación calidad-precio. La red de hospitales Sanitas es amplia y moderna.",
-            "reviewRating": {
-              "@type": "Rating",
-              "ratingValue": "4",
-              "bestRating": "5"
-            }
-          }
-        ]
+        }
       },
       {
         "@type": "BreadcrumbList",
