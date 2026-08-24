@@ -35,7 +35,117 @@ export interface BlogPostData {
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'seguro-salud-nomadas-digitales-espana-requisitos',
+    title: 'Seguro de Salud para Nómadas Digitales en España: Requisitos UGE (Guía 2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y NIE',
+    readTime: '7 min de lectura',
+    date: '24 Agosto 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Vas a solicitar la Visa de Nómada Digital en España? Te explicamos los requisitos exactos del seguro médico exigidos por la UGE (Unidad de Grandes Empresas), coberturas internacionales y opciones recomendadas.',
+    featuredImage: 'https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'La aprobación de la <em>Ley de Startups (Ley 28/2022)</em> convirtió a España en uno de los destinos más atractivos del mundo para teletrabajadores internacionales y autónomos remotos gracias a la creación del <strong>Visado y Autorización de Residencia para Nómadas Digitales (Teletrabajo de Carácter Internacional)</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Sin embargo, tanto si tramitas la solicitud a través del consulado español en tu país como si la presentas directamente desde España ante la <strong>UGE (Unidad de Grandes Empresas y Colectivos Estratégicos)</strong>, uno de los requisitos documentales más estrictos es acreditar la disposición de un <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">seguro médico privado para nómadas digitales en España</a> que cumpla con los estándares de cobertura total de la sanidad española.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Requisitos obligatorios del seguro de salud exigidos por la UGE'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para que la UGE no emita un requerimiento de subsanación o deniegue tu expediente de residencia de teletrabajo, el seguro privado debe cumplir con las siguientes condiciones indispensables:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Entidad autorizada para operar en España</strong>: La aseguradora debe estar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) de España (como Sanitas). Los seguros internacionales basados en otros países o con sede offshore no suelen ser admitidos si no tienen sucursal autorizada en España.',
+          '<strong>Totalmente Sin Copagos ni Franquicias</strong>: No se aceptan pólizas donde el asegurado deba abonar dinero por acudir a consultas médicas o realizarse pruebas. Para entender la importancia de este criterio, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Sin Periodos de Carencia</strong>: La cobertura debe ser inmediata desde el día 1 en hospitalizaciones, pruebas diagnósticas y cirugías.',
+          '<strong>Cobertura integral equivalente a la sanidad pública</strong>: Debe cubrir medicina general, especialistas, analíticas, resonancias, hospitalización quirúrgica y urgencias las 24 horas.',
+          '<strong>Repatriación sanitaria y de restos</strong>: Cobertura obligatoria de traslado sanitario o de restos mortales al país de origen.'
+        ]
+      },
+      {
+        type: 'table',
+        tableHeader: ['Tipo de Cobertura', 'Póliza Homologada en España (Sanitas)', 'Seguro Nómada Internacional Genérico (SafetyWing, etc.)'],
+        tableRows: [
+          ['Validez directa ante la UGE / Extranjería', '100% Aceptada (Entidad DGSFP)', 'Riesgo alto de rechazo por operar fuera de España'],
+          ['Copagos por consulta médica en España', '0€ (Sin copagos)', 'Aplica franquicias de 250$ o copagos por visita'],
+          ['Pago directo a hospitales en España', 'Sí (Presentando tarjeta digital Sanitas)', 'No (El usuario debe pagar y pedir reembolso)'],
+          ['Cobertura en viajes por Europa / Mundo', 'Incluida hasta 12.000€/año en urgencias', 'Incluida en el extranjero'],
+          ['Telemedicina y receta electrónica en farmacias', 'Sí (App oficial Sanitas con videoconsulta 24/7)', 'Limitada o en inglés']
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Homologado para la UGE',
+        ctaTitle: '¿Vas a solicitar tu Visa de Nómada Digital en España?',
+        ctaDescription: 'Calcula en 30 segundos el precio de tu seguro oficial de Sanitas homologado para la UGE con cobertura en España y asistencia en viajes internacionales.',
+        ctaButtonText: 'Cotizar seguro para nómadas digitales',
+        ctaLink: '/wizard'
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por qué los seguros nómadas genéricos suelen dar problemas con la UGE?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Muchos nómadas digitales que viajan habitualmente contratan seguros de suscripción mensual tipo <em>SafetyWing, Genki o World Nomads</em>. Aunque son excelentes opciones para mochileros o viajes de ocio, <strong>la Unidad de Grandes Empresas (UGE) rechaza habitualmente estas pólizas</strong> para la concesión de la residencia en España por tres razones técnicas:'
+      },
+      {
+        type: 'list',
+        items: [
+          'No son entidades aseguradoras domiciliadas y supervisadas en España por la DGSFP.',
+          'Operan mediante franquicias (el asegurado asume los primeros 250$ de cualquier gasto médico), lo que incumple la exigencia legal de "seguro sin copagos".',
+          'Excluyen el tratamiento continuado de dolencias preexistentes o crónicas y no brindan acceso a la red médica española mediante pago directo.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '💡 <strong>La Solución Ideal</strong>: Para los nómadas digitales en España, la póliza recomendada es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> o <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">Sanitas International</a>, que combina un cuadro médico completo de primer nivel en España con cobertura de urgencias en viajes internacionales.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Precios estimados del seguro médico para nómadas digitales en 2026'
+      },
+      {
+        type: 'paragraph',
+        text: 'El coste de una póliza homologada para nómadas digitales oscila generalmente entre <strong>45€ y 75€ al mes</strong> (según la edad del profesional y si se contrata individualmente o con pareja/familia).'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si vas a tramitar la solicitud de residencia de 3 años ante la UGE desde dentro de España, la aseguradora te permite abonar la póliza de forma mensual o anual según tus preferencias fiscales. Si deseas saber cómo influyen las condiciones médicas en el precio, puedes leer sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Visa de Nómada Digital (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Si me doy de alta como autónomo en la Seguridad Social española necesito seguro privado?</strong>: Para la concesión inicial de la residencia ante la UGE, se exige presentar el seguro privado si la empresa extranjera no cotiza en España o si existe un periodo de transición hasta el alta en el RETA. Muchos nómadas conservan además el seguro privado por la rapidez en especialistas y telemedicina.',
+          '<strong>¿Puedo incluir a mi cónyuge e hijos en la misma póliza?</strong>: Sí. Los familiares que te acompañen en el visado de nómada digital pueden incluirse en la misma póliza familiar de Sanitas, beneficiándose de descuentos por número de asegurados.',
+          '<strong>¿Cuánto tiempo tarda la emisión del certificado para la UGE?</strong>: Al tramitarlo a través de VitaBlue, el certificado oficial con firma electrónica se emite en menos de 24 horas laborables.'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'certificado-seguro-medico-visado-estudiante-consulado',
+
     title: 'Cómo Tramitar el Certificado del Seguro Médico para el Visado en 24h (Guía 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
