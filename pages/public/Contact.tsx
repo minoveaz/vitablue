@@ -8,6 +8,8 @@ import InputText from '../../components/atoms/InputText';
 import FormField from '../../components/molecules/FormField';
 import Checkbox from '../../components/atoms/Checkbox';
 import Button from '../../components/atoms/Button';
+import { trackContactConversion } from '@/utils/analytics';
+
 
 const Contact: React.FC = () => {
   const isEnglish = window.location.pathname.startsWith('/en');
@@ -56,9 +58,17 @@ const Contact: React.FC = () => {
     const data = new FormData(event.currentTarget);
     const subject = encodeURIComponent(content.emailSubject);
     const body = encodeURIComponent(`Nombre: ${data.get('name')}\nEmail: ${data.get('email')}\n\n${data.get('message')}`);
+    
+    // Google Ads conversion tracking
+    trackContactConversion('form', {
+      form_name: 'contact_page',
+      language: isEnglish ? 'en' : 'es',
+    });
+
     window.location.href = `mailto:info@vitablue.es?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
+
 
   return (
     <div className="w-full bg-background-light text-text-main">

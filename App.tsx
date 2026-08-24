@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/organisms/ProtectedRoute';
 import PublicLayout from '@/components/layouts/PublicLayout';
 import PrivateLayout from '@/components/layouts/PrivateLayout';
 import { dynamicRoutes, privateRoutes } from '@/config/routes';
+import { initGlobalConversionTracking } from '@/utils/analytics';
 
 // Import new page views (Phase 3 & 4)
 const Home = lazy(() => import('@/pages/public/Home'));
@@ -238,6 +239,11 @@ const AppLayout: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  React.useEffect(() => {
+    const cleanup = initGlobalConversionTracking();
+    return cleanup;
+  }, []);
+
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -245,5 +251,6 @@ const App: React.FC = () => {
     </BrowserRouter>
   );
 };
+
 
 export default App;
