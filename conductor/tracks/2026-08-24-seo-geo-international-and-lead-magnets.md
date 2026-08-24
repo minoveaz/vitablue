@@ -20,17 +20,18 @@
 ## 🗺️ Fases de Ejecución
 
 ### Fase 1: Páginas por Consulado y País de Origen (Long-Tail Consular)
-- [ ] **Estructura y Datos Consulares**:
-  - Definir la base de datos de consulados y requisitos específicos en `utils/consulatesData.ts`.
-  - Crear la plantilla dinámica / componente de página consular `pages/public/ConsulateVisaInsurance.tsx`.
-- [ ] **Landings de Consulados Clave**:
-  - [ ] *Consulado de España en Bogotá (Colombia)* (`/seguro-medico-visado-espana/colombia-bogota`).
-  - [ ] *Consulado de España en Ciudad de México (México)* (`/seguro-medico-visado-espana/mexico-cdmx`).
-  - [ ] *Consulado de España en Lima (Perú)* (`/seguro-medico-visado-espana/peru-lima`).
-  - [ ] *Consulado de España en Buenos Aires (Argentina)* (`/seguro-medico-visado-espana/argentina-buenos-aires`).
-  - [ ] *Consulado de España en Quito y Guayaquil (Ecuador)* (`/seguro-medico-visado-espana/ecuador-quito-guayaquil`).
-- [ ] **Metadatos y Schemas**:
-  - Inyección de JSON-LD `GovernmentService` / `FAQPage` y `BreadcrumbList`.
+- [x] **Estructura y Datos Consulares**:
+  - [x] Definir la base de datos de consulados y requisitos específicos en `utils/consulatesData.ts`.
+  - [x] Crear la plantilla dinámica / componente de página consular `pages/public/ConsulateVisaInsurance.tsx`.
+- [x] **Landings de Consulados Clave**:
+  - [x] *Consulado de España en Bogotá (Colombia)* (`/seguro-medico-visado-espana/colombia-bogota`).
+  - [x] *Consulado de España en Ciudad de México (México)* (`/seguro-medico-visado-espana/mexico-cdmx`).
+  - [x] *Consulado de España en Lima (Perú)* (`/seguro-medico-visado-espana/peru-lima`).
+  - [x] *Consulado de España en Buenos Aires (Argentina)* (`/seguro-medico-visado-espana/argentina-buenos-aires`).
+  - [x] *Consulado de España en Quito y Guayaquil (Ecuador)* (`/seguro-medico-visado-espana/ecuador-quito-guayaquil`).
+- [x] **Metadatos y Schemas**:
+  - [x] Inyección de JSON-LD `GovernmentService` / `FAQPage` y `BreadcrumbList`.
+
 
 ---
 

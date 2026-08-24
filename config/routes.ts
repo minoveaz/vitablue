@@ -69,13 +69,20 @@ export const canonicalRoutes: RouteDefinition[] = [
   canonical('/cookies', { locale: 'es', canonical: '/cookies', indexable: false, prerender: true, sitemap: false }),
   canonical('/blog', { locale: 'es', canonical: '/blog', alternate: '/en/blog', indexable: true, prerender: true, sitemap: true }),
   canonical('/en/blog', { locale: 'en', canonical: '/en/blog', alternate: '/blog', indexable: true, prerender: true, sitemap: true }),
+  canonical('/seguro-medico-visado-espana/colombia-bogota', { locale: 'es', canonical: '/seguro-medico-visado-espana/colombia-bogota', indexable: true, prerender: true, sitemap: true }),
+  canonical('/seguro-medico-visado-espana/mexico-cdmx', { locale: 'es', canonical: '/seguro-medico-visado-espana/mexico-cdmx', indexable: true, prerender: true, sitemap: true }),
+  canonical('/seguro-medico-visado-espana/peru-lima', { locale: 'es', canonical: '/seguro-medico-visado-espana/peru-lima', indexable: true, prerender: true, sitemap: true }),
+  canonical('/seguro-medico-visado-espana/argentina-buenos-aires', { locale: 'es', canonical: '/seguro-medico-visado-espana/argentina-buenos-aires', indexable: true, prerender: true, sitemap: true }),
+  canonical('/seguro-medico-visado-espana/ecuador-quito-guayaquil', { locale: 'es', canonical: '/seguro-medico-visado-espana/ecuador-quito-guayaquil', indexable: true, prerender: true, sitemap: true }),
 ];
 
 /** Dynamic routes require content data to generate concrete SSG entries. */
 export const dynamicRoutes: RouteDefinition[] = [
   { path: '/blog/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/en/blog/:slug', kind: 'dynamic', locale: 'en', indexable: true, prerender: true, sitemap: true },
+  { path: '/seguro-medico-visado-espana/:slug', kind: 'dynamic', locale: 'es', indexable: true, prerender: true, sitemap: true },
   { path: '/backoffice/tools/document-intelligence/extraccion/:extractionId', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
+
   { path: '/backoffice/marketing-studio/campanas/:campaignId', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/r/:slug', kind: 'dynamic', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
 ];

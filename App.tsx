@@ -29,7 +29,9 @@ const CookiesPolicy = lazy(() => import('@/pages/public/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/public/AvisoLegal'));
 const BlogList = lazy(() => import('@/pages/public/BlogList'));
 const BlogPost = lazy(() => import('@/pages/public/BlogPost'));
+const ConsulateVisaInsurance = lazy(() => import('@/pages/public/ConsulateVisaInsurance'));
 const MarketingStudio = lazy(() => import('@/marketing-studio/MarketingStudio'));
+
 const MarketingLogin = lazy(() => import('@/pages/backoffice/MarketingLogin'));
 const BackofficeHome = lazy(() => import('@/pages/backoffice/BackofficeHome'));
 const ToolsHome = lazy(() => import('@/pages/backoffice/ToolsHome'));
@@ -172,8 +174,17 @@ const AppLayout: React.FC = () => {
             <Route path="/productos/seguros-salud/seguro-nomadas-digitales" element={<NomadInsurance />} />
             <Route path="/en/digital-nomad-insurance-spain" element={<NomadInsurance />} />
             <Route path="/productos/seguros-salud/seguro-salud-extranjeros" element={<ForeignerInsurance />} />
+
+            {/* Silo Consular / Países */}
+            <Route path="/seguro-medico-visado-espana/:slug" element={<ConsulateVisaInsurance />} />
+            <Route path="/seguro-medico-visado-espana/colombia-bogota" element={<ConsulateVisaInsurance />} />
+            <Route path="/seguro-medico-visado-espana/mexico-cdmx" element={<ConsulateVisaInsurance />} />
+            <Route path="/seguro-medico-visado-espana/peru-lima" element={<ConsulateVisaInsurance />} />
+            <Route path="/seguro-medico-visado-espana/argentina-buenos-aires" element={<ConsulateVisaInsurance />} />
+            <Route path="/seguro-medico-visado-espana/ecuador-quito-guayaquil" element={<ConsulateVisaInsurance />} />
             
             {/* Sub-silo: Seguros de Salud de Sanitas */}
+
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
