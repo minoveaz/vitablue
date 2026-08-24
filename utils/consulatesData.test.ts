@@ -5,23 +5,29 @@ describe('Consulates Data Specification', () => {
   it('contains the 5 target consulates', () => {
     expect(consulatesList).toHaveLength(5);
     const slugs = consulatesList.map((c) => c.slug);
-    expect(slugs).toContain('colombia-bogota');
-    expect(slugs).toContain('mexico-cdmx');
-    expect(slugs).toContain('peru-lima');
-    expect(slugs).toContain('argentina-buenos-aires');
-    expect(slugs).toContain('ecuador-quito-guayaquil');
+    expect(slugs).toContain('colombia');
+    expect(slugs).toContain('mexico');
+    expect(slugs).toContain('peru');
+    expect(slugs).toContain('argentina');
+    expect(slugs).toContain('ecuador');
   });
 
   it('retrieves consulate by slug accurately', () => {
-    const bogota = getConsulateBySlug('colombia-bogota');
-    expect(bogota).toBeDefined();
-    expect(bogota?.country).toBe('Colombia');
-    expect(bogota?.city).toBe('Bogotá');
-    expect(bogota?.whatsappTag).toBe('CONS-BOGOTA');
+    const colombia = getConsulateBySlug('colombia');
+    expect(colombia).toBeDefined();
+    expect(colombia?.country).toBe('Colombia');
+    expect(colombia?.city).toBe('Bogotá');
+    expect(colombia?.canonicalPath).toBe('/productos/seguros-salud/seguro-medico-estudiantes/colombia');
+    expect(colombia?.whatsappTag).toBe('CONS-BOGOTA');
+
+    const bogotaAlias = getConsulateBySlug('colombia-bogota');
+    expect(bogotaAlias).toBeDefined();
+    expect(bogotaAlias?.country).toBe('Colombia');
 
     const unknown = getConsulateBySlug('non-existent');
     expect(unknown).toBeUndefined();
   });
+
 
   it('validates each consulate has complete legal and procedural data', () => {
     consulatesList.forEach((c) => {

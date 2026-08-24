@@ -147,7 +147,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
           {
             '@type': 'ListItem',
             position: 3,
-            name: `${consulate.flag} ${consulate.city}`,
+            name: `${consulate.flag} ${consulate.country}`,
           },
         ],
       },
@@ -193,9 +193,10 @@ export const ConsulateVisaInsurance: React.FC = () => {
         items={[
           { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
           { label: 'Seguro Estudiantes', href: '/productos/seguros-salud/seguro-medico-estudiantes' },
-          { label: `${consulate.flag} ${consulate.city}`, href: consulate.canonicalPath },
+          { label: `${consulate.flag} ${consulate.country}`, href: consulate.canonicalPath },
         ]}
       />
+
 
       {/* Hero Section */}
       <ProductHero
