@@ -18,6 +18,8 @@ const BRAND_PALETTE = [
   { label: 'Clean White', hex: '#FFFFFF' },
   { label: 'Coral Red', hex: '#F43F5E' },
   { label: 'Midnight Blue', hex: '#001219' },
+  { label: 'Sky Blue', hex: '#38BDF8' },
+  { label: 'Emerald Green', hex: '#10B981' },
 ];
 
 export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
@@ -50,23 +52,24 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     const range = sel.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     if (rect && rect.width > 0) {
+      // Posicionar la barra flotante exactamente centrada encima de la palabra seleccionada
       setBubbleMenuPos({
-        top: Math.max(10, rect.top - 48),
-        left: Math.max(10, rect.left + rect.width / 2),
+        top: Math.max(12, rect.top - 60),
+        left: Math.max(120, rect.left + rect.width / 2),
       });
     }
   };
 
   const applyFormat = (command: string, value: string | null = null) => {
     document.execCommand(command, false, value ?? undefined);
-    updateSelectionBubble();
     if (editorRef.current) {
       onSave(editorRef.current.innerHTML);
     }
+    updateSelectionBubble();
   };
 
   const handleBlur = (e: React.FocusEvent) => {
-    // Si el clic fue en la barra flotante, no salir de edición
+    // Si el clic fue en la barra flotante o paleta, no salir de edición
     if (containerRef.current?.contains(e.relatedTarget as Node)) {
       return;
     }
@@ -86,10 +89,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {/* BARRA FLOTANTE DE TIPOGRAFÍA ESTILO CANVA (BUBBLE MENU) */}
+        {/* BARRA FLOTANTE DE TIPOGRAFÍA PROFESIONAL ESTILO CANVA (BUBBLE MENU) */}
         {bubbleMenuPos && (
           <div
-            className="fixed z-[99999] flex -translate-x-1/2 items-center gap-1 rounded-2xl border border-slate-700 bg-slate-950/95 p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.85)] backdrop-blur-xl animate-fadeIn select-none pointer-events-auto"
+            className="fixed z-[999999] flex -translate-x-1/2 items-center gap-1.5 rounded-2xl border border-slate-700/90 bg-slate-950/98 px-2.5 py-1.5 shadow-[0_15px_40px_rgba(0,0,0,0.9)] backdrop-blur-2xl animate-fadeIn select-none pointer-events-auto"
             style={{
               top: `${bubbleMenuPos.top}px`,
               left: `${bubbleMenuPos.left}px`,
@@ -103,10 +106,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                 e.preventDefault();
                 applyFormat('bold');
               }}
-              className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-amber-400 hover:text-amber-300 transition-colors"
-              title="Negrita"
+              className="flex size-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-amber-400 hover:text-amber-300 hover:bg-slate-800 transition-all shadow-xs"
+              title="Negrita (B)"
             >
-              <Bold className="size-3.5" />
+              <Bold className="size-4" />
             </button>
 
             {/* CURSIVA */}
@@ -116,10 +119,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                 e.preventDefault();
                 applyFormat('italic');
               }}
-              className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
-              title="Cursiva"
+              className="flex size-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 transition-all shadow-xs"
+              title="Cursiva (I)"
             >
-              <Italic className="size-3.5" />
+              <Italic className="size-4" />
             </button>
 
             {/* SUBRAYADO */}
@@ -129,10 +132,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                 e.preventDefault();
                 applyFormat('underline');
               }}
-              className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan transition-colors"
-              title="Subrayado"
+              className="flex size-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 transition-all shadow-xs"
+              title="Subrayado (U)"
             >
-              <UnderlineIcon className="size-3.5" />
+              <UnderlineIcon className="size-4" />
             </button>
 
             {/* TACHADO */}
@@ -142,15 +145,15 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                 e.preventDefault();
                 applyFormat('strikeThrough');
               }}
-              className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-rose-400 hover:text-rose-300 transition-colors"
-              title="Tachado"
+              className="flex size-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800 transition-all shadow-xs"
+              title="Tachado (S)"
             >
-              <Strikethrough className="size-3.5" />
+              <Strikethrough className="size-4" />
             </button>
 
-            <div className="mx-0.5 h-4 w-px bg-slate-800" />
+            <div className="mx-1 h-5 w-px bg-slate-800" />
 
-            {/* SELECTOR DE COLOR POR PALABRA */}
+            {/* SELECTOR DE COLOR POR PALABRA - TAMAÑO CÓMODO & CLARO */}
             <div className="relative">
               <button
                 type="button"
@@ -158,45 +161,52 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                   e.preventDefault();
                   setShowColorPicker(!showColorPicker);
                 }}
-                className={`flex size-7 items-center justify-center rounded-lg border transition-colors ${
+                className={`flex h-8 items-center gap-1.5 px-2.5 rounded-xl border transition-all shadow-xs ${
                   showColorPicker
                     ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
-                    : 'border-slate-800 bg-slate-900 text-slate-200 hover:text-white'
+                    : 'border-slate-800 bg-slate-900/90 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan'
                 }`}
                 title="Cambiar color del texto seleccionado"
               >
-                <Palette className="size-3.5" />
+                <Palette className="size-4 text-amber-400" />
+                <span className="text-[11px] font-bold">Color</span>
               </button>
 
-              {/* PALETA POPUP */}
+              {/* PALETA POPUP GRANDE Y NÍTIDA */}
               {showColorPicker && (
                 <div
-                  className="absolute top-9 left-0 flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 p-2 shadow-2xl backdrop-blur-xl animate-fadeIn"
+                  className="absolute top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-950 p-2.5 shadow-[0_15px_40px_rgba(0,0,0,0.95)] backdrop-blur-2xl animate-fadeIn z-50 min-w-[280px]"
                   onMouseDown={(e) => e.preventDefault()}
                 >
-                  {BRAND_PALETTE.map((swatch) => (
-                    <button
-                      key={swatch.hex}
-                      type="button"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        applyFormat('foreColor', swatch.hex);
-                        setShowColorPicker(false);
-                      }}
-                      className="size-5 rounded-full border border-slate-600 hover:scale-125 transition-transform"
-                      style={{ backgroundColor: swatch.hex }}
-                      title={swatch.label}
-                    />
-                  ))}
-                  {/* INPUT COLOR NATIVO */}
-                  <input
-                    type="color"
-                    onChange={(e) => {
-                      applyFormat('foreColor', e.target.value);
-                    }}
-                    className="size-5 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
-                    title="Color personalizado"
-                  />
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Paleta:</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {BRAND_PALETTE.map((swatch) => (
+                      <button
+                        key={swatch.hex}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          applyFormat('foreColor', swatch.hex);
+                          setShowColorPicker(false);
+                        }}
+                        className="size-6 rounded-full border-2 border-slate-700 hover:scale-125 hover:border-white transition-transform shadow-xs"
+                        style={{ backgroundColor: swatch.hex }}
+                        title={swatch.label}
+                      />
+                    ))}
+                    {/* INPUT COLOR NATIVO CON PREVIEW */}
+                    <label className="size-6 rounded-full border-2 border-dashed border-slate-500 hover:border-brand-cyan flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative overflow-hidden">
+                      <input
+                        type="color"
+                        onChange={(e) => {
+                          applyFormat('foreColor', e.target.value);
+                        }}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                        title="Elegir cualquier color personalizado"
+                      />
+                      <span className="text-[10px] text-brand-cyan font-black">+</span>
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
@@ -220,13 +230,14 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   return (
     <Component
-      onDoubleClick={(e) => {
+      onClick={(e) => {
+        // Clic directo activa el modo de edición y selección de palabras
         e.stopPropagation();
         setIsEditing(true);
       }}
-      className={`${className} cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
+      className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       style={style}
-      title="Doble clic para editar y colorear directamente aquí"
+      title="Haz clic para seleccionar y formatear palabras"
     >
       {children ?? (
         <span dangerouslySetInnerHTML={{ __html: text || '' }} />
