@@ -34,6 +34,7 @@ import {
   Palette,
   Lock,
   Unlock,
+  Trash2,
 } from 'lucide-react';
 import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
 import {
@@ -223,6 +224,7 @@ const HexColorPickerField: React.FC<HexColorPickerFieldProps> = ({
             key={swatch.hex}
             type="button"
             title={swatch.label}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
               setLocalHex(swatch.hex.toUpperCase());
               onChange(swatch.hex);
@@ -1631,6 +1633,52 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 }}
               />
             </div>
+
+            {/* PALABRAS DESTACADAS ACTIVAS (COLORES INDIVIDUALES) */}
+            {Array.isArray(props.highlightWords) && (props.highlightWords as TextHighlightRule[]).length > 0 && (
+              <div className="pt-2 border-t border-slate-900 space-y-1.5">
+                <span className="block text-[10px] text-slate-400 font-bold uppercase">
+                  Colores por palabra activos
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {(props.highlightWords as TextHighlightRule[]).map((rule, idx) => (
+                    <div
+                      key={`hw-chip-${idx}`}
+                      className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1 shadow-xs"
+                    >
+                      <input
+                        type="color"
+                        value={rule.color || '#EE9B00'}
+                        onChange={(e) => {
+                          const updated = [...(props.highlightWords as TextHighlightRule[])];
+                          updated[idx] = { ...updated[idx], color: e.target.value };
+                          onUpdateLayerProps(selectedLayer.id, { highlightWords: updated });
+                        }}
+                        className="size-4 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
+                        title={`Cambiar color de "${rule.word}"`}
+                      />
+                      <span
+                        className="text-xs font-bold font-mono"
+                        style={{ color: rule.color || '#EE9B00' }}
+                      >
+                        {rule.word}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (props.highlightWords as TextHighlightRule[]).filter((_, i) => i !== idx);
+                          onUpdateLayerProps(selectedLayer.id, { highlightWords: updated });
+                        }}
+                        className="text-slate-500 hover:text-rose-400 transition-colors ml-0.5"
+                        title={`Quitar color a "${rule.word}"`}
+                      >
+                        <Trash2 className="size-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* ESPACIADO & INTERLINEADO */}
             <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-900">
