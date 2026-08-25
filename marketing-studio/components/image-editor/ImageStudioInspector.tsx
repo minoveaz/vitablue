@@ -706,8 +706,17 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     'AdvisorSubline',
     'ComparisonWrongBox',
     'ComparisonCorrectBox',
+    'InsuranceProductHero',
+    'InsuranceCoverageGrid',
+    'InsurancePlanComparison',
+    'InsuranceTrustBar',
+    'InsuranceAdvisorCta',
+    'MotionAdvisorCard',
+    'MotionTrustBadge',
+    'MotionComparisonCard',
+    'MotionProviderGrid',
   ];
-  const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '');
+  const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '') || Boolean(props.text || props.title || props.subtitle || props.description || props.badge || props.ctaText);
 
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
