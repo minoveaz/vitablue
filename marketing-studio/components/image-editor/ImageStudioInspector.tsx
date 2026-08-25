@@ -1314,61 +1314,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 lang="es"
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed"
               />
-              <div className="flex items-center justify-between mt-1 text-[9px] text-slate-500">
-                <span>💡 Selecciona una palabra para colorearla:</span>
-                {textSelection && (
-                  <span className="font-bold text-amber-400 font-mono">
-                    "{textSelection.text}"
-                  </span>
-                )}
-              </div>
-
-              {/* ACCESO DIRECTO: PALETA RÁPIDA DE PALABRAS */}
               {textSelection && (
-                <div className="mt-1.5 p-2 rounded-xl bg-slate-950/95 border border-brand-cyan/50 flex items-center justify-between animate-fadeIn shadow-lg">
-                  <span className="text-[10px] text-brand-cyan font-bold truncate max-w-[130px]">
-                    Colorear "{textSelection.text}":
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    {[
-                      { label: 'Dorado / Ámbar', hex: '#EE9B00' },
-                      { label: 'Menta', hex: '#94D2BD' },
-                      { label: 'Teal', hex: '#005F73' },
-                      { label: 'Blanco', hex: '#FFFFFF' },
-                      { label: 'Rojo', hex: '#F43F5E' },
-                    ].map((swatch) => (
-                      <button
-                        key={swatch.hex}
-                        type="button"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          const currentText = String(props.text ?? selectedLayer.title ?? '');
-                          const before = currentText.substring(0, textSelection.start);
-                          const after = currentText.substring(textSelection.end);
-                          const formatted = `[${textSelection.text}](${swatch.hex})`;
-                          onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
-                          setTextSelection(null);
-                        }}
-                        className="size-5 rounded-full border border-slate-700 hover:scale-125 transition-transform"
-                        style={{ backgroundColor: swatch.hex }}
-                        title={swatch.label}
-                      />
-                    ))}
-                    {/* INPUT COLOR NATIVO */}
-                    <input
-                      type="color"
-                      onChange={(e) => {
-                        const currentText = String(props.text ?? selectedLayer.title ?? '');
-                        const before = currentText.substring(0, textSelection.start);
-                        const after = currentText.substring(textSelection.end);
-                        const formatted = `[${textSelection.text}](${e.target.value})`;
-                        onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
-                        setTextSelection(null);
-                      }}
-                      className="size-5 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
-                      title="Elegir otro color personalizado"
-                    />
-                  </div>
+                <div className="flex items-center justify-between mt-1 text-[10px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-lg animate-fadeIn">
+                  <span>Texto seleccionado: "{textSelection.text}"</span>
+                  <span className="text-[9px] text-slate-400 font-normal">Los cambios de color y estilo se aplicarán a esta selección</span>
                 </div>
               )}
             </div>
