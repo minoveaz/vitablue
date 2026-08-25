@@ -47,6 +47,7 @@ import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 import { correctSpanishText } from '../../utils/spellingCorrector';
+import { stripTextFormatting, TextHighlightRule } from '../../utils/textFormatter';
 import { EditorPanelSection } from './EditorPanelSection';
 import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog';
 
@@ -1276,7 +1277,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
               <textarea
                 ref={textAreaRef}
-                value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
+                value={stripTextFormatting(String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? ''))}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (onReplaceLayerContent) {
@@ -1317,7 +1318,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               {textSelection && (
                 <div className="flex items-center justify-between mt-1 text-[10px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-lg animate-fadeIn">
                   <span>Texto seleccionado: "{textSelection.text}"</span>
-                  <span className="text-[9px] text-slate-400 font-normal">Los cambios de color y estilo se aplicarán a esta selección</span>
+                  <span className="text-[9px] text-slate-400 font-normal">Usa los botones de color o formato para personalizarlo</span>
                 </div>
               )}
             </div>
@@ -1428,12 +1429,28 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
-                    const currentText = String(props.text ?? selectedLayer.title ?? '');
                     if (textSelection && textSelection.text) {
-                      const before = currentText.substring(0, textSelection.start);
-                      const after = currentText.substring(textSelection.end);
-                      const formatted = `**${textSelection.text}**`;
-                      onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                      const existingHighlightWords: TextHighlightRule[] = Array.isArray(props.highlightWords)
+                        ? [...(props.highlightWords as TextHighlightRule[])]
+                        : [];
+                      const existingIdx = existingHighlightWords.findIndex(
+                        (hw) => hw.word.trim().toLowerCase() === textSelection.text.trim().toLowerCase()
+                      );
+                      if (existingIdx >= 0) {
+                        const curWeight = existingHighlightWords[existingIdx].fontWeight;
+                        existingHighlightWords[existingIdx] = {
+                          ...existingHighlightWords[existingIdx],
+                          fontWeight: curWeight === '800' ? undefined : '800',
+                        };
+                      } else {
+                        existingHighlightWords.push({
+                          word: textSelection.text.trim(),
+                          fontWeight: '800',
+                        });
+                      }
+                      onUpdateLayerProps(selectedLayer.id, {
+                        highlightWords: existingHighlightWords,
+                      });
                       setTextSelection(null);
                     } else {
                       const currentWeight = selectedLayer.fontWeight ?? '700';
@@ -1586,11 +1603,27 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 allowTransparent={false}
                 onChange={(hex) => {
                   if (textSelection && textSelection.text) {
-                    const currentText = String(props.text ?? selectedLayer.title ?? '');
-                    const before = currentText.substring(0, textSelection.start);
-                    const after = currentText.substring(textSelection.end);
-                    const formatted = `[${textSelection.text}](${hex})`;
-                    onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                    const existingHighlightWords: TextHighlightRule[] = Array.isArray(props.highlightWords)
+                      ? [...(props.highlightWords as TextHighlightRule[])]
+                      : [];
+                    // Actualizar o agregar regla de color para esta palabra
+                    const existingIdx = existingHighlightWords.findIndex(
+                      (hw) => hw.word.trim().toLowerCase() === textSelection.text.trim().toLowerCase()
+                    );
+                    if (existingIdx >= 0) {
+                      existingHighlightWords[existingIdx] = {
+                        ...existingHighlightWords[existingIdx],
+                        color: hex,
+                      };
+                    } else {
+                      existingHighlightWords.push({
+                        word: textSelection.text.trim(),
+                        color: hex,
+                      });
+                    }
+                    onUpdateLayerProps(selectedLayer.id, {
+                      highlightWords: existingHighlightWords,
+                    });
                     setTextSelection(null);
                   } else {
                     onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex });

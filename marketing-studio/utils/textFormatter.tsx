@@ -9,6 +9,23 @@ export interface TextHighlightRule {
 }
 
 /**
+ * Devuelve el texto limpio sin etiquetas de formato [Palabra](#HEX) o **Palabra** para mostrar al usuario.
+ */
+export function stripTextFormatting(rawText: string): string {
+  if (!rawText) return '';
+  return rawText
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\*\*\*([^*]+)\*\*\*/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/~~([^~]+)~~/g, '$1')
+    .replace(/<u>(.*?)<\/u>/g, '$1')
+    .replace(/\{color:[^}]+\}(.*?)\{\/color\}/g, '$1')
+    .replace(/\{size:[^}]+\}(.*?)\{\/size\}/g, '$1');
+}
+
+/**
  * Parsea y formatea texto para permitir palabras con colores individuales,
  * fondos resaltados y sintaxis enriquecida como [Palabra](#COLOR) o **Palabra**.
  */

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { stripTextFormatting } from '../../utils/textFormatter';
 
 interface InlineEditableTextProps {
   text: string;
@@ -19,6 +20,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<HTMLElement>(null);
+  const cleanDisplayText = stripTextFormatting(text);
 
   useEffect(() => {
     if (isEditing && ref.current) {
@@ -37,10 +39,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     setIsEditing(false);
     if (ref.current) {
       const updated = ref.current.innerText.trim();
-      if (updated !== text && updated.length > 0) {
+      if (updated !== cleanDisplayText && updated.length > 0) {
         onSave(updated);
       } else {
-        ref.current.innerText = text;
+        ref.current.innerText = cleanDisplayText;
       }
     }
   };
@@ -51,7 +53,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       ref.current?.blur();
     } else if (e.key === 'Escape') {
       if (ref.current) {
-        ref.current.innerText = text;
+        ref.current.innerText = cleanDisplayText;
       }
       setIsEditing(false);
     }
@@ -70,7 +72,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         className={`${className} !cursor-text outline-none ring-1 ring-brand-cyan/80 bg-white/10 rounded-xs px-1 select-text transition-all`}
         style={style}
       >
-        {text}
+        {cleanDisplayText}
       </Component>
     );
   }
@@ -85,7 +87,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       style={style}
       title="Doble clic para editar texto"
     >
-      {children ?? text}
+      {children ?? cleanDisplayText}
     </Component>
   );
 };
