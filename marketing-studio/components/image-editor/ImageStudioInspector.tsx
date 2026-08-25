@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Sliders,
   Type,
@@ -413,6 +413,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   const [gradientTheme, setGradientTheme] = useState<'light' | 'dark'>('light');
   const [spellingFeedback, setSpellingFeedback] = useState<string | null>(null);
   const [replacementImageUrl, setReplacementImageUrl] = useState('');
+  const [textSelection, setTextSelection] = useState<{ start: number; end: number; text: string } | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
     setReplacementImageUrl(
@@ -1273,6 +1275,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               )}
 
               <textarea
+                ref={textAreaRef}
                 value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -1291,6 +1294,19 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     });
                   }
                 }}
+                onSelect={(e) => {
+                  const target = e.currentTarget;
+                  if (target.selectionStart !== target.selectionEnd) {
+                    const selText = target.value.substring(target.selectionStart, target.selectionEnd);
+                    setTextSelection({
+                      start: target.selectionStart,
+                      end: target.selectionEnd,
+                      text: selText,
+                    });
+                  } else {
+                    setTextSelection(null);
+                  }
+                }}
                 disabled={selectedLayer.locked}
                 rows={2}
                 placeholder="Escribe el texto aquí..."
@@ -1298,9 +1314,14 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 lang="es"
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed"
               />
-              <span className="text-[9px] text-slate-500 mt-1 block">
-                💡 Tip: Escribe <code className="text-amber-400 font-mono">[Palabra](#COLOR)</code> o <code className="text-amber-400 font-mono">**Palabra**</code> para colorear términos individuales.
-              </span>
+              <div className="flex items-center justify-between mt-1 text-[9px] text-slate-500">
+                <span>💡 Selecciona una palabra para colorearla o formatearla individualmente.</span>
+                {textSelection && (
+                  <span className="font-bold text-amber-400 font-mono">
+                    Seleccionado: "{textSelection.text}"
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* FUENTE Y PESO */}
@@ -1408,16 +1429,25 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    const currentWeight = selectedLayer.fontWeight ?? '700';
-                    const nextWeight = currentWeight === '700' || currentWeight === '800' || currentWeight === '900' ? '400' : '700';
-                    onUpdateLayerProps(selectedLayer.id, { fontWeight: nextWeight });
+                    const currentText = String(props.text ?? selectedLayer.title ?? '');
+                    if (textSelection && textSelection.text) {
+                      const before = currentText.substring(0, textSelection.start);
+                      const after = currentText.substring(textSelection.end);
+                      const formatted = `**${textSelection.text}**`;
+                      onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                      setTextSelection(null);
+                    } else {
+                      const currentWeight = selectedLayer.fontWeight ?? '700';
+                      const nextWeight = currentWeight === '700' || currentWeight === '800' || currentWeight === '900' ? '400' : '700';
+                      onUpdateLayerProps(selectedLayer.id, { fontWeight: nextWeight });
+                    }
                   }}
                   className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${
                     (selectedLayer.fontWeight ?? '700') === '700' || (selectedLayer.fontWeight ?? '700') === '800' || (selectedLayer.fontWeight ?? '700') === '900'
                       ? 'border-amber-400/50 bg-amber-500/20 text-amber-300 shadow-xs'
                       : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
                   }`}
-                  title="Alternar Negrita"
+                  title="Aplicar Negrita a la selección (**Palabra**)"
                 >
                   <Bold className="size-3.5" />
                   <span>Negrita</span>
@@ -1427,10 +1457,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   type="button"
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
-                    if (!currentText.startsWith('*') || !currentText.endsWith('*')) {
-                      onUpdateLayerProps(selectedLayer.id, { text: `*${currentText}*` });
+                    if (textSelection && textSelection.text) {
+                      const before = currentText.substring(0, textSelection.start);
+                      const after = currentText.substring(textSelection.end);
+                      const formatted = `*${textSelection.text}*`;
+                      onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                      setTextSelection(null);
                     } else {
-                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^\*|\*$/g, '') });
+                      if (!currentText.startsWith('*') || !currentText.endsWith('*')) {
+                        onUpdateLayerProps(selectedLayer.id, { text: `*${currentText}*` });
+                      } else {
+                        onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^\*|\*$/g, '') });
+                      }
                     }
                   }}
                   className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 text-[11px] font-bold transition-all"
@@ -1444,10 +1482,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   type="button"
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
-                    if (!currentText.startsWith('__') || !currentText.endsWith('__')) {
-                      onUpdateLayerProps(selectedLayer.id, { text: `__${currentText}__` });
+                    if (textSelection && textSelection.text) {
+                      const before = currentText.substring(0, textSelection.start);
+                      const after = currentText.substring(textSelection.end);
+                      const formatted = `__${textSelection.text}__`;
+                      onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                      setTextSelection(null);
                     } else {
-                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^__|__$/g, '') });
+                      if (!currentText.startsWith('__') || !currentText.endsWith('__')) {
+                        onUpdateLayerProps(selectedLayer.id, { text: `__${currentText}__` });
+                      } else {
+                        onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^__|__$/g, '') });
+                      }
                     }
                   }}
                   className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 text-[11px] font-bold transition-all"
@@ -1461,10 +1507,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   type="button"
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
-                    if (!currentText.startsWith('~~') || !currentText.endsWith('~~')) {
-                      onUpdateLayerProps(selectedLayer.id, { text: `~~${currentText}~~` });
+                    if (textSelection && textSelection.text) {
+                      const before = currentText.substring(0, textSelection.start);
+                      const after = currentText.substring(textSelection.end);
+                      const formatted = `~~${textSelection.text}~~`;
+                      onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                      setTextSelection(null);
                     } else {
-                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^~~|~~$/g, '') });
+                      if (!currentText.startsWith('~~') || !currentText.endsWith('~~')) {
+                        onUpdateLayerProps(selectedLayer.id, { text: `~~${currentText}~~` });
+                      } else {
+                        onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^~~|~~$/g, '') });
+                      }
                     }
                   }}
                   className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800 text-[11px] font-bold transition-all"
@@ -1525,10 +1579,21 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             {/* COLOR DE LETRA PRINCIPAL */}
             <div className="pt-2 border-t border-slate-900">
               <HexColorPickerField
-                label="Color de Letra"
+                label={textSelection ? `Color para "${textSelection.text}"` : 'Color de Letra'}
                 value={String(selectedLayer.fill ?? props.color ?? props.textColor ?? '#FFFFFF')}
                 allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex })}
+                onChange={(hex) => {
+                  if (textSelection && textSelection.text) {
+                    const currentText = String(props.text ?? selectedLayer.title ?? '');
+                    const before = currentText.substring(0, textSelection.start);
+                    const after = currentText.substring(textSelection.end);
+                    const formatted = `[${textSelection.text}](${hex})`;
+                    onUpdateLayerProps(selectedLayer.id, { text: `${before}${formatted}${after}` });
+                    setTextSelection(null);
+                  } else {
+                    onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex });
+                  }
+                }}
               />
             </div>
 
