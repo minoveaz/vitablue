@@ -652,8 +652,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       const nextLayers = prev.layers.map((l) => {
         if (l.id !== layerId || l.locked) return l;
         const constraints = getLayerLayoutConstraints(l, prev.layout?.defaultLayerConstraints);
-        const minScale = Math.max(0.3, constraints.minScale ?? 0.3);
-        const maxScale = Math.min(2.5, Math.max(minScale, constraints.maxScale ?? 2.5));
+        const minScale = Math.max(0.1, constraints.minScale ?? 0.1);
+        const maxScale = Math.min(5.0, Math.max(minScale, constraints.maxScale ?? 5.0));
         return { ...l, scale: Math.max(minScale, Math.min(maxScale, scale)) };
       });
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };

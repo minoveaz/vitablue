@@ -673,7 +673,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
-        <div className="absolute top-4 z-40" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="absolute top-4 z-40"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           <ImageQuickToolbar
             layer={selectedLayer}
             selectedCount={selectedLayerIds.length > 0 ? selectedLayerIds.length : 1}
