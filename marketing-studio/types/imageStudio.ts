@@ -81,7 +81,42 @@ export interface ImageTextFit {
 }
 
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
-  // 0. CARRUSELES MULTIPLATAFORMA (PANORÁMICOS / SEAMLESS)
+  // 1. REDES SOCIALES & ADS
+  {
+    id: 'instagram-portrait',
+    name: 'Post de Instagram (4:5)',
+    category: 'instagram',
+    width: 1080,
+    height: 1350,
+    aspectRatio: '4:5',
+    description: 'Máxima retención visual en el feed de Instagram y Meta Ads',
+    iconName: 'Instagram',
+    recommendedFor: 'Anuncios y publicaciones principales',
+  },
+  {
+    id: 'story-vertical',
+    name: 'Historia & Reel (9:16)',
+    category: 'instagram',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    description: 'Pantalla completa vertical inmersiva para Stories, Reels y TikTok',
+    iconName: 'Smartphone',
+    recommendedFor: 'Stories, Reels de Instagram y TikTok Ads',
+  },
+  {
+    id: 'instagram-square',
+    name: 'Post Cuadrado (1:1)',
+    category: 'instagram',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    description: 'Formato clásico para Instagram, Facebook y carruseles',
+    iconName: 'Square',
+    recommendedFor: 'Feed tradicional y carruseles de producto',
+  },
+
+  // 2. CARRUSELES MULTIPLATAFORMA (PANORÁMICOS / SEAMLESS)
   {
     id: 'instagram-carousel-portrait',
     name: 'Carrusel Instagram / Meta (4:5)',
@@ -161,41 +196,6 @@ export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
     slideWidth: 1080,
     slideHeight: 1080,
     carouselPlatform: 'twitter',
-  },
-
-  // 1. REDES SOCIALES & ADS
-  {
-    id: 'instagram-portrait',
-    name: 'Post de Instagram (4:5)',
-    category: 'instagram',
-    width: 1080,
-    height: 1350,
-    aspectRatio: '4:5',
-    description: 'Máxima retención visual en el feed de Instagram y Meta Ads',
-    iconName: 'Instagram',
-    recommendedFor: 'Anuncios y publicaciones principales',
-  },
-  {
-    id: 'story-vertical',
-    name: 'Historia & Reel (9:16)',
-    category: 'instagram',
-    width: 1080,
-    height: 1920,
-    aspectRatio: '9:16',
-    description: 'Pantalla completa vertical inmersiva para Stories, Reels y TikTok',
-    iconName: 'Smartphone',
-    recommendedFor: 'Stories, Reels de Instagram y TikTok Ads',
-  },
-  {
-    id: 'instagram-square',
-    name: 'Post Cuadrado (1:1)',
-    category: 'instagram',
-    width: 1080,
-    height: 1080,
-    aspectRatio: '1:1',
-    description: 'Formato clásico para Instagram, Facebook y carruseles',
-    iconName: 'Square',
-    recommendedFor: 'Feed tradicional y carruseles de producto',
   },
   {
     id: 'linkedin-post',

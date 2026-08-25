@@ -40,10 +40,24 @@ export const ImageStudio: React.FC = () => {
   const initialProject = React.useMemo(() => {
     if (!assetId) return undefined;
     const stored = getStoredImageProjects();
-    return stored.find((p) => p.id === assetId);
+    const found = stored.find((p) => p.id === assetId);
+    if (found) return found;
+    // Si el ID no existe en storage (ej. render inicial o recarga antes de persistir)
+    return undefined;
   }, [assetId]);
 
   const editor = useImageProjectEditor(initialProject);
+
+  // Si hay assetId en URL pero el proyecto no se encuentra, volver al hub
+  useEffect(() => {
+    if (assetId && !initialProject) {
+      const stored = getStoredImageProjects();
+      const found = stored.find((p) => p.id === assetId);
+      if (!found) {
+        setSearchParams({});
+      }
+    }
+  }, [assetId, initialProject, setSearchParams]);
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
   const showToast = React.useCallback((msg: string) => {
