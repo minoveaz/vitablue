@@ -5,6 +5,7 @@ import {
 } from '../../types/imageStudio';
 import { calculateSnapping } from '../../hooks/useKonvaSnapping';
 import { ImageQuickToolbar } from './ImageQuickToolbar';
+import { InlineEditorProvider } from './InlineEditableText';
 import {
   Minus,
   Plus,
@@ -660,17 +661,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
 
   return (
-    <div
-      ref={containerRef}
-      onMouseDown={handleContainerMouseDown}
-      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
-        effectiveHandMode
-          ? isPanning
-            ? 'cursor-grabbing'
-            : 'cursor-grab'
-          : 'cursor-default'
-      }`}
-    >
+    <InlineEditorProvider>
+      <div
+        ref={containerRef}
+        onMouseDown={handleContainerMouseDown}
+        className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
+          effectiveHandMode
+            ? isPanning
+              ? 'cursor-grabbing'
+              : 'cursor-grab'
+            : 'cursor-default'
+        }`}
+      >
       {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
       {selectedLayer && (
         <div
@@ -1700,6 +1702,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           <span>Ajustar</span>
         </button>
       </div>
-    </div>
+      </div>
+    </InlineEditorProvider>
   );
 };

@@ -1,10 +1,74 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import type { Editor } from '@tiptap/core';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+
+export interface ActiveInlineEditor {
+  editor: Editor;
+  revision: number;
+  save: () => void;
+}
+
+interface InlineEditorRegistry {
+  activeEditor: ActiveInlineEditor | null;
+  registerEditor: (editor: Editor, save: () => void) => void;
+  unregisterEditor: (editor: Editor) => void;
+}
+
+const InlineEditorRegistryContext = createContext<InlineEditorRegistry>({
+  activeEditor: null,
+  registerEditor: () => undefined,
+  unregisterEditor: () => undefined,
+});
+
+export const InlineEditorProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const [activeEditor, setActiveEditor] = useState<ActiveInlineEditor | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  const unregisterEditor = useCallback((editor: Editor) => {
+    setActiveEditor((current) => {
+      if (current?.editor !== editor) return current;
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+      return null;
+    });
+  }, []);
+
+  const registerEditor = useCallback((editor: Editor, save: () => void) => {
+    cleanupRef.current?.();
+
+    const notify = () => {
+      setActiveEditor((current) =>
+        current?.editor === editor
+          ? { ...current, save, revision: current.revision + 1 }
+          : current
+      );
+    };
+
+    editor.on('selectionUpdate', notify);
+    editor.on('transaction', notify);
+    cleanupRef.current = () => {
+      editor.off('selectionUpdate', notify);
+      editor.off('transaction', notify);
+    };
+    setActiveEditor({ editor, save, revision: 0 });
+  }, []);
+
+  useEffect(() => () => cleanupRef.current?.(), []);
+
+  return (
+    <InlineEditorRegistryContext.Provider value={{ activeEditor, registerEditor, unregisterEditor }}>
+      {children}
+    </InlineEditorRegistryContext.Provider>
+  );
+};
+
+export const useInlineEditorRegistry = () => useContext(InlineEditorRegistryContext);
+export const useActiveInlineEditor = () => useInlineEditorRegistry().activeEditor;
 
 interface InlineEditableTextProps {
   text: string;
@@ -26,6 +90,12 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isEditingRef = useRef(false);
+  const onSaveRef = useRef(onSave);
+  const { registerEditor, unregisterEditor } = useInlineEditorRegistry();
+
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
 
   const editor = useEditor({
     extensions: [
@@ -46,24 +116,31 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     editor.setEditable(isEditing);
     if (isEditing) {
       editor.commands.focus();
+      const save = () => onSaveRef.current(editor.getHTML());
+      registerEditor(editor, save);
+      return () => unregisterEditor(editor);
     }
-  }, [editor, isEditing]);
+  }, [editor, isEditing, registerEditor, unregisterEditor]);
 
   const finishEditing = useCallback(() => {
     if (!isEditingRef.current) return;
 
     isEditingRef.current = false;
     if (editor) {
-      onSave(editor.getHTML());
+      onSaveRef.current(editor.getHTML());
       editor.setEditable(false);
     }
     setIsEditing(false);
-  }, [editor, onSave]);
+  }, [editor]);
 
   useEffect(() => {
     if (!isEditing) return;
 
     const handleExternalPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('[data-inline-editor-toolbar]')) {
+        return;
+      }
       if (!containerRef.current?.contains(event.target as Node)) {
         finishEditing();
       }
