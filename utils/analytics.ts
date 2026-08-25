@@ -312,8 +312,20 @@ export const trackContactConversion = (
     ...details,
   });
 
-  // Google Ads auto-created alias (conversion_event_contact_1)
+  // Google Ads auto-created aliases (conversion_event_contact_1, 2, 3, etc.)
   trackConversion('conversion_event_contact_1', {
+    contact_method: method,
+    ...details,
+  });
+  trackConversion('conversion_event_contact_2', {
+    contact_method: method,
+    ...details,
+  });
+  trackConversion('conversion_event_contact_3', {
+    contact_method: method,
+    ...details,
+  });
+  trackConversion('conversion_event_contact_4', {
     contact_method: method,
     ...details,
   });
