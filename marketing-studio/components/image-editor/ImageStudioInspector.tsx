@@ -1325,8 +1325,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
               {/* ACCESO DIRECTO: PALETA RÁPIDA DE PALABRAS */}
               {textSelection && (
-                <div className="mt-1.5 p-2 rounded-xl bg-slate-950/80 border border-brand-cyan/40 flex items-center justify-between animate-fadeIn">
-                  <span className="text-[10px] text-brand-cyan font-bold">
+                <div className="mt-1.5 p-2 rounded-xl bg-slate-950/95 border border-brand-cyan/50 flex items-center justify-between animate-fadeIn shadow-lg">
+                  <span className="text-[10px] text-brand-cyan font-bold truncate max-w-[130px]">
                     Colorear "{textSelection.text}":
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -1340,7 +1340,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                       <button
                         key={swatch.hex}
                         type="button"
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault();
                           const currentText = String(props.text ?? selectedLayer.title ?? '');
                           const before = currentText.substring(0, textSelection.start);
                           const after = currentText.substring(textSelection.end);
@@ -1476,6 +1477,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <div className="grid grid-cols-4 gap-1.5">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
                     if (textSelection && textSelection.text) {
@@ -1503,6 +1505,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
                     if (textSelection && textSelection.text) {
@@ -1528,6 +1531,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
                     if (textSelection && textSelection.text) {
@@ -1553,6 +1557,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     const currentText = String(props.text ?? selectedLayer.title ?? '');
                     if (textSelection && textSelection.text) {
