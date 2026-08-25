@@ -24,6 +24,10 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Strikethrough,
   FolderHeart,
   BookmarkCheck,
   Check,
@@ -1367,12 +1371,12 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
 
               <div>
-                <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1">Alineación</span>
-                <div className="grid grid-cols-3 gap-1">
+                <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1">Alineación & Formato</span>
+                <div className="flex items-center gap-1">
                   {[
-                    { id: 'left', icon: AlignLeft },
-                    { id: 'center', icon: AlignCenter },
-                    { id: 'right', icon: AlignRight },
+                    { id: 'left', icon: AlignLeft, title: 'Alinear a la izquierda' },
+                    { id: 'center', icon: AlignCenter, title: 'Centrar' },
+                    { id: 'right', icon: AlignRight, title: 'Alinear a la derecha' },
                   ].map((al) => {
                     const Icon = al.icon;
                     return (
@@ -1380,7 +1384,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                         key={al.id}
                         type="button"
                         onClick={() => onUpdateLayerProps(selectedLayer.id, { textAlign: al.id, align: al.id })}
-                        className={`flex h-7 items-center justify-center rounded-lg border text-xs transition-colors ${
+                        title={al.title}
+                        className={`flex-1 h-7 items-center justify-center rounded-lg border text-xs transition-colors flex ${
                           (selectedLayer.align ?? String(props.textAlign ?? 'center')) === al.id
                             ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
                             : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
@@ -1391,6 +1396,83 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     );
                   })}
                 </div>
+              </div>
+            </div>
+
+            {/* BARRA DE ESTILOS RÁPIDOS: NEGRITA, CURSIVA, SUBRAYADO, TACHADO */}
+            <div className="pt-1.5 border-t border-slate-900">
+              <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1.5">
+                Estilo de Texto & Resaltado Rápido
+              </span>
+              <div className="grid grid-cols-4 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentWeight = selectedLayer.fontWeight ?? '700';
+                    const nextWeight = currentWeight === '700' || currentWeight === '800' || currentWeight === '900' ? '400' : '700';
+                    onUpdateLayerProps(selectedLayer.id, { fontWeight: nextWeight });
+                  }}
+                  className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${
+                    (selectedLayer.fontWeight ?? '700') === '700' || (selectedLayer.fontWeight ?? '700') === '800' || (selectedLayer.fontWeight ?? '700') === '900'
+                      ? 'border-amber-400/50 bg-amber-500/20 text-amber-300 shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                  title="Alternar Negrita"
+                >
+                  <Bold className="size-3.5" />
+                  <span>Negrita</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentText = String(props.text ?? selectedLayer.title ?? '');
+                    if (!currentText.startsWith('*') || !currentText.endsWith('*')) {
+                      onUpdateLayerProps(selectedLayer.id, { text: `*${currentText}*` });
+                    } else {
+                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^\*|\*$/g, '') });
+                    }
+                  }}
+                  className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 text-[11px] font-bold transition-all"
+                  title="Cursiva / Itálica (*Palabra*)"
+                >
+                  <Italic className="size-3.5" />
+                  <span>Cursiva</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentText = String(props.text ?? selectedLayer.title ?? '');
+                    if (!currentText.startsWith('__') || !currentText.endsWith('__')) {
+                      onUpdateLayerProps(selectedLayer.id, { text: `__${currentText}__` });
+                    } else {
+                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^__|__$/g, '') });
+                    }
+                  }}
+                  className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 text-[11px] font-bold transition-all"
+                  title="Subrayado (__Palabra__)"
+                >
+                  <UnderlineIcon className="size-3.5" />
+                  <span>Subrayar</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentText = String(props.text ?? selectedLayer.title ?? '');
+                    if (!currentText.startsWith('~~') || !currentText.endsWith('~~')) {
+                      onUpdateLayerProps(selectedLayer.id, { text: `~~${currentText}~~` });
+                    } else {
+                      onUpdateLayerProps(selectedLayer.id, { text: currentText.replace(/^~~|~~$/g, '') });
+                    }
+                  }}
+                  className="flex h-8 items-center justify-center gap-1 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800 text-[11px] font-bold transition-all"
+                  title="Tachado (~~Palabra~~)"
+                >
+                  <Strikethrough className="size-3.5" />
+                  <span>Tachar</span>
+                </button>
               </div>
             </div>
 

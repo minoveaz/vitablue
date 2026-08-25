@@ -19,9 +19,21 @@ export function parseFormattedText(
 ): React.ReactNode {
   if (!rawText) return null;
 
-  // 1. Procesar sintaxis de etiquetas [Palabra](#HEX) o [Palabra](#COLOR:#BG) o **Palabra**
-  const tokens: Array<{ text: string; color?: string; bgColor?: string; isCustom?: boolean }> = [];
-  const tagRegex = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|\{color:([^}]+)\}(.*?)\{\/color\}/g;
+  // 1. Procesar sintaxis de etiquetas [Palabra](#HEX) o [Palabra](#HEX:size:bg) o **bold**, *italic*, ~~strike~~, <u>underline</u>, etc.
+  interface FormattedToken {
+    text: string;
+    color?: string;
+    bgColor?: string;
+    fontSize?: string;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    strikethrough?: boolean;
+    isCustom?: boolean;
+  }
+
+  const tokens: FormattedToken[] = [];
+  const tagRegex = /\[([^\]]+)\]\(([^)]+)\)|\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*|__([^_]+)__|~~([^~]+)~~|<u>(.*?)<\/u>|\{color:([^}]+)\}(.*?)\{\/color\}|\{size:([^}]+)\}(.*?)\{\/size\}/g;
 
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -32,27 +44,72 @@ export function parseFormattedText(
     }
 
     if (match[1] && match[2]) {
-      // [Palabra](#HEX) o [Palabra](#HEX:#BG)
+      // [Palabra](#HEX) o [Palabra](#HEX:fontSize:bgColor)
       const content = match[1];
       const params = match[2].split(':');
       tokens.push({
         text: content,
         color: params[0]?.trim() || undefined,
-        bgColor: params[1]?.trim() || undefined,
+        fontSize: params[1]?.trim() ? (params[1].endsWith('px') ? params[1] : `${params[1]}px`) : undefined,
+        bgColor: params[2]?.trim() || undefined,
         isCustom: true,
       });
     } else if (match[3]) {
-      // **Palabra** -> Resaltado ámbar/dorado de conversión
+      // ***Negrita e Itálica***
       tokens.push({
         text: match[3],
+        bold: true,
+        italic: true,
+        isCustom: true,
+      });
+    } else if (match[4]) {
+      // **Negrita**
+      tokens.push({
+        text: match[4],
+        bold: true,
         color: '#EE9B00',
         isCustom: true,
       });
-    } else if (match[4] && match[5]) {
-      // {color:#HEX}Palabra{/color}
+    } else if (match[5]) {
+      // *Cursiva / Itálica*
       tokens.push({
         text: match[5],
-        color: match[4].trim(),
+        italic: true,
+        isCustom: true,
+      });
+    } else if (match[6]) {
+      // __Subrayado__
+      tokens.push({
+        text: match[6],
+        underline: true,
+        isCustom: true,
+      });
+    } else if (match[7]) {
+      // ~~Tachado~~
+      tokens.push({
+        text: match[7],
+        strikethrough: true,
+        isCustom: true,
+      });
+    } else if (match[8]) {
+      // <u>Subrayado</u>
+      tokens.push({
+        text: match[8],
+        underline: true,
+        isCustom: true,
+      });
+    } else if (match[9] && match[10]) {
+      // {color:#HEX}Palabra{/color}
+      tokens.push({
+        text: match[10],
+        color: match[9].trim(),
+        isCustom: true,
+      });
+    } else if (match[11] && match[12]) {
+      // {size:40}Palabra{/size}
+      tokens.push({
+        text: match[12],
+        fontSize: match[11].trim().endsWith('px') ? match[11].trim() : `${match[11].trim()}px`,
         isCustom: true,
       });
     }
@@ -69,15 +126,23 @@ export function parseFormattedText(
 
   tokens.forEach((tok, tokIdx) => {
     if (tok.isCustom) {
+      const textDecorations: string[] = [];
+      if (tok.underline) textDecorations.push('underline');
+      if (tok.strikethrough) textDecorations.push('line-through');
+
       finalNodes.push(
         <span
           key={`custom-tok-${tokIdx}`}
           style={{
             color: tok.color || undefined,
+            fontSize: tok.fontSize || undefined,
+            fontWeight: tok.bold ? '800' : undefined,
+            fontStyle: tok.italic ? 'italic' : undefined,
+            textDecoration: textDecorations.length > 0 ? textDecorations.join(' ') : undefined,
             backgroundColor: tok.bgColor && tok.bgColor !== 'transparent' ? tok.bgColor : undefined,
             padding: tok.bgColor && tok.bgColor !== 'transparent' ? '1px 6px' : undefined,
             borderRadius: tok.bgColor && tok.bgColor !== 'transparent' ? '6px' : undefined,
-            display: tok.bgColor && tok.bgColor !== 'transparent' ? 'inline-block' : undefined,
+            display: (tok.bgColor && tok.bgColor !== 'transparent') || tok.fontSize ? 'inline-block' : undefined,
           }}
         >
           {tok.text}
