@@ -14,7 +14,8 @@ export interface TextHighlightRule {
 export function stripTextFormatting(rawText: string): string {
   if (!rawText) return '';
   return rawText
-    .replace(/<[^>]*>/g, '') // Quitar HTML tags de Tiptap
+    .replace(/&nbsp;/g, ' ')
+    .replace(/<[^>]*>/g, '') // Quitar HTML tags
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/\*\*\*([^*]+)\*\*\*/g, '$1')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -27,7 +28,7 @@ export function stripTextFormatting(rawText: string): string {
 
 /**
  * Parsea y formatea texto para permitir palabras con colores individuales,
- * fondos resaltados y sintaxis enriquecida como HTML de Tiptap o [Palabra](#COLOR).
+ * fondos resaltados y sintaxis enriquecida como HTML o [Palabra](#COLOR).
  */
 export function parseFormattedText(
   rawText: string,
@@ -36,9 +37,12 @@ export function parseFormattedText(
 ): React.ReactNode {
   if (!rawText) return null;
 
-  // Si el texto proviene del editor enriquecido Tiptap (HTML nativo), renderizar con fidelidad total
-  if (rawText.includes('<p>') || rawText.includes('<span>') || rawText.includes('<mark>') || rawText.includes('<strong>') || rawText.includes('<em>') || rawText.includes('<u>') || rawText.includes('<s>')) {
-    return <span className="inline-rich-html [&_p]:inline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: rawText }} />;
+  // Limpiar entidades HTML como &nbsp; antes de procesar
+  const cleanHtml = rawText.replace(/&nbsp;/g, ' ');
+
+  // Si el texto proviene del editor enriquecido (HTML nativo), renderizar con fidelidad total
+  if (cleanHtml.includes('<p>') || cleanHtml.includes('<span>') || cleanHtml.includes('<font') || cleanHtml.includes('<mark>') || cleanHtml.includes('<strong>') || cleanHtml.includes('<b>') || cleanHtml.includes('<em>') || cleanHtml.includes('<i>') || cleanHtml.includes('<u>') || cleanHtml.includes('<s>') || cleanHtml.includes('<strike>')) {
+    return <span className="inline-rich-html [&_p]:inline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
   }
 
   // 1. Procesar sintaxis de etiquetas [Palabra](#HEX) o [Palabra](#HEX:size:bg) o **bold**, *italic*, ~~strike~~, <u>underline</u>, etc.

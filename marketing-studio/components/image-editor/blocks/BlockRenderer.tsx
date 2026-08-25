@@ -399,7 +399,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
 
         return (
           <div
-            className={`w-full h-full flex flex-col justify-center select-none ${
+            className={`w-full h-full flex flex-col justify-center select-text ${
               hasBoxEffect ? 'p-3 rounded-2xl shadow-xl' : ''
             }`}
             style={{

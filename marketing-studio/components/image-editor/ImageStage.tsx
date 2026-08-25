@@ -1490,15 +1490,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className={`canvas-layer-item absolute transition-shadow select-none shrink-0 [&_*]:cursor-inherit ${getClipClass(
+                className={`canvas-layer-item absolute transition-shadow shrink-0 [&_*]:cursor-inherit ${getClipClass(
                   layer.clipShape
                 )} ${
                   effectiveHandMode
                     ? isPanning
-                      ? 'cursor-grabbing'
-                      : 'cursor-grab'
+                      ? 'cursor-grabbing select-none'
+                      : 'cursor-grab select-none'
                     : isLocked
-                    ? 'cursor-default'
+                    ? 'cursor-default select-none'
                     : 'cursor-move'
                 } ${
                   isSelected
