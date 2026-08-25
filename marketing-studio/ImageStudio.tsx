@@ -10,7 +10,7 @@ import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
 import { exportCarouselSlices } from './utils/carouselExporter';
-import { getStoredImageProjects } from './utils/imageProjectStorage';
+import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import {
   LayoutTemplate,
