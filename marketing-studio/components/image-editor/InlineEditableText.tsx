@@ -1,6 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Bold, Italic, Underline as UnderlineIcon, Strikethrough, Palette } from 'lucide-react';
-import { stripTextFormatting } from '../../utils/textFormatter';
+import { Color } from '@tiptap/extension-color';
+import Highlight from '@tiptap/extension-highlight';
+import { TextStyle } from '@tiptap/extension-text-style';
+import Underline from '@tiptap/extension-underline';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 
 interface InlineEditableTextProps {
   text: string;
@@ -33,18 +38,45 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [bubbleMenuPos, setBubbleMenuPos] = useState<{ top: number; left: number } | null>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isEditingRef = useRef(false);
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TextStyle,
+      Color.configure({ types: ['textStyle'] }),
+      Underline,
+      Highlight.configure({ multicolor: true }),
+    ],
+    content: text || '',
+    editable: false,
+    immediatelyRender: false,
+  });
 
   useEffect(() => {
-    if (isEditing && editorRef.current) {
-      editorRef.current.focus();
-    }
-  }, [isEditing]);
+    if (!editor) return;
 
-  const updateSelectionBubble = () => {
+    editor.setEditable(isEditing);
+    if (isEditing) {
+      editor.commands.focus();
+    }
+  }, [editor, isEditing]);
+
+  const updateSelectionBubble = useCallback(() => {
+    if (!editor) return;
+
     const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+    const editorDom = editor.view.dom;
+    if (
+      !sel ||
+      sel.rangeCount === 0 ||
+      sel.isCollapsed ||
+      !sel.anchorNode ||
+      !sel.focusNode ||
+      !editorDom.contains(sel.anchorNode) ||
+      !editorDom.contains(sel.focusNode)
+    ) {
       setBubbleMenuPos(null);
       setShowColorPicker(false);
       return;
@@ -58,27 +90,77 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         left: Math.max(120, rect.left + rect.width / 2),
       });
     }
-  };
+  }, [editor]);
 
-  const applyFormat = (command: string, value: string | null = null) => {
-    document.execCommand(command, false, value ?? undefined);
-    if (editorRef.current) {
-      onSave(editorRef.current.innerHTML);
-    }
-    updateSelectionBubble();
-  };
+  const finishEditing = useCallback(() => {
+    if (!isEditingRef.current) return;
 
-  const handleBlur = (e: React.FocusEvent) => {
-    // Si el clic fue en la barra flotante o paleta, no salir de edición
-    if (containerRef.current?.contains(e.relatedTarget as Node)) {
-      return;
-    }
-    if (editorRef.current) {
-      onSave(editorRef.current.innerHTML);
+    isEditingRef.current = false;
+    if (editor) {
+      onSave(editor.getHTML());
+      editor.setEditable(false);
     }
     setIsEditing(false);
     setBubbleMenuPos(null);
     setShowColorPicker(false);
+  }, [editor, onSave]);
+
+  const applyFormat = useCallback(
+    (format: 'bold' | 'italic' | 'underline' | 'strike' | 'color', value?: string) => {
+      if (!editor) return;
+
+      const chain = editor.chain().focus();
+      switch (format) {
+        case 'bold':
+          chain.toggleBold().run();
+          break;
+        case 'italic':
+          chain.toggleItalic().run();
+          break;
+        case 'underline':
+          chain.toggleUnderline().run();
+          break;
+        case 'strike':
+          chain.toggleStrike().run();
+          break;
+        case 'color':
+          if (value) chain.setColor(value).run();
+          break;
+      }
+      onSave(editor.getHTML());
+      updateSelectionBubble();
+    },
+    [editor, onSave, updateSelectionBubble]
+  );
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleExternalPointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        finishEditing();
+      }
+    };
+
+    document.addEventListener('pointerdown', handleExternalPointerDown, true);
+    return () => document.removeEventListener('pointerdown', handleExternalPointerDown, true);
+  }, [finishEditing, isEditing]);
+
+  const startEditing = () => {
+    isEditingRef.current = true;
+    setIsEditing(true);
+    setShowColorPicker(false);
+    if (editor) {
+      editor.setEditable(true);
+      editor.commands.setContent(text || '', { emitUpdate: false });
+    }
+  };
+
+  const handleBlur = (event: React.FocusEvent) => {
+    if (event.relatedTarget && containerRef.current?.contains(event.relatedTarget as Node)) {
+      return;
+    }
+    finishEditing();
   };
 
   if (isEditing) {
@@ -88,6 +170,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         className="relative inline-block w-full"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
+        onBlur={handleBlur}
       >
         {/* BARRA FLOTANTE DE TIPOGRAFÍA PROFESIONAL ESTILO CANVA (BUBBLE MENU) */}
         {bubbleMenuPos && (
@@ -143,7 +226,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
               type="button"
               onMouseDown={(e) => {
                 e.preventDefault();
-                applyFormat('strikeThrough');
+                applyFormat('strike');
               }}
               className="flex size-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800 transition-all shadow-xs"
               title="Tachado (S)"
@@ -186,7 +269,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                         type="button"
                         onMouseDown={(e) => {
                           e.preventDefault();
-                          applyFormat('foreColor', swatch.hex);
+                          applyFormat('color', swatch.hex);
                           setShowColorPicker(false);
                         }}
                         className="size-6 rounded-full border-2 border-slate-700 hover:scale-125 hover:border-white transition-transform shadow-xs"
@@ -198,8 +281,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
                     <label className="size-6 rounded-full border-2 border-dashed border-slate-500 hover:border-brand-cyan flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative overflow-hidden">
                       <input
                         type="color"
+                        onMouseDown={(e) => e.preventDefault()}
                         onChange={(e) => {
-                          applyFormat('foreColor', e.target.value);
+                          applyFormat('color', e.target.value);
+                          setShowColorPicker(false);
                         }}
                         className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                         title="Elegir cualquier color personalizado"
@@ -214,16 +299,13 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         )}
 
         <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
           onMouseUp={updateSelectionBubble}
           onKeyUp={updateSelectionBubble}
-          onBlur={handleBlur}
-          dangerouslySetInnerHTML={{ __html: text || '' }}
           className={`${className} !cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text`}
           style={style}
-        />
+        >
+          <EditorContent editor={editor} />
+        </div>
       </div>
     );
   }
@@ -233,7 +315,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       onClick={(e) => {
         // Clic directo activa el modo de edición y selección de palabras
         e.stopPropagation();
-        setIsEditing(true);
+        startEditing();
       }}
       className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       style={style}
