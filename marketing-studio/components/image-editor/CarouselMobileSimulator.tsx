@@ -44,6 +44,25 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   const slideWidth = project.preset.slideWidth ?? 1080;
   const slideHeight = project.preset.height ?? 1350;
 
+  const slideBoxRef = useRef<HTMLDivElement | null>(null);
+  const [measuredSlideWidth, setMeasuredSlideWidth] = useState<number>(340);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const updateSize = () => {
+      if (slideBoxRef.current) {
+        setMeasuredSlideWidth(slideBoxRef.current.clientWidth);
+      }
+    };
+    updateSize();
+    const timer = window.setTimeout(updateSize, 100);
+    window.addEventListener('resize', updateSize);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('resize', updateSize);
+    };
+  }, [isOpen, platformMode]);
+
   useEffect(() => {
     if (project.preset.id.includes('tiktok') || project.preset.carouselPlatform === 'tiktok') {
       setPlatformMode('tiktok');
@@ -203,6 +222,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                     >
                       {/* Slide Box */}
                       <div
+                        ref={idx === 0 ? slideBoxRef : undefined}
                         className="relative w-full shadow-2xl overflow-hidden rounded-xl"
                         style={{
                           aspectRatio: `${slideWidth} / ${slideHeight}`,
@@ -210,13 +230,13 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                           ...bgStyle,
                         }}
                       >
-                        {/* Layers snapshot rendered inside slice viewport */}
+                        {/* Full Resolution Canvas Scaled to Slide Viewport */}
                         <div
-                          className="absolute inset-0 origin-top-left"
+                          className="absolute top-0 left-0 origin-top-left pointer-events-none select-none"
                           style={{
-                            width: `${slideCount * 100}%`,
-                            height: '100%',
-                            transform: `translateX(-${(idx / slideCount) * 100}%)`,
+                            width: `${project.preset.width}px`,
+                            height: `${project.preset.height}px`,
+                            transform: `scale(${measuredSlideWidth / (slideWidth || 1080)}) translateX(-${idx * slideWidth}px)`,
                           }}
                         >
                           {/* Render of layers */}
