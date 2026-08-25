@@ -30,8 +30,8 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
   { id: 'coverage-comparison', projectId: 'vitablue-coverage-comparison', name: 'Comparativa de coberturas', scope: 'organization', category: 'Comparación', aspectRatio: '1:1' },
   { id: 'saving-ad', projectId: 'vitablue-saving-ad', name: 'Anuncio de ahorro', scope: 'organization', category: 'Captación', aspectRatio: '1:1' },
   { id: 'advisor-story', projectId: 'vitablue-advisor-story', name: 'Story de asesoría', scope: 'organization', category: 'Stories', aspectRatio: '9:16' },
-  { id: 'trust-post', projectId: 'vitablue-trust-post', name: 'Post de confianza VitaBlue', scope: 'organization', category: 'Confianza', aspectRatio: '1:1' },
   { id: 'providers-carousel', projectId: 'vitablue-providers-carousel', name: 'Carrusel de aseguradoras', scope: 'organization', category: 'Seguros', aspectRatio: '1:1' },
   { id: 'campaign-cover', projectId: 'vitablue-campaign-cover', name: 'Portada de campaña', scope: 'organization', category: 'Campañas', aspectRatio: '16:9' },
   { id: 'seamless-educational-carousel', projectId: 'vitablue-seamless-educational-carousel', name: 'Carrusel Panorámico: Guía 5 Pasos', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1' },
+  { id: 'consular-certificate-guide-carousel', projectId: 'vitablue-consular-certificate-guide-carousel', name: 'Carrusel: Certificado Consular Paso a Paso', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1' },
 ];
