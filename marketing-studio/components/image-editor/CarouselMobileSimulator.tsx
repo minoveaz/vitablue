@@ -17,7 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { ImageProject } from '../../types/imageStudio';
-import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks/BlockRenderer';
+import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
