@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { ImageProject } from '../../types/imageStudio';
+import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks/BlockRenderer';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
@@ -213,32 +214,46 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                         <div
                           className="absolute inset-0 origin-top-left"
                           style={{
-                            width: `${project.preset.width}px`,
-                            height: `${project.preset.height}px`,
-                            transform: `scale(${1 / slideCount}) translateX(-${idx * 100}%)`,
+                            width: `${slideCount * 100}%`,
+                            height: '100%',
+                            transform: `translateX(-${(idx / slideCount) * 100}%)`,
                           }}
                         >
-                          {/* Mini render of layers */}
+                          {/* Render of layers */}
                           {project.layers.map((layer) => {
                             if (layer.visible === false) return null;
+                            const blockProps = layer.props as Record<string, unknown>;
+                            const widthStyle = getBlockDefaultWidth(layer.blockType, layer.width, blockProps);
+
                             return (
                               <div
                                 key={layer.id}
-                                className="absolute pointer-events-none"
+                                className="absolute pointer-events-none select-none"
                                 style={{
                                   left: `${layer.position.x}%`,
                                   top: `${layer.position.y}%`,
                                   transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${layer.scale ?? 1})`,
                                   zIndex: layer.zIndex,
+                                  width: layer.type === 'block' ? widthStyle : layer.width ? `${layer.width}px` : 'auto',
+                                  height: layer.height ? `${layer.height}px` : 'auto',
+                                  opacity: layer.opacity ?? 1,
                                 }}
                               >
+                                {layer.type === 'block' && (
+                                  <ImageLayerBlockRenderer
+                                    layer={layer}
+                                    brandTokens={project.brandTokens}
+                                  />
+                                )}
                                 {layer.type === 'text' && (
                                   <div
-                                    className="font-bold whitespace-nowrap"
+                                    className="font-bold leading-tight"
                                     style={{
                                       color: layer.color ?? '#FFFFFF',
-                                      fontSize: `${layer.fontSize ?? 28}px`,
+                                      fontSize: `${layer.fontSize ?? 32}px`,
                                       fontFamily: layer.fontFamily ?? 'Inter',
+                                      fontWeight: layer.fontWeight ?? 'bold',
+                                      textAlign: layer.textAlign ?? 'left',
                                     }}
                                   >
                                     {layer.text}
@@ -247,8 +262,8 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                                 {layer.type === 'shape' && (
                                   <div
                                     style={{
-                                      width: `${layer.width ?? 100}px`,
-                                      height: `${layer.height ?? 100}px`,
+                                      width: `${layer.width ?? 120}px`,
+                                      height: `${layer.height ?? 120}px`,
                                       background: layer.color ?? '#94D2BD',
                                       borderRadius: layer.shapeType === 'circle' ? '9999px' : '16px',
                                     }}
@@ -260,8 +275,8 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                                     alt=""
                                     className="object-cover rounded-lg"
                                     style={{
-                                      width: `${layer.width ?? 200}px`,
-                                      height: `${layer.height ?? 200}px`,
+                                      width: `${layer.width ?? 300}px`,
+                                      height: `${layer.height ?? 300}px`,
                                     }}
                                   />
                                 )}
