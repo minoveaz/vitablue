@@ -644,6 +644,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     onSetZoom(parseFloat(clampedZoom.toFixed(2)));
   };
 
+  // Auto-ajustar al lienzo automáticamente cuando se carga o cambia el formato/preset
+  const lastPresetIdRef = useRef<string>('');
+  useEffect(() => {
+    if (project.preset.id !== lastPresetIdRef.current) {
+      lastPresetIdRef.current = project.preset.id;
+      // Retraso para que el contenedor tenga sus dimensiones computadas
+      const timer = window.setTimeout(() => {
+        handleResetFit();
+      }, 50);
+      return () => window.clearTimeout(timer);
+    }
+  }, [project.preset.id, project.preset.width, project.preset.height]);
+
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
 
   return (
