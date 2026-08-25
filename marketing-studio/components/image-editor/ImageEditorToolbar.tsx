@@ -55,11 +55,13 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
+  onOpenCarouselSimulator,
   onUndo,
   onRedo,
   onUpdateTitle,
   onCopyToClipboard,
   onExport,
+  onExportCarousel,
   onSaveToDam,
   onSendToVideoStudio,
 }) => {
