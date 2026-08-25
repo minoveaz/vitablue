@@ -52,6 +52,9 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     content: text || '',
     editable: false,
     immediatelyRender: false,
+    onSelectionUpdate: () => {
+      requestAnimationFrame(updateSelectionBubble);
+    },
   });
 
   useEffect(() => {
@@ -312,14 +315,14 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   return (
     <Component
-      onClick={(e) => {
-        // Clic directo activa el modo de edición y selección de palabras
+      onDoubleClick={(e) => {
+        // Entrar con doble clic deja el primer clic disponible para seleccionar.
         e.stopPropagation();
         startEditing();
       }}
       className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       style={style}
-      title="Haz clic para seleccionar y formatear palabras"
+      title="Doble clic para seleccionar y formatear palabras"
     >
       {children ?? (
         <span dangerouslySetInnerHTML={{ __html: text || '' }} />
