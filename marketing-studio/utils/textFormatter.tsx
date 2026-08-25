@@ -14,20 +14,20 @@ export interface TextHighlightRule {
 export function stripTextFormatting(rawText: string): string {
   if (!rawText) return '';
   return rawText
+    .replace(/<[^>]*>/g, '') // Quitar HTML tags de Tiptap
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/\*\*\*([^*]+)\*\*\*/g, '$1')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/__([^_]+)__/g, '$1')
     .replace(/~~([^~]+)~~/g, '$1')
-    .replace(/<u>(.*?)<\/u>/g, '$1')
     .replace(/\{color:[^}]+\}(.*?)\{\/color\}/g, '$1')
     .replace(/\{size:[^}]+\}(.*?)\{\/size\}/g, '$1');
 }
 
 /**
  * Parsea y formatea texto para permitir palabras con colores individuales,
- * fondos resaltados y sintaxis enriquecida como [Palabra](#COLOR) o **Palabra**.
+ * fondos resaltados y sintaxis enriquecida como HTML de Tiptap o [Palabra](#COLOR).
  */
 export function parseFormattedText(
   rawText: string,
@@ -35,6 +35,11 @@ export function parseFormattedText(
   _defaultColor?: string
 ): React.ReactNode {
   if (!rawText) return null;
+
+  // Si el texto proviene del editor enriquecido Tiptap (HTML nativo), renderizar con fidelidad total
+  if (rawText.includes('<p>') || rawText.includes('<span>') || rawText.includes('<mark>') || rawText.includes('<strong>') || rawText.includes('<em>') || rawText.includes('<u>') || rawText.includes('<s>')) {
+    return <span className="inline-rich-html [&_p]:inline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: rawText }} />;
+  }
 
   // 1. Procesar sintaxis de etiquetas [Palabra](#HEX) o [Palabra](#HEX:size:bg) o **bold**, *italic*, ~~strike~~, <u>underline</u>, etc.
   interface FormattedToken {
