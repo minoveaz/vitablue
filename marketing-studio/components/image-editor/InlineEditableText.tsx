@@ -277,16 +277,193 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   }
 
   return (
-    <Component
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        setIsEditing(true);
-      }}
-      className={`${className} cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
-      style={style}
-      title="Doble clic para editar y formatear texto"
-    >
-      {children ?? text}
-    </Component>
+    <div ref={containerRef} className="relative inline-block w-full">
+      {/* MENÚ FLOTANTE DE FORMATO DE TEXTO EN SELECCIÓN (MODO DIRECTO O EDICIÓN) */}
+      {floatingMenuPos && selectedRange && (
+        <div
+          className="fixed z-[9999] flex -translate-x-1/2 items-center gap-1 rounded-2xl border border-slate-700 bg-slate-950/95 p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-xl animate-fadeIn select-none pointer-events-auto"
+          style={{
+            top: `${floatingMenuPos.top}px`,
+            left: `${floatingMenuPos.left}px`,
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* NEGRITA */}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (selectedRange?.text) {
+                const current = text;
+                const formatted = `**${selectedRange.text}**`;
+                onSave(current.replace(selectedRange.text, formatted));
+                setSelectedRange(null);
+                setFloatingMenuPos(null);
+              }
+            }}
+            className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-amber-400 hover:text-amber-300 hover:bg-slate-800 transition-colors"
+            title="Negrita (**Palabra**)"
+          >
+            <Bold className="size-3.5" />
+          </button>
+
+          {/* CURSIVA */}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (selectedRange?.text) {
+                const current = text;
+                const formatted = `*${selectedRange.text}*`;
+                onSave(current.replace(selectedRange.text, formatted));
+                setSelectedRange(null);
+                setFloatingMenuPos(null);
+              }
+            }}
+            className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 transition-colors"
+            title="Cursiva (*Palabra*)"
+          >
+            <Italic className="size-3.5" />
+          </button>
+
+          {/* SUBRAYADO */}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (selectedRange?.text) {
+                const current = text;
+                const formatted = `__${selectedRange.text}__`;
+                onSave(current.replace(selectedRange.text, formatted));
+                setSelectedRange(null);
+                setFloatingMenuPos(null);
+              }
+            }}
+            className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800 transition-colors"
+            title="Subrayado (__Palabra__)"
+          >
+            <UnderlineIcon className="size-3.5" />
+          </button>
+
+          {/* TACHADO */}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (selectedRange?.text) {
+                const current = text;
+                const formatted = `~~${selectedRange.text}~~`;
+                onSave(current.replace(selectedRange.text, formatted));
+                setSelectedRange(null);
+                setFloatingMenuPos(null);
+              }
+            }}
+            className="flex size-7 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-200 hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800 transition-colors"
+            title="Tachado (~~Palabra~~)"
+          >
+            <Strikethrough className="size-3.5" />
+          </button>
+
+          {/* DIVISOR */}
+          <div className="mx-0.5 h-4 w-px bg-slate-800" />
+
+          {/* BOTÓN SELECTOR DE COLOR */}
+          <div className="relative">
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setShowColorPicker(!showColorPicker);
+              }}
+              className={`flex size-7 items-center justify-center rounded-lg border transition-colors ${
+                showColorPicker
+                  ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
+                  : 'border-slate-800 bg-slate-900 text-slate-200 hover:border-brand-cyan hover:text-brand-cyan'
+              }`}
+              title="Colorear solo esta palabra"
+            >
+              <Palette className="size-3.5" />
+            </button>
+
+            {/* POPUP DE COLORES RÁPIDOS */}
+            {showColorPicker && (
+              <div className="absolute top-9 left-0 flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl">
+                {SWATCH_COLORS.map((swatch) => (
+                  <button
+                    key={swatch.hex}
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      if (selectedRange?.text) {
+                        const current = text;
+                        const formatted = `[${selectedRange.text}](${swatch.hex})`;
+                        onSave(current.replace(selectedRange.text, formatted));
+                        setSelectedRange(null);
+                        setFloatingMenuPos(null);
+                        setShowColorPicker(false);
+                      }
+                    }}
+                    className="size-5 rounded-full border border-slate-700 hover:scale-125 transition-transform"
+                    style={{ backgroundColor: swatch.hex }}
+                    title={swatch.label}
+                  />
+                ))}
+                {/* COLOR PERSONALIZADO INPUT */}
+                <input
+                  type="color"
+                  onChange={(e) => {
+                    if (selectedRange?.text) {
+                      const current = text;
+                      const formatted = `[${selectedRange.text}](${e.target.value})`;
+                      onSave(current.replace(selectedRange.text, formatted));
+                      setSelectedRange(null);
+                      setFloatingMenuPos(null);
+                      setShowColorPicker(false);
+                    }
+                  }}
+                  className="size-5 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
+                  title="Elegir otro color"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <Component
+        onMouseUp={(e) => {
+          e.stopPropagation();
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+            const selectedText = sel.toString().trim();
+            if (selectedText.length > 0) {
+              const range = sel.getRangeAt(0);
+              const rect = range.getBoundingClientRect();
+              if (rect) {
+                setFloatingMenuPos({
+                  top: Math.max(10, rect.top - 48),
+                  left: Math.max(10, rect.left + rect.width / 2),
+                });
+                setSelectedRange({
+                  text: selectedText,
+                  start: 0,
+                  end: selectedText.length,
+                });
+              }
+            }
+          }
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          setIsEditing(true);
+        }}
+        className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs select-text transition-all`}
+        style={style}
+        title="Selecciona texto para formatear o doble clic para editar"
+      >
+        {children ?? text}
+      </Component>
+    </div>
   );
 };
