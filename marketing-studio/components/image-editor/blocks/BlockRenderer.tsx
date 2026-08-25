@@ -37,6 +37,7 @@ import { InstagramHighlightBadge } from './HighlightCoverBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 import { MarketingBlockRenderer } from './MarketingBlocks';
+import { getBlockDefaultWidth } from '../../../utils/blockGeometry';
 
 const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
   <div
@@ -48,8 +49,6 @@ const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
     Vista previa no disponible
   </div>
 );
-
-import { getBlockDefaultWidth } from '../../../utils/blockGeometry';
 
 export interface ImageLayerBlockRendererProps {
   layer: ImageLayer;
