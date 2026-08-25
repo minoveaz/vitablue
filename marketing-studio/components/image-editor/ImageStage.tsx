@@ -376,6 +376,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     if (layer.locked) return;
+
+    // Si el usuario hace clic o arrastra para seleccionar texto, no iniciar dragging del bloque
+    const targetEl = e.target as HTMLElement | null;
+    const isTextElement = targetEl?.closest('[contenteditable="true"]') || targetEl?.closest('.inline-editable-text') || targetEl?.closest('span, p, h1, h2, h3');
+    if (isSelected && isTextElement) {
+      // Si ya está seleccionada la capa y hace clic en el texto, permitir seleccionar texto libremente
+      return;
+    }
+
     setDraggingLayerId(layer.id);
 
     const layersToDrag = project.layers.filter(
