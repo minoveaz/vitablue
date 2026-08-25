@@ -886,7 +886,7 @@ const companyBlockLayer = (
 const createCompanyProject = (
   id: string,
   title: string,
-  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9',
+  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1',
   background: string,
   layers: ImageLayer[],
 ): ImageProject => ({

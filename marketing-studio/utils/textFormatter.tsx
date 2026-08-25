@@ -1,4 +1,5 @@
 import React from 'react';
+import { htmlToPlainText, isTiptapHtml, sanitizeTiptapHtml } from './tiptapHtml';
 
 export interface TextHighlightRule {
   id?: string;
@@ -13,6 +14,7 @@ export interface TextHighlightRule {
  */
 export function stripTextFormatting(rawText: string): string {
   if (!rawText) return '';
+  if (isTiptapHtml(rawText)) return htmlToPlainText(rawText);
   return rawText
     .replace(/&nbsp;/g, ' ')
     .replace(/<[^>]*>/g, '') // Quitar HTML tags
@@ -40,9 +42,10 @@ export function parseFormattedText(
   // Limpiar entidades HTML como &nbsp; antes de procesar
   const cleanHtml = rawText.replace(/&nbsp;/g, ' ');
 
-  // Si el texto proviene del editor enriquecido (HTML nativo), renderizar con fidelidad total
-  if (cleanHtml.includes('<p>') || cleanHtml.includes('<span>') || cleanHtml.includes('<font') || cleanHtml.includes('<mark>') || cleanHtml.includes('<strong>') || cleanHtml.includes('<b>') || cleanHtml.includes('<em>') || cleanHtml.includes('<i>') || cleanHtml.includes('<u>') || cleanHtml.includes('<s>') || cleanHtml.includes('<strike>')) {
-    return <span className="inline-rich-html [&_p]:inline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
+  // Tiptap HTML sanitizado es la ruta canónica; las reglas legacy solo se
+  // consultan cuando el contenido aún no ha migrado.
+  if (isTiptapHtml(cleanHtml)) {
+    return <span className="inline-rich-html [&_p]:inline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: sanitizeTiptapHtml(cleanHtml) }} />;
   }
 
   // 1. Procesar sintaxis de etiquetas [Palabra](#HEX) o [Palabra](#HEX:size:bg) o **bold**, *italic*, ~~strike~~, <u>underline</u>, etc.

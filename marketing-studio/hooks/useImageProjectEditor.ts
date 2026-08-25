@@ -10,7 +10,7 @@ import {
   ImageStyleVariantId,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
-import { saveStoredImageProject, saveRecoveryImageProject, getRecoveryImageProject } from '../utils/imageProjectStorage';
+import { saveStoredImageProject, saveRecoveryImageProject, getRecoveryImageProject, normalizeStoredProject } from '../utils/imageProjectStorage';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
@@ -32,6 +32,7 @@ import {
   replaceLayerContent as replaceLayerContentPreservingComposition,
 } from '../utils/imageDesignSystem';
 import { getBlockCatalogItem } from '../data/blockCatalog';
+import { normalizeTiptapHtml } from '../utils/tiptapHtml';
 import {
   createDefaultLayoutMetadata,
   getLayerLayoutConstraints,
@@ -39,7 +40,7 @@ import {
 } from '../../packages/video-studio/src/domain/layoutConstraints';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
-  ...project,
+  ...normalizeStoredProject(project),
   layout: {
     ...createDefaultLayoutMetadata(),
     ...(project.layout ?? {}),
@@ -520,7 +521,11 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     const applyStandardProps = (layer: ImageLayer): ImageLayer => {
-      const updated: ImageLayer = { ...layer, props: { ...layer.props, ...patch } };
+      const normalizedPatch = { ...patch };
+      ['text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText', 'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message'].forEach((key) => {
+        if (typeof normalizedPatch[key] === 'string') normalizedPatch[key] = normalizeTiptapHtml(normalizedPatch[key] as string);
+      });
+      const updated: ImageLayer = { ...layer, props: { ...layer.props, ...normalizedPatch } };
 
       if ('fill' in patch) updated.fill = patch.fill as string;
       if ('color' in patch) updated.fill = patch.color as string;
@@ -1110,6 +1115,9 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       initialTitle = catalogDefinition.name;
       initialProps = { ...catalogDefinition.defaultProps, ...initialProps };
     }
+    ['text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText', 'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message', 'wrongOptionTitle', 'wrongOptionDesc', 'correctOptionTitle', 'correctOptionDesc'].forEach((key) => {
+      if (typeof initialProps[key] === 'string') initialProps[key] = normalizeTiptapHtml(initialProps[key] as string);
+    });
 
     let width = typeof defaultProps?.width === 'number'
       ? defaultProps.width
@@ -1197,7 +1205,10 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
 
   const addTextLayer = useCallback((preset?: Partial<TextPresetItem>) => {
     const canvasWidth = project.preset.width || 1080;
-    const scaleFactor = Math.max(0.8, canvasWidth / 1080);
+    const referenceWidth = project.preset.isCarousel
+      ? project.preset.slideWidth ?? Math.round(canvasWidth / (project.preset.defaultSlideCount || 1))
+      : canvasWidth;
+    const scaleFactor = Math.max(0.8, referenceWidth / 1080);
 
     // Calcular tamaño de fuente legible para el tamaño real del lienzo
     const calculateFontSize = () => {
@@ -1236,7 +1247,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       blockType: 'CustomText',
       title: preset?.title ?? preset?.defaultText ?? 'Capa de Texto',
       props: {
-        text: preset?.defaultText ?? 'Escribe tu texto aquí',
+        text: normalizeTiptapHtml(preset?.defaultText ?? 'Escribe tu texto aquí'),
         tag: preset?.tag ?? 'h2',
         ...preset?.customProps,
       },
@@ -1265,11 +1276,14 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       pushHistory(next);
       return next;
     });
-  }, [project.preset.width, pushHistory]);
+  }, [project.preset.defaultSlideCount, project.preset.isCarousel, project.preset.slideWidth, project.preset.width, pushHistory]);
 
   const addImageLayer = useCallback((imageUrl: string, options?: { title?: string; width?: number; height?: number; clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon' }) => {
     const canvasWidth = project.preset.width || 1080;
-    const defaultW = options?.width ?? Math.round(canvasWidth * 0.45);
+    const referenceWidth = project.preset.isCarousel
+      ? project.preset.slideWidth ?? Math.round(canvasWidth / (project.preset.defaultSlideCount || 1))
+      : canvasWidth;
+    const defaultW = options?.width ?? Math.round(referenceWidth * 0.45);
     const defaultH = options?.height ?? Math.round(defaultW * 0.75);
 
     const newLayer: ImageLayer = {
@@ -1299,7 +1313,7 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
       pushHistory(next);
       return next;
     });
-  }, [project.preset.width, pushHistory]);
+  }, [project.preset.defaultSlideCount, project.preset.isCarousel, project.preset.slideWidth, project.preset.width, pushHistory]);
 
   const saveLayerToMyDesigns = useCallback((layerId: string, customTitle?: string) => {
     const target = project.layers.find((l) => l.id === layerId);

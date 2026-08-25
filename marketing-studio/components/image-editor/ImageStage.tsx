@@ -4,8 +4,6 @@ import {
   ImageLayer,
 } from '../../types/imageStudio';
 import { calculateSnapping } from '../../hooks/useKonvaSnapping';
-import { ImageQuickToolbar } from './ImageQuickToolbar';
-import { InlineEditorProvider } from './InlineEditableText';
 import {
   Minus,
   Plus,
@@ -658,47 +656,18 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
   }, [project.preset.id, project.preset.width, project.preset.height]);
 
-  const selectedLayer = project.layers.find((l) => l.id === selectedLayerId);
-
   return (
-    <InlineEditorProvider>
-      <div
-        ref={containerRef}
-        onMouseDown={handleContainerMouseDown}
-        className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
-          effectiveHandMode
-            ? isPanning
-              ? 'cursor-grabbing'
-              : 'cursor-grab'
-            : 'cursor-default'
-        }`}
-      >
-      {/* FLOATING QUICK TOOLBAR (ABOVE CANVAS) */}
-      {selectedLayer && (
-        <div
-          className="absolute top-4 z-40"
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <ImageQuickToolbar
-            layer={selectedLayer}
-            selectedCount={selectedLayerIds.length > 0 ? selectedLayerIds.length : 1}
-            onDuplicate={onDuplicateLayer}
-            onDuplicateSelected={onDuplicateSelectedLayers}
-            onRemove={onRemoveLayer}
-            onDeleteSelected={onDeleteSelectedLayers}
-            onGroup={onGroupSelectedLayers}
-            onScaleChange={onUpdateScale}
-            onCenter={(id) => onUpdatePosition(id, { x: 50, y: 50 })}
-            onUngroup={onUngroupLayer}
-            onFitToCanvas={onFitToCanvas}
-            onToggleLock={onToggleLock}
-            onToggleFlipHorizontal={onToggleFlipHorizontal}
-          />
-        </div>
-      )}
-
+    <div
+      ref={containerRef}
+      onMouseDown={handleContainerMouseDown}
+      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
+        effectiveHandMode
+          ? isPanning
+            ? 'cursor-grabbing'
+            : 'cursor-grab'
+          : 'cursor-default'
+      }`}
+    >
       {/* RIGHT-CLICK CONTEXT MENU (ESTILO CANVA) */}
       {contextMenu && (
         <div
@@ -1263,9 +1232,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       {/* PLATFORM SPECIFIC OVERLAYS WHEN SAFE ZONE ENABLED */}
                       {showSafeZones && (
                         <div
-                          className="absolute inset-y-0"
+                          className="pointer-events-none absolute inset-y-0"
                           style={{ left: `${leftPos}px`, width: `${slideW}px` }}
                         >
+                          {/* Carousel safe zones are local to each slide, not the panorama. */}
+                          <div
+                            className="absolute border-2 border-dashed border-amber-400/80 bg-amber-400/[0.03]"
+                            style={{
+                              left: `${(guideProfile.safeInsets.left / project.preset.width) * slideW}px`,
+                              right: `${(guideProfile.safeInsets.right / project.preset.width) * slideW}px`,
+                              top: `${(guideProfile.safeInsets.top / project.preset.height) * project.preset.height}px`,
+                              bottom: `${(guideProfile.safeInsets.bottom / project.preset.height) * project.preset.height}px`,
+                            }}
+                          />
                           {/* 1:1 Profile Grid Crop Preview on Slide 1 for Instagram */}
                           {isInstagram && isFirst && (
                             <div
@@ -1360,7 +1339,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                   }}
                 />
               )}
-              {guideSettings.showSafeZone && (
+              {guideSettings.showSafeZone && !project.preset.isCarousel && (
                 <div
                   className="absolute border-2 border-dashed border-amber-400/80 bg-amber-400/[0.03]"
                   style={{
@@ -1703,6 +1682,5 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </button>
       </div>
       </div>
-    </InlineEditorProvider>
   );
 };

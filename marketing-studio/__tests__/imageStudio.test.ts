@@ -55,10 +55,10 @@ describe('ImageStudio Presets & Templates', () => {
 
   it('maps every marketing catalog item to an independent project with the correct aspect', () => {
     expect(UNIVERSAL_IMAGE_TEMPLATES).toHaveLength(8);
-    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(8);
+    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(10);
 
     const marketingCatalog = TEMPLATE_CATALOG;
-    expect(marketingCatalog).toHaveLength(16);
+    expect(marketingCatalog).toHaveLength(17);
     marketingCatalog.forEach((item) => {
       const project = MARKETING_TEMPLATE_PROJECT_BY_ID.get(item.projectId);
       expect(project, item.id).toBeDefined();

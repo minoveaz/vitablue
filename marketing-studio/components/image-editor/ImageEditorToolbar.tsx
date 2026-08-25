@@ -20,6 +20,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
+import { InlineTextControls, useActiveInlineEditor } from './InlineEditableText';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -65,6 +66,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   onSaveToDam,
   onSendToVideoStudio,
 }) => {
+  const activeInlineEditor = useActiveInlineEditor();
   const [copied, setCopied] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -137,11 +139,19 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
 
       {/* 2. SECCIÓN CENTRAL: DESHACER / REHACER COMPACTO */}
       <div className="flex items-center gap-1.5 shrink-0">
+        <InlineTextControls compact />
         <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-0.5 shadow-xs">
           <button
             type="button"
-            onClick={onUndo}
-            disabled={!canUndo}
+            onClick={() => {
+              if (activeInlineEditor) {
+                activeInlineEditor.editor.commands.undo();
+                activeInlineEditor.save();
+              } else {
+                onUndo();
+              }
+            }}
+            disabled={activeInlineEditor ? !activeInlineEditor.editor.can().undo() : !canUndo}
             className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
             title="Deshacer (Cmd+Z)"
           >
@@ -149,8 +159,15 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </button>
           <button
             type="button"
-            onClick={onRedo}
-            disabled={!canRedo}
+            onClick={() => {
+              if (activeInlineEditor) {
+                activeInlineEditor.editor.commands.redo();
+                activeInlineEditor.save();
+              } else {
+                onRedo();
+              }
+            }}
+            disabled={activeInlineEditor ? !activeInlineEditor.editor.can().redo() : !canRedo}
             className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
             title="Rehacer (Cmd+Shift+Z)"
           >
@@ -287,7 +304,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      onExportCarousel ? onExportCarousel('zip') : onExport('png');
+                      if (onExportCarousel) onExportCarousel('zip');
+                      else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
                     className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
@@ -298,7 +316,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      onExportCarousel ? onExportCarousel('pdf') : onExport('png');
+                      if (onExportCarousel) onExportCarousel('pdf');
+                      else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
                     className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
@@ -309,7 +328,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      onExportCarousel ? onExportCarousel('full') : onExport('png');
+                      if (onExportCarousel) onExportCarousel('full');
+                      else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
                     className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"

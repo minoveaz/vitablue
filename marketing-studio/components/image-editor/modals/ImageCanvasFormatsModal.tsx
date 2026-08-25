@@ -241,8 +241,7 @@ export const ImageCanvasFormatsModal: React.FC<ImageCanvasFormatsModalProps> = (
               {filteredPresets.map((preset) => {
                 const isCurrent = Boolean(
                   currentPreset &&
-                    (currentPreset.id === preset.id ||
-                      (currentPreset.width === preset.width && currentPreset.height === preset.height))
+                    currentPreset.id === preset.id
                 );
                 const ratioValue = preset.width / preset.height;
                 const isVertical = ratioValue < 0.9;

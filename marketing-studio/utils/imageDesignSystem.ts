@@ -12,6 +12,7 @@ import {
   type LayoutCanvasSize,
   resizeLayerForFormat,
 } from '../../packages/video-studio/src/domain/layoutConstraints';
+import { normalizeTiptapHtml } from './tiptapHtml';
 
 export interface PlatformGuideProfile {
   id: ImagePlatformGuideId;
@@ -416,7 +417,7 @@ export const replaceLayerContent = (layer: ImageLayer, replacement: ContentRepla
       'buttonText',
     ].filter((key) => key in props);
     (contentKeys.length > 0 ? contentKeys : ['text']).forEach((key) => {
-      props[key] = replacement.text;
+      props[key] = normalizeTiptapHtml(replacement.text!);
     });
   }
   return {

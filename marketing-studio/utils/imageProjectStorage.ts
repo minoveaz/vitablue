@@ -1,7 +1,8 @@
-import { ImageProject, IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
+import { ImageProject, ImageLayer, IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from './imageTemplates';
 import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import { createDefaultLayoutMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
+import { normalizeTiptapHtml } from './tiptapHtml';
 
 export const IMAGE_STUDIO_STORAGE_KEY = 'vitablue_image_studio_projects';
 export const IMAGE_STUDIO_RECOVERY_KEY = 'vitablue_image_studio_recovery';
@@ -11,8 +12,28 @@ let inMemoryCache: ImageProject[] = INITIAL_IMAGE_TEMPLATES.map((project) => ({
   layout: createDefaultLayoutMetadata(),
 }));
 
-const normalizeStoredProject = (project: ImageProject): ImageProject => ({
+const TEXT_PROP_KEYS = new Set([
+  'text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText',
+  'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message',
+  'wrongOptionTitle', 'wrongOptionDesc', 'correctOptionTitle', 'correctOptionDesc',
+]);
+
+const migrateLayerText = (layer: ImageLayer): ImageLayer => {
+  const props = { ...(layer.props ?? {}) };
+  TEXT_PROP_KEYS.forEach((key) => {
+    if (typeof props[key] === 'string' && props[key].trim()) {
+      props[key] = normalizeTiptapHtml(props[key] as string);
+    }
+  });
+  if (Array.isArray(props.childrenLayers)) {
+    props.childrenLayers = (props.childrenLayers as ImageLayer[]).map(migrateLayerText);
+  }
+  return { ...layer, props };
+};
+
+export const normalizeStoredProject = (project: ImageProject): ImageProject => ({
   ...project,
+  layers: (project.layers ?? []).map(migrateLayerText),
   layout: {
     ...createDefaultLayoutMetadata(),
     ...(project.layout ?? {}),
@@ -49,6 +70,7 @@ export function getStoredImageProjects(): ImageProject[] {
         return merged;
       }
       inMemoryCache = normalizedParsed;
+      localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(normalizedParsed));
       return normalizedParsed;
     }
     const seeded = INITIAL_IMAGE_TEMPLATES.map(normalizeStoredProject);
@@ -76,10 +98,10 @@ export function getUserSavedImageProjects(): ImageProject[] {
 export function saveStoredImageProject(project: ImageProject): void {
   const projects = getStoredImageProjects();
   const existingIndex = projects.findIndex((p) => p.id === project.id);
-  const updated = {
+  const updated = normalizeStoredProject({
     ...project,
     updatedAt: new Date().toISOString(),
-  };
+  });
 
   let nextProjects: ImageProject[];
   if (existingIndex >= 0) {
@@ -103,7 +125,7 @@ export function saveStoredImageProject(project: ImageProject): void {
 export function saveRecoveryImageProject(project: ImageProject): void {
   if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project, savedAt: new Date().toISOString() }));
+    localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project: normalizeStoredProject(project), savedAt: new Date().toISOString() }));
   } catch (error) {
     console.error('Error saving image studio recovery snapshot:', error);
   }

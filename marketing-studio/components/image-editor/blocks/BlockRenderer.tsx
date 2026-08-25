@@ -38,6 +38,7 @@ import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 import { MarketingBlockRenderer } from './MarketingBlocks';
 import { getBlockDefaultWidth } from '../../../utils/blockGeometry';
+import { htmlToPlainText, isTiptapHtml } from '../../../utils/tiptapHtml';
 
 const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
   <div
@@ -61,6 +62,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
   brandTokens,
   onUpdateLayerProps,
 }) => {
+  const displayText = (value: unknown, fallback = '') => {
+    const text = String(value ?? fallback);
+    return isTiptapHtml(text) ? htmlToPlainText(text) : text;
+  };
   const blockProps = {
     ...(layer.blockType ? getBlockCatalogItem(layer.blockType)?.defaultProps : {}),
     ...((layer.props ?? {}) as Record<string, unknown>),
@@ -124,12 +129,12 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionAdvisorCard':
       return (
         <MotionAdvisorCard
-          name={String(blockProps.name ?? 'Sofía')}
-          role={String(blockProps.role ?? 'Asesora')}
-          badge={String(blockProps.badge ?? 'EN DIRECTO')}
-          message={String(blockProps.message ?? '')}
+          name={displayText(blockProps.name, 'Sofía')}
+          role={displayText(blockProps.role, 'Asesora')}
+          badge={displayText(blockProps.badge, 'EN DIRECTO')}
+          message={displayText(blockProps.message)}
           avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
-          whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
+          whatsAppText={displayText(blockProps.whatsAppText, 'WhatsApp')}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -139,10 +144,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionTrustBadge':
       return (
         <MotionTrustBadge
-          title={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
-          subtitle={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa')}
-          highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
-          verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
+          title={displayText(blockProps.title, 'PÓLIZA 100% VÁLIDA PARA VISADO')}
+          subtitle={displayText(blockProps.subtitle, 'Sin Copagos · Cobertura Completa')}
+          highlight={displayText(blockProps.highlight, 'GARANTÍA CONSULAR')}
+          verifiedLabel={displayText(blockProps.verifiedLabel, 'VERIFICADO')}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -152,8 +157,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionProviderGrid':
       return (
         <MotionProviderGrid
-          title={String(blockProps.title ?? 'Aseguradoras Líderes')}
-          subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
+          title={displayText(blockProps.title, 'Aseguradoras Líderes')}
+          subtitle={blockProps.subtitle ? displayText(blockProps.subtitle) : undefined}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -163,11 +168,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionComparisonCard':
       return (
         <MotionComparisonCard
-          title={String(blockProps.title ?? '')}
-          wrongOptionTitle={String(blockProps.wrongOptionTitle ?? '')}
-          wrongOptionDesc={String(blockProps.wrongOptionDesc ?? '')}
-          correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
-          correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
+          title={displayText(blockProps.title)}
+          wrongOptionTitle={displayText(blockProps.wrongOptionTitle)}
+          wrongOptionDesc={displayText(blockProps.wrongOptionDesc)}
+          correctOptionTitle={displayText(blockProps.correctOptionTitle)}
+          correctOptionDesc={displayText(blockProps.correctOptionDesc)}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -289,6 +294,12 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
       if (layer.type === 'text' || layer.blockType === 'CustomText') {
         const textTag = (blockProps.tag as 'h1' | 'h2' | 'h3' | 'p' | 'span') ?? 'p';
         const isBadge = blockProps.tag === 'badge';
+        const rawText = String(blockProps.text ?? layer.title ?? 'Texto');
+        const legacyTextPreview = parseFormattedText(
+          rawText,
+          (blockProps.highlightWords as TextHighlightRule[]) ?? [],
+          String(layer.fill ?? blockProps.color ?? '#FFFFFF')
+        );
 
         if (isBadge) {
           const badgeVariant = String(blockProps.badgeVariant ?? 'pill');
@@ -339,6 +350,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               fontSize: `min(${baseFontSize}px, 12cqw)`,
               fontWeight: layer.fontWeight ?? (blockProps.fontWeight as any) ?? '700',
               color: hasStrokeEffect ? 'transparent' : (layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'),
+              fontStyle: (layer.fontStyle ?? blockProps.fontStyle) as React.CSSProperties['fontStyle'],
+              textDecoration: (blockProps.textDecoration as React.CSSProperties['textDecoration']) ?? undefined,
               backgroundColor: hasBoxEffect ? (layer.boxColor ?? '#EE9B00') : undefined,
               textAlign: layer.align ?? (blockProps.textAlign as any) ?? 'center',
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
@@ -350,17 +363,13 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
             }}
           >
             <InlineEditableText
-              text={String(blockProps.text ?? layer.title ?? 'Texto')}
+              text={rawText}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
               className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line'}`}
               style={{ '--text-fit-lines': maxLines } as React.CSSProperties}
               as={textTag}
             >
-              {parseFormattedText(
-                String(blockProps.text ?? layer.title ?? 'Texto'),
-                (blockProps.highlightWords as TextHighlightRule[]) ?? [],
-                String(layer.fill ?? blockProps.color ?? '#FFFFFF')
-              )}
+              {isTiptapHtml(rawText) ? undefined : legacyTextPreview}
             </InlineEditableText>
           </div>
         );

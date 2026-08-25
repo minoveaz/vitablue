@@ -10,27 +10,22 @@ import {
   Share2,
   MoreVertical,
   Music2,
-  FileText,
-  Instagram,
   CheckCircle2,
-  ZoomIn,
   Sparkles,
 } from 'lucide-react';
-import { ImageProject } from '../../types/imageStudio';
+import { ImageLayer, ImageProject } from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
   onClose: () => void;
   project: ImageProject;
-  canvasRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = ({
   isOpen,
   onClose,
   project,
-  canvasRef,
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [platformMode, setPlatformMode] = useState<'instagram' | 'tiktok' | 'linkedin'>('instagram');
@@ -40,9 +35,19 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   const [touchDelta, setTouchDelta] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  const slideCount = project.preset.defaultSlideCount ?? (project.carouselConfig?.slideCount || 5);
-  const slideWidth = project.preset.slideWidth ?? 1080;
-  const slideHeight = project.preset.height ?? 1350;
+  const isPanoramicCarousel = Boolean(project.preset.isCarousel || project.carouselConfig?.enabled);
+  const carouselConfig = project.carouselConfig;
+  const slideCount = isPanoramicCarousel
+    ? Math.max(1, carouselConfig?.slideCount ?? project.preset.defaultSlideCount ?? 5)
+    : 1;
+  const slideWidth = isPanoramicCarousel
+    ? carouselConfig?.slideWidth ?? project.preset.slideWidth ?? project.preset.width / slideCount
+    : project.preset.width;
+  const slideHeight = isPanoramicCarousel
+    ? carouselConfig?.slideHeight ?? project.preset.slideHeight ?? project.preset.height
+    : project.preset.height;
+  const canvasWidth = project.preset.width;
+  const canvasHeight = project.preset.height;
 
   const slideBoxRef = useRef<HTMLDivElement | null>(null);
   const [measuredSlideWidth, setMeasuredSlideWidth] = useState<number>(340);
@@ -64,14 +69,19 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   }, [isOpen, platformMode]);
 
   useEffect(() => {
-    if (project.preset.id.includes('tiktok') || project.preset.carouselPlatform === 'tiktok') {
+    setCurrentSlide((slide) => Math.min(slide, slideCount - 1));
+  }, [project.id, project.preset.id, slideCount]);
+
+  useEffect(() => {
+    const platform = project.carouselConfig?.platform ?? project.preset.carouselPlatform;
+    if (project.preset.id.includes('tiktok') || platform === 'tiktok') {
       setPlatformMode('tiktok');
-    } else if (project.preset.id.includes('linkedin') || project.preset.carouselPlatform === 'linkedin') {
+    } else if (project.preset.id.includes('linkedin') || platform === 'linkedin') {
       setPlatformMode('linkedin');
     } else {
       setPlatformMode('instagram');
     }
-  }, [project.preset]);
+  }, [project.carouselConfig?.platform, project.preset.carouselPlatform, project.preset.id]);
 
   if (!isOpen) return null;
 
@@ -130,7 +140,46 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
     background: project.background.gradient ?? project.background.color ?? '#001219',
   };
 
-  const isPortrait = slideHeight >= slideWidth;
+  const getFilterStyle = (layer: ImageLayer) => {
+    const parts: string[] = [];
+    if (layer.brightness !== undefined && layer.brightness !== 100) parts.push(`brightness(${layer.brightness}%)`);
+    if (layer.contrast !== undefined && layer.contrast !== 100) parts.push(`contrast(${layer.contrast}%)`);
+    if (layer.blur !== undefined && layer.blur > 0) parts.push(`blur(${layer.blur}px)`);
+    if (layer.filter === 'grayscale') parts.push('grayscale(100%)');
+    if (layer.filter === 'sepia') parts.push('sepia(80%)');
+    if (layer.filter === 'contrast') parts.push('contrast(160%) saturate(120%)');
+    if (layer.filter === 'teal_tint') parts.push('hue-rotate(150deg) saturate(130%)');
+    if (layer.filter === 'gold_tint') parts.push('sepia(50%) hue-rotate(330deg) saturate(160%)');
+    return parts.length > 0 ? parts.join(' ') : undefined;
+  };
+
+  const getShadowStyle = (layer: ImageLayer) => {
+    if (layer.shadowPreset === 'soft') return '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)';
+    if (layer.shadowPreset === 'deep') return '0 25px 50px -12px rgba(0, 0, 0, 0.7)';
+    if (layer.shadowPreset === 'glow_teal') return '0 0 25px rgba(148, 210, 189, 0.6), 0 0 10px rgba(0, 95, 115, 0.8)';
+    if (layer.shadowPreset === 'glow_gold') return '0 0 25px rgba(238, 155, 0, 0.6), 0 0 10px rgba(202, 103, 2, 0.8)';
+    if (layer.shadowPreset === 'neon') return '0 0 5px #00FFFF, 0 0 20px #005F73, 0 0 40px #001219';
+    if (layer.shadowBlur || layer.shadowColor) {
+      return `${layer.shadowOffsetX ?? 0}px ${layer.shadowOffsetY ?? 4}px ${layer.shadowBlur ?? 10}px ${layer.shadowColor ?? 'rgba(0,0,0,0.4)'}`;
+    }
+    return undefined;
+  };
+
+  const getClipClass = (clipShape: ImageLayer['clipShape']) => {
+    switch (clipShape) {
+      case 'circle':
+      case 'pill':
+        return 'rounded-full overflow-hidden';
+      case 'squircle':
+        return 'rounded-[2.5rem] overflow-hidden';
+      case 'phone_mockup':
+        return 'rounded-[3rem] border-4 border-slate-700 shadow-2xl overflow-hidden';
+      case 'shield':
+        return 'rounded-b-[3rem] rounded-t-2xl overflow-hidden';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fadeIn select-none">
@@ -234,72 +283,47 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                         <div
                           className="absolute top-0 left-0 origin-top-left pointer-events-none select-none"
                           style={{
-                            width: `${project.preset.width}px`,
-                            height: `${project.preset.height}px`,
-                            transform: `scale(${measuredSlideWidth / (slideWidth || 1080)}) translateX(-${idx * slideWidth}px)`,
+                            width: `${canvasWidth}px`,
+                            height: `${canvasHeight}px`,
+                            transform: `scale(${measuredSlideWidth / slideWidth}) translateX(-${idx * slideWidth}px)`,
                           }}
                         >
                           {/* Render of layers */}
                           {project.layers.map((layer) => {
                             if (layer.visible === false) return null;
-                            const blockProps = layer.props as Record<string, unknown>;
+                            const blockProps = layer.props ?? {};
                             const widthStyle = getBlockDefaultWidth(layer.blockType, layer.width, blockProps);
+                            const scaleX = (layer.scale ?? 1) * (layer.flipHorizontal ? -1 : 1);
+                            const scaleY = (layer.scale ?? 1) * (layer.flipVertical ? -1 : 1);
 
                             return (
                               <div
                                 key={layer.id}
-                                className="absolute pointer-events-none select-none"
+                                className={`absolute pointer-events-none select-none ${getClipClass(layer.clipShape)}`}
                                 style={{
                                   left: `${layer.position.x}%`,
                                   top: `${layer.position.y}%`,
-                                  transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${layer.scale ?? 1})`,
+                                  transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${scaleX}, ${scaleY})`,
                                   zIndex: layer.zIndex,
-                                  width: layer.type === 'block' ? widthStyle : layer.width ? `${layer.width}px` : 'auto',
-                                  height: layer.height ? `${layer.height}px` : 'auto',
+                                  width: widthStyle,
+                                  height: layer.height
+                                    ? `${layer.height}px`
+                                    : layer.blockType === 'GeometricShape'
+                                    ? '200px'
+                                    : 'auto',
                                   opacity: layer.opacity ?? 1,
+                                  boxShadow: getShadowStyle(layer),
+                                  borderWidth: layer.blockType === 'GeometricShape' ? undefined : layer.borderWidth ? `${layer.borderWidth}px` : undefined,
+                                  borderColor: layer.blockType === 'GeometricShape' ? undefined : layer.borderColor,
+                                  borderStyle: layer.blockType === 'GeometricShape' ? undefined : layer.borderWidth ? 'solid' : undefined,
+                                  borderRadius: layer.blockType === 'GeometricShape' ? undefined : layer.borderRadius ? `${layer.borderRadius}px` : undefined,
+                                  filter: getFilterStyle(layer),
                                 }}
                               >
-                                {layer.type === 'block' && (
-                                  <ImageLayerBlockRenderer
-                                    layer={layer}
-                                    brandTokens={project.brandTokens}
-                                  />
-                                )}
-                                {layer.type === 'text' && (
-                                  <div
-                                    className="font-bold leading-tight"
-                                    style={{
-                                      color: layer.color ?? '#FFFFFF',
-                                      fontSize: `${layer.fontSize ?? 32}px`,
-                                      fontFamily: layer.fontFamily ?? 'Inter',
-                                      fontWeight: layer.fontWeight ?? 'bold',
-                                      textAlign: layer.textAlign ?? 'left',
-                                    }}
-                                  >
-                                    {layer.text}
-                                  </div>
-                                )}
-                                {layer.type === 'shape' && (
-                                  <div
-                                    style={{
-                                      width: `${layer.width ?? 120}px`,
-                                      height: `${layer.height ?? 120}px`,
-                                      background: layer.color ?? '#94D2BD',
-                                      borderRadius: layer.shapeType === 'circle' ? '9999px' : '16px',
-                                    }}
-                                  />
-                                )}
-                                {layer.type === 'image' && layer.imageUrl && (
-                                  <img
-                                    src={layer.imageUrl}
-                                    alt=""
-                                    className="object-cover rounded-lg"
-                                    style={{
-                                      width: `${layer.width ?? 300}px`,
-                                      height: `${layer.height ?? 300}px`,
-                                    }}
-                                  />
-                                )}
+                                <ImageLayerBlockRenderer
+                                  layer={layer}
+                                  brandTokens={project.brandTokens}
+                                />
                               </div>
                             );
                           })}

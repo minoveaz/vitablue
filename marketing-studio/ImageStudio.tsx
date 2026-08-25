@@ -9,6 +9,7 @@ import { ImageStudioInspector } from './components/image-editor/ImageStudioInspe
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
+import { InlineEditorProvider } from './components/image-editor/InlineEditableText';
 import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
@@ -265,7 +266,8 @@ export const ImageStudio: React.FC = () => {
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
   return (
-    <StudioWorkspaceShell
+    <InlineEditorProvider>
+      <StudioWorkspaceShell
       suiteTitle="Image & Graphic Studio"
       tools={studioTools}
       activeToolId={activeToolId}
@@ -427,7 +429,6 @@ export const ImageStudio: React.FC = () => {
           isOpen={isCarouselSimulatorOpen}
           onClose={() => setIsCarouselSimulatorOpen(false)}
           project={editor.project}
-          canvasRef={canvasRef}
         />
 
         {/* TOAST NOTIFICATION */}
@@ -437,7 +438,8 @@ export const ImageStudio: React.FC = () => {
           </div>
         )}
       </div>
-    </StudioWorkspaceShell>
+      </StudioWorkspaceShell>
+    </InlineEditorProvider>
   );
 };
 

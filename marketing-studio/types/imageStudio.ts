@@ -443,6 +443,10 @@ export interface ImageLayer {
   type: 'block' | 'text' | 'image' | 'badge' | 'shape';
   blockType?: ImageBlockType;
   title: string;
+  /**
+   * Component properties. Text-bearing values are persisted as sanitized
+   * Tiptap HTML; legacy plain/markdown strings are migrated on load.
+   */
   props: Record<string, unknown>;
   position: { x: number; y: number }; // Percentage (0-100) or canvas pixels
   zIndex: number;
