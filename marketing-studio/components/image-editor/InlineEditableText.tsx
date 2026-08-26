@@ -143,6 +143,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isEditingRef = useRef(false);
+  const windowBlurredRef = useRef(false);
   const selectionRef = useRef<{ from: number; to: number } | null>(null);
   const onSaveRef = useRef(onSave);
   const { registerEditor, unregisterEditor } = useInlineEditorRegistry();
@@ -200,18 +201,32 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       selectionRef.current = { from, to };
     };
     const restoreSelection = () => {
+      if (document.visibilityState !== 'visible') return;
       const selection = selectionRef.current;
       if (!selection) return;
-      editor.commands.setTextSelection(selection);
-      editor.commands.focus();
+      requestAnimationFrame(() => {
+        if (!isEditingRef.current) return;
+        editor.commands.setTextSelection(selection);
+        editor.commands.focus();
+      });
+    };
+    const handleWindowBlur = () => {
+      windowBlurredRef.current = true;
+      rememberSelection();
+    };
+    const handleWindowFocus = () => {
+      windowBlurredRef.current = false;
+      restoreSelection();
     };
     editor.on('selectionUpdate', rememberSelection);
-    window.addEventListener('focus', restoreSelection);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
     document.addEventListener('visibilitychange', restoreSelection);
     rememberSelection();
     return () => {
       editor.off('selectionUpdate', rememberSelection);
-      window.removeEventListener('focus', restoreSelection);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', restoreSelection);
     };
   }, [editor, isEditing]);
@@ -238,7 +253,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   };
 
   const handleBlur = (event: React.FocusEvent) => {
-    if (document.visibilityState === 'hidden') return;
+    if (windowBlurredRef.current || document.visibilityState === 'hidden') return;
     if (event.relatedTarget && containerRef.current?.contains(event.relatedTarget as Node)) return;
     finishEditing();
   };
