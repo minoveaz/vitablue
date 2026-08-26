@@ -294,7 +294,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   );
 };
 
-export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
+export const InlineTextControls: React.FC<{ compact?: boolean; visible?: boolean }> = ({ compact = false, visible = false }) => {
   const active = useActiveInlineEditor();
   const editor = active?.editor;
   const [colorInput, setColorInput] = useState('#001219');
@@ -305,7 +305,14 @@ export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = 
   useEffect(() => {
     if (editor) setHighlightInput(editor.getAttributes('highlight').color ?? '#fff3a3');
   }, [editor, active?.revision]);
-  if (!active || !editor) return null;
+  if (!active || !editor) {
+    if (!visible) return null;
+    return (
+      <div data-inline-editor-toolbar className="flex w-full items-center justify-center border-b border-slate-800/90 bg-slate-950/95 px-4 py-2 text-xs text-slate-400">
+        Selecciona el texto para activar sus herramientas de formato
+      </div>
+    );
+  }
   const controls = [
     ['bold', 'Negrita', Bold, () => editor.chain().focus().toggleBold().run()],
     ['italic', 'Cursiva', Italic, () => editor.chain().focus().toggleItalic().run()],

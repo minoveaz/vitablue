@@ -346,7 +346,13 @@ export const ImageStudio: React.FC = () => {
         />
       }
       contextualToolbar={
-        <InlineTextControls compact />
+        <InlineTextControls
+          compact
+          visible={Boolean((() => {
+            const layer = editor.project.layers.find((item) => item.id === editor.selectedLayerId);
+            return layer?.type === 'text' || layer?.blockType === 'CustomText';
+          })())}
+        />
       }
       aside={
         isInspectorOpen ? (
