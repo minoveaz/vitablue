@@ -13,6 +13,7 @@ import { InlineEditorProvider } from './components/image-editor/InlineEditorProv
 import { InlineEditingProvider } from './components/image-editor/InlineEditingProvider';
 import { InlineTextControls } from './components/image-editor/InlineEditableText';
 import { ContextualToolbar } from './components/image-editor/ContextualToolbar';
+import { MultiSelectionContextualToolbar } from './components/image-editor/MultiSelectionContextualToolbar';
 import { ImageContextualToolbar } from './components/image-editor/ImageContextualToolbar';
 import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
@@ -420,7 +421,9 @@ export const ImageStudio: React.FC = () => {
       contextualToolbar={
         <ContextualToolbar
           context={
-            activeInlineLayerId
+            editor.selectedLayerIds.length > 1
+              ? { kind: 'shape', layerId: editor.selectedLayerIds[0] ?? '' }
+              : activeInlineLayerId
               ? { kind: 'text', layerId: activeInlineLayerId }
               : selectedImageLayer
                 ? { kind: 'image', layerId: selectedImageLayer.id, slideIndex: activeSlideIndex }
@@ -431,7 +434,14 @@ export const ImageStudio: React.FC = () => {
             handleDeselectAll();
           }}
         >
-          {activeInlineLayerId ? (
+          {editor.selectedLayerIds.length > 1 ? (
+            <MultiSelectionContextualToolbar
+              count={editor.selectedLayerIds.length}
+              onAlign={editor.alignSelectedLayers}
+              onDistribute={editor.distributeSelectedLayers}
+              onGroup={editor.groupSelectedLayers}
+            />
+          ) : activeInlineLayerId ? (
             <InlineTextControls compact selectedLayerId={activeInlineLayerId} />
           ) : selectedImageLayer ? (
             <ImageContextualToolbar
