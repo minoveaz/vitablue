@@ -12,9 +12,12 @@ import { CarouselMobileSimulator } from './components/image-editor/CarouselMobil
 import { InlineEditorProvider } from './components/image-editor/InlineEditorProvider';
 import { InlineEditingProvider } from './components/image-editor/InlineEditingProvider';
 import { InlineTextControls } from './components/image-editor/InlineEditableText';
+import { ContextualToolbar } from './components/image-editor/ContextualToolbar';
+import { ImageContextualToolbar } from './components/image-editor/ImageContextualToolbar';
 import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
+import { getCarouselGeometry } from './utils/imageDesignSystem';
 import {
   LayoutTemplate,
   Type,
@@ -52,12 +55,36 @@ export const ImageStudio: React.FC = () => {
   }, [assetId]);
 
   const editor = useImageProjectEditor(initialProject);
+  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const selectedLayer = editor.project.layers.find((layer) => layer.id === editor.selectedLayerId);
+  const selectedImageLayer =
+    selectedLayer && (selectedLayer.type === 'image' || Boolean(selectedLayer.props.imageUrl))
+      ? selectedLayer
+      : null;
+  const carouselGeometry = React.useMemo(
+    () =>
+      getCarouselGeometry(
+        editor.project.preset,
+        editor.project.carouselConfig?.slideCount ?? editor.project.preset.defaultSlideCount,
+      ),
+    [
+      editor.project.preset,
+      editor.project.carouselConfig?.slideCount,
+    ],
+  );
+  const activeSlideIndex = Math.max(
+    0,
+    Math.min(
+      carouselGeometry.slideCount - 1,
+      editor.project.currentSlide ?? editor.project.carouselConfig?.currentSlideIndex ?? 0,
+    ),
+  );
   const activeInlineLayerId =
-    selectedLayer?.type === 'text' || selectedLayer?.blockType === 'CustomText'
+    editingLayerId &&
+    selectedLayer?.id === editingLayerId &&
+    (selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText')
       ? selectedLayer.id
       : null;
-  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
   const showToast = React.useCallback((msg: string) => {
@@ -69,6 +96,8 @@ export const ImageStudio: React.FC = () => {
   useEffect(() => {
     if (editor.selectedLayerId) {
       setIsInspectorOpen(true);
+    } else {
+      setIsInspectorOpen(false);
     }
   }, [editor.selectedLayerId]);
 
@@ -199,7 +228,7 @@ export const ImageStudio: React.FC = () => {
     setEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(true);
-    setIsInspectorOpen(true);
+    setIsInspectorOpen(false);
   };
 
   const handleDeselectAll = () => {
@@ -359,11 +388,20 @@ export const ImageStudio: React.FC = () => {
           canRedo={editor.canRedo}
           isExporting={editor.isExporting}
           showSafeZones={editor.showSafeZones}
+          previewMode={editor.previewMode}
           isInspectorOpen={isInspectorOpen}
           lastSavedAt={editor.lastSavedAt}
           onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
-          onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
+          onToggleSafeZones={() => {
+            const next = !editor.showSafeZones;
+            editor.setShowSafeZones(next);
+            editor.setPreviewMode(next ? 'guides' : 'normal');
+          }}
+          onSetPreviewMode={(mode) => {
+            editor.setPreviewMode(mode);
+            editor.setShowSafeZones(mode === 'guides');
+          }}
           onOpenCarouselSimulator={() => setIsCarouselSimulatorOpen(true)}
           onUndo={editor.undo}
           onRedo={editor.redo}
@@ -380,10 +418,42 @@ export const ImageStudio: React.FC = () => {
         />
       }
       contextualToolbar={
-        <InlineTextControls compact selectedLayerId={activeInlineLayerId} />
+        <ContextualToolbar
+          context={
+            activeInlineLayerId
+              ? { kind: 'text', layerId: activeInlineLayerId }
+              : selectedImageLayer
+                ? { kind: 'image', layerId: selectedImageLayer.id, slideIndex: activeSlideIndex }
+                : null
+          }
+          onDismiss={() => {
+            setEditingLayerId(null);
+            handleDeselectAll();
+          }}
+        >
+          {activeInlineLayerId ? (
+            <InlineTextControls compact selectedLayerId={activeInlineLayerId} />
+          ) : selectedImageLayer ? (
+            <ImageContextualToolbar
+              layer={selectedImageLayer}
+              isCarousel={Boolean(editor.project.preset.isCarousel)}
+              activeSlideIndex={activeSlideIndex}
+              carouselGeometry={carouselGeometry}
+              onCrop={(layerId) => {
+                editor.updateLayerProps(layerId, { objectFit: 'cover' });
+              }}
+              onRotate={(layerId, rotation) => editor.updateLayerRotation(layerId, rotation)}
+              onToggleFlipHorizontal={editor.toggleFlipHorizontal}
+              onToggleFlipVertical={editor.toggleFlipVertical}
+              onFitToActiveSlide={editor.fitLayerToActiveSlide}
+              onReplaceLayerContent={editor.replaceLayerContent}
+              onResetAdjustments={editor.resetLayerAdjustments}
+            />
+          ) : null}
+        </ContextualToolbar>
       }
+      asideVisible={isInspectorOpen}
       aside={
-        isInspectorOpen ? (
           <ImageStudioInspector
             project={editor.project}
             selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
@@ -401,6 +471,9 @@ export const ImageStudio: React.FC = () => {
             onUpdateLayerClipShape={editor.updateLayerClipShape}
             onToggleFlipHorizontal={editor.toggleFlipHorizontal}
             onToggleFlipVertical={editor.toggleFlipVertical}
+            onFitToActiveSlide={editor.fitLayerToActiveSlide}
+            onResetAdjustments={editor.resetLayerAdjustments}
+            activeSlideIndex={activeSlideIndex}
             onUpdateLayerOpacity={editor.updateLayerOpacity}
             onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
             onUpdateLayerBorder={editor.updateLayerBorder}
@@ -415,7 +488,6 @@ export const ImageStudio: React.FC = () => {
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />
-        ) : undefined
       }
     >
       <div className="flex h-full w-full flex-col overflow-hidden relative">
@@ -427,6 +499,8 @@ export const ImageStudio: React.FC = () => {
           isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
+          previewMode={editor.previewMode}
+          onSetCurrentSlide={editor.setCurrentSlide}
           canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
           editingLayerId={editingLayerId}

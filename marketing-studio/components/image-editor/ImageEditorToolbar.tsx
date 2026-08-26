@@ -18,8 +18,12 @@ import {
   Pencil,
   MoreHorizontal,
   Smartphone,
+  Focus,
+  Ruler,
+  Scan,
+  PanelTop,
 } from 'lucide-react';
-import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
+import { ImageFormatPreset, ImagePreviewMode, ImageProject } from '../../types/imageStudio';
 import { useActiveInlineEditor } from './InlineEditorContext';
 
 export interface ImageEditorToolbarProps {
@@ -28,11 +32,13 @@ export interface ImageEditorToolbarProps {
   canRedo: boolean;
   isExporting: boolean;
   showSafeZones: boolean;
+  previewMode: ImagePreviewMode;
   isInspectorOpen: boolean;
   lastSavedAt?: string;
   onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
+  onSetPreviewMode: (mode: ImagePreviewMode) => void;
   onOpenCarouselSimulator?: () => void;
   onUndo: () => void;
   onRedo: () => void;
@@ -51,11 +57,13 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   canRedo,
   isExporting,
   showSafeZones,
+  previewMode,
   isInspectorOpen,
   lastSavedAt,
   onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
+  onSetPreviewMode,
   onOpenCarouselSimulator,
   onUndo,
   onRedo,
@@ -156,6 +164,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           >
             <Undo2 className="size-3.5" />
           </button>
+
           <button
             type="button"
             onClick={() => {
@@ -172,6 +181,29 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           >
             <Redo2 className="size-3.5" />
           </button>
+        </div>
+        <div className="hidden lg:flex items-center gap-0.5 rounded-xl border border-slate-800 bg-slate-950 p-0.5">
+          {([
+            ['normal', PanelTop, 'Vista normal'],
+            ['focus', Focus, 'Enfocar slide activo'],
+            ['guides', Ruler, 'Vista de guías'],
+            ['overview', Scan, 'Vista panorámica'],
+          ] as const).map(([mode, Icon, label]) => (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={previewMode === mode}
+              onClick={() => onSetPreviewMode(mode)}
+              className={`flex size-7 items-center justify-center rounded-lg transition-colors ${
+                previewMode === mode
+                  ? 'bg-primary/30 text-brand-cyan'
+                  : 'text-slate-500 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+              title={label}
+            >
+              <Icon className="size-3.5" />
+            </button>
+          ))}
         </div>
 
         {/* TOGGLE SAFE ZONES (ICONO CON ESTADO) */}

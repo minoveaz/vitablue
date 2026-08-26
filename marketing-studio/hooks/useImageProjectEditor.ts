@@ -29,6 +29,8 @@ import {
   createDefaultGuideSettings,
   fitTextLayer,
   getPlatformGuideProfile,
+  getCarouselSlideFrame,
+  getCarouselGeometry,
   replaceLayerContent as replaceLayerContentPreservingComposition,
 } from '../utils/imageDesignSystem';
 import { getBlockCatalogItem } from '../data/blockCatalog';
@@ -38,6 +40,7 @@ import {
   getLayerLayoutConstraints,
   resizeLayersForFormat,
 } from '../../packages/video-studio/src/domain/layoutConstraints';
+import type { ImagePreviewMode } from '../types/imageStudio';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...normalizeStoredProject(project),
@@ -64,7 +67,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
   }, []);
 
   const [zoom, setZoom] = useState<number>(0.55);
-  const [showSafeZones, setShowSafeZones] = useState<boolean>(true);
+  const [showSafeZones, setShowSafeZones] = useState<boolean>(false);
+  const [previewMode, setPreviewMode] = useState<ImagePreviewMode>('normal');
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
   const [validationIssues, setValidationIssues] = useState<ImageProjectValidationIssue[]>([]);
@@ -1518,6 +1522,68 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     });
   }, [pushHistory]);
 
+  const fitLayerToActiveSlide = useCallback((layerId: string, activeSlideIndex: number) => {
+    setProject((prev) => {
+      const layer = prev.layers.find((item) => item.id === layerId);
+      if (!layer || layer.locked || (layer.type !== 'image' && !layer.props?.imageUrl)) return prev;
+
+      const geometry = getCarouselGeometry(
+        prev.preset,
+        prev.carouselConfig?.slideCount ?? prev.preset.defaultSlideCount,
+      );
+      const frame = getCarouselSlideFrame(
+        prev.preset,
+        activeSlideIndex,
+        geometry.slideCount,
+      );
+      const nextLayers = prev.layers.map((item) =>
+        item.id === layerId
+          ? {
+              ...item,
+              position: frame.center,
+              rotation: 0,
+              scale: 1,
+              width: frame.width,
+              height: frame.height,
+            }
+          : item,
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const resetLayerAdjustments = useCallback((layerId: string) => {
+    setProject((prev) => {
+      const layer = prev.layers.find((item) => item.id === layerId);
+      if (!layer || layer.locked || (layer.type !== 'image' && !layer.props?.imageUrl)) return prev;
+
+      const nextLayers = prev.layers.map((item) =>
+        item.id === layerId
+          ? {
+              ...item,
+              rotation: 0,
+              flipHorizontal: false,
+              flipVertical: false,
+              filter: 'none' as const,
+              brightness: 100,
+              contrast: 100,
+              blur: 0,
+              props: {
+                ...item.props,
+                objectFit: 'cover',
+                focalPoint: { x: 50, y: 50 },
+              },
+            }
+          : item,
+      );
+      const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
   const ungroupLayer = useCallback((layerId: string) => {
     setProject((prev) => {
       const layer = prev.layers.find((l) => l.id === layerId);
@@ -1862,6 +1928,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     setZoom,
     showSafeZones,
     setShowSafeZones,
+    previewMode,
+    setPreviewMode,
     isExporting,
     lastSavedAt,
     saveState,
@@ -1892,6 +1960,8 @@ export function useImageProjectEditor(initialProject?: ImageProject) {
     updateLayerRotation,
     commitPositionChange,
     fitLayerToCanvas,
+    fitLayerToActiveSlide,
+    resetLayerAdjustments,
     ungroupLayer,
     duplicateLayer,
     duplicateSelectedLayers,

@@ -51,7 +51,7 @@ import { stripTextFormatting } from '../../utils/textFormatter';
 import { EditorPanelSection } from './EditorPanelSection';
 import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog';
 import { InlineTextControls } from './InlineEditableText';
-import { useActiveInlineEditor } from './InlineEditorContext';
+import { useActiveInlineEditor, useInlineTextFormatting } from './InlineEditorContext';
 import { htmlToPlainText, isTiptapHtml, normalizeTiptapHtml } from '../../utils/tiptapHtml';
 
 interface NumberInputProps {
@@ -198,7 +198,6 @@ const HexColorPickerField: React.FC<HexColorPickerFieldProps> = ({
           <input
             type="color"
             value={safeHexForInput}
-            onMouseDown={(e) => e.preventDefault()}
             onChange={(e) => {
               setLocalHex(e.target.value.toUpperCase());
               onChange(e.target.value);
@@ -361,6 +360,9 @@ export interface ImageStudioInspectorProps {
   onUpdateLayerClipShape?: (id: string, clipShape: ImageLayer['clipShape']) => void;
   onToggleFlipHorizontal?: (id: string) => void;
   onToggleFlipVertical?: (id: string) => void;
+  onFitToActiveSlide?: (id: string, slideIndex: number) => void;
+  onResetAdjustments?: (id: string) => void;
+  activeSlideIndex?: number;
   onUpdateLayerOpacity?: (id: string, opacity: number) => void;
   onUpdateLayerShadowPreset?: (id: string, preset: ImageLayer['shadowPreset']) => void;
   onUpdateLayerBorder?: (id: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => void;
@@ -393,6 +395,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateLayerClipShape,
   onToggleFlipHorizontal,
   onToggleFlipVertical,
+  onFitToActiveSlide,
+  onResetAdjustments,
+  activeSlideIndex = 0,
   onUpdateLayerOpacity,
   onUpdateLayerShadowPreset,
   onUpdateLayerBorder,
@@ -408,6 +413,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onClose,
 }) => {
   const activeInlineEditor = useActiveInlineEditor();
+  const formatting = useInlineTextFormatting();
   const avatarOptions = [
     { name: 'Sofía', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop' },
     { name: 'Elena', url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&auto=format&fit=crop' },
@@ -423,7 +429,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   React.useEffect(() => {
     setReplacementImageUrl(
-      selectedLayer?.type === 'image'
+      selectedLayer && (selectedLayer.type === 'image' || selectedLayer.props.imageUrl || selectedLayer.src)
         ? String(selectedLayer.props.imageUrl ?? selectedLayer.src ?? '')
         : ''
     );
@@ -715,6 +721,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   const activeBlockAttributes = activeEditor && activeBlockName
     ? activeEditor.getAttributes(activeBlockName) as { textAlign?: string; lineHeight?: string }
     : undefined;
+  const applyTextStyle = formatting.applyTextStyle;
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
   const textBearingBlockTypes = [
     'CustomText',
@@ -739,6 +746,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     'MotionProviderGrid',
   ];
   const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '') || Boolean(props.text || props.title || props.subtitle || props.description || props.badge || props.ctaText);
+  const isImageType = selectedLayer.type === 'image' || Boolean(props.imageUrl || selectedLayer.src);
 
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
@@ -791,6 +799,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   };
 
   return (
+    <div data-inline-editor-inspector="true">
     <ModuleContextPanel
       label={`Bloque: ${selectedLayer.title}`}
       width="standard"
@@ -1306,7 +1315,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
               <textarea
                 value={activeEditor
-                  ? htmlToPlainText(activeEditor.getHTML())
+                  ? activeEditor.getText({ blockSeparator: '\n' })
                   : stripTextFormatting(String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? ''))}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -1348,11 +1357,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 </label>
                 <select
                   value={activeEditor ? String(activeTextStyle?.fontFamily ?? '') : (selectedLayer.fontFamily ?? 'Poppins, sans-serif')}
-                  onMouseDown={(e) => e.preventDefault()}
                   onChange={(e) => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().setMark('textStyle', { fontFamily: e.target.value || null }).run();
-                      activeInlineEditor.save();
+                      applyTextStyle({ fontFamily: e.target.value || null });
                       return;
                     }
                     onUpdateLayerProps(selectedLayer.id, { fontFamily: e.target.value });
@@ -1376,11 +1383,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 </label>
                 <select
                   value={activeEditor ? String(activeTextStyle?.fontWeight ?? '') : (selectedLayer.fontWeight ?? '700')}
-                  onMouseDown={(e) => e.preventDefault()}
                   onChange={(e) => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().setMark('textStyle', { fontWeight: e.target.value || null }).run();
-                      activeInlineEditor.save();
+                      applyTextStyle({ fontWeight: e.target.value || null });
                       return;
                     }
                     onUpdateLayerProps(selectedLayer.id, { fontWeight: e.target.value });
@@ -1413,8 +1418,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                       onChange={(val) => {
                         if (activeInlineEditor) {
                           const fontSize = val === undefined ? null : `${val}px`;
-                          activeInlineEditor.editor.chain().focus().setMark('textStyle', { fontSize }).run();
-                          activeInlineEditor.save();
+                          applyTextStyle({ fontSize });
                           return;
                         }
                         onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 24 });
@@ -1432,12 +1436,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   value={activeEditor
                     ? (parseInt(String(activeTextStyle?.fontSize ?? '').replace('px', ''), 10) || 24)
                     : (selectedLayer.fontSize ?? 24)}
-                  onMouseDown={(e) => e.preventDefault()}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().setMark('textStyle', { fontSize: `${value}px` }).run();
-                      activeInlineEditor.save();
+                      applyTextStyle({ fontSize: `${value}px` });
                       return;
                     }
                     onUpdateLayerProps(selectedLayer.id, { fontSize: value });
@@ -1461,9 +1463,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
-                          if (activeInlineEditor && activeBlockName) {
-                            activeInlineEditor.editor.chain().focus().updateAttributes(activeBlockName, { textAlign: al.id }).run();
-                            activeInlineEditor.save();
+                          if (activeInlineEditor) {
+                            formatting.updateBlockAttributes({ textAlign: al.id });
                             return;
                           }
                           onUpdateLayerProps(selectedLayer.id, { textAlign: al.id, align: al.id });
@@ -1494,8 +1495,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().toggleBold().run();
-                      activeInlineEditor.save();
+                      formatting.toggleMark('bold');
                       return;
                     }
                     const currentWeight = selectedLayer.fontWeight ?? '700';
@@ -1518,8 +1518,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().toggleItalic().run();
-                      activeInlineEditor.save();
+                      formatting.toggleMark('italic');
                       return;
                     }
                     onUpdateLayerProps(selectedLayer.id, {
@@ -1538,8 +1537,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().toggleUnderline().run();
-                      activeInlineEditor.save();
+                      formatting.toggleMark('underline');
                       return;
                     }
                     const current = String(props.textDecoration ?? '');
@@ -1561,8 +1559,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     if (activeInlineEditor) {
-                      activeInlineEditor.editor.chain().focus().toggleStrike().run();
-                      activeInlineEditor.save();
+                      formatting.toggleMark('strike');
                       return;
                     }
                     const current = String(props.textDecoration ?? '');
@@ -1637,8 +1634,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 allowTransparent={false}
                 onChange={(hex) => {
                   if (activeInlineEditor) {
-                    activeInlineEditor.editor.chain().focus().setColor(hex).run();
-                    activeInlineEditor.save();
+                    formatting.setColor(hex);
                     return;
                   }
                   onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex });
@@ -1653,8 +1649,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 value={String(activeEditor.getAttributes('highlight').color ?? '#fff3a3')}
                 allowTransparent={false}
                 onChange={(hex) => {
-                  activeEditor.chain().focus().setHighlight({ color: hex }).run();
-                  activeInlineEditor?.save();
+                  if (activeInlineEditor) formatting.setHighlight(hex);
                 }}
               />
             ) : (
@@ -1692,12 +1687,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   max={2.0}
                   step={0.05}
                   value={activeEditor ? (parseFloat(String(activeBlockAttributes?.lineHeight ?? '')) || 1.25) : (selectedLayer.lineHeight ?? 1.25)}
-                  onMouseDown={(e) => e.preventDefault()}
                   onChange={(e) => {
                     const value = parseFloat(e.target.value);
-                    if (activeInlineEditor && activeBlockName) {
-                      activeInlineEditor.editor.chain().focus().updateAttributes(activeBlockName, { lineHeight: String(value) }).run();
-                      activeInlineEditor.save();
+                    if (activeInlineEditor) {
+                      formatting.updateBlockAttributes({ lineHeight: String(value) });
                       return;
                     }
                     onUpdateLayerProps(selectedLayer.id, { lineHeight: value });
@@ -2230,7 +2223,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
 
-        {selectedLayer.type === 'image' && (
+        {isImageType && (
           <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
               <Crop className="size-3.5 text-brand-cyan" />
@@ -2269,8 +2262,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <button
                   key={fit}
                   type="button"
+                  disabled={selectedLayer.locked}
                   onClick={() => onUpdateLayerProps(selectedLayer.id, { objectFit: fit })}
-                  className={`rounded-lg border py-1 text-[10px] font-bold ${
+                  className={`rounded-lg border py-1 text-[10px] font-bold disabled:cursor-not-allowed disabled:opacity-40 ${
                     ((props.objectFit as string) ?? 'cover') === fit
                       ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
                       : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
@@ -2287,6 +2281,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 min="0"
                 max="100"
                 value={Number((props.focalPoint as { x?: number } | undefined)?.x ?? 50)}
+                disabled={selectedLayer.locked}
                 onChange={(e) =>
                   onUpdateLayerProps(selectedLayer.id, {
                     focalPoint: {
@@ -2305,6 +2300,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 min="0"
                 max="100"
                 value={Number((props.focalPoint as { y?: number } | undefined)?.y ?? 50)}
+                disabled={selectedLayer.locked}
                 onChange={(e) =>
                   onUpdateLayerProps(selectedLayer.id, {
                     focalPoint: {
@@ -2316,6 +2312,28 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 className="mt-1 w-full accent-brand-cyan"
               />
             </label>
+            <div className="flex flex-wrap gap-1.5 border-t border-slate-800/80 pt-2">
+              {onFitToActiveSlide && (
+                <button
+                  type="button"
+                  disabled={selectedLayer.locked}
+                  onClick={() => onFitToActiveSlide(selectedLayer.id, activeSlideIndex)}
+                  className="flex-1 rounded-lg border border-primary/40 bg-primary/20 px-2 py-1.5 text-[10px] font-bold text-brand-cyan transition-colors hover:bg-primary/30 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Ajustar al slide activo
+                </button>
+              )}
+              {onResetAdjustments && (
+                <button
+                  type="button"
+                  disabled={selectedLayer.locked}
+                  onClick={() => onResetAdjustments(selectedLayer.id)}
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-[10px] font-bold text-slate-300 transition-colors hover:border-amber-400/50 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Restablecer ajustes
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -2393,5 +2411,6 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         </div>
       </div>
     </ModuleContextPanel>
+    </div>
   );
 };

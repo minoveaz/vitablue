@@ -252,7 +252,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const imageUrl = String(blockProps.imageUrl ?? layer.src ?? '');
         const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
         const focalPoint = blockProps.focalPoint as { x?: number; y?: number } | undefined;
-        const clipShape = layer.clipShape ?? 'rounded-2xl';
+        const clipShape = layer.clipShape ?? 'none';
 
         let clipStyle: React.CSSProperties = {};
         if (clipShape === 'circle') {
@@ -326,6 +326,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
                 layerId={layer.id}
                 text={String(blockProps.text ?? layer.title ?? 'Badge')}
                 onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
+                onUpdateLayerProps={(patch) => onUpdateLayerProps?.(layer.id, patch)}
                 as="span"
               />
             </div>
@@ -339,6 +340,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const baseFontSize = layer.fontSize ?? (blockProps.fontSize as number) ?? 24;
         const textFit = blockProps.textFit as { mode?: 'auto' | 'fixed'; maxLines?: number } | undefined;
         const maxLines = Math.max(1, textFit?.maxLines ?? 3);
+        const isFixedTextFit = textFit?.mode === 'fixed';
 
         return (
           <div
@@ -358,7 +360,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
               lineHeight: layer.lineHeight ?? 1.25,
               overflowWrap: 'anywhere',
-              overflow: 'hidden',
+              overflow: isFixedTextFit ? 'hidden' : 'visible',
               textShadow: hasGlowEffect ? '0 0 20px rgba(148, 210, 189, 0.9), 0 0 40px rgba(0, 95, 115, 0.8)' : undefined,
               WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'}` : undefined,
             }}
@@ -367,7 +369,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               layerId={layer.id}
               text={rawText}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
-              className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line'}`}
+              onUpdateLayerProps={(patch) => onUpdateLayerProps?.(layer.id, patch)}
+              className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : isFixedTextFit ? 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line' : 'whitespace-pre-line'}`}
               style={{ '--text-fit-lines': maxLines } as React.CSSProperties}
               as={textTag}
             >

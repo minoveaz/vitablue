@@ -22,6 +22,16 @@ export type CarouselPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'facebook' 
 
 export type CarouselSlideRole = 'hook' | 'content' | 'comparison' | 'proof' | 'cta';
 
+export type ImagePreviewMode = 'normal' | 'focus' | 'guides' | 'overview';
+
+export interface CarouselGeometry {
+  slideCount: number;
+  slideWidth: number;
+  slideHeight: number;
+  panoramaWidth: number;
+  panoramaHeight: number;
+}
+
 export interface CarouselSlideMetadata {
   index: number;
   title: string;

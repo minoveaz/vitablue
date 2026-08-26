@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
+import { getCarouselGeometry } from '../../utils/imageDesignSystem';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
@@ -37,14 +38,15 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
 
   const isPanoramicCarousel = Boolean(project.preset.isCarousel || project.carouselConfig?.enabled);
   const carouselConfig = project.carouselConfig;
+  const carouselGeometry = getCarouselGeometry(project.preset, carouselConfig?.slideCount);
   const slideCount = isPanoramicCarousel
-    ? Math.max(1, carouselConfig?.slideCount ?? project.preset.defaultSlideCount ?? 5)
+    ? carouselGeometry.slideCount
     : 1;
   const slideWidth = isPanoramicCarousel
-    ? carouselConfig?.slideWidth ?? project.preset.slideWidth ?? project.preset.width / slideCount
+    ? carouselConfig?.slideWidth ?? carouselGeometry.slideWidth
     : project.preset.width;
   const slideHeight = isPanoramicCarousel
-    ? carouselConfig?.slideHeight ?? project.preset.slideHeight ?? project.preset.height
+    ? carouselConfig?.slideHeight ?? carouselGeometry.slideHeight
     : project.preset.height;
   const canvasWidth = project.preset.width;
   const canvasHeight = project.preset.height;

@@ -2,13 +2,22 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core';
 import {
   InlineEditorRegistryContext,
+  InlineTextFormattingContext,
   type ActiveInlineEditor,
 } from './InlineEditorContext';
+import {
+  applyInlineTextStyle,
+  setInlineColor,
+  setInlineHighlight,
+  toggleInlineMark,
+  updateInlineBlockAttributes,
+} from './inlineTextFormatting';
 
 interface RegisteredEditor {
   editor: Editor;
   layerId?: string;
   save: () => void;
+  updateLayerProps?: (patch: Record<string, unknown>) => void;
 }
 
 interface InlineEditorProviderProps {
@@ -47,8 +56,8 @@ export const InlineEditorProvider: React.FC<InlineEditorProviderProps> = ({
   }, []);
 
   const registerEditor = useCallback(
-    (editor: Editor, layerId: string | undefined, save: () => void) => {
-      const registered = { editor, layerId, save };
+    (editor: Editor, layerId: string | undefined, save: () => void, updateLayerProps?: (patch: Record<string, unknown>) => void) => {
+      const registered = { editor, layerId, save, updateLayerProps };
       editorsRef.current.set(editor, registered);
 
       if (activeLayerIdRef.current !== layerId) return;
@@ -96,10 +105,33 @@ export const InlineEditorProvider: React.FC<InlineEditorProviderProps> = ({
     () => ({ activeEditor, registerEditor, activateEditor, notifyEditor, unregisterEditor }),
     [activeEditor, registerEditor, activateEditor, notifyEditor, unregisterEditor]
   );
+  const formattingValue = useMemo(
+    () => ({
+      activeEditor,
+      applyTextStyle: (attributes: Parameters<typeof applyInlineTextStyle>[1]) => {
+        if (activeEditor) applyInlineTextStyle(activeEditor, attributes);
+      },
+      toggleMark: (mark: Parameters<typeof toggleInlineMark>[1]) => {
+        if (activeEditor) toggleInlineMark(activeEditor, mark);
+      },
+      setColor: (color: string) => {
+        if (activeEditor) setInlineColor(activeEditor, color);
+      },
+      setHighlight: (color: string) => {
+        if (activeEditor) setInlineHighlight(activeEditor, color);
+      },
+      updateBlockAttributes: (attributes: Record<string, string | null>) => {
+        if (activeEditor) updateInlineBlockAttributes(activeEditor, attributes);
+      },
+    }),
+    [activeEditor],
+  );
 
   return (
     <InlineEditorRegistryContext.Provider value={contextValue}>
-      {children}
+      <InlineTextFormattingContext.Provider value={formattingValue}>
+        {children}
+      </InlineTextFormattingContext.Provider>
     </InlineEditorRegistryContext.Provider>
   );
 };
