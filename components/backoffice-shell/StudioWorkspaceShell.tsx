@@ -17,6 +17,7 @@ export interface StudioWorkspaceShellProps {
   drawerTitle?: string;
   drawerContent?: React.ReactNode;
   toolbar?: React.ReactNode;
+  contextualToolbar?: React.ReactNode;
   aside?: React.ReactNode;
   overlay?: React.ReactNode;
   children: React.ReactNode;
@@ -30,6 +31,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
   drawerTitle,
   drawerContent,
   toolbar,
+  contextualToolbar,
   aside,
   overlay,
   children,
@@ -147,6 +149,11 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
           {toolbar && (
             <div className="shrink-0 border-b border-slate-800/90 bg-slate-900/90 px-4 py-1.5 text-white relative z-40 backdrop-blur-md">
               {toolbar}
+            </div>
+          )}
+          {contextualToolbar && (
+            <div className="shrink-0 border-b border-slate-800/90 bg-slate-950/95 px-4 py-1.5 text-white relative z-30">
+              {contextualToolbar}
             </div>
           )}
 

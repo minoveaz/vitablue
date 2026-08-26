@@ -20,7 +20,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
-import { InlineTextControls, useActiveInlineEditor } from './InlineEditableText';
+import { useActiveInlineEditor } from './InlineEditableText';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -139,7 +139,6 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
 
       {/* 2. SECCIÓN CENTRAL: DESHACER / REHACER COMPACTO */}
       <div className="flex items-center gap-1.5 shrink-0">
-        <InlineTextControls compact />
         <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-0.5 shadow-xs">
           <button
             type="button"
