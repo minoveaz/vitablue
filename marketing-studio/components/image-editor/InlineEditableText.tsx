@@ -185,12 +185,14 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       });
       const save = () => onSaveRef.current(sanitizeTiptapHtml(editor.getHTML()));
       registerEditor(editor, save);
-      return () => {
-        cancelAnimationFrame(focusEditor);
-        unregisterEditor(editor);
-      };
+      return () => cancelAnimationFrame(focusEditor);
     }
   }, [editor, isEditing, registerEditor, unregisterEditor]);
+
+  useEffect(() => {
+    if (!editor) return;
+    return () => unregisterEditor(editor);
+  }, [editor, unregisterEditor]);
 
   useEffect(() => {
     if (!editor || !isEditing) return;
