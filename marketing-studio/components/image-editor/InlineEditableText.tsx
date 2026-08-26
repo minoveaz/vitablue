@@ -241,8 +241,8 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   return (
     <Component
-      onMouseDown={(e) => {
-        e.stopPropagation();
+      data-inline-edit-trigger="true"
+      onMouseDown={() => {
         startEditing();
       }}
       onClick={(e) => { e.stopPropagation(); startEditing(); }}

@@ -360,6 +360,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     e.stopPropagation();
+    if ((e.target as HTMLElement).closest('[data-inline-edit-trigger]')) {
+      onSelectLayer(layer.id, false);
+      return;
+    }
     const isShift = e.shiftKey || e.metaKey || e.ctrlKey;
     const isAlreadySelected = selectedLayerIds.includes(layer.id);
     let currentSelectedIds = selectedLayerIds;
