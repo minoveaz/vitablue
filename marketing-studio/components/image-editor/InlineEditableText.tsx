@@ -260,7 +260,19 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   if (isEditing) {
     return (
-      <div ref={containerRef} className="relative inline-block w-full" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onBlur={handleBlur}>
+      <div
+        ref={containerRef}
+        className="relative inline-block w-full"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onBlur={handleBlur}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            finishEditing();
+          }
+        }}
+      >
         <div className={`${className} !cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text`} style={style}>
           <EditorContent editor={editor} />
         </div>
