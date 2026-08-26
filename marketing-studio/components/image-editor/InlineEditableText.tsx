@@ -180,10 +180,15 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     if (!editor) return;
     editor.setEditable(isEditing);
     if (isEditing) {
-      editor.commands.focus();
+      const focusEditor = requestAnimationFrame(() => {
+        editor.commands.focus('end');
+      });
       const save = () => onSaveRef.current(sanitizeTiptapHtml(editor.getHTML()));
       registerEditor(editor, save);
-      return () => unregisterEditor(editor);
+      return () => {
+        cancelAnimationFrame(focusEditor);
+        unregisterEditor(editor);
+      };
     }
   }, [editor, isEditing, registerEditor, unregisterEditor]);
 
@@ -236,6 +241,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   return (
     <Component
+      onClick={(e) => { e.stopPropagation(); startEditing(); }}
       onDoubleClick={(e) => { e.stopPropagation(); startEditing(); }}
       className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
       style={style}
