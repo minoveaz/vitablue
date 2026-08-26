@@ -82,6 +82,8 @@ interface ImageStageProps {
   onSetZoom: (zoom: number) => void;
 }
 
+const DRAG_THRESHOLD_PX = 5;
+
 export const ImageStage: React.FC<ImageStageProps> = ({
   project,
   selectedLayerId,
@@ -169,6 +171,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const canvasMouseDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const dragMovedRef = useRef(false);
   const pointerTargetRef = useRef<{ layerId: string; isText: boolean } | null>(null);
+  const pointerCaptureRef = useRef<{ element: HTMLElement; pointerId: number } | null>(null);
 
   // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
   useEffect(() => {
@@ -401,6 +404,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     if (layer.locked) return;
     pointerTargetRef.current = { layerId: layer.id, isText: isTextLayer };
     dragMovedRef.current = false;
+    const layerElement = e.currentTarget as HTMLElement;
+    try {
+      layerElement.setPointerCapture(e.pointerId);
+      pointerCaptureRef.current = { element: layerElement, pointerId: e.pointerId };
+    } catch {
+      // Pointer capture is not available in a few embedded browser contexts.
+    }
     setPendingLayerId(layer.id);
 
     const layersToDrag = project.layers.filter(
@@ -572,13 +582,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
       const activeDragLayerId = draggingLayerId ?? pendingLayerId;
       if (!activeDragLayerId || !canvasRef.current) return;
-      if (
-        !dragMovedRef.current &&
-        Math.hypot(e.clientX - dragStartRef.current.x, e.clientY - dragStartRef.current.y) <= 5
-      ) {
+      const dragDistance = Math.hypot(
+        e.clientX - dragStartRef.current.x,
+        e.clientY - dragStartRef.current.y
+      );
+      if (!dragMovedRef.current && dragDistance <= DRAG_THRESHOLD_PX) {
         return;
       }
       dragMovedRef.current = true;
+      e.preventDefault();
       if (!draggingLayerId) {
         setDraggingLayerId(activeDragLayerId);
       }
@@ -657,6 +669,17 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       ) {
         onRequestEdit?.(completedLayer.id);
       }
+      const pointerCapture = pointerCaptureRef.current;
+      if (pointerCapture) {
+        try {
+          if (pointerCapture.element.hasPointerCapture(pointerCapture.pointerId)) {
+            pointerCapture.element.releasePointerCapture(pointerCapture.pointerId);
+          }
+        } catch {
+          // The pointer may already have been released by the browser.
+        }
+        pointerCaptureRef.current = null;
+      }
       pointerTargetRef.current = null;
       setIsPanning(false);
       setPendingLayerId(null);
@@ -732,6 +755,10 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           ? isPanning
             ? 'cursor-grabbing'
             : 'cursor-grab'
+          : draggingLayerId
+          ? 'cursor-grabbing'
+          : pendingLayerId
+          ? 'cursor-move'
           : 'cursor-default'
       }`}
       >
@@ -1547,6 +1574,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                       : 'cursor-grab select-none'
                     : isLocked
                     ? 'cursor-default select-none'
+                    : draggingLayerId === layer.id
+                    ? 'cursor-grabbing select-none'
                     : 'cursor-move'
                 } ${
                   isSelected

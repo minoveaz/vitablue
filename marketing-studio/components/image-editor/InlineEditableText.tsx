@@ -239,7 +239,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         <EditorContent editor={editor} />
       </div>
       <Component
-        className={`${className} ${isEditing ? 'hidden' : 'cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all'}`}
+        className={`${className} ${isEditing ? 'hidden' : 'cursor-inherit hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all'}`}
         style={style}
         title={isEditing ? undefined : 'Clic para editar y formatear'}
       >
