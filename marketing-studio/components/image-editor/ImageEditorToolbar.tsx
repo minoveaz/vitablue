@@ -20,7 +20,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
-import { useActiveInlineEditor } from './InlineEditableText';
+import { useActiveInlineEditor } from './InlineEditorContext';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;

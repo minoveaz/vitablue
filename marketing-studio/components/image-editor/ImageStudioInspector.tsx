@@ -50,7 +50,8 @@ import { correctSpanishText } from '../../utils/spellingCorrector';
 import { stripTextFormatting } from '../../utils/textFormatter';
 import { EditorPanelSection } from './EditorPanelSection';
 import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog';
-import { InlineTextControls, useActiveInlineEditor } from './InlineEditableText';
+import { InlineTextControls } from './InlineEditableText';
+import { useActiveInlineEditor } from './InlineEditorContext';
 import { htmlToPlainText, isTiptapHtml, normalizeTiptapHtml } from '../../utils/tiptapHtml';
 
 interface NumberInputProps {

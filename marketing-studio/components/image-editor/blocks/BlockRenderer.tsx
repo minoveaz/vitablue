@@ -323,6 +323,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               }}
             >
               <InlineEditableText
+                layerId={layer.id}
                 text={String(blockProps.text ?? layer.title ?? 'Badge')}
                 onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
                 as="span"
@@ -363,6 +364,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
             }}
           >
             <InlineEditableText
+              layerId={layer.id}
               text={rawText}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
               className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line'}`}

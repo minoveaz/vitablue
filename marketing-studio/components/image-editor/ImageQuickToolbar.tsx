@@ -17,7 +17,7 @@ import {
   Strikethrough,
 } from 'lucide-react';
 import { ImageLayer } from '../../types/imageStudio';
-import { useActiveInlineEditor } from './InlineEditableText';
+import { useActiveInlineEditor } from './InlineEditorContext';
 
 interface ImageQuickToolbarProps {
   layer: ImageLayer;

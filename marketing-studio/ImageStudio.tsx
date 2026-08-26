@@ -9,7 +9,8 @@ import { ImageStudioInspector } from './components/image-editor/ImageStudioInspe
 import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
-import { InlineEditorProvider, InlineTextControls } from './components/image-editor/InlineEditableText';
+import { InlineEditorProvider } from './components/image-editor/InlineEditorProvider';
+import { InlineTextControls } from './components/image-editor/InlineEditableText';
 import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
@@ -50,6 +51,11 @@ export const ImageStudio: React.FC = () => {
   }, [assetId]);
 
   const editor = useImageProjectEditor(initialProject);
+  const selectedLayer = editor.project.layers.find((layer) => layer.id === editor.selectedLayerId);
+  const activeInlineLayerId =
+    selectedLayer?.type === 'text' || selectedLayer?.blockType === 'CustomText'
+      ? selectedLayer.id
+      : null;
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
   const showToast = React.useCallback((msg: string) => {
@@ -266,7 +272,7 @@ export const ImageStudio: React.FC = () => {
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
   return (
-    <InlineEditorProvider>
+    <InlineEditorProvider activeLayerId={activeInlineLayerId}>
       <StudioWorkspaceShell
       suiteTitle="Image & Graphic Studio"
       tools={studioTools}
@@ -346,13 +352,7 @@ export const ImageStudio: React.FC = () => {
         />
       }
       contextualToolbar={
-        <InlineTextControls
-          compact
-          visible={Boolean((() => {
-            const layer = editor.project.layers.find((item) => item.id === editor.selectedLayerId);
-            return layer?.type === 'text' || layer?.blockType === 'CustomText';
-          })())}
-        />
+        <InlineTextControls compact />
       }
       aside={
         isInspectorOpen ? (

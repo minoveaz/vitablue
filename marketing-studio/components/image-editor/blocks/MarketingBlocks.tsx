@@ -396,6 +396,7 @@ const MarketingBlockPart: React.FC<{
   const value = richText(props, 'text');
   const editableValue = (
     <InlineEditableText
+      layerId={layer?.id}
       text={value}
       onSave={(nextValue) => layer && onUpdateLayerProps?.(layer.id, { text: nextValue })}
       as="span"
