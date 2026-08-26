@@ -47,6 +47,9 @@ interface ImageStageProps {
   showSafeZones: boolean;
   canvasRef: React.RefObject<HTMLDivElement | null>;
   onSelectLayer: (id: string, isShift?: boolean) => void;
+  editingLayerId?: string | null;
+  onExitEditing?: () => void;
+  onRequestEdit?: (id: string) => void;
   onSelectMultipleLayers?: (ids: string[]) => void;
   onGroupSelectedLayers?: () => void;
   onDeleteSelectedLayers?: () => void;
@@ -88,6 +91,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   showSafeZones,
   canvasRef,
   onSelectLayer,
+  editingLayerId,
+  onExitEditing,
+  onRequestEdit,
   onSelectMultipleLayers,
   onGroupSelectedLayers,
   onDeleteSelectedLayers,
@@ -160,6 +166,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   });
 
   const canvasMouseDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const dragMovedRef = useRef(false);
 
   // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
   useEffect(() => {
@@ -271,7 +278,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   }, [zoom, onSetZoom]);
 
-  const handleContainerMouseDown = (e: React.MouseEvent) => {
+  const handleContainerPointerDown = (e: React.PointerEvent) => {
     if (effectiveHandMode || e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
@@ -312,7 +319,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     });
   };
 
-  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+  const handleCanvasPointerDown = (e: React.PointerEvent) => {
     if (effectiveHandMode || e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
@@ -346,7 +353,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     });
   };
 
-  const handleMouseDown = (e: React.MouseEvent, layer: ImageLayer) => {
+  const handlePointerDown = (e: React.PointerEvent, layer: ImageLayer) => {
     if (effectiveHandMode || e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
@@ -360,6 +367,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     e.stopPropagation();
+    if (editingLayerId && editingLayerId !== layer.id) {
+      onExitEditing?.();
+    }
     const isShift = e.shiftKey || e.metaKey || e.ctrlKey;
     const isAlreadySelected = selectedLayerIds.includes(layer.id);
     let currentSelectedIds = selectedLayerIds;
@@ -375,6 +385,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     if (layer.locked) return;
+    dragMovedRef.current = false;
     setDraggingLayerId(layer.id);
 
     const layersToDrag = project.layers.filter(
@@ -389,6 +400,14 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           ? layersToDrag.map((l) => ({ id: l.id, startX: l.position.x, startY: l.position.y }))
           : [{ id: layer.id, startX: layer.position.x, startY: layer.position.y }],
     };
+
+  };
+
+  const handleLayerDoubleClick = (e: React.MouseEvent, layer: ImageLayer) => {
+    if (layer.locked || (layer.type !== 'text' && layer.blockType !== 'CustomText')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    onRequestEdit?.(layer.id);
   };
 
   const handleContextMenu = (e: React.MouseEvent, layer: ImageLayer) => {
@@ -405,13 +424,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   };
 
   const handleResizeStart = (
-    e: React.MouseEvent,
+    e: React.PointerEvent,
     layer: ImageLayer,
     corner: 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w' | 'n' | 's' = 'se'
   ) => {
     e.stopPropagation();
+    e.preventDefault();
     onSelectLayer(layer.id);
     setResizingLayerId(layer.id);
+    dragMovedRef.current = true;
 
     const layerEl = (e.currentTarget as HTMLElement).closest('.canvas-layer-item') as HTMLElement | null;
     const currentScale = layer.scale ?? 1;
@@ -428,10 +449,12 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     };
   };
 
-  const handleRotateStart = (e: React.MouseEvent, layer: ImageLayer) => {
+  const handleRotateStart = (e: React.PointerEvent, layer: ImageLayer) => {
     e.stopPropagation();
+    e.preventDefault();
     onSelectLayer(layer.id);
     setRotatingLayerId(layer.id);
+    dragMovedRef.current = true;
     if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.left + (layer.position.x / 100) * rect.width;
@@ -446,7 +469,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   };
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       // 0. Pan panorámico con ratón
       if (isPanning) {
         const deltaX = e.clientX - panStartRef.current.x;
@@ -540,6 +563,13 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       }
 
       if (!draggingLayerId || !canvasRef.current) return;
+      if (
+        !dragMovedRef.current &&
+        Math.hypot(e.clientX - dragStartRef.current.x, e.clientY - dragStartRef.current.y) <= 5
+      ) {
+        return;
+      }
+      dragMovedRef.current = true;
       const rect = canvasRef.current.getBoundingClientRect();
       const deltaX = ((e.clientX - dragStartRef.current.x) / rect.width) * 100;
       const deltaY = ((e.clientY - dragStartRef.current.y) / rect.height) * 100;
@@ -593,8 +623,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       }
     };
 
-    const handleMouseUp = () => {
-      if (draggingLayerId || resizingLayerId || rotatingLayerId) {
+    const handlePointerUp = () => {
+      if (dragMovedRef.current && (draggingLayerId || resizingLayerId || rotatingLayerId)) {
         onCommitPositionChange?.();
       }
       setIsPanning(false);
@@ -604,16 +634,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       setIsMarqueeSelecting(false);
       setMarqueeBox(null);
       setGuides([]);
+      dragMovedRef.current = false;
     };
 
     if (isPanning || draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerup', handlePointerUp);
+      window.addEventListener('pointercancel', handlePointerUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
     };
   }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, guideSettings.snapToGuides, guideSnapLines.vertical, guideSnapLines.horizontal, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
@@ -659,7 +692,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   return (
     <div
       ref={containerRef}
-      onMouseDown={handleContainerMouseDown}
+      onPointerDown={handleContainerPointerDown}
       className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
         effectiveHandMode
           ? isPanning
@@ -1144,7 +1177,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         {/* ARTBOARD (STAGE) */}
         <div
           ref={canvasRef}
-          onMouseDown={handleCanvasMouseDown}
+          onPointerDown={handleCanvasPointerDown}
           onClick={(e) => {
             const dist = Math.hypot(
               e.clientX - canvasMouseDownPosRef.current.x,
@@ -1466,7 +1499,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
             return (
               <div
                 key={layer.id}
-                onMouseDown={(e) => handleMouseDown(e, layer)}
+                onPointerDown={(e) => handlePointerDown(e, layer)}
+                onDoubleClick={(e) => handleLayerDoubleClick(e, layer)}
                 onContextMenu={(e) => handleContextMenu(e, layer)}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1537,7 +1571,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
                     {/* MANEJADOR SUPERIOR DE ROTACIÓN ANGULAR */}
                     <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-brand-cyan pointer-events-none" />
                     <div
-                      onMouseDown={(e) => handleRotateStart(e, layer)}
+                      onPointerDown={(e) => handleRotateStart(e, layer)}
                       className="absolute -top-8 left-1/2 -translate-x-1/2 size-4 rounded-full bg-white border-2 border-primary shadow-xl cursor-grab active:cursor-grabbing hover:scale-125 transition-transform flex items-center justify-center z-30"
                       title="Arrastrar para rotar libremente"
                     >
@@ -1546,46 +1580,46 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
                     {/* ESQUINAS: ESCALA PROPORCIONAL */}
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'nw')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'nw')}
                       className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'ne')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'ne')}
                       className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'sw')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'sw')}
                       className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'se')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'se')}
                       className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
 
                     {/* LATERALES: AJUSTE DE ANCHURA (WIDTH) */}
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'w')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'w')}
                       className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar ancho izquierdo"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'e')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'e')}
                       className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar ancho derecho"
                     />
 
                     {/* SUPERIOR/INFERIOR: AJUSTE DE ALTURA (HEIGHT) */}
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 'n')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 'n')}
                       className="absolute -top-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar altura superior"
                     />
                     <div
-                      onMouseDown={(e) => handleResizeStart(e, layer, 's')}
+                      onPointerDown={(e) => handleResizeStart(e, layer, 's')}
                       className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar altura inferior"
                     />

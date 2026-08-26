@@ -8,6 +8,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { AlignLeft, AlignCenter, AlignRight, Bold, Italic, Strikethrough, Underline as UnderlineIcon } from 'lucide-react';
 import { legacyTextToTiptapHtml, sanitizeTiptapHtml } from '../../utils/tiptapHtml';
 import { useActiveInlineEditor, useInlineEditorRegistry } from './InlineEditorContext';
+import { useInlineEditing } from './InlineEditingContext';
 
 /**
  * Adds the partial typography attributes used by Image Studio to Tiptap's
@@ -86,15 +87,15 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   style,
   as: Component = 'div',
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isEditingRef = useRef(false);
   const windowBlurredRef = useRef(false);
   const selectionRef = useRef<{ from: number; to: number } | null>(null);
   const onSaveRef = useRef(onSave);
   const { registerEditor, activateEditor, notifyEditor, unregisterEditor } = useInlineEditorRegistry();
-  const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
-  const didMoveRef = useRef(false);
+  const { editingLayerId, requestEdit, exitEditing } = useInlineEditing();
+  const isEditing = Boolean(layerId && editingLayerId === layerId);
+  const wasEditingRef = useRef(false);
+  const lastSavedHtmlRef = useRef('');
 
   useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
@@ -117,7 +118,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
   const save = useCallback(() => {
     if (!editor) return;
-    onSaveRef.current(sanitizeTiptapHtml(editor.getHTML()));
+    const html = sanitizeTiptapHtml(editor.getHTML());
+    if (html === lastSavedHtmlRef.current) return;
+    lastSavedHtmlRef.current = html;
+    onSaveRef.current(html);
   }, [editor]);
 
   useEffect(() => {
@@ -143,19 +147,24 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     if (content !== lastContentRef.current) {
       editor.commands.setContent(content, { emitUpdate: false });
       lastContentRef.current = content;
+      lastSavedHtmlRef.current = content;
     }
   }, [editor, isEditing, text]);
 
   useEffect(() => {
     if (!editor) return;
     editor.setEditable(isEditing);
+    if (wasEditingRef.current && !isEditing) {
+      save();
+    }
+    wasEditingRef.current = isEditing;
     if (isEditing) {
       const focusEditor = requestAnimationFrame(() => {
         editor.commands.focus('end');
       });
       return () => cancelAnimationFrame(focusEditor);
     }
-  }, [editor, isEditing]);
+  }, [editor, isEditing, save]);
 
   useEffect(() => {
     if (!editor || !isEditing) return;
@@ -168,7 +177,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       const selection = selectionRef.current;
       if (!selection) return;
       requestAnimationFrame(() => {
-        if (!isEditingRef.current) return;
+        if (!isEditing) return;
         editor.commands.setTextSelection(selection);
         editor.commands.focus();
       });
@@ -195,55 +204,10 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   }, [editor, isEditing]);
 
   const finishEditing = useCallback(() => {
-    if (!isEditingRef.current) return;
-    isEditingRef.current = false;
-    if (editor) {
-      onSaveRef.current(sanitizeTiptapHtml(editor.getHTML()));
-      editor.setEditable(false);
-    }
-    setIsEditing(false);
-  }, [editor]);
-
-  const startEditing = () => {
-    isEditingRef.current = true;
-    if (editor) activateEditor(editor);
-    setIsEditing(true);
-    if (editor) {
-      const content = legacyTextToTiptapHtml(text || '');
-      editor.commands.setContent(content, { emitUpdate: false });
-      lastContentRef.current = content;
-      editor.setEditable(true);
-    }
-  };
-
-  const handlePointerDown = (event: React.MouseEvent) => {
-    if (event.button !== 0) return;
-    pointerDownRef.current = { x: event.clientX, y: event.clientY };
-    didMoveRef.current = false;
-  };
-
-  useEffect(() => {
-    const handlePointerMove = (event: MouseEvent) => {
-      const start = pointerDownRef.current;
-      if (!start) return;
-      if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) {
-        didMoveRef.current = true;
-      }
-    };
-    document.addEventListener('mousemove', handlePointerMove);
-    return () => document.removeEventListener('mousemove', handlePointerMove);
-  }, []);
-
-  const handleActivate = (event: React.MouseEvent) => {
-    if (didMoveRef.current) {
-      pointerDownRef.current = null;
-      didMoveRef.current = false;
-      return;
-    }
-    pointerDownRef.current = null;
-    event.stopPropagation();
-    startEditing();
-  };
+    if (!isEditing) return;
+    save();
+    exitEditing();
+  }, [exitEditing, isEditing, save]);
 
   const handleBlur = (event: React.FocusEvent) => {
     if (windowBlurredRef.current || document.visibilityState === 'hidden') return;
@@ -251,50 +215,62 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     finishEditing();
   };
 
-  if (isEditing) {
-    return (
-      <div
-        ref={containerRef}
-        className="relative inline-block w-full"
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onBlur={handleBlur}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            finishEditing();
-          }
-        }}
+  return (
+    <div
+      ref={containerRef}
+      data-inline-edit-trigger="true"
+      data-inline-editor-editing={isEditing ? 'true' : 'false'}
+      className="relative inline-block w-full"
+      onPointerDown={(event) => {
+        if (isEditing) event.stopPropagation();
+      }}
+      onClick={(event) => {
+        if (isEditing) event.stopPropagation();
+      }}
+      onDoubleClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (layerId && !isEditing) {
+          if (editor) activateEditor(editor);
+          requestEdit(layerId);
+        }
+      }}
+      onBlur={handleBlur}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          finishEditing();
+        }
+      }}
+    >
+      <Component
+        className={`${className} ${isEditing ? '!cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text' : 'cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all'}`}
+        style={style}
+        title={isEditing ? undefined : 'Doble clic para editar y formatear'}
       >
-        <div className={`${className} !cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text`} style={style}>
+        <div className={isEditing ? 'block' : 'hidden'}>
           <EditorContent editor={editor} />
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <Component
-      data-inline-edit-trigger="true"
-      onMouseDown={handlePointerDown}
-      onClick={handleActivate}
-      onDoubleClick={handleActivate}
-      className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
-      style={style}
-      title="Doble clic para seleccionar y formatear palabras"
-    >
-      {children ?? <span dangerouslySetInnerHTML={{ __html: sanitizeTiptapHtml(legacyTextToTiptapHtml(text || '')) }} />}
-    </Component>
+        {!isEditing && (children ?? (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: sanitizeTiptapHtml(legacyTextToTiptapHtml(text || '')),
+            }}
+          />
+        ))}
+      </Component>
+    </div>
   );
 };
 
 interface InlineTextControlsProps {
   compact?: boolean;
+  selectedLayerId?: string | null;
   /** Kept for callers from older Image Studio builds; the toolbar is now selection-driven. */
   visible?: boolean;
 }
 
-export const InlineTextControls: React.FC<InlineTextControlsProps> = ({ compact = false }) => {
+export const InlineTextControls: React.FC<InlineTextControlsProps> = ({ compact = false, selectedLayerId }) => {
   const active = useActiveInlineEditor();
   const editor = active?.editor;
   const [colorInput, setColorInput] = useState('#001219');
@@ -305,7 +281,7 @@ export const InlineTextControls: React.FC<InlineTextControlsProps> = ({ compact 
   useEffect(() => {
     if (editor) setHighlightInput(editor.getAttributes('highlight').color ?? '#fff3a3');
   }, [editor, active?.revision]);
-  if (!active || !editor) {
+  if (!active || !editor || (selectedLayerId !== undefined && active.layerId !== selectedLayerId)) {
     return null;
   }
   const controls = [

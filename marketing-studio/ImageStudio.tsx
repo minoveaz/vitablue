@@ -10,6 +10,7 @@ import { ImageStage } from './components/image-editor/ImageStage';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
 import { InlineEditorProvider } from './components/image-editor/InlineEditorProvider';
+import { InlineEditingProvider } from './components/image-editor/InlineEditingProvider';
 import { InlineTextControls } from './components/image-editor/InlineEditableText';
 import { exportCarouselSlices } from './utils/carouselExporter';
 import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
@@ -56,6 +57,7 @@ export const ImageStudio: React.FC = () => {
     selectedLayer?.type === 'text' || selectedLayer?.blockType === 'CustomText'
       ? selectedLayer.id
       : null;
+  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
   const showToast = React.useCallback((msg: string) => {
@@ -69,6 +71,12 @@ export const ImageStudio: React.FC = () => {
       setIsInspectorOpen(true);
     }
   }, [editor.selectedLayerId]);
+
+  useEffect(() => {
+    if (editingLayerId && editor.selectedLayerId !== editingLayerId) {
+      setEditingLayerId(null);
+    }
+  }, [editingLayerId, editor.selectedLayerId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -166,6 +174,9 @@ export const ImageStudio: React.FC = () => {
   }, [editor, showToast]);
 
   const handleSelectLayer = (id: string, isShift?: boolean) => {
+    if (editingLayerId && editingLayerId !== id) {
+      setEditingLayerId(null);
+    }
     if (isShift) {
       editor.toggleLayerSelection(id);
     } else {
@@ -174,13 +185,25 @@ export const ImageStudio: React.FC = () => {
     setIsCanvasSelected(false);
   };
 
+  const handleRequestEdit = React.useCallback(
+    (layerId: string) => {
+      if (editor.selectedLayerId !== layerId) {
+        editor.selectLayer(layerId);
+      }
+      setEditingLayerId(layerId);
+    },
+    [editor]
+  );
+
   const handleSelectCanvas = () => {
+    setEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(true);
     setIsInspectorOpen(true);
   };
 
   const handleDeselectAll = () => {
+    setEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(false);
   };
@@ -272,7 +295,12 @@ export const ImageStudio: React.FC = () => {
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
   return (
-    <InlineEditorProvider activeLayerId={activeInlineLayerId}>
+    <InlineEditingProvider
+      editingLayerId={editingLayerId}
+      onRequestEdit={handleRequestEdit}
+      onExitEditing={() => setEditingLayerId(null)}
+    >
+      <InlineEditorProvider activeLayerId={activeInlineLayerId}>
       <StudioWorkspaceShell
       suiteTitle="Image & Graphic Studio"
       tools={studioTools}
@@ -352,7 +380,7 @@ export const ImageStudio: React.FC = () => {
         />
       }
       contextualToolbar={
-        <InlineTextControls compact />
+        <InlineTextControls compact selectedLayerId={activeInlineLayerId} />
       }
       aside={
         isInspectorOpen ? (
@@ -401,6 +429,9 @@ export const ImageStudio: React.FC = () => {
           showSafeZones={editor.showSafeZones}
           canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
+          editingLayerId={editingLayerId}
+          onExitEditing={() => setEditingLayerId(null)}
+          onRequestEdit={handleRequestEdit}
           onSelectMultipleLayers={editor.selectMultipleLayers}
           onGroupSelectedLayers={editor.groupSelectedLayers}
           onDeleteSelectedLayers={editor.deleteSelectedLayers}
@@ -448,7 +479,8 @@ export const ImageStudio: React.FC = () => {
         )}
       </div>
       </StudioWorkspaceShell>
-    </InlineEditorProvider>
+      </InlineEditorProvider>
+    </InlineEditingProvider>
   );
 };
 
