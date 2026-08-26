@@ -130,6 +130,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pendingLayerId, setPendingLayerId] = useState<string | null>(null);
   const [draggingLayerId, setDraggingLayerId] = useState<string | null>(null);
   const [resizingLayerId, setResizingLayerId] = useState<string | null>(null);
   const [rotatingLayerId, setRotatingLayerId] = useState<string | null>(null);
@@ -167,6 +168,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
 
   const canvasMouseDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const dragMovedRef = useRef(false);
+  const pointerTargetRef = useRef<{ layerId: string; isText: boolean } | null>(null);
 
   // Atajos de teclado para herramientas (V = Selección, H = Mano, Espacio = Mano temporal)
   useEffect(() => {
@@ -356,6 +358,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const handlePointerDown = (e: React.PointerEvent, layer: ImageLayer) => {
     if (effectiveHandMode || e.button === 1) {
       e.preventDefault();
+      pointerTargetRef.current = null;
       setIsPanning(true);
       panStartRef.current = {
         x: e.clientX,
@@ -365,8 +368,19 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       };
       return;
     }
+    if (e.button !== 0) return;
 
     e.stopPropagation();
+    const target = e.target as HTMLElement;
+    const isTextLayer =
+      layer.type === 'text' ||
+      layer.blockType === 'CustomText' ||
+      Boolean(target.closest('[data-inline-edit-trigger]'));
+    // While editing, pointer events belong to ProseMirror (caret and selection),
+    // never to the canvas drag interaction.
+    if (editingLayerId === layer.id && isTextLayer) {
+      return;
+    }
     if (editingLayerId && editingLayerId !== layer.id) {
       onExitEditing?.();
     }
@@ -385,8 +399,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     }
 
     if (layer.locked) return;
+    pointerTargetRef.current = { layerId: layer.id, isText: isTextLayer };
     dragMovedRef.current = false;
-    setDraggingLayerId(layer.id);
+    setPendingLayerId(layer.id);
 
     const layersToDrag = project.layers.filter(
       (l) => currentSelectedIds.includes(l.id) && !l.locked
@@ -401,13 +416,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
           : [{ id: layer.id, startX: layer.position.x, startY: layer.position.y }],
     };
 
-  };
-
-  const handleLayerDoubleClick = (e: React.MouseEvent, layer: ImageLayer) => {
-    if (layer.locked || (layer.type !== 'text' && layer.blockType !== 'CustomText')) return;
-    e.preventDefault();
-    e.stopPropagation();
-    onRequestEdit?.(layer.id);
   };
 
   const handleContextMenu = (e: React.MouseEvent, layer: ImageLayer) => {
@@ -562,7 +570,8 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         return;
       }
 
-      if (!draggingLayerId || !canvasRef.current) return;
+      const activeDragLayerId = draggingLayerId ?? pendingLayerId;
+      if (!activeDragLayerId || !canvasRef.current) return;
       if (
         !dragMovedRef.current &&
         Math.hypot(e.clientX - dragStartRef.current.x, e.clientY - dragStartRef.current.y) <= 5
@@ -570,13 +579,16 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         return;
       }
       dragMovedRef.current = true;
+      if (!draggingLayerId) {
+        setDraggingLayerId(activeDragLayerId);
+      }
       const rect = canvasRef.current.getBoundingClientRect();
       const deltaX = ((e.clientX - dragStartRef.current.x) / rect.width) * 100;
       const deltaY = ((e.clientY - dragStartRef.current.y) / rect.height) * 100;
 
       // Si arrastramos una sola capa, calculamos snapping
       if (dragStartRef.current.layers.length <= 1) {
-        const primary = dragStartRef.current.layers[0] ?? { id: draggingLayerId, startX: 50, startY: 50 };
+        const primary = dragStartRef.current.layers[0] ?? { id: activeDragLayerId, startX: 50, startY: 50 };
         let nextX = primary.startX + deltaX;
         let nextY = primary.startY + deltaY;
 
@@ -623,11 +635,31 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       }
     };
 
-    const handlePointerUp = () => {
-      if (dragMovedRef.current && (draggingLayerId || resizingLayerId || rotatingLayerId)) {
+    const handlePointerEnd = (cancelled = false) => {
+      const completedLayerId = draggingLayerId ?? pendingLayerId;
+      const completedLayer = completedLayerId
+        ? project.layers.find((layer) => layer.id === completedLayerId)
+        : undefined;
+      const pointerTarget = pointerTargetRef.current;
+      const didMove = dragMovedRef.current;
+
+      if (dragMovedRef.current && (completedLayerId || resizingLayerId || rotatingLayerId)) {
         onCommitPositionChange?.();
       }
+      if (
+        !cancelled &&
+        !didMove &&
+        completedLayer &&
+        pointerTarget?.layerId === completedLayer.id &&
+        pointerTarget.isText &&
+        !completedLayer.locked &&
+        editingLayerId !== completedLayer.id
+      ) {
+        onRequestEdit?.(completedLayer.id);
+      }
+      pointerTargetRef.current = null;
       setIsPanning(false);
+      setPendingLayerId(null);
       setDraggingLayerId(null);
       setResizingLayerId(null);
       setRotatingLayerId(null);
@@ -636,19 +668,21 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       setGuides([]);
       dragMovedRef.current = false;
     };
+    const handlePointerUp = () => handlePointerEnd();
+    const handlePointerCancel = () => handlePointerEnd(true);
 
-    if (isPanning || draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
+    if (isPanning || pendingLayerId || draggingLayerId || resizingLayerId || rotatingLayerId || isMarqueeSelecting) {
       window.addEventListener('pointermove', handlePointerMove);
       window.addEventListener('pointerup', handlePointerUp);
-      window.addEventListener('pointercancel', handlePointerUp);
+      window.addEventListener('pointercancel', handlePointerCancel);
     }
 
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerCancel);
     };
-  }, [isPanning, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, guideSettings.snapToGuides, guideSnapLines.vertical, guideSnapLines.horizontal, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
+  }, [isPanning, pendingLayerId, draggingLayerId, resizingLayerId, rotatingLayerId, isMarqueeSelecting, marqueeBox, zoom, project.layers, project.preset.width, project.preset.height, guideSettings.snapToGuides, guideSnapLines.vertical, guideSnapLines.horizontal, editingLayerId, onRequestEdit, onSelectMultipleLayers, onUpdatePosition, onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, canvasRef]);
 
   const handleResetFit = () => {
     setPanOffset({ x: 0, y: 0 });
@@ -1500,7 +1534,6 @@ export const ImageStage: React.FC<ImageStageProps> = ({
               <div
                 key={layer.id}
                 onPointerDown={(e) => handlePointerDown(e, layer)}
-                onDoubleClick={(e) => handleLayerDoubleClick(e, layer)}
                 onContextMenu={(e) => handleContextMenu(e, layer)}
                 onClick={(e) => {
                   e.stopPropagation();

@@ -91,8 +91,8 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   const windowBlurredRef = useRef(false);
   const selectionRef = useRef<{ from: number; to: number } | null>(null);
   const onSaveRef = useRef(onSave);
-  const { registerEditor, activateEditor, notifyEditor, unregisterEditor } = useInlineEditorRegistry();
-  const { editingLayerId, requestEdit, exitEditing } = useInlineEditing();
+  const { registerEditor, notifyEditor, unregisterEditor } = useInlineEditorRegistry();
+  const { editingLayerId, exitEditing } = useInlineEditing();
   const isEditing = Boolean(layerId && editingLayerId === layerId);
   const wasEditingRef = useRef(false);
   const lastSavedHtmlRef = useRef('');
@@ -221,20 +221,6 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       data-inline-edit-trigger="true"
       data-inline-editor-editing={isEditing ? 'true' : 'false'}
       className="relative inline-block w-full"
-      onPointerDown={(event) => {
-        if (isEditing) event.stopPropagation();
-      }}
-      onClick={(event) => {
-        if (isEditing) event.stopPropagation();
-      }}
-      onDoubleClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (layerId && !isEditing) {
-          if (editor) activateEditor(editor);
-          requestEdit(layerId);
-        }
-      }}
       onBlur={handleBlur}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
@@ -243,21 +229,27 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
         }
       }}
     >
-      <Component
-        className={`${className} ${isEditing ? '!cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text' : 'cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all'}`}
+      {/* Keep ProseMirror mounted so switching into edit mode never loses its selection. */}
+      <div
+        data-inline-editor="true"
+        className={`${isEditing ? 'block' : 'hidden'} ${className} !cursor-text outline-none ring-2 ring-brand-cyan bg-white/10 rounded-xs p-1 select-text`}
         style={style}
-        title={isEditing ? undefined : 'Doble clic para editar y formatear'}
+        aria-hidden={!isEditing}
       >
-        <div className={isEditing ? 'block' : 'hidden'}>
-          <EditorContent editor={editor} />
-        </div>
-        {!isEditing && (children ?? (
+        <EditorContent editor={editor} />
+      </div>
+      <Component
+        className={`${className} ${isEditing ? 'hidden' : 'cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all'}`}
+        style={style}
+        title={isEditing ? undefined : 'Clic para editar y formatear'}
+      >
+        {children ?? (
           <span
             dangerouslySetInnerHTML={{
               __html: sanitizeTiptapHtml(legacyTextToTiptapHtml(text || '')),
             }}
           />
-        ))}
+        )}
       </Component>
     </div>
   );
