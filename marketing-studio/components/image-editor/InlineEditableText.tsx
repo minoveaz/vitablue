@@ -268,12 +268,28 @@ export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = 
   ] as const;
   const color = editor.getAttributes('textStyle').color ?? '#001219';
   const highlight = editor.getAttributes('highlight').color ?? '#fff3a3';
+  const [colorInput, setColorInput] = useState(color);
+  const [highlightInput, setHighlightInput] = useState(highlight);
+  useEffect(() => { setColorInput(color); }, [color]);
+  useEffect(() => { setHighlightInput(highlight); }, [highlight]);
   const blockType = editor.state.selection.$from.parent.type.name;
   const blockName = blockType === 'heading' ? 'heading' : 'paragraph';
   const paragraph = editor.getAttributes(blockName);
   const textStyle = editor.getAttributes('textStyle');
   const buttonClass = 'flex size-7 items-center justify-center rounded-lg border border-slate-800 text-slate-300 hover:border-brand-cyan hover:text-brand-cyan';
   const save = () => active.save();
+  const brandColors = [
+    ['Ocean', '#005F73'],
+    ['Midnight', '#001219'],
+    ['Gold', '#EE9B00'],
+    ['Mint', '#94D2BD'],
+    ['White', '#FFFFFF'],
+  ] as const;
+  const applyColor = (value: string) => {
+    if (!/^#[0-9A-F]{6}$/i.test(value)) return;
+    editor.chain().focus().setColor(value).run();
+    save();
+  };
   return (
     <div data-inline-editor-toolbar className={`flex flex-wrap items-center gap-1.5 ${compact ? '' : 'rounded-xl border border-slate-800 bg-slate-950/90 p-1.5'}`} aria-label="Formato de texto Tiptap">
       {controls.map(([id, label, Icon, run]) => (
@@ -281,14 +297,46 @@ export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = 
           <Icon className="size-3.5" />
         </button>
       ))}
-      <label className={`${buttonClass} relative`} title="Color del texto">
-        <span className="size-3.5 rounded-full border border-white/50" style={{ backgroundColor: color }} />
-        <input type="color" value={color} onMouseDown={(e) => e.preventDefault()} onChange={(e) => { editor.chain().focus().setColor(e.target.value).run(); save(); }} className="absolute size-7 cursor-pointer opacity-0" aria-label="Color del texto" />
-      </label>
-      <label className={`${buttonClass} relative`} title="Resaltado">
-        <span className="size-3.5 rounded border border-white/50" style={{ backgroundColor: highlight }} />
-        <input type="color" value={highlight} onMouseDown={(e) => e.preventDefault()} onChange={(e) => { editor.chain().focus().setHighlight({ color: e.target.value }).run(); save(); }} className="absolute size-7 cursor-pointer opacity-0" aria-label="Color de resaltado" />
-      </label>
+      <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-1.5 py-1" data-inline-editor-toolbar>
+        <span className="size-3.5 rounded-full border border-white/50" style={{ backgroundColor: color }} title="Color del texto" />
+        <input
+          className="w-16 bg-transparent text-[10px] font-mono uppercase text-slate-200 outline-none"
+          value={colorInput}
+          onMouseDown={(e) => e.preventDefault()}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase();
+            setColorInput(value);
+            if (/^#[0-9A-F]{6}$/i.test(value)) applyColor(value);
+          }}
+          aria-label="Código HEX del color del texto"
+          spellCheck={false}
+        />
+        <input type="color" value={color} onMouseDown={(e) => e.preventDefault()} onChange={(e) => applyColor(e.target.value)} className="size-4 cursor-pointer rounded opacity-80" aria-label="Selector visual de color del texto" />
+        <div className="flex gap-0.5">
+          {brandColors.map(([label, value]) => (
+            <button key={value} type="button" className="size-3.5 rounded-full border border-white/20 hover:scale-125" style={{ backgroundColor: value }} title={`${label} ${value}`} aria-label={`Usar color ${label}`} onMouseDown={(e) => e.preventDefault()} onClick={() => applyColor(value)} />
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-900/80 px-1.5 py-1" data-inline-editor-toolbar>
+        <span className="size-3.5 rounded border border-white/50" style={{ backgroundColor: highlight }} title="Resaltado" />
+        <input
+          className="w-16 bg-transparent text-[10px] font-mono uppercase text-slate-200 outline-none"
+          value={highlightInput}
+          onMouseDown={(e) => e.preventDefault()}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase();
+            setHighlightInput(value);
+            if (/^#[0-9A-F]{6}$/i.test(value)) {
+              editor.chain().focus().setHighlight({ color: value }).run();
+              save();
+            }
+          }}
+          aria-label="Código HEX del resaltado"
+          spellCheck={false}
+        />
+        <input type="color" value={highlight} onMouseDown={(e) => e.preventDefault()} onChange={(e) => { editor.chain().focus().setHighlight({ color: e.target.value }).run(); save(); }} className="size-4 cursor-pointer rounded opacity-80" aria-label="Selector visual de resaltado" />
+      </div>
       <select className="h-7 max-w-28 rounded-lg border border-slate-800 bg-slate-950 px-1 text-[10px] text-slate-200" value={String(textStyle.fontFamily ?? '')} onMouseDown={(e) => e.preventDefault()} onChange={(e) => { const value = e.target.value; editor.chain().focus().setMark('textStyle', { fontFamily: value || null }).run(); save(); }} aria-label="Familia tipográfica">
         <option value="">Fuente</option>
         <option value="Poppins, sans-serif">Poppins</option>
