@@ -152,9 +152,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
             </div>
           )}
           {contextualToolbar && (
-            <div className="shrink-0 border-b border-slate-800/90 bg-slate-950/95 px-4 py-1.5 text-white relative z-30">
-              {contextualToolbar}
-            </div>
+            contextualToolbar
           )}
 
           <div className="relative flex min-h-0 flex-1 overflow-hidden">

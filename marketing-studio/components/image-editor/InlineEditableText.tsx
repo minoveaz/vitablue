@@ -336,7 +336,7 @@ export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = 
     save();
   };
   return (
-    <div data-inline-editor-toolbar className={`flex flex-wrap items-center gap-1.5 ${compact ? '' : 'rounded-xl border border-slate-800 bg-slate-950/90 p-1.5'}`} aria-label="Formato de texto Tiptap">
+    <div data-inline-editor-toolbar className={`flex w-full flex-wrap items-center justify-center gap-1.5 ${compact ? 'border-b border-slate-800/90 bg-slate-950/95 px-4 py-1.5' : 'rounded-xl border border-slate-800 bg-slate-950/90 p-1.5'}`} aria-label="Formato de texto Tiptap">
       {controls.map(([id, label, Icon, run]) => (
         <button key={id} type="button" className={`${buttonClass} ${editor.isActive(id) ? 'bg-primary/30 text-brand-cyan' : ''}`} title={label} aria-label={label} aria-pressed={editor.isActive(id)} onMouseDown={(e) => e.preventDefault()} onClick={() => { run(); save(); }}>
           <Icon className="size-3.5" />
