@@ -143,6 +143,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isEditingRef = useRef(false);
+  const selectionRef = useRef<{ from: number; to: number } | null>(null);
   const onSaveRef = useRef(onSave);
   const { registerEditor, unregisterEditor } = useInlineEditorRegistry();
 
@@ -192,6 +193,29 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     }
   }, [editor, isEditing, registerEditor, unregisterEditor]);
 
+  useEffect(() => {
+    if (!editor || !isEditing) return;
+    const rememberSelection = () => {
+      const { from, to } = editor.state.selection;
+      selectionRef.current = { from, to };
+    };
+    const restoreSelection = () => {
+      const selection = selectionRef.current;
+      if (!selection) return;
+      editor.commands.setTextSelection(selection);
+      editor.commands.focus();
+    };
+    editor.on('selectionUpdate', rememberSelection);
+    window.addEventListener('focus', restoreSelection);
+    document.addEventListener('visibilitychange', restoreSelection);
+    rememberSelection();
+    return () => {
+      editor.off('selectionUpdate', rememberSelection);
+      window.removeEventListener('focus', restoreSelection);
+      document.removeEventListener('visibilitychange', restoreSelection);
+    };
+  }, [editor, isEditing]);
+
   const finishEditing = useCallback(() => {
     if (!isEditingRef.current) return;
     isEditingRef.current = false;
@@ -214,6 +238,7 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   };
 
   const handleBlur = (event: React.FocusEvent) => {
+    if (document.visibilityState === 'hidden') return;
     if (event.relatedTarget && containerRef.current?.contains(event.relatedTarget as Node)) return;
     finishEditing();
   };
