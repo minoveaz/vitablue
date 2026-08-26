@@ -3,7 +3,6 @@ import { Extension, type Editor } from '@tiptap/core';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
 import { TextStyle } from '@tiptap/extension-text-style';
-import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { AlignLeft, AlignCenter, AlignRight, Bold, Italic, Strikethrough, Underline as UnderlineIcon } from 'lucide-react';
@@ -155,7 +154,6 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
       StarterKit,
       TextStyle,
       Color.configure({ types: ['textStyle'] }),
-      Underline,
       Highlight.configure({ multicolor: true }),
       ImageStudioTypography,
     ],
@@ -299,20 +297,24 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
 
 export const InlineTextControls: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
   const active = useActiveInlineEditor();
-  if (!active) return null;
-  const { editor } = active;
+  const editor = active?.editor;
+  const [colorInput, setColorInput] = useState('#001219');
+  const [highlightInput, setHighlightInput] = useState('#fff3a3');
+  useEffect(() => {
+    if (editor) setColorInput(editor.getAttributes('textStyle').color ?? '#001219');
+  }, [editor, active?.revision]);
+  useEffect(() => {
+    if (editor) setHighlightInput(editor.getAttributes('highlight').color ?? '#fff3a3');
+  }, [editor, active?.revision]);
+  if (!active || !editor) return null;
   const controls = [
     ['bold', 'Negrita', Bold, () => editor.chain().focus().toggleBold().run()],
     ['italic', 'Cursiva', Italic, () => editor.chain().focus().toggleItalic().run()],
     ['underline', 'Subrayado', UnderlineIcon, () => editor.chain().focus().toggleUnderline().run()],
     ['strike', 'Tachado', Strikethrough, () => editor.chain().focus().toggleStrike().run()],
   ] as const;
-  const color = editor.getAttributes('textStyle').color ?? '#001219';
-  const highlight = editor.getAttributes('highlight').color ?? '#fff3a3';
-  const [colorInput, setColorInput] = useState(color);
-  const [highlightInput, setHighlightInput] = useState(highlight);
-  useEffect(() => { setColorInput(color); }, [color]);
-  useEffect(() => { setHighlightInput(highlight); }, [highlight]);
+  const color = editor.getAttributes('textStyle').color ?? colorInput;
+  const highlight = editor.getAttributes('highlight').color ?? highlightInput;
   const blockType = editor.state.selection.$from.parent.type.name;
   const blockName = blockType === 'heading' ? 'heading' : 'paragraph';
   const paragraph = editor.getAttributes(blockName);
