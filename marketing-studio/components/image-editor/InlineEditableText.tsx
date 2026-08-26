@@ -202,17 +202,6 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
     setIsEditing(false);
   }, [editor]);
 
-  useEffect(() => {
-    if (!isEditing) return;
-    const handleExternalPointerDown = (event: PointerEvent) => {
-      const target = event.target;
-      if (target instanceof Element && target.closest('[data-inline-editor-toolbar]')) return;
-      if (!containerRef.current?.contains(event.target as Node)) finishEditing();
-    };
-    document.addEventListener('pointerdown', handleExternalPointerDown, true);
-    return () => document.removeEventListener('pointerdown', handleExternalPointerDown, true);
-  }, [finishEditing, isEditing]);
-
   const startEditing = () => {
     isEditingRef.current = true;
     setIsEditing(true);
