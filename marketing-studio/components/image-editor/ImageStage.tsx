@@ -4,7 +4,6 @@ import {
   ImageLayer,
 } from '../../types/imageStudio';
 import { calculateSnapping } from '../../hooks/useKonvaSnapping';
-import { InlineEditorProvider } from './InlineEditableText';
 import {
   Minus,
   Plus,
@@ -658,8 +657,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   }, [project.preset.id, project.preset.width, project.preset.height]);
 
   return (
-    <InlineEditorProvider>
-      <div
+    <div
       ref={containerRef}
       onMouseDown={handleContainerMouseDown}
       className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#050B14] bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] p-8 select-none ${
@@ -1684,6 +1682,5 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </button>
       </div>
       </div>
-    </InlineEditorProvider>
   );
 };
