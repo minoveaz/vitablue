@@ -283,9 +283,6 @@ export const InlineEditableText: React.FC<InlineEditableTextProps> = ({
   return (
     <Component
       data-inline-edit-trigger="true"
-      onMouseDown={() => {
-        startEditing();
-      }}
       onClick={(e) => { e.stopPropagation(); startEditing(); }}
       onDoubleClick={(e) => { e.stopPropagation(); startEditing(); }}
       className={`${className} cursor-text hover:outline-dashed hover:outline-1 hover:outline-brand-cyan/60 rounded-xs transition-all`}
