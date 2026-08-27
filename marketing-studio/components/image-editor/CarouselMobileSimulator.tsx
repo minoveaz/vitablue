@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
-import { getCarouselGeometry } from '../../utils/imageDesignSystem';
+import { getCarouselGeometry, isCarouselProject } from '../../utils/imageDesignSystem';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
@@ -36,9 +36,9 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   const [touchDelta, setTouchDelta] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  const isPanoramicCarousel = Boolean(project.preset.isCarousel || project.carouselConfig?.enabled);
+  const isPanoramicCarousel = isCarouselProject(project.preset, project.carouselConfig?.enabled);
   const carouselConfig = project.carouselConfig;
-  const carouselGeometry = getCarouselGeometry(project.preset, carouselConfig?.slideCount);
+  const carouselGeometry = getCarouselGeometry(project.preset, carouselConfig?.slideCount, carouselConfig?.enabled);
   const slideCount = isPanoramicCarousel
     ? carouselGeometry.slideCount
     : 1;

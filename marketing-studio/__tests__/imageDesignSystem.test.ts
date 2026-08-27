@@ -50,6 +50,15 @@ describe('Image Studio professional design system', () => {
     expect(getCarouselGeometry(tiktokCarousel).slideWidth).toBe(1080);
   });
 
+  it('treats an explicitly enabled carousel config as a carousel', () => {
+    const geometry = getCarouselGeometry(portrait, 3, true);
+
+    expect(geometry.slideCount).toBe(3);
+    expect(geometry.slideWidth).toBe(360);
+    expect(geometry.panoramaWidth).toBe(1080);
+    expect(geometry.panoramaHeight).toBe(1350);
+  });
+
   it('centers image fitting on the active slide instead of the panorama', () => {
     const frame = getCarouselSlideFrame(carousel, 3);
 

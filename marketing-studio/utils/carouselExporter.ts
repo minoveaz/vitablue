@@ -1,9 +1,25 @@
 import { toPng } from 'html-to-image';
 import { ImageProject } from '../types/imageStudio';
+import { getCarouselGeometry, isCarouselProject } from './imageDesignSystem';
 
-/**
- * Creates a standard uncompressed PKZip binary file in browser without external dependencies
- */
+const compressForZip = async (data: Uint8Array): Promise<Uint8Array> => {
+  if (typeof CompressionStream === 'undefined') {
+    throw new Error('ZIP compression is not supported by this browser');
+  }
+
+  const stream = new CompressionStream('deflate');
+  const writer = stream.writable.getWriter();
+  await writer.write(data);
+  await writer.close();
+  const compressed = new Uint8Array(await new Response(stream.readable).arrayBuffer());
+
+  // ZIP expects a raw DEFLATE stream; CompressionStream('deflate') wraps it in zlib.
+  if (compressed.length < 6) {
+    throw new Error('ZIP compression returned an invalid DEFLATE stream');
+  }
+  return compressed.slice(2, -4);
+};
+
 class SimpleZipBuilder {
   private files: { name: string; data: Uint8Array }[] = [];
 
@@ -11,7 +27,7 @@ class SimpleZipBuilder {
     this.files.push({ name, data });
   }
 
-  public generateZip(): Blob {
+  public async generateZip(): Promise<Blob> {
     const fileEntries: Uint8Array[] = [];
     const centralDirectoryEntries: Uint8Array[] = [];
     let currentOffset = 0;
@@ -19,6 +35,7 @@ class SimpleZipBuilder {
     for (const file of this.files) {
       const nameBytes = new TextEncoder().encode(file.name);
       const dataBytes = file.data;
+      const compressedData = await compressForZip(dataBytes);
       const crc = this.computeCRC32(dataBytes);
 
       // Local file header (30 bytes + name + data)
@@ -27,11 +44,11 @@ class SimpleZipBuilder {
       lv.setUint32(0, 0x04034b50, true); // Local file header signature
       lv.setUint16(4, 20, true); // Version needed to extract
       lv.setUint16(6, 0, true); // General purpose bit flag
-      lv.setUint16(8, 0, true); // Compression method (0 = store)
+      lv.setUint16(8, 8, true); // Compression method (8 = deflate)
       lv.setUint16(10, 0, true); // Mod time
       lv.setUint16(12, 0, true); // Mod date
       lv.setUint32(14, crc, true); // CRC-32
-      lv.setUint32(18, dataBytes.length, true); // Compressed size
+      lv.setUint32(18, compressedData.length, true); // Compressed size
       lv.setUint32(22, dataBytes.length, true); // Uncompressed size
       lv.setUint16(26, nameBytes.length, true); // Filename length
       lv.setUint16(28, 0, true); // Extra field length
@@ -44,11 +61,11 @@ class SimpleZipBuilder {
       cv.setUint16(4, 20, true); // Version made by
       cv.setUint16(6, 20, true); // Version needed to extract
       cv.setUint16(8, 0, true); // General purpose bit flag
-      cv.setUint16(10, 0, true); // Compression method (0 = store)
+      cv.setUint16(10, 8, true); // Compression method (8 = deflate)
       cv.setUint16(12, 0, true); // Mod time
       cv.setUint16(14, 0, true); // Mod date
       cv.setUint32(16, crc, true); // CRC-32
-      cv.setUint32(20, dataBytes.length, true); // Compressed size
+      cv.setUint32(20, compressedData.length, true); // Compressed size
       cv.setUint32(24, dataBytes.length, true); // Uncompressed size
       cv.setUint16(28, nameBytes.length, true); // Filename length
       cv.setUint16(30, 0, true); // Extra field length
@@ -59,10 +76,10 @@ class SimpleZipBuilder {
       cv.setUint32(42, currentOffset, true); // Relative offset of local header
       cdHeader.set(nameBytes, 46);
 
-      fileEntries.push(localHeader, dataBytes);
+      fileEntries.push(localHeader, compressedData);
       centralDirectoryEntries.push(cdHeader);
 
-      currentOffset += localHeader.length + dataBytes.length;
+      currentOffset += localHeader.length + compressedData.length;
     }
 
     const cdOffset = currentOffset;
@@ -201,6 +218,44 @@ export interface CarouselExportResult {
   slicesCount: number;
 }
 
+export interface CarouselExportPlan {
+  slideCount: number;
+  slideWidth: number;
+  slideHeight: number;
+  panoramaWidth: number;
+  panoramaHeight: number;
+}
+
+export const getCarouselExportPlan = (project: ImageProject): CarouselExportPlan => {
+  const isCarousel = isCarouselProject(project.preset, project.carouselConfig?.enabled);
+  if (!isCarousel) {
+    throw new Error('Cannot export a project that is not configured as a carousel');
+  }
+
+  const geometry = getCarouselGeometry(
+    project.preset,
+    project.carouselConfig?.slideCount,
+    project.carouselConfig?.enabled,
+  );
+
+  return {
+    slideCount: geometry.slideCount,
+    slideWidth: project.carouselConfig?.slideWidth ?? geometry.slideWidth,
+    slideHeight: project.carouselConfig?.slideHeight ?? geometry.slideHeight,
+    panoramaWidth: (project.carouselConfig?.slideWidth ?? geometry.slideWidth) * geometry.slideCount,
+    panoramaHeight: project.carouselConfig?.slideHeight ?? geometry.slideHeight,
+  };
+};
+
+export const getCarouselDownloadName = (
+  project: ImageProject,
+  suffix: 'panorama' | 'linkedin_carousel' | 'carousel_pack',
+  extension: 'png' | 'pdf' | 'zip',
+): string => {
+  const title = project.title.trim().toLowerCase().replace(/\s+/g, '_') || 'carousel';
+  return `${title}_${suffix}.${extension}`;
+};
+
 /**
  * Splits and exports a panoramic carousel into individual slices, ZIP archive or LinkedIn PDF
  */
@@ -209,10 +264,8 @@ export async function exportCarouselSlices(
   project: ImageProject,
   targetFormat: 'zip' | 'pdf' | 'full' = 'zip'
 ): Promise<void> {
-  const slideCount = project.preset.defaultSlideCount ?? (project.carouselConfig?.slideCount || 5);
-  const totalWidth = project.preset.width;
-  const totalHeight = project.preset.height;
-  const slideWidth = project.preset.slideWidth ?? (totalWidth / slideCount);
+  const { slideCount, slideWidth, slideHeight, panoramaHeight } = getCarouselExportPlan(project);
+  const totalHeight = panoramaHeight;
 
   // 1. Render the full panoramic stage to PNG with html-to-image at native resolution
   const fullDataUrl = await toPng(canvasElement, {
@@ -230,7 +283,7 @@ export async function exportCarouselSlices(
   // If full panoramic image is requested, download directly
   if (targetFormat === 'full') {
     const link = document.createElement('a');
-    link.download = `${project.title.toLowerCase().replace(/\s+/g, '_')}_panorama.png`;
+    link.download = getCarouselDownloadName(project, 'panorama', 'png');
     link.href = fullDataUrl;
     link.click();
     return;
@@ -251,7 +304,7 @@ export async function exportCarouselSlices(
   for (let idx = 0; idx < slideCount; idx++) {
     const sliceCanvas = document.createElement('canvas');
     sliceCanvas.width = slideWidth;
-    sliceCanvas.height = totalHeight;
+    sliceCanvas.height = slideHeight;
     const ctx = sliceCanvas.getContext('2d');
     if (!ctx) continue;
 
@@ -261,11 +314,11 @@ export async function exportCarouselSlices(
       idx * slideWidth, // sx
       0, // sy
       slideWidth, // sWidth
-      totalHeight, // sHeight
+      slideHeight, // sHeight
       0, // dx
       0, // dy
       slideWidth, // dWidth
-      totalHeight // dHeight
+      slideHeight // dHeight
     );
 
     if (targetFormat === 'pdf') {
@@ -289,16 +342,16 @@ export async function exportCarouselSlices(
 
   // 4. Download file according to requested format
   if (targetFormat === 'pdf') {
-    const pdfBlob = createMinimalPdf(jpgDataUrls, slideWidth * 0.75, totalHeight * 0.75);
+    const pdfBlob = createMinimalPdf(jpgDataUrls, slideWidth * 0.75, slideHeight * 0.75);
     const link = document.createElement('a');
-    link.download = `${project.title.toLowerCase().replace(/\s+/g, '_')}_linkedin_carousel.pdf`;
+    link.download = getCarouselDownloadName(project, 'linkedin_carousel', 'pdf');
     link.href = URL.createObjectURL(pdfBlob);
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 3000);
   } else {
-    const zipBlob = zip.generateZip();
+    const zipBlob = await zip.generateZip();
     const link = document.createElement('a');
-    link.download = `${project.title.toLowerCase().replace(/\s+/g, '_')}_carousel_pack.zip`;
+    link.download = getCarouselDownloadName(project, 'carousel_pack', 'zip');
     link.href = URL.createObjectURL(zipBlob);
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 3000);
