@@ -1,11 +1,18 @@
 # Track: Carousel Creative Composition System
 
 **Fecha:** 2026-08-27  
-**Estado:** Propuesto / En definición  
+**Estado:** Pausado temporalmente — priorizar persistencia de Creative Studio  
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, carousel, templates, ux, visual-design]`
 
 ---
+
+## Nota de priorización
+
+La evolución visual del carrusel queda pausada para priorizar una base de
+persistencia compartida para Marketing Studio / Creative Studio. Al reanudar
+este track, sus proyectos deberán consumir el modelo persistente definido en
+`2026-08-27-marketing-creative-studio-persistence.md`.
 
 ## 1. Objetivo
 
