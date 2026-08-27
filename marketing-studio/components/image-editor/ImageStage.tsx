@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import type { ImageCrop, ImageProject, ImagePreviewMode } from '../../types/imageStudio';
-import { createDefaultGuideSettings, getCarouselGeometry, getGuideSnapLines, getPlatformGuideProfile } from '../../utils/imageDesignSystem';
+import { createDefaultGuideSettings, getCarouselGeometry, getGuideSnapLines, getPlatformGuideProfile, isCarouselProject } from '../../utils/imageDesignSystem';
 import { useImageStageViewport } from '../../hooks/useImageStageViewport';
 import { useImageStageInteractions } from '../../hooks/useImageStageInteractions';
 import { ImageStageContextMenu } from './ImageStageContextMenu';
@@ -54,9 +54,9 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   const guideSettings = project.guideSettings ?? createDefaultGuideSettings(project.preset);
   const guideProfile = getPlatformGuideProfile(project.preset, guideSettings.profileId);
   const guideSnapLines = getGuideSnapLines(project.preset, guideSettings);
-  const carouselGeometry = getCarouselGeometry(project.preset, project.carouselConfig?.slideCount ?? project.preset.defaultSlideCount);
+  const isCarousel = isCarouselProject(project.preset, project.carouselConfig?.enabled);
+  const carouselGeometry = getCarouselGeometry(project.preset, project.carouselConfig?.slideCount ?? project.preset.defaultSlideCount, project.carouselConfig?.enabled);
   const activeSlideIndex = Math.min(carouselGeometry.slideCount - 1, Math.max(0, project.currentSlide ?? project.carouselConfig?.currentSlideIndex ?? 0));
-  const isCarousel = Boolean(project.preset.isCarousel);
   const showGuideOverlay = previewMode === 'guides' || showSafeZones;
   const viewport = useImageStageViewport({ containerRef, project, zoom, previewMode, isCarousel, carouselGeometry, onSetZoom, onNudgeSelectedLayers, activeSlideIndex });
   const interactions = useImageStageInteractions({

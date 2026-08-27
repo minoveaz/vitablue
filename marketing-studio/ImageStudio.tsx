@@ -22,7 +22,7 @@ import {
   initializeImagePersistence,
 } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
-import { getCarouselGeometry } from './utils/imageDesignSystem';
+import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
 import type { ImageCrop } from './types/imageStudio';
 import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
@@ -89,10 +89,12 @@ export const ImageStudio: React.FC = () => {
       getCarouselGeometry(
         editor.project.preset,
         editor.project.carouselConfig?.slideCount ?? editor.project.preset.defaultSlideCount,
+        editor.project.carouselConfig?.enabled,
       ),
     [
       editor.project.preset,
       editor.project.carouselConfig?.slideCount,
+      editor.project.carouselConfig?.enabled,
     ],
   );
   const activeSlideIndex = Math.max(
@@ -520,7 +522,7 @@ export const ImageStudio: React.FC = () => {
           ) : selectedImageLayer ? (
             <ImageContextualToolbar
               layer={selectedImageLayer}
-              isCarousel={Boolean(editor.project.preset.isCarousel)}
+              isCarousel={isCarouselProject(editor.project.preset, editor.project.carouselConfig?.enabled)}
               activeSlideIndex={activeSlideIndex}
               carouselGeometry={carouselGeometry}
               cropEditing={cropEditingLayerId === selectedImageLayer.id}

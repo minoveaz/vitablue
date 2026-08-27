@@ -37,11 +37,18 @@ export interface AutoLayoutOptions {
 export { getLayerLayoutConstraints, resizeLayerForFormat };
 export type { LayerLayoutConstraints, LayoutCanvasSize };
 
+export const isCarouselProject = (
+  preset: ImageFormatPreset,
+  carouselEnabled?: boolean,
+): boolean => Boolean(preset.isCarousel || carouselEnabled);
+
 export const getCarouselGeometry = (
   preset: ImageFormatPreset,
-  slideCountOverride?: number
+  slideCountOverride?: number,
+  carouselEnabled?: boolean,
 ): CarouselGeometry => {
-  const slideCount = preset.isCarousel
+  const isCarousel = isCarouselProject(preset, carouselEnabled);
+  const slideCount = isCarousel
     ? Math.max(
         1,
         slideCountOverride ??
@@ -49,15 +56,15 @@ export const getCarouselGeometry = (
           Math.round(preset.width / (preset.slideWidth ?? preset.width)),
       )
     : 1;
-  const slideWidth = preset.slideWidth ?? (preset.isCarousel ? preset.width / slideCount : preset.width);
+  const slideWidth = preset.slideWidth ?? (isCarousel ? preset.width / slideCount : preset.width);
   const slideHeight = preset.slideHeight ?? preset.height;
 
   return {
     slideCount,
     slideWidth,
     slideHeight,
-    panoramaWidth: preset.isCarousel ? slideWidth * slideCount : preset.width,
-    panoramaHeight: preset.isCarousel ? slideHeight : preset.height,
+    panoramaWidth: isCarousel ? slideWidth * slideCount : preset.width,
+    panoramaHeight: isCarousel ? slideHeight : preset.height,
   };
 };
 
