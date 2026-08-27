@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Crop,
+  Check,
   FlipHorizontal,
   FlipVertical,
   ImagePlus,
   Maximize2,
   RotateCw,
+  RotateCcw,
   Undo2,
+  X,
 } from 'lucide-react';
 import type { CarouselGeometry, ImageLayer } from '../../types/imageStudio';
+import { saveUploadedImageMediaAsync } from '../../utils/imageMediaStorage';
+import { isDefaultImageCrop } from '../../utils/imageCrop';
 
 export interface ImageContextualToolbarProps {
   layer: ImageLayer;
@@ -22,6 +27,12 @@ export interface ImageContextualToolbarProps {
   onFitToActiveSlide: (layerId: string, slideIndex: number) => void;
   onReplaceLayerContent: (layerId: string, replacement: { imageUrl: string }) => void;
   onResetAdjustments: (layerId: string) => void;
+  cropEditing?: boolean;
+  cropZoom?: number;
+  onCropZoomChange?: (zoom: number) => void;
+  onApplyCrop?: () => void;
+  onCancelCrop?: () => void;
+  onResetCrop?: () => void;
 }
 
 const actionClass =
@@ -39,6 +50,12 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
   onFitToActiveSlide,
   onReplaceLayerContent,
   onResetAdjustments,
+  cropEditing = false,
+  cropZoom = 1,
+  onCropZoomChange,
+  onApplyCrop,
+  onCancelCrop,
+  onResetCrop,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [replacementUrl, setReplacementUrl] = useState(
@@ -53,6 +70,7 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
     setReplacementUrl(imageUrl);
     setReplacementError(null);
   }, [layer.id, imageUrl]);
+  const hasCrop = Boolean(layer.crop && !isDefaultImageCrop(layer.crop));
   const hasAdjustments =
     (layer.rotation ?? 0) !== 0 ||
     Boolean(layer.flipHorizontal) ||
@@ -63,7 +81,8 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
     (layer.blur ?? 0) !== 0 ||
     objectFit !== 'cover' ||
     Number(focalPoint?.x ?? 50) !== 50 ||
-    Number(focalPoint?.y ?? 50) !== 50;
+    Number(focalPoint?.y ?? 50) !== 50 ||
+    hasCrop;
 
   const replaceWithUrl = () => {
     const nextUrl = replacementUrl.trim();
@@ -82,7 +101,7 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = typeof reader.result === 'string' ? reader.result : '';
       if (!dataUrl) {
         setReplacementError('No se pudo leer la imagen.');
@@ -90,7 +109,24 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
       }
       setReplacementError(null);
       setReplacementUrl(dataUrl);
-      onReplaceLayerContent(layer.id, { imageUrl: dataUrl });
+      try {
+        const saved = await saveUploadedImageMediaAsync(dataUrl, {
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          fileName: file.name,
+          mimeType: file.type,
+        });
+        if (!saved.media) {
+          setReplacementError(saved.error ?? 'No se pudo guardar la imagen en tu biblioteca.');
+        } else {
+          setReplacementError(saved.warning ?? null);
+        }
+      } catch {
+        setReplacementError('No se pudo guardar la imagen en tu biblioteca.');
+      } finally {
+        // Keep the current editing operation usable even when persistence is
+        // unavailable; the next project save can still capture the data URL.
+        onReplaceLayerContent(layer.id, { imageUrl: dataUrl });
+      }
     };
     reader.onerror = () => setReplacementError('No se pudo leer la imagen.');
     reader.readAsDataURL(file);
@@ -108,10 +144,45 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
         {isLocked && <span className="shrink-0 text-amber-300" title="Capa bloqueada" aria-label="Capa bloqueada">🔒</span>}
       </span>
 
-      <button type="button" className={actionClass} onClick={() => onCrop(layer.id)} disabled={isLocked} title="Recortar al marco" aria-label="Recortar al marco">
-        <Crop className="size-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">Recortar</span>
-      </button>
+      {cropEditing ? (
+        <>
+          <span className="inline-flex h-8 items-center gap-1 rounded-lg border border-brand-cyan/40 bg-primary/20 px-2 text-[10px] font-bold text-brand-cyan">
+            <Crop className="size-3.5" aria-hidden="true" />
+            <span>Recortando</span>
+          </span>
+          <label className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-700/80 bg-slate-900/80 px-2 text-[10px] font-semibold text-slate-300">
+            <span>Zoom</span>
+            <input
+              aria-label="Zoom del recorte"
+              type="range"
+              min="1"
+              max="3"
+              step="0.01"
+              value={cropZoom}
+              onChange={(event) => onCropZoomChange?.(Number(event.target.value))}
+              className="w-20 accent-brand-cyan sm:w-28"
+            />
+            <span className="w-7 text-right tabular-nums">{cropZoom.toFixed(1)}×</span>
+          </label>
+          <button type="button" className={actionClass} onClick={onResetCrop} title="Centrar el recorte" aria-label="Centrar el recorte">
+            <RotateCcw className="size-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Centrar</span>
+          </button>
+          <button type="button" className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-lg border border-brand-cyan/60 bg-brand-cyan/15 px-2.5 text-[11px] font-bold text-brand-cyan transition-colors hover:bg-brand-cyan/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan" onClick={onApplyCrop} title="Aplicar recorte" aria-label="Aplicar recorte">
+            <Check className="size-3.5" aria-hidden="true" />
+            <span>Aplicar</span>
+          </button>
+          <button type="button" className={actionClass} onClick={onCancelCrop} title="Cancelar recorte" aria-label="Cancelar recorte">
+            <X className="size-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Cancelar</span>
+          </button>
+        </>
+      ) : (
+        <button type="button" className={`${actionClass} ${hasCrop ? 'border-brand-cyan/60 bg-primary/30 text-brand-cyan' : ''}`} onClick={() => onCrop(layer.id)} disabled={isLocked} title="Abrir editor de recorte" aria-label="Abrir editor de recorte">
+          <Crop className="size-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">Recortar</span>
+        </button>
+      )}
       <button type="button" className={actionClass} onClick={() => onRotate(layer.id, ((layer.rotation ?? 0) + 90) % 360)} disabled={isLocked} title="Rotar 90 grados a la derecha" aria-label="Rotar 90 grados a la derecha">
         <RotateCw className="size-3.5" aria-hidden="true" />
         <span className="hidden sm:inline">Rotar</span>

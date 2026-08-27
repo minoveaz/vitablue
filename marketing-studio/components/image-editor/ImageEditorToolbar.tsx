@@ -35,6 +35,7 @@ export interface ImageEditorToolbarProps {
   previewMode: ImagePreviewMode;
   isInspectorOpen: boolean;
   lastSavedAt?: string;
+  saveState?: 'saved' | 'saving' | 'recovery' | 'error';
   onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
@@ -60,6 +61,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   previewMode,
   isInspectorOpen,
   lastSavedAt,
+  saveState,
   onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
@@ -135,13 +137,47 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </div>
         </div>
 
-        {/* INDICADOR DISCRETO DE AUTOGUARDADO */}
+        {/* INDICADOR DINÁMICO DE AUTOGUARDADO */}
         <div
-          className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/20 px-2 py-0.5 rounded-full shrink-0"
-          title={lastSavedAt ? `Guardado localmente: ${new Date(lastSavedAt).toLocaleTimeString()}` : 'Guardado en LocalStorage'}
+          className={`flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 border transition-all ${
+            saveState === 'saving'
+              ? 'text-amber-400 bg-amber-950/40 border-amber-500/30'
+              : saveState === 'recovery'
+              ? 'text-cyan-400 bg-cyan-950/40 border-cyan-500/30'
+              : saveState === 'error'
+              ? 'text-rose-300 bg-rose-950/40 border-rose-500/30'
+              : 'text-emerald-400 bg-emerald-950/40 border-emerald-500/20'
+          }`}
+          title={
+            saveState === 'saving'
+              ? 'Guardando cambios...'
+              : saveState === 'error'
+              ? 'No se pudieron guardar los cambios'
+              : lastSavedAt
+              ? `Guardado: ${new Date(lastSavedAt).toLocaleTimeString()}`
+              : 'Guardado'
+          }
         >
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Guardado</span>
+          <span
+            className={`size-1.5 rounded-full ${
+              saveState === 'saving'
+                ? 'bg-amber-400 animate-spin'
+                : saveState === 'recovery'
+                ? 'bg-cyan-400'
+                : saveState === 'error'
+                ? 'bg-rose-400'
+                : 'bg-emerald-400'
+            }`}
+          />
+          <span>
+            {saveState === 'saving'
+              ? 'Guardando...'
+              : saveState === 'recovery'
+              ? 'Restaurado'
+              : saveState === 'error'
+              ? 'Error al guardar'
+              : 'Guardado'}
+          </span>
         </div>
       </div>
 

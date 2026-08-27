@@ -16,9 +16,15 @@ import { ContextualToolbar } from './components/image-editor/ContextualToolbar';
 import { MultiSelectionContextualToolbar } from './components/image-editor/MultiSelectionContextualToolbar';
 import { ImageContextualToolbar } from './components/image-editor/ImageContextualToolbar';
 import { exportCarouselSlices } from './utils/carouselExporter';
-import { getStoredImageProjects, createBlankImageProject } from './utils/imageProjectStorage';
+import {
+  createBlankImageProjectDraft,
+  getStoredImageProjects,
+  initializeImagePersistence,
+} from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import { getCarouselGeometry } from './utils/imageDesignSystem';
+import type { ImageCrop } from './types/imageStudio';
+import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
   LayoutTemplate,
   Type,
@@ -42,24 +48,40 @@ export const ImageStudio: React.FC = () => {
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [isCarouselSimulatorOpen, setIsCarouselSimulatorOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [persistenceReady, setPersistenceReady] = useState(false);
 
-  // Load project by assetId from localStorage if present, or create a fallback so editor never crashes
+  useEffect(() => {
+    let active = true;
+    void initializeImagePersistence()
+      .then(() => {
+        if (active) setPersistenceReady(true);
+      })
+      .catch(() => {
+        if (active) setPersistenceReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // The repository has already hydrated media before exposing these projects.
   const initialProject = React.useMemo(() => {
-    if (!assetId) return undefined;
-    const stored = getStoredImageProjects();
-    const found = stored.find((p) => p.id === assetId);
+    if (!assetId || !persistenceReady) return undefined;
+    const found = getStoredImageProjects().find((p) => p.id === assetId);
     if (found) return found;
-    // Si el proyecto no está en storage, creamos uno inicial con preset estándar o carrusel
-    const fallback = createBlankImageProject('instagram-portrait');
-    fallback.id = assetId;
-    return fallback;
-  }, [assetId]);
+    return createBlankImageProjectDraft('instagram-portrait', undefined, assetId);
+  }, [assetId, persistenceReady]);
 
-  const editor = useImageProjectEditor(initialProject);
+  const editor = useImageProjectEditor(initialProject, { persistenceReady });
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
+  const [cropEditingLayerId, setCropEditingLayerId] = useState<string | null>(null);
+  const [cropDraft, setCropDraft] = useState<ImageCrop>(DEFAULT_IMAGE_CROP);
   const selectedLayer = editor.project.layers.find((layer) => layer.id === editor.selectedLayerId);
   const selectedImageLayer =
-    selectedLayer && (selectedLayer.type === 'image' || Boolean(selectedLayer.props.imageUrl))
+    selectedLayer &&
+    (selectedLayer.type === 'image' ||
+      Boolean(selectedLayer.props.imageUrl) ||
+      Boolean(selectedLayer.src))
       ? selectedLayer
       : null;
   const carouselGeometry = React.useMemo(
@@ -107,6 +129,12 @@ export const ImageStudio: React.FC = () => {
       setEditingLayerId(null);
     }
   }, [editingLayerId, editor.selectedLayerId]);
+
+  useEffect(() => {
+    if (cropEditingLayerId && editor.selectedLayerId !== cropEditingLayerId) {
+      setCropEditingLayerId(null);
+    }
+  }, [cropEditingLayerId, editor.selectedLayerId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -207,6 +235,9 @@ export const ImageStudio: React.FC = () => {
     if (editingLayerId && editingLayerId !== id) {
       setEditingLayerId(null);
     }
+    if (cropEditingLayerId && cropEditingLayerId !== id) {
+      setCropEditingLayerId(null);
+    }
     if (isShift) {
       editor.toggleLayerSelection(id);
     } else {
@@ -227,6 +258,7 @@ export const ImageStudio: React.FC = () => {
 
   const handleSelectCanvas = () => {
     setEditingLayerId(null);
+    setCropEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(true);
     setIsInspectorOpen(false);
@@ -234,9 +266,35 @@ export const ImageStudio: React.FC = () => {
 
   const handleDeselectAll = () => {
     setEditingLayerId(null);
+    setCropEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(false);
   };
+
+  const handleStartCrop = React.useCallback(
+    (layerId: string) => {
+      const layer = editor.project.layers.find((item) => item.id === layerId);
+      if (!layer || layer.locked) return;
+      setEditingLayerId(null);
+      setCropEditingLayerId(layerId);
+      setCropDraft(normalizeImageCrop(layer.crop));
+    },
+    [editor.project.layers],
+  );
+
+  const handleApplyCrop = React.useCallback(() => {
+    if (!cropEditingLayerId) return;
+    editor.updateLayerCrop(cropEditingLayerId, cropDraft);
+    setCropEditingLayerId(null);
+  }, [cropDraft, cropEditingLayerId, editor]);
+
+  const handleCancelCrop = React.useCallback(() => {
+    setCropEditingLayerId(null);
+  }, []);
+
+  const handleResetCrop = React.useCallback(() => {
+    setCropDraft(DEFAULT_IMAGE_CROP);
+  }, []);
 
   const handleLoadTemplate = (template: typeof editor.project) => {
     editor.loadTemplate(template);
@@ -300,6 +358,21 @@ export const ImageStudio: React.FC = () => {
     );
   }
 
+  if (!persistenceReady || !initialProject) {
+    return (
+      <BackofficeShell
+        title="Image Studio"
+        eyebrow="3. Creative Studio"
+        breadcrumbs={['Marketing Studio', '3. Creative Studio', 'Image Studio (Canva)']}
+        mode="overview"
+      >
+        <div className="flex min-h-64 items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-sm font-semibold text-slate-500">
+          Cargando tu diseño…
+        </div>
+      </BackofficeShell>
+    );
+  }
+
   const studioTools: StudioToolItem[] = [
     // 🌟 Posición 1: Biblioteca Personal Unificada
     { id: 'my-designs', label: 'Mis Diseños', icon: <FolderHeart className="size-4" /> },
@@ -355,6 +428,7 @@ export const ImageStudio: React.FC = () => {
           onToggleAllLock={editor.toggleAllLayersLock}
           onToggleAllVisibility={editor.toggleAllLayersVisibility}
           onMoveZIndex={editor.moveLayerZIndex}
+          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onReorderLayers={editor.reorderLayers}
           onRenameLayer={editor.renameLayer}
           onDuplicateLayer={editor.duplicateLayer}
@@ -365,7 +439,6 @@ export const ImageStudio: React.FC = () => {
           onFitText={editor.fitSelectedText}
           onApplyVariant={editor.applyStyleVariant}
           onAlignSelectedLayers={editor.alignSelectedLayers}
-          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onGroupSelectedLayers={editor.groupSelectedLayers}
           onUngroupLayer={editor.ungroupLayer}
           onUpdateLayerProps={editor.updateLayerProps}
@@ -392,6 +465,7 @@ export const ImageStudio: React.FC = () => {
           previewMode={editor.previewMode}
           isInspectorOpen={isInspectorOpen}
           lastSavedAt={editor.lastSavedAt}
+          saveState={editor.saveState}
           onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
           onToggleSafeZones={() => {
@@ -449,9 +523,13 @@ export const ImageStudio: React.FC = () => {
               isCarousel={Boolean(editor.project.preset.isCarousel)}
               activeSlideIndex={activeSlideIndex}
               carouselGeometry={carouselGeometry}
-              onCrop={(layerId) => {
-                editor.updateLayerProps(layerId, { objectFit: 'cover' });
-              }}
+              cropEditing={cropEditingLayerId === selectedImageLayer.id}
+              cropZoom={cropDraft.zoom}
+              onCrop={handleStartCrop}
+              onCropZoomChange={(zoom) => setCropDraft((current) => normalizeImageCrop({ ...current, zoom }))}
+              onApplyCrop={handleApplyCrop}
+              onCancelCrop={handleCancelCrop}
+              onResetCrop={handleResetCrop}
               onRotate={(layerId, rotation) => editor.updateLayerRotation(layerId, rotation)}
               onToggleFlipHorizontal={editor.toggleFlipHorizontal}
               onToggleFlipVertical={editor.toggleFlipVertical}
@@ -531,6 +609,7 @@ export const ImageStudio: React.FC = () => {
           onToggleVisibility={editor.toggleLayerVisibility}
           onMoveZIndex={editor.moveLayerZIndex}
           onAlignSelectedLayers={editor.alignSelectedLayers}
+          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onSelectCanvas={handleSelectCanvas}
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
@@ -539,6 +618,9 @@ export const ImageStudio: React.FC = () => {
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
           onUpdateLayerProps={editor.updateLayerProps}
+          cropEditingLayerId={cropEditingLayerId}
+          cropDraft={cropDraft}
+          onCropChange={setCropDraft}
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}

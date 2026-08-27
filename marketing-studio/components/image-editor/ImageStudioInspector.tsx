@@ -799,7 +799,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   };
 
   return (
-    <div data-inline-editor-inspector="true">
+    <div data-inline-editor-inspector="true" className="h-full min-h-0 min-w-0">
     <ModuleContextPanel
       label={`Bloque: ${selectedLayer.title}`}
       width="standard"

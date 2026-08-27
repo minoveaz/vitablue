@@ -1,10 +1,16 @@
 import React from 'react';
 import {
-  AlignCenter, AlignLeft, AlignRight, AlignVerticalJustifyCenter, ArrowDown, ArrowUp, Clipboard,
+  AlignCenter, AlignHorizontalDistributeCenter, AlignLeft, AlignRight, AlignVerticalDistributeCenter,
+  AlignVerticalJustifyCenter, ArrowDown, ArrowUp, Clipboard,
   Copy, Eye, EyeOff, FlipHorizontal, FlipVertical, FolderHeart, FolderPlus, Lock, Maximize2,
   Paintbrush, Trash2, Ungroup, Unlock,
 } from 'lucide-react';
-import type { ImageStageActions, ImageStageContextMenuState } from './ImageStage.types';
+import {
+  createContextMenuActionHandler,
+  getContextMenuTargetLayerIds,
+  type ImageStageActions,
+  type ImageStageContextMenuState,
+} from './ImageStage.types';
 
 interface ImageStageContextMenuProps extends ImageStageActions {
   contextMenu: ImageStageContextMenuState | null;
@@ -13,8 +19,17 @@ interface ImageStageContextMenuProps extends ImageStageActions {
 }
 
 export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ contextMenu, selectedLayerIds, onClose, ...actions }) => {
+  const runAction = React.useMemo(() => createContextMenuActionHandler(onClose), [onClose]);
+  React.useEffect(() => {
+    runAction.reset();
+  }, [contextMenu, runAction]);
   if (!contextMenu) return null;
   const { layer } = contextMenu;
+  // A context menu click selects its target, but that state update is
+  // asynchronous. Resolve the effective selection from the menu target so
+  // actions never operate on the previously selected layer(s).
+  const targetLayerIds = getContextMenuTargetLayerIds(layer.id, selectedLayerIds, contextMenu.targetLayerIds);
+  const isMultiSelection = targetLayerIds.length > 1;
   const {
     onCopySelectedLayers, onPasteLayers, onCopyLayerStyle, onPasteLayerStyle, onDuplicateSelectedLayers, onSaveToMyDesigns,
     onDeleteSelectedLayers, onRemoveLayer, onGroupSelectedLayers, onUngroupLayer, onMoveZIndex, onToggleFlipHorizontal,
@@ -26,19 +41,20 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
       {contextMenu && (
         <div
           style={{
-            left: Math.min(contextMenu.x, Math.max(8, window.innerWidth - 296)),
+            left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 296 - 8)),
             top: contextMenu.y,
             transform: contextMenu.y > window.innerHeight * 0.55 ? 'translateY(-100%)' : undefined,
           }}
           className="fixed z-50 min-w-[240px] max-w-[280px] max-h-[calc(100vh-1rem)] overflow-y-auto rounded-2xl border border-slate-700/80 bg-slate-950/95 p-1.5 shadow-2xl backdrop-blur-xl animate-fadeIn text-xs text-slate-200 divide-y divide-slate-800/80 select-none"
           data-image-context-menu="true"
+          onPointerDown={(event) => event.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
           {/* HEADER / TITULAR */}
           <div className="px-3 py-1.5 flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 truncate">
-              {selectedLayerIds.length > 1
-                ? `${selectedLayerIds.length} Elementos Seleccionados`
+              {isMultiSelection
+                ? `${targetLayerIds.length} Elementos Seleccionados`
                 : layer.title}
             </span>
           </div>
@@ -47,10 +63,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
           <div className="py-1">
             <button
               type="button"
-              onClick={() => {
-                onCopySelectedLayers?.();
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onCopySelectedLayers?.(targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -62,10 +76,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onPasteLayers?.();
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onPasteLayers?.();})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -77,10 +89,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onCopyLayerStyle?.(layer.id);
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onCopyLayerStyle?.(layer.id);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -92,10 +102,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onPasteLayerStyle?.(layer.id);
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onPasteLayerStyle?.(layer.id, targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -107,14 +115,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                if (selectedLayerIds.length > 1 && onDuplicateSelectedLayers) {
-                  onDuplicateSelectedLayers();
+              onClick={() => runAction(() => {
+                if (isMultiSelection && onDuplicateSelectedLayers) {
+                  onDuplicateSelectedLayers(targetLayerIds);
                 } else {
                   onDuplicateLayer(layer.id);
-                }
-                onClose();
-              }}
+                }})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -127,10 +133,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
             {onSaveToMyDesigns && (
               <button
                 type="button"
-                onClick={() => {
-                  onSaveToMyDesigns(layer.id);
-                  onClose();
-                }}
+                onClick={() => runAction(() => {
+                  targetLayerIds.forEach((id) => onSaveToMyDesigns(id));})}
                 className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left text-amber-300 hover:bg-amber-950/40 hover:text-amber-200 transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -143,14 +147,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                if (selectedLayerIds.length > 1 && onDeleteSelectedLayers) {
-                  onDeleteSelectedLayers();
+              onClick={() => runAction(() => {
+                if (onDeleteSelectedLayers) {
+                  onDeleteSelectedLayers(targetLayerIds);
                 } else {
                   onRemoveLayer(layer.id);
-                }
-                onClose();
-              }}
+                }})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left text-rose-400 hover:bg-rose-950/50 hover:text-rose-300 transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -162,15 +164,13 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
           </div>
 
           {/* SECCIÓN 2: AGRUPACIÓN / DESAGRUPACIÓN */}
-          {(selectedLayerIds.length >= 2 || ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(layer.blockType ?? '')) && (
+          {(isMultiSelection || ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(layer.blockType ?? '')) && (
             <div className="py-1">
-              {selectedLayerIds.length >= 2 && onGroupSelectedLayers && (
+              {isMultiSelection && onGroupSelectedLayers && (
                 <button
                   type="button"
-                  onClick={() => {
-                    onGroupSelectedLayers();
-                    onClose();
-                  }}
+                  onClick={() => runAction(() => {
+                    onGroupSelectedLayers(targetLayerIds);})}
                   className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left font-bold text-brand-cyan hover:bg-brand-cyan/20 transition-colors"
                 >
                   <div className="flex items-center gap-2">
@@ -184,10 +184,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
               {onUngroupLayer && ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(layer.blockType ?? '') && (
                 <button
                   type="button"
-                  onClick={() => {
-                    onUngroupLayer(layer.id);
-                    onClose();
-                  }}
+                  onClick={() => runAction(() => {
+                    targetLayerIds.forEach((id) => onUngroupLayer(id));})}
                   className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left font-bold text-amber-300 hover:bg-amber-500/20 transition-colors"
                 >
                   <div className="flex items-center gap-2">
@@ -204,10 +202,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
           <div className="py-1">
             <button
               type="button"
-              onClick={() => {
-                onMoveZIndex?.(layer.id, 'top');
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onMoveZIndex?.(layer.id, 'top', targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -219,10 +215,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onMoveZIndex?.(layer.id, 'up');
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onMoveZIndex?.(layer.id, 'up', targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -234,10 +228,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onMoveZIndex?.(layer.id, 'down');
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onMoveZIndex?.(layer.id, 'down', targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -249,10 +241,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onMoveZIndex?.(layer.id, 'bottom');
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onMoveZIndex?.(layer.id, 'bottom', targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -267,10 +257,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
           <div className="py-1">
             <button
               type="button"
-              onClick={() => {
-                onToggleFlipHorizontal?.(layer.id);
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onToggleFlipHorizontal?.(layer.id, targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -282,10 +270,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
             <button
               type="button"
-              onClick={() => {
-                onToggleFlipVertical?.(layer.id);
-                onClose();
-              }}
+              onClick={() => runAction(() => {
+                onToggleFlipVertical?.(layer.id, targetLayerIds);})}
               className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -304,14 +290,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
             <div className="grid grid-cols-4 gap-1 px-2 py-0.5">
               <button
                 type="button"
-                onClick={() => {
-                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
-                    onAlignSelectedLayers('left');
+                onClick={() => runAction(() => {
+                  if (onAlignSelectedLayers) {
+                    onAlignSelectedLayers('left', targetLayerIds);
                   } else {
                     onUpdatePosition(layer.id, { x: 20, y: layer.position.y });
-                  }
-                  onClose();
-                }}
+                  }})}
                 className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
                 title="Alinear a la izquierda"
               >
@@ -321,14 +305,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
               <button
                 type="button"
-                onClick={() => {
-                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
-                    onAlignSelectedLayers('center');
+                onClick={() => runAction(() => {
+                  if (onAlignSelectedLayers) {
+                    onAlignSelectedLayers('center', targetLayerIds);
                   } else {
                     onUpdatePosition(layer.id, { x: 50, y: layer.position.y });
-                  }
-                  onClose();
-                }}
+                  }})}
                 className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
                 title="Centrar horizontalmente"
               >
@@ -338,14 +320,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
               <button
                 type="button"
-                onClick={() => {
-                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
-                    onAlignSelectedLayers('right');
+                onClick={() => runAction(() => {
+                  if (onAlignSelectedLayers) {
+                    onAlignSelectedLayers('right', targetLayerIds);
                   } else {
                     onUpdatePosition(layer.id, { x: 80, y: layer.position.y });
-                  }
-                  onClose();
-                }}
+                  }})}
                 className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
                 title="Alinear a la derecha"
               >
@@ -355,14 +335,12 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
 
               <button
                 type="button"
-                onClick={() => {
-                  if (selectedLayerIds.length > 1 && onAlignSelectedLayers) {
-                    onAlignSelectedLayers('middle');
+                onClick={() => runAction(() => {
+                  if (onAlignSelectedLayers) {
+                    onAlignSelectedLayers('middle', targetLayerIds);
                   } else {
                     onUpdatePosition(layer.id, { x: layer.position.x, y: 50 });
-                  }
-                  onClose();
-                }}
+                  }})}
                 className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
                 title="Centrar verticalmente"
               >
@@ -370,6 +348,35 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
                 <span>Medio</span>
               </button>
             </div>
+            {isMultiSelection && targetLayerIds.length >= 3 && actions.onDistributeSelectedLayers && (
+              <>
+                <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500">
+                  Distribuir elementos
+                </div>
+                <div className="grid grid-cols-2 gap-1 px-2 py-0.5">
+                  <button
+                    type="button"
+                    onClick={() => runAction(() => {
+                      actions.onDistributeSelectedLayers?.('horizontal', targetLayerIds);})}
+                    className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                    title="Distribuir horizontalmente"
+                  >
+                    <AlignHorizontalDistributeCenter className="size-3" />
+                    <span>Horizontal</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => runAction(() => {
+                      actions.onDistributeSelectedLayers?.('vertical', targetLayerIds);})}
+                    className="flex items-center justify-center gap-1 rounded-lg bg-slate-900 border border-slate-800 p-1.5 text-[10px] hover:border-brand-cyan hover:text-brand-cyan transition-colors"
+                    title="Distribuir verticalmente"
+                  >
+                    <AlignVerticalDistributeCenter className="size-3" />
+                    <span>Vertical</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* SECCIÓN 5: BLOQUEO, VISIBILIDAD Y AUTO-AJUSTE */}
@@ -377,10 +384,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
             {onToggleLock && (
               <button
                 type="button"
-                onClick={() => {
-                  onToggleLock(layer.id);
-                  onClose();
-                }}
+                onClick={() => runAction(() => {
+                  onToggleLock(layer.id, targetLayerIds, !layer.locked);})}
                 className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -403,10 +408,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
             {onToggleVisibility && (
               <button
                 type="button"
-                onClick={() => {
-                  onToggleVisibility(layer.id);
-                  onClose();
-                }}
+                onClick={() => runAction(() => {
+                  onToggleVisibility(layer.id, targetLayerIds, layer.visible === false);})}
                 className="flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -428,10 +431,8 @@ export const ImageStageContextMenu: React.FC<ImageStageContextMenuProps> = ({ co
             {onFitToCanvas && (
               <button
                 type="button"
-                onClick={() => {
-                  onFitToCanvas(layer.id);
-                  onClose();
-                }}
+                onClick={() => runAction(() => {
+                  targetLayerIds.forEach((id) => onFitToCanvas(id));})}
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-1.5 text-left hover:bg-slate-800/80 hover:text-white transition-colors"
               >
                 <Maximize2 className="size-3.5 text-primary" />

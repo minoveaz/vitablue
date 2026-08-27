@@ -2,6 +2,8 @@ import React from 'react';
 import type { ImageLayer, ImageProject } from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 import type { ImageStageInteractionHandlers } from './ImageStage.types';
+import { ImageCropEditor } from './ImageCropEditor';
+import type { ImageCrop } from '../../types/imageStudio';
 
 interface ImageStageLayersProps extends ImageStageInteractionHandlers {
   project: ImageProject;
@@ -11,9 +13,12 @@ interface ImageStageLayersProps extends ImageStageInteractionHandlers {
   isPanning: boolean;
   draggingLayerId: string | null;
   onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
+  cropEditingLayerId?: string | null;
+  cropDraft?: ImageCrop;
+  onCropChange?: (crop: ImageCrop) => void;
 }
 
-export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, selectedLayerId, selectedLayerIds, effectiveHandMode, isPanning, draggingLayerId, onUpdateLayerProps, handlePointerDown, handleContextMenu, handleResizeStart, handleRotateStart }) => (
+export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, selectedLayerId, selectedLayerIds, effectiveHandMode, isPanning, draggingLayerId, onUpdateLayerProps, cropEditingLayerId, cropDraft, onCropChange, handlePointerDown, handleContextMenu, handleResizeStart, handleRotateStart }) => (
   <>
           {/* RENDER LAYERS */}
           {project.layers.map((layer) => {
@@ -21,7 +26,12 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
 
             const isSelected = selectedLayerIds.includes(layer.id) || layer.id === selectedLayerId;
             const isLocked = Boolean(layer.locked);
+            const isCropEditing = cropEditingLayerId === layer.id;
             const blockProps = layer.props as Record<string, unknown>;
+            const maxLayerZIndex = project.layers.reduce(
+              (max, item) => Math.max(max, item.zIndex ?? 0),
+              0,
+            );
 
             const getBlockWidth = (blockType?: string, customWidth?: number) =>
               getBlockDefaultWidth(blockType, customWidth, blockProps);
@@ -81,9 +91,9 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className={`canvas-layer-item absolute transition-shadow shrink-0 [&_*]:cursor-inherit ${getClipClass(
-                  layer.clipShape
-                )} ${
+                className={`canvas-layer-item absolute transition-shadow shrink-0 [&_*]:cursor-inherit ${
+                  isCropEditing ? '' : getClipClass(layer.clipShape)
+                } ${
                   effectiveHandMode
                     ? isPanning
                       ? 'cursor-grabbing select-none'
@@ -104,7 +114,10 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                   left: `${layer.position.x}%`,
                   top: `${layer.position.y}%`,
                   transform: `translate(-50%, -50%) rotate(${layer.rotation ?? 0}deg) scale(${scaleX}, ${scaleY})`,
-                  zIndex: layer.zIndex,
+                  // Crop controls must remain above neighbouring layers. The
+                  // regular layer z-index is intentionally preserved outside
+                  // crop mode.
+                  zIndex: isCropEditing ? maxLayerZIndex + 1 : layer.zIndex,
                   width: getBlockWidth(layer.blockType, layer.width),
                   minWidth: getBlockWidth(layer.blockType, layer.width) === 'auto' ? 'auto' : getBlockWidth(layer.blockType, layer.width),
                   maxWidth: 'none',
@@ -129,11 +142,19 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                 }}
               >
                 {/* RENDER BLOCK VIA MODULAR RENDERER */}
-                <ImageLayerBlockRenderer
-                  layer={layer}
-                  brandTokens={project.brandTokens}
-                  onUpdateLayerProps={onUpdateLayerProps}
-                />
+                {isCropEditing && (layer.type === 'image' || Boolean(blockProps.imageUrl) || Boolean(layer.src)) ? (
+                  <ImageCropEditor
+                    imageUrl={String(blockProps.imageUrl ?? layer.src ?? '')}
+                    crop={cropDraft ?? layer.crop ?? { x: 50, y: 50, zoom: 1 }}
+                    onChange={(nextCrop) => onCropChange?.(nextCrop)}
+                  />
+                ) : (
+                  <ImageLayerBlockRenderer
+                    layer={layer}
+                    brandTokens={project.brandTokens}
+                    onUpdateLayerProps={onUpdateLayerProps}
+                  />
+                )}
 
                 {/* LOCK BADGE IF SELECTED AND LOCKED */}
                 {isSelected && isLocked && (
@@ -144,7 +165,7 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                 )}
 
                 {/* BOUNDING BOX CORNER & LATERAL HANDLES CON ARRASTRE DE REDIMENSIÓN */}
-                {isSelected && !isLocked && (
+                {isSelected && !isLocked && !isCropEditing && (
                   <>
                     {/* MANEJADOR SUPERIOR DE ROTACIÓN ANGULAR */}
                     <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-brand-cyan pointer-events-none" />

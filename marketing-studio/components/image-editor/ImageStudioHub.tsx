@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Plus,
   Search,
@@ -15,11 +15,13 @@ import {
 import { ImageProject, IMAGE_FORMAT_PRESETS } from '../../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
 import {
-  getStoredImageProjects,
-  saveStoredImageProject,
-  deleteStoredImageProject,
-  duplicateStoredImageProject,
-  createBlankImageProject,
+  IMAGE_PROJECTS_UPDATED_EVENT,
+  createBlankImageProjectAsync,
+  deleteStoredImageProjectAsync,
+  duplicateStoredImageProjectAsync,
+  getStoredImageProjectsAsync,
+  initializeImagePersistence,
+  saveStoredImageProjectAsync,
 } from '../../utils/imageProjectStorage';
 import { ImageLayerBlockRenderer } from './blocks/BlockRenderer';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
@@ -89,7 +91,8 @@ const CanvasThumbnailPreview: React.FC<{ project: ImageProject }> = ({ project }
 };
 
 export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject }) => {
-  const [projects, setProjects] = useState<ImageProject[]>(() => getStoredImageProjects());
+  const [projects, setProjects] = useState<ImageProject[]>([]);
+  const [isHydrating, setIsHydrating] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFormatFilter, setSelectedFormatFilter] = useState<string>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -99,15 +102,43 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [pendingDelete, setPendingDelete] = useState<ImageProject | null>(null);
 
-  const refreshProjects = () => {
-    setProjects(getStoredImageProjects());
-  };
+  const refreshProjects = useCallback(async () => {
+    const hydratedProjects = await getStoredImageProjectsAsync();
+    setProjects(hydratedProjects);
+    setIsHydrating(false);
+  }, []);
 
-  const handleDuplicate = (id: string, e: React.MouseEvent) => {
+  useEffect(() => {
+    let active = true;
+    void initializeImagePersistence()
+      .then(() => {
+        if (active) return refreshProjects();
+        return undefined;
+      })
+      .catch(() => {
+        if (active) setIsHydrating(false);
+      });
+    const handleUpdate = () => {
+      if (active) void refreshProjects();
+    };
+    window.addEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      active = false;
+      window.removeEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [refreshProjects]);
+
+  const handleDuplicate = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const dup = duplicateStoredImageProject(id);
-    if (dup) {
-      refreshProjects();
+    try {
+      const dup = await duplicateStoredImageProjectAsync(id);
+      if (dup) {
+        await refreshProjects();
+      }
+    } catch {
+      // The editor remains usable if a browser storage transaction fails.
     }
   };
 
@@ -116,20 +147,31 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
     setPendingDelete(project);
   };
 
-  const performDeleteProject = (project: ImageProject) => {
-    deleteStoredImageProject(project.id);
-    refreshProjects();
-    setPendingDelete(null);
+  const performDeleteProject = async (project: ImageProject) => {
+    try {
+      await deleteStoredImageProjectAsync(project.id);
+      await refreshProjects();
+      setPendingDelete(null);
+    } catch {
+      // Keep the confirmation open so the user can retry.
+    }
   };
 
-  const handleCreateBlank = () => {
-    const project = createBlankImageProject(selectedPresetId, newProjectTitle.trim() || undefined);
-    refreshProjects();
-    setIsCreateModalOpen(false);
-    onOpenProject(project.id);
+  const handleCreateBlank = async () => {
+    try {
+      const project = await createBlankImageProjectAsync(
+        selectedPresetId,
+        newProjectTitle.trim() || undefined,
+      );
+      await refreshProjects();
+      setIsCreateModalOpen(false);
+      onOpenProject(project.id);
+    } catch {
+      // Keep the modal open when a durable write cannot be completed.
+    }
   };
 
-  const handleCreateFromTemplate = (template: ImageProject) => {
+  const handleCreateFromTemplate = async (template: ImageProject) => {
     const newProj: ImageProject = {
       ...template,
       id: `project-${Date.now()}`,
@@ -137,10 +179,14 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    saveStoredImageProject(newProj);
-    refreshProjects();
-    setIsCreateModalOpen(false);
-    onOpenProject(newProj.id);
+    try {
+      await saveStoredImageProjectAsync(newProj, { touchUpdatedAt: false });
+      await refreshProjects();
+      setIsCreateModalOpen(false);
+      onOpenProject(newProj.id);
+    } catch {
+      // Keep the modal open when a durable write cannot be completed.
+    }
   };
 
   // Filtrado de proyectos
@@ -235,7 +281,11 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
       </div>
 
       {/* 3. LISTADO DE DISEÑOS EN GRID (ESTILO CAMPAÑAS ACTIVAS) */}
-      {filteredProjects.length === 0 ? (
+      {isHydrating ? (
+        <div className="flex min-h-56 items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-sm font-semibold text-slate-500 shadow-sm">
+          Cargando tus diseños…
+        </div>
+      ) : filteredProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-16 text-center shadow-sm">
           <ImageIcon className="mb-4 h-12 w-12 text-slate-300" />
           <h3 className="text-xl font-bold text-slate-900">No se encontraron diseños</h3>

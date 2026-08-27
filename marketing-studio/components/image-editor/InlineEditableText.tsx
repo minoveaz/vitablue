@@ -281,6 +281,9 @@ interface InlineTextControlsProps {
   visible?: boolean;
 }
 
+const toColorInputValue = (value: unknown, fallback: string): string =>
+  typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+
 export const InlineTextControls: React.FC<InlineTextControlsProps> = ({ compact = false, selectedLayerId }) => {
   const formatting = useInlineTextFormatting();
   const active = formatting.activeEditor;
@@ -302,8 +305,8 @@ export const InlineTextControls: React.FC<InlineTextControlsProps> = ({ compact 
     ['underline', 'Subrayado', UnderlineIcon, () => formatting.toggleMark('underline')],
     ['strike', 'Tachado', Strikethrough, () => formatting.toggleMark('strike')],
   ] as const;
-  const color = editor.getAttributes('textStyle').color ?? colorInput;
-  const highlight = editor.getAttributes('highlight').color ?? highlightInput;
+  const color = toColorInputValue(editor.getAttributes('textStyle').color ?? colorInput, '#001219');
+  const highlight = toColorInputValue(editor.getAttributes('highlight').color ?? highlightInput, '#fff3a3');
   const blockType = editor.state.selection.$from.parent.type.name;
   const blockName = blockType === 'heading' ? 'heading' : 'paragraph';
   const paragraph = editor.getAttributes(blockName);

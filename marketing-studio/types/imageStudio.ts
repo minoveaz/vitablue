@@ -90,6 +90,26 @@ export interface ImageTextFit {
   maxLines: number;
 }
 
+/** Normalized crop framing for image layers. Position is the source focal point (0-100). */
+export interface ImageCropBounds {
+  /** Crop rectangle edges as percentages of the layer frame (0-100). */
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+export interface ImageCrop {
+  x: number;
+  y: number;
+  zoom: number;
+  /**
+   * Optional non-destructive crop rectangle. It is optional for backwards
+   * compatibility with projects that only stored a focal point and zoom.
+   */
+  bounds?: ImageCropBounds;
+}
+
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
   // 1. REDES SOCIALES & ADS
   {
@@ -502,6 +522,8 @@ export interface ImageLayer {
   styleVariant?: ImageStyleVariantId;
   /** Format-independent layout rules persisted with the layer. */
   constraints?: LayerLayoutConstraints;
+  /** Persistent, non-destructive image crop framing. */
+  crop?: ImageCrop;
 }
 
 /** Stable contracts used by the editor engine and persistence adapters. */

@@ -39,6 +39,7 @@ import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormat
 import { MarketingBlockRenderer } from './MarketingBlocks';
 import { getBlockDefaultWidth } from '../../../utils/blockGeometry';
 import { htmlToPlainText, isTiptapHtml } from '../../../utils/tiptapHtml';
+import { getCropImageStyle } from '../../../utils/imageCrop';
 
 const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
   <div
@@ -253,6 +254,7 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
         const focalPoint = blockProps.focalPoint as { x?: number; y?: number } | undefined;
         const clipShape = layer.clipShape ?? 'none';
+        const cropImageStyle = layer.crop ? getCropImageStyle(layer.crop) : {};
 
         let clipStyle: React.CSSProperties = {};
         if (clipShape === 'circle') {
@@ -281,8 +283,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               alt={String(blockProps.alt ?? layer.title ?? 'Image')}
               className="w-full h-full pointer-events-none"
               style={{
-                objectFit,
-                objectPosition: `${focalPoint?.x ?? 50}% ${focalPoint?.y ?? 50}%`,
+                objectFit: layer.crop ? 'cover' : objectFit,
+                objectPosition: layer.crop
+                  ? cropImageStyle.objectPosition
+                  : `${focalPoint?.x ?? 50}% ${focalPoint?.y ?? 50}%`,
+                ...(layer.crop ? cropImageStyle : {}),
               }}
               loading="lazy"
             />
