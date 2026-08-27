@@ -97,6 +97,44 @@ const BlogSectionRenderer: React.FC<{ sections: BlogSection[] }> = ({ sections }
               </div>
             </div>
           );
+        case 'cta-validator':
+          return (
+            <div
+              key={index}
+              className="my-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-primary/10 via-brand-cyan/10 to-white border border-primary/20 shadow-sm space-y-5 text-left"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-caption font-black text-primary uppercase tracking-wider shadow-xs border border-primary/15">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                  {section.ctaBadge || 'Auditoría Oficial Gratuita'}
+                </span>
+                <span className="text-caption font-bold text-text-secondary flex items-center gap-1">
+                  ✓ Diagnóstico Inmediato en 30s
+                </span>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-h3 font-display font-black text-text-main leading-snug">
+                  {section.ctaTitle || '¿Tu seguro médico cumple al 100% los requisitos de Extranjería?'}
+                </h3>
+                <p className="text-body-reg text-text-secondary leading-relaxed max-w-2xl">
+                  {section.ctaDescription ||
+                    'Evita inadmisiones o requerimientos en el consulado. Audita tu póliza en 30 segundos con nuestro validador oficial gratuito.'}
+                </p>
+              </div>
+              <div className="pt-2">
+                <Link to={section.ctaLink || '/validador-visado'} className="inline-block">
+                  <Button
+                    variant="accent"
+                    size="lg"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
+                    className="shadow-md shadow-accent/20 font-bold"
+                  >
+                    {section.ctaButtonText || 'Validar mi seguro gratis'}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          );
         case 'table':
           return (
             <div

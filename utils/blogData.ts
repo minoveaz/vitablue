@@ -1,5 +1,5 @@
 export interface BlogSection {
-  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table' | 'cta-wizard';
+  type: 'paragraph' | 'heading-2' | 'heading-3' | 'list' | 'callout' | 'table' | 'cta-wizard' | 'cta-validator';
   text?: string;
   items?: string[];
   tableHeader?: string[];
@@ -797,6 +797,14 @@ export const blogPosts: BlogPostData[] = [
         ]
       },
       {
+        type: 'cta-validator',
+        ctaTitle: '¿Tienes dudas sobre si tu seguro cumple para el Visado de Estudiante?',
+        ctaDescription: 'Comprueba al instante si tu póliza tiene 0€ copagos, carencias eliminadas y repatriación oficial con nuestro validador gratuito.',
+        ctaButtonText: 'Auditar mi seguro para el visado',
+        ctaLink: '/validador-visado',
+        ctaBadge: 'Validador Consular Gratuito'
+      },
+      {
         type: 'heading-2',
         text: '¿Cómo y cuándo se genera el certificado oficial para el visado?'
       },
@@ -1237,12 +1245,12 @@ export const blogPosts: BlogPostData[] = [
         ]
       },
       {
-        type: 'cta-wizard',
-        ctaBadge: 'Official Certificate in 24h',
-        ctaTitle: 'Ready to Secure Your Spanish Student Visa Insurance?',
-        ctaDescription: 'Calculate your monthly quote with zero copays and get your certified consular documentation signed and stamped ready for submission.',
-        ctaButtonText: 'Calculate Student Quote Online →',
-        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+        type: 'cta-validator',
+        ctaBadge: 'Free Consular Audit',
+        ctaTitle: 'Not sure if your insurance meets Spanish visa requirements?',
+        ctaDescription: 'Verify instantly whether your policy has $0 copay, zero waiting periods and official repatriation with our free consular diagnostic tool.',
+        ctaButtonText: 'Audit My Visa Policy Free',
+        ctaLink: '/validador-visado'
       },
       {
         type: 'heading-2',

@@ -91,6 +91,8 @@ const canonicalPageDates = {
   '/productos/seguro-mascotas/sanitas-mascotas': '2026-08-15',
   '/productos/seguro-para-decesos/asistencia-familiar': '2026-08-15',
   '/productos/seguro-vida': '2026-08-15',
+  '/productos/seguros-salud/seguro-medico-estudiantes/chile': '2026-08-24',
+  '/productos/seguros-salud/seguro-medico-estudiantes/estados-unidos': '2026-08-24',
   '/validador-visado': '2026-08-24',
   '/productos/seguros-salud/seguro-medico-estudiantes/madrid': '2026-08-24',
   '/productos/seguros-salud/seguro-medico-estudiantes/barcelona': '2026-08-24',
