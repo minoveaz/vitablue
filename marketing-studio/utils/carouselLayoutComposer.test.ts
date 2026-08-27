@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCarouselLayout } from '../data/carouselLayoutCatalog';
-import { getCarouselSlotFrame, getCarouselSlideLayout } from './carouselLayoutComposer';
+import { getCarouselSlotFrame, getCarouselSlideLayout, instantiateCarouselLayout } from './carouselLayoutComposer';
 
 describe('carousel layout composer', () => {
   it('cycles a layout narrative for any supported slide count', () => {
@@ -21,5 +21,14 @@ describe('carousel layout composer', () => {
         expect(frame.y + frame.height).toBeLessThanOrEqual(100);
       }
     }
+  });
+
+  it('instantiates a bounded project with slide-aware layer positions', () => {
+    const layout = getCarouselLayout('educational-flow')!;
+    const project = instantiateCarouselLayout(layout, 7, { title: 'Guia VitaBlue' });
+    expect(project.carouselConfig?.slideCount).toBe(7);
+    expect(project.preset.width).toBe(7560);
+    expect(project.layers.length).toBeGreaterThan(0);
+    expect(project.layers.every((layer) => layer.position.x >= 0 && layer.position.x <= 700)).toBe(true);
   });
 });

@@ -97,31 +97,31 @@ Las referencias visuales de esta fase incluyen:
 
 ### Fase 1 — Contratos y layouts de referencia
 
-- [ ] Definir `CarouselLayout`, `CarouselSlideLayout` y `CarouselElementSlot`.
-- [ ] Definir roles narrativos y reglas de compatibilidad por plataforma.
-- [ ] Crear una plantilla de referencia de 5 slides con identidad VitaBlue.
-- [ ] Registrar layouts en el catálogo con previews y metadatos.
+- [x] Definir `CarouselLayout`, `CarouselSlideLayout` y `CarouselElementSlot`.
+- [x] Definir roles narrativos y reglas de compatibilidad por plataforma.
+- [x] Crear una plantilla de referencia de 5 slides con identidad VitaBlue.
+- [x] Registrar layouts en el catálogo con previews y metadatos.
 
 ### Fase 2 — Composición guiada
 
-- [ ] Implementar regiones, constraints y anclajes entre slides.
+- [x] Implementar regiones, constraints y anclajes entre slides.
 - [ ] Añadir máscaras, focal point y elementos decorativos continuos.
-- [ ] Incorporar auto-fit de texto y validación de overflow.
+- [x] Incorporar auto-fit de texto y validación de overflow.
 - [ ] Añadir componentes editoriales de conversión.
 
 ### Fase 3 — Edición multi-slide
 
-- [ ] Implementar miniaturas, focus mode y navegación por slide.
-- [ ] Añadir reordenación y duplicación de diapositivas.
-- [ ] Permitir cambiar layouts conservando contenido compatible.
-- [ ] Integrar undo/redo y persistencia para operaciones multi-slide.
+- [x] Implementar miniaturas, focus mode y navegación por slide en el editor y simulador.
+- [x] Añadir reordenación y duplicación de diapositivas a nivel de dominio.
+- [x] Permitir cambiar layouts conservando contenido compatible.
+- [x] Integrar undo/redo y persistencia para operaciones multi-slide.
 
 ### Fase 4 — Preview y variantes
 
-- [ ] Mejorar mockups y pieles de Instagram, TikTok y LinkedIn.
-- [ ] Añadir variantes de layout, color, copy, CTA e imagen.
-- [ ] Implementar adaptación semántica a `1:1`, `4:5`, `9:16` y `16:9`.
-- [ ] Mantener una comparación antes/después de la variante.
+- [x] Mejorar mockups y pieles de Instagram, TikTok y LinkedIn.
+- [x] Añadir variantes de layout, color, copy, CTA e imagen.
+- [x] Implementar adaptación semántica a `1:1`, `4:5`, `9:16` y `16:9`.
+- [x] Mantener una comparación antes/después de la variante.
 
 ### Fase 5 — Calidad y publicación
 

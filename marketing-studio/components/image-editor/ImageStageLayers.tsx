@@ -28,6 +28,7 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
             const isLocked = Boolean(layer.locked);
             const isCropEditing = cropEditingLayerId === layer.id;
             const blockProps = layer.props as Record<string, unknown>;
+            const isStructuralBackground = blockProps.isCarouselBackground === true;
             const maxLayerZIndex = project.layers.reduce(
               (max, item) => Math.max(max, item.zIndex ?? 0),
               0,
@@ -132,6 +133,7 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                     ? '20px'
                     : 'auto',
                   flexShrink: 0,
+                  pointerEvents: isStructuralBackground ? 'none' : undefined,
                   opacity: layer.opacity !== undefined ? layer.opacity : 1,
                   boxShadow: getShadowStyle(layer.shadowPreset, layer),
                   borderWidth: layer.blockType === 'GeometricShape' ? undefined : (layer.borderWidth ? `${layer.borderWidth}px` : undefined),
@@ -158,7 +160,7 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
 
                 {/* LOCK BADGE IF SELECTED AND LOCKED */}
                 {isSelected && isLocked && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[10px] font-bold text-primary-dark shadow-md backdrop-blur-xs">
+                  <div data-export-exclude="true" className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2.5 py-0.5 text-[10px] font-bold text-primary-dark shadow-md backdrop-blur-xs">
                     <span>🔒</span>
                     <span>Capa Bloqueada</span>
                   </div>
@@ -168,8 +170,9 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                 {isSelected && !isLocked && !isCropEditing && (
                   <>
                     {/* MANEJADOR SUPERIOR DE ROTACIÓN ANGULAR */}
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-brand-cyan pointer-events-none" />
+                    <div data-export-exclude="true" className="absolute -top-6 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-brand-cyan pointer-events-none" />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleRotateStart(e, layer)}
                       className="absolute -top-8 left-1/2 -translate-x-1/2 size-4 rounded-full bg-white border-2 border-primary shadow-xl cursor-grab active:cursor-grabbing hover:scale-125 transition-transform flex items-center justify-center z-30"
                       title="Arrastrar para rotar libremente"
@@ -179,21 +182,25 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
 
                     {/* ESQUINAS: ESCALA PROPORCIONAL */}
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'nw')}
                       className="absolute -top-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'ne')}
                       className="absolute -top-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'sw')}
                       className="absolute -bottom-2 -left-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
                     />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'se')}
                       className="absolute -bottom-2 -right-2 size-3.5 rounded-full bg-brand-cyan border-2 border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform z-20"
                       title="Arrastrar para redimensionar proporcionalmente"
@@ -201,11 +208,13 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
 
                     {/* LATERALES: AJUSTE DE ANCHURA (WIDTH) */}
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'w')}
                       className="absolute top-1/2 -left-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar ancho izquierdo"
                     />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'e')}
                       className="absolute top-1/2 -right-2 -translate-y-1/2 h-5 w-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ew-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar ancho derecho"
@@ -213,11 +222,13 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
 
                     {/* SUPERIOR/INFERIOR: AJUSTE DE ALTURA (HEIGHT) */}
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 'n')}
                       className="absolute -top-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar altura superior"
                     />
                     <div
+                      data-export-exclude="true"
                       onPointerDown={(e) => handleResizeStart(e, layer, 's')}
                       className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border border-slate-800 shadow-md cursor-ns-resize hover:scale-125 transition-transform z-20"
                       title="Ajustar altura inferior"

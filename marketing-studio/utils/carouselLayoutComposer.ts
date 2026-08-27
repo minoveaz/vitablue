@@ -3,7 +3,11 @@ import type {
   CarouselLayout,
   CarouselSlideLayout,
   ImageLayer,
+  ImageProject,
+  CarouselConfig,
 } from '../types/imageStudio';
+import { IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
+import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 
 export interface CarouselSlotFrame {
   x: number;
@@ -72,4 +76,92 @@ export const validateCarouselLayoutLayers = (
     }
   }
   return errors;
+};
+
+export const instantiateCarouselLayout = (
+  layout: CarouselLayout,
+  slideCount: number,
+  options: {
+    title?: string;
+    platform?: CarouselConfig['platform'];
+    slideWidth?: number;
+    slideHeight?: number;
+  } = {},
+): ImageProject => {
+  const platform = options.platform ?? layout.supportedPlatforms[0] ?? 'instagram';
+  const preset = IMAGE_FORMAT_PRESETS.find(
+    (item) => item.carouselPlatform === platform && item.isCarousel,
+  ) ?? IMAGE_FORMAT_PRESETS.find((item) => item.isCarousel);
+  if (!preset) throw new Error('No carousel preset is available');
+
+  const safeSlideCount = Math.max(layout.minSlides, Math.min(layout.maxSlides, Math.round(slideCount)));
+  const slideWidth = options.slideWidth ?? preset.slideWidth ?? 1080;
+  const slideHeight = options.slideHeight ?? preset.slideHeight ?? preset.height;
+  const now = new Date().toISOString();
+  const layers: ImageLayer[] = [];
+  const slides = Array.from({ length: safeSlideCount }, (_, index) => {
+    const slideLayout = getCarouselSlideLayout(layout, index);
+    return {
+      index,
+      title: slideLayout.label,
+      role: slideLayout.role,
+    };
+  });
+
+  slides.forEach((slide, slideIndex) => {
+    const slideLayout = getCarouselSlideLayout(layout, slideIndex);
+    slideLayout.slots.forEach((slot, slotIndex) => {
+      const frame = getCarouselSlotFrame(slot);
+      if (slot.type === 'decorative') return;
+      layers.push({
+        id: `carousel-${layout.id}-${slideIndex}-${slot.id}`,
+        type: slot.type === 'media' ? 'image' : 'text',
+        title: `${slide.title}: ${slot.type}`,
+        props: {
+          text: slot.type === 'title' ? slide.title : slot.type === 'cta' ? 'COMENZAR AHORA' : '',
+          tag: slot.type,
+          slideIndex,
+          slotId: slot.id,
+        },
+        position: {
+          x: ((slideIndex + (frame.x + frame.width / 2) / 100) / safeSlideCount) * 100,
+          y: frame.y + frame.height / 2,
+        },
+        zIndex: 10 + slotIndex,
+        scale: 1,
+        width: (frame.width / 100) * slideWidth,
+        height: (frame.height / 100) * slideHeight,
+        fontSize: slot.type === 'title' ? 54 : 24,
+        fontWeight: slot.type === 'title' ? '800' : '500',
+        fill: '#f8fafc',
+        align: 'left',
+        visible: true,
+        constraints: { snapToGuides: true },
+      });
+    });
+  });
+
+  return {
+    id: `carousel-${layout.id}-${Date.now()}`,
+    title: options.title ?? layout.name,
+    preset: { ...preset, width: slideWidth * safeSlideCount, height: slideHeight },
+    background: { type: 'solid', color: '#001219' },
+    layers,
+    brandTokens: defaultMotionBrandTokens,
+    carouselConfig: {
+      enabled: true,
+      platform,
+      slideCount: safeSlideCount,
+      slideWidth,
+      slideHeight,
+      layoutId: layout.id,
+      currentSlideIndex: 0,
+      slides,
+      showSlideDividers: true,
+      showSlideNumbers: true,
+      autoSnapToSlides: true,
+    },
+    createdAt: now,
+    updatedAt: now,
+  };
 };

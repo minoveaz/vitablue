@@ -147,8 +147,22 @@ export function deleteStoredImageProject(id: string): void {
 const createProjectId = (prefix: string): string =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
+const cloneProject = (project: ImageProject): ImageProject =>
+  JSON.parse(JSON.stringify(project)) as ImageProject;
+
+const createProjectFromTemplate = (template: ImageProject, title?: string): ImageProject => {
+  const now = new Date().toISOString();
+  return {
+    ...cloneProject(template),
+    id: createProjectId('project'),
+    title: title?.trim() || `${template.title} (Nuevo)`,
+    createdAt: now,
+    updatedAt: now,
+  };
+};
+
 const duplicateProject = (target: ImageProject): ImageProject => ({
-  ...target,
+  ...cloneProject(target),
   id: createProjectId('project'),
   title: `${target.title} (Copia)`,
   createdAt: new Date().toISOString(),
@@ -170,6 +184,23 @@ export async function duplicateStoredImageProjectAsync(
   if (!target) return null;
   const duplicated = duplicateProject(target);
   return saveStoredImageProjectAsync(duplicated, { touchUpdatedAt: false });
+}
+
+export function createImageProjectFromTemplate(
+  template: ImageProject,
+  title?: string,
+): ImageProject {
+  const project = createProjectFromTemplate(template, title);
+  void saveStoredImageProject(project);
+  return project;
+}
+
+export async function createImageProjectFromTemplateAsync(
+  template: ImageProject,
+  title?: string,
+): Promise<ImageProject> {
+  const project = createProjectFromTemplate(template, title);
+  return saveStoredImageProjectAsync(project, { touchUpdatedAt: false });
 }
 
 const buildBlankImageProject = (

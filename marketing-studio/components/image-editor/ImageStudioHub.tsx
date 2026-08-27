@@ -13,15 +13,16 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ImageProject, IMAGE_FORMAT_PRESETS } from '../../types/imageStudio';
-import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
+import { MARKETING_TEMPLATE_PROJECT_BY_ID } from '../../utils/imageTemplates';
+import { TEMPLATE_CATALOG } from '../../data/templateCatalog';
 import {
   IMAGE_PROJECTS_UPDATED_EVENT,
   createBlankImageProjectAsync,
+  createImageProjectFromTemplateAsync,
   deleteStoredImageProjectAsync,
   duplicateStoredImageProjectAsync,
   getStoredImageProjectsAsync,
   initializeImagePersistence,
-  saveStoredImageProjectAsync,
 } from '../../utils/imageProjectStorage';
 import { ImageLayerBlockRenderer } from './blocks/BlockRenderer';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
@@ -172,15 +173,8 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
   };
 
   const handleCreateFromTemplate = async (template: ImageProject) => {
-    const newProj: ImageProject = {
-      ...template,
-      id: `project-${Date.now()}`,
-      title: `${template.title} (Nuevo)`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
     try {
-      await saveStoredImageProjectAsync(newProj, { touchUpdatedAt: false });
+      const newProj = await createImageProjectFromTemplateAsync(template);
       await refreshProjects();
       setIsCreateModalOpen(false);
       onOpenProject(newProj.id);
@@ -599,7 +593,10 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
             {createModalTab === 'template' && (
               <div className="flex-1 flex flex-col min-h-0 justify-between">
                 <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {INITIAL_IMAGE_TEMPLATES.map((tmpl) => (
+                  {TEMPLATE_CATALOG.map((catalogItem) => {
+                    const tmpl = MARKETING_TEMPLATE_PROJECT_BY_ID.get(catalogItem.projectId);
+                    if (!tmpl) return null;
+                    return (
                     <div
                       key={tmpl.id}
                       onClick={() => handleCreateFromTemplate(tmpl)}
@@ -610,7 +607,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       <div className="mt-3">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-[10px] font-black uppercase text-primary">
-                            {tmpl.preset.name}
+                            {catalogItem.category}
                           </span>
                           <span className="text-[10px] font-mono text-slate-400 font-bold">
                             {tmpl.preset.aspectRatio}
@@ -621,6 +618,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                         </h4>
                         <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
                           {tmpl.layers.length} capas listas para personalizar
+                          {catalogItem.colorVariant ? ` · Fondo ${catalogItem.colorVariant}` : ''}
                         </p>
                       </div>
 
@@ -632,7 +630,8 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                         <span>Usar esta plantilla</span>
                       </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

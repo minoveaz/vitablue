@@ -18,6 +18,8 @@ import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
+import { ImageStudioBackgroundDrawer } from './drawers/ImageStudioBackgroundDrawer';
+import type { CarouselBackgroundCompositionInput } from '../../types/carouselBackgroundComposition';
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -68,6 +70,7 @@ export interface ImageStudioAssetDrawerContentProps {
     border: { borderWidth?: number; borderColor?: string; borderRadius?: number }
   ) => void;
   onPrepareVideo?: (settings: VideoPreparationSettings) => void;
+  onRegenerateBackground?: (composition: CarouselBackgroundCompositionInput) => void;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -108,6 +111,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onUpdateLayerShadowPreset,
   onUpdateLayerBorder,
   onPrepareVideo,
+  onRegenerateBackground,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -162,6 +166,14 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           onRemoveLayer={onRemoveLayer}
           onDeleteSelectedLayers={onDeleteSelectedLayers}
         />
+      )}
+      {activeTab === 'backgrounds' && onRegenerateBackground && (
+        <div className="-m-4 h-[calc(100vh-140px)] overflow-y-auto p-4">
+          <ImageStudioBackgroundDrawer
+            project={project}
+            onRegenerateBackground={onRegenerateBackground}
+          />
+        </div>
       )}
       {activeTab === 'layout' && onUpdateGuideSettings && onAutoLayout && onFitText && onApplyVariant && (
         <ImageStudioLayoutDrawer

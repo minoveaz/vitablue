@@ -55,10 +55,10 @@ describe('ImageStudio Presets & Templates', () => {
 
   it('maps every marketing catalog item to an independent project with the correct aspect', () => {
     expect(UNIVERSAL_IMAGE_TEMPLATES).toHaveLength(8);
-    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(10);
+    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(13);
 
     const marketingCatalog = TEMPLATE_CATALOG;
-    expect(marketingCatalog).toHaveLength(17);
+    expect(marketingCatalog).toHaveLength(20);
     marketingCatalog.forEach((item) => {
       const project = MARKETING_TEMPLATE_PROJECT_BY_ID.get(item.projectId);
       expect(project, item.id).toBeDefined();
@@ -89,6 +89,20 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
     const copy = duplicateStoredImageProject(blank.id);
     expect(copy).toBeDefined();
     expect(copy?.title).toContain('(Copia)');
+  });
+
+  it('creates an independent persisted project from a catalog template', async () => {
+    const { createImageProjectFromTemplate } = await import('../utils/imageProjectStorage');
+    const source = MARKETING_TEMPLATE_PROJECT_BY_ID.get('vitablue-reference-carousel-white');
+    expect(source).toBeDefined();
+
+    const created = createImageProjectFromTemplate(source!, 'Mi referencia');
+
+    expect(created.id).not.toBe(source?.id);
+    expect(created.title).toBe('Mi referencia');
+    expect(created.carouselConfig?.slideCount).toBe(5);
+    expect(created.layers).not.toBe(source?.layers);
+    expect(created.layers[0].props).not.toBe(source?.layers[0].props);
   });
 
   it('persists uploaded image media for reuse without duplicating identical data URLs', async () => {

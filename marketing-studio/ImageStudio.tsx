@@ -7,6 +7,7 @@ import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
 import { ImageStage } from './components/image-editor/ImageStage';
+import { CarouselSlideStrip } from './components/image-editor/CarouselSlideStrip';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
 import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
 import { InlineEditorProvider } from './components/image-editor/InlineEditorProvider';
@@ -23,7 +24,7 @@ import {
 } from './utils/imageProjectStorage';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
-import type { ImageCrop } from './types/imageStudio';
+import type { CarouselAspectRatio, CarouselCreativeVariant, ImageCrop, ImageProject } from './types/imageStudio';
 import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
   LayoutTemplate,
@@ -37,6 +38,7 @@ import {
   FolderHeart,
   Grid3X3,
   Video,
+  Waves,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -49,6 +51,7 @@ export const ImageStudio: React.FC = () => {
   const [isCarouselSimulatorOpen, setIsCarouselSimulatorOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [persistenceReady, setPersistenceReady] = useState(false);
+  const [carouselComparisonBefore, setCarouselComparisonBefore] = useState<ImageProject | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -342,6 +345,18 @@ export const ImageStudio: React.FC = () => {
     showToast('Guardando en DAM...');
   };
 
+  const handleApplyCarouselVariant = React.useCallback((variant: CarouselCreativeVariant) => {
+    setCarouselComparisonBefore(editor.project);
+    editor.applyCarouselVariant(variant);
+    showToast(`Variante aplicada: ${variant.label}`);
+  }, [editor, showToast]);
+
+  const handleAdaptCarouselAspectRatio = React.useCallback((aspectRatio: CarouselAspectRatio) => {
+    setCarouselComparisonBefore(null);
+    editor.adaptCarouselAspectRatio(aspectRatio);
+    showToast(`Formato adaptado a ${aspectRatio}`);
+  }, [editor, showToast]);
+
   // VISTA 1: HUB / DAM GALLERY DE ASSETS DE IMAGEN
   if (!assetId) {
     return (
@@ -384,6 +399,7 @@ export const ImageStudio: React.FC = () => {
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
+    { id: 'backgrounds', label: 'Fondos', icon: <Waves className="size-4" /> },
     { id: 'layout', label: 'Diseño', icon: <Grid3X3 className="size-4" /> },
 
     // 🔵 Zona 2: Identidad y Marca (6)
@@ -455,6 +471,7 @@ export const ImageStudio: React.FC = () => {
             showToast(`Vídeo preparado: ${settings.durationInSeconds}s`);
             window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
           }}
+          onRegenerateBackground={editor.regenerateCarouselBackground}
         />
       }
       toolbar={
@@ -631,12 +648,23 @@ export const ImageStudio: React.FC = () => {
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
         />
+        <CarouselSlideStrip
+          project={editor.project}
+          activeSlideIndex={activeSlideIndex}
+          onSelectSlide={editor.setCurrentSlide}
+          onReorderSlides={editor.reorderCarouselSlides}
+          onDuplicateSlide={editor.duplicateCarouselSlide}
+          onChangeLayout={editor.updateCarouselLayout}
+        />
 
         {/* CAROUSEL MOBILE INTERACTIVE SIMULATOR MODAL */}
         <CarouselMobileSimulator
           isOpen={isCarouselSimulatorOpen}
           onClose={() => setIsCarouselSimulatorOpen(false)}
           project={editor.project}
+          comparisonBefore={carouselComparisonBefore}
+          onApplyVariant={handleApplyCarouselVariant}
+          onAdaptAspectRatio={handleAdaptCarouselAspectRatio}
         />
 
         {/* TOAST NOTIFICATION */}

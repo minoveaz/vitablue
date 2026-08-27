@@ -14,6 +14,8 @@ export function appendImageProjectHistory(
     JSON.stringify(last.layers) === JSON.stringify(clone.layers) &&
     last.preset.id === clone.preset.id &&
     JSON.stringify(last.background) === JSON.stringify(clone.background) &&
+    JSON.stringify(last.carouselConfig) === JSON.stringify(clone.carouselConfig) &&
+    last.currentSlide === clone.currentSlide &&
     last.title === clone.title
   ) {
     return { history, index };
