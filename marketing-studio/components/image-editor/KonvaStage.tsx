@@ -403,6 +403,40 @@ export const KonvaStage: React.FC<KonvaStageProps> = ({
           </Layer>
         </Stage>
 
+        {/* CAROUSEL SLIDE GUIDES & BADGES ON KONVA */}
+        {project.preset.isCarousel && (() => {
+          const slideCount = project.preset.defaultSlideCount ?? 5;
+          const slideW = project.preset.slideWidth ?? (canvasWidth / slideCount);
+
+          return (
+            <div className="pointer-events-none absolute inset-0 z-30 overflow-visible select-none" aria-hidden="true">
+              {Array.from({ length: slideCount }, (_, idx) => {
+                const leftPos = idx * slideW;
+                const roleLabel = idx === 0 ? 'Portada' : idx === slideCount - 1 ? 'Cierre / CTA' : `Slide ${idx + 1}`;
+                return (
+                  <React.Fragment key={`konva-slide-${idx}`}>
+                    <div
+                      className="absolute -top-7 flex items-center gap-1.5 rounded-t-md border-t border-x border-brand-cyan/40 bg-slate-900/90 px-2.5 py-1 backdrop-blur-xs"
+                      style={{ left: `${leftPos + 8}px` }}
+                    >
+                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-cyan/20 text-[9px] font-mono font-black text-brand-cyan">
+                        {idx + 1}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-200">{roleLabel}</span>
+                    </div>
+                    {idx > 0 && (
+                      <div
+                        className="absolute inset-y-0 w-0 border-l border-dashed border-brand-cyan/50 shadow-[0_0_10px_rgba(148,210,189,0.3)]"
+                        style={{ left: `${leftPos}px` }}
+                      />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          );
+        })()}
+
         {/* SAFE ZONES OVERLAY */}
         {showSafeZones && (
           <div className="pointer-events-none absolute inset-0 z-30 select-none">

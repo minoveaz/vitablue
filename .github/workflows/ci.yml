@@ -329,10 +329,11 @@ jobs:
         continue-on-error: true
         with:
           name: lighthouse-report-${{ github.sha }}
-          path: .unlighthouse/
+          # El informe HTML contiene cientos de archivos y agota rápidamente
+          # la cuota de artefactos. El JSON es suficiente para diagnosticar CI.
+          path: .unlighthouse/ci-result.json
           if-no-files-found: ignore
-          include-hidden-files: true
-          retention-days: 7
+          retention-days: 1
 
       - name: Upload preview log on failure
         if: failure()
@@ -342,7 +343,7 @@ jobs:
           name: lighthouse-preview-log-${{ github.sha }}
           path: /tmp/vitablue-preview.log
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 1
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 5: Gate de calidad — Todos los checks deben pasar

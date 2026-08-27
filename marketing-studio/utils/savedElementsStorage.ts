@@ -51,7 +51,7 @@ export function saveCustomElement(layer: ImageLayer, customTitle?: string): Save
   }
 
   const newElement: SavedCustomElement = {
-    id: `saved-elem-${Date.now()}`,
+    id: `saved-elem-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     title: customTitle?.trim() || layer.title || 'Elemento Personalizado',
     category,
     layer: JSON.parse(JSON.stringify(layer)),

@@ -17,8 +17,14 @@ import {
   Check,
   Pencil,
   MoreHorizontal,
+  Smartphone,
+  Focus,
+  Ruler,
+  Scan,
+  PanelTop,
 } from 'lucide-react';
-import { ImageFormatPreset, ImageProject } from '../../types/imageStudio';
+import { ImageFormatPreset, ImagePreviewMode, ImageProject } from '../../types/imageStudio';
+import { useActiveInlineEditor } from './InlineEditorContext';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -26,17 +32,22 @@ export interface ImageEditorToolbarProps {
   canRedo: boolean;
   isExporting: boolean;
   showSafeZones: boolean;
+  previewMode: ImagePreviewMode;
   isInspectorOpen: boolean;
   lastSavedAt?: string;
+  saveState?: 'saved' | 'saving' | 'recovery' | 'error';
   onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
+  onSetPreviewMode: (mode: ImagePreviewMode) => void;
+  onOpenCarouselSimulator?: () => void;
   onUndo: () => void;
   onRedo: () => void;
   onUpdateTitle: (title: string) => void;
   onSetPreset?: (preset: ImageFormatPreset) => void;
   onCopyToClipboard?: () => void;
   onExport: (format: 'png' | 'jpeg' | 'svg') => void;
+  onExportCarousel?: (format: 'zip' | 'pdf' | 'full') => void;
   onSaveToDam: () => void;
   onSendToVideoStudio?: () => void;
 }
@@ -47,19 +58,25 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   canRedo,
   isExporting,
   showSafeZones,
+  previewMode,
   isInspectorOpen,
   lastSavedAt,
+  saveState,
   onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
+  onSetPreviewMode,
+  onOpenCarouselSimulator,
   onUndo,
   onRedo,
   onUpdateTitle,
   onCopyToClipboard,
   onExport,
+  onExportCarousel,
   onSaveToDam,
   onSendToVideoStudio,
 }) => {
+  const activeInlineEditor = useActiveInlineEditor();
   const [copied, setCopied] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -120,13 +137,47 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </div>
         </div>
 
-        {/* INDICADOR DISCRETO DE AUTOGUARDADO */}
+        {/* INDICADOR DINÁMICO DE AUTOGUARDADO */}
         <div
-          className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/20 px-2 py-0.5 rounded-full shrink-0"
-          title={lastSavedAt ? `Guardado localmente: ${new Date(lastSavedAt).toLocaleTimeString()}` : 'Guardado en LocalStorage'}
+          className={`flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 border transition-all ${
+            saveState === 'saving'
+              ? 'text-amber-400 bg-amber-950/40 border-amber-500/30'
+              : saveState === 'recovery'
+              ? 'text-cyan-400 bg-cyan-950/40 border-cyan-500/30'
+              : saveState === 'error'
+              ? 'text-rose-300 bg-rose-950/40 border-rose-500/30'
+              : 'text-emerald-400 bg-emerald-950/40 border-emerald-500/20'
+          }`}
+          title={
+            saveState === 'saving'
+              ? 'Guardando cambios...'
+              : saveState === 'error'
+              ? 'No se pudieron guardar los cambios'
+              : lastSavedAt
+              ? `Guardado: ${new Date(lastSavedAt).toLocaleTimeString()}`
+              : 'Guardado'
+          }
         >
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Guardado</span>
+          <span
+            className={`size-1.5 rounded-full ${
+              saveState === 'saving'
+                ? 'bg-amber-400 animate-spin'
+                : saveState === 'recovery'
+                ? 'bg-cyan-400'
+                : saveState === 'error'
+                ? 'bg-rose-400'
+                : 'bg-emerald-400'
+            }`}
+          />
+          <span>
+            {saveState === 'saving'
+              ? 'Guardando...'
+              : saveState === 'recovery'
+              ? 'Restaurado'
+              : saveState === 'error'
+              ? 'Error al guardar'
+              : 'Guardado'}
+          </span>
         </div>
       </div>
 
@@ -135,22 +186,60 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950 p-0.5 shadow-xs">
           <button
             type="button"
-            onClick={onUndo}
-            disabled={!canUndo}
+            onClick={() => {
+              if (activeInlineEditor) {
+                activeInlineEditor.editor.commands.undo();
+                activeInlineEditor.save();
+              } else {
+                onUndo();
+              }
+            }}
+            disabled={activeInlineEditor ? !activeInlineEditor.editor.can().undo() : !canUndo}
             className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
             title="Deshacer (Cmd+Z)"
           >
             <Undo2 className="size-3.5" />
           </button>
+
           <button
             type="button"
-            onClick={onRedo}
-            disabled={!canRedo}
+            onClick={() => {
+              if (activeInlineEditor) {
+                activeInlineEditor.editor.commands.redo();
+                activeInlineEditor.save();
+              } else {
+                onRedo();
+              }
+            }}
+            disabled={activeInlineEditor ? !activeInlineEditor.editor.can().redo() : !canRedo}
             className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
             title="Rehacer (Cmd+Shift+Z)"
           >
             <Redo2 className="size-3.5" />
           </button>
+        </div>
+        <div className="hidden lg:flex items-center gap-0.5 rounded-xl border border-slate-800 bg-slate-950 p-0.5">
+          {([
+            ['normal', PanelTop, 'Vista normal'],
+            ['focus', Focus, 'Enfocar slide activo'],
+            ['guides', Ruler, 'Vista de guías'],
+            ['overview', Scan, 'Vista panorámica'],
+          ] as const).map(([mode, Icon, label]) => (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={previewMode === mode}
+              onClick={() => onSetPreviewMode(mode)}
+              className={`flex size-7 items-center justify-center rounded-lg transition-colors ${
+                previewMode === mode
+                  ? 'bg-primary/30 text-brand-cyan'
+                  : 'text-slate-500 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+              title={label}
+            >
+              <Icon className="size-3.5" />
+            </button>
+          ))}
         </div>
 
         {/* TOGGLE SAFE ZONES (ICONO CON ESTADO) */}
@@ -166,6 +255,19 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         >
           <ShieldAlert className="size-3.5" />
         </button>
+
+        {/* VISTA PREVIA MÓVIL (SIMULADOR DE SWIPE) SI ES CARRUSEL */}
+        {project.preset.isCarousel && onOpenCarouselSimulator && (
+          <button
+            type="button"
+            onClick={onOpenCarouselSimulator}
+            className="flex items-center gap-1.5 rounded-lg border border-brand-cyan/40 bg-brand-cyan/15 px-2.5 py-1 text-xs font-bold text-brand-cyan hover:bg-brand-cyan/25 transition-all shadow-xs"
+            title="Abrir simulador móvil interactivo para probar el deslizamiento (swipe)"
+          >
+            <Smartphone className="size-3.5" />
+            <span className="hidden sm:inline">Vista Previa Móvil</span>
+          </button>
+        )}
       </div>
 
       {/* 3. SECCIÓN DERECHA: HERRAMIENTAS, COPIAR Y DESCARGAR */}
@@ -260,40 +362,86 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           </button>
 
           {isExportMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white">
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('png');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar PNG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-brand-cyan">1080p</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('jpeg');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar JPEG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Web</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onExport('svg');
-                  setIsExportMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
-              >
-                <span>Descargar SVG</span>
-                <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Vector</span>
-              </button>
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl z-[100] animate-fadeIn text-white">
+              {project.preset.isCarousel ? (
+                <>
+                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-cyan border-b border-slate-800/80 mb-1">
+                    Exportación de Carrusel
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onExportCarousel) onExportCarousel('zip');
+                      else onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Pack de Diapositivas (ZIP)</span>
+                    <span className="rounded bg-brand-cyan/20 text-brand-cyan px-1.5 py-0.5 text-[9px] font-mono font-bold">1-Click</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onExportCarousel) onExportCarousel('pdf');
+                      else onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Documento LinkedIn (PDF)</span>
+                    <span className="rounded bg-blue-500/20 text-blue-300 px-1.5 py-0.5 text-[9px] font-mono font-bold">Doc</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onExportCarousel) onExportCarousel('full');
+                      else onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Tira Panorámica Completa</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">PNG</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('png');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar PNG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-brand-cyan">1080p</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('jpeg');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar JPEG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Web</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onExport('svg');
+                      setIsExportMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                  >
+                    <span>Descargar SVG</span>
+                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Vector</span>
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import {
   Search,
   UploadCloud,
@@ -9,8 +9,16 @@ import {
   Circle,
   Square,
   Hexagon,
+  Trash2,
 } from 'lucide-react';
 import { CURATED_STOCK_PHOTOS, STOCK_CATEGORIES } from '../../../data/stockPhotos';
+import {
+  getStoredImageMediaAsync,
+  IMAGE_MEDIA_UPDATED_EVENT,
+  deleteStoredImageMediaAsync,
+  saveUploadedImageMediaAsync,
+  UploadedImageMedia,
+} from '../../../utils/imageMediaStorage';
 
 export interface ImageStudioMediaDrawerProps {
   onInsertImageLayer: (
@@ -34,7 +42,34 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
   const [selectedScope, setSelectedScope] = useState<'system' | 'organization' | 'user'>('organization');
   const [selectedClipShape, setSelectedClipShape] = useState<'squircle' | 'circle' | 'rounded-2xl' | 'none' | 'hexagon'>('rounded-2xl');
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [userMedia, setUserMedia] = useState<UploadedImageMedia[]>([]);
+  const [isHydrating, setIsHydrating] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    const refreshMedia = async () => {
+      try {
+        const media = await getStoredImageMediaAsync();
+        if (active) {
+          setUserMedia(media);
+          setIsHydrating(false);
+        }
+      } catch {
+        if (active) setIsHydrating(false);
+      }
+    };
+    void refreshMedia();
+    const handleMediaUpdate = () => void refreshMedia();
+    window.addEventListener(IMAGE_MEDIA_UPDATED_EVENT, handleMediaUpdate);
+    window.addEventListener('storage', handleMediaUpdate);
+    return () => {
+      active = false;
+      window.removeEventListener(IMAGE_MEDIA_UPDATED_EVENT, handleMediaUpdate);
+      window.removeEventListener('storage', handleMediaUpdate);
+    };
+  }, []);
 
   const categoryCounts = STOCK_CATEGORIES.reduce((counts, category) => {
     counts.set(
@@ -60,53 +95,91 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
     return matchesCategory && matchesQuery;
   });
 
+  const filteredUserMedia = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return userMedia;
+    return userMedia.filter((media) =>
+      [media.title, media.fileName].some((value) => value.toLowerCase().includes(q)),
+    );
+  }, [searchQuery, userMedia]);
+
+  const reportUploadError = (message: string) => {
+    setUploadError(message);
+  };
+
+  const insertUploadedImage = async (file: File, dataUrl: string) => {
+    const result = await saveUploadedImageMediaAsync(dataUrl, {
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      fileName: file.name,
+      mimeType: file.type,
+    });
+    if (!result.media) {
+      reportUploadError(result.error ?? 'No se pudo guardar la imagen.');
+      // Keep the editor's original insertion behavior even when browser
+      // storage is full; the image can still be used in the current project.
+      onInsertImageLayer(dataUrl, {
+        title: file.name.replace(/\.[^/.]+$/, ''),
+        clipShape: selectedClipShape,
+      });
+      return;
+    }
+    setUploadError(result.warning ?? null);
+    setUserMedia(await getStoredImageMediaAsync());
+    onInsertImageLayer(result.media.dataUrl, {
+      title: result.media.title,
+      clipShape: selectedClipShape,
+    });
+  };
+
+  const readUploadedImage = (file: File) => {
+    setIsUploading(true);
+    setUploadError(null);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const dataUrl = typeof event.target?.result === 'string' ? event.target.result : '';
+        if (dataUrl) {
+          await insertUploadedImage(file, dataUrl);
+        } else {
+          reportUploadError('No se pudo leer la imagen.');
+        }
+      } catch {
+        reportUploadError('No se pudo guardar la imagen.');
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.onerror = () => {
+      reportUploadError('Error al leer la imagen seleccionada.');
+      setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Manejo de subida de archivos locales
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Por favor selecciona un archivo de imagen válido (PNG, JPG, WebP o SVG).');
+      reportUploadError('Por favor selecciona un archivo de imagen válido (PNG, JPG, WebP o SVG).');
       return;
     }
-
-    setIsUploading(true);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      if (dataUrl) {
-        onInsertImageLayer(dataUrl, {
-          title: file.name.replace(/\.[^/.]+$/, ''),
-          clipShape: selectedClipShape,
-        });
-      }
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    };
-    reader.onerror = () => {
-      alert('Error al leer la imagen seleccionada.');
-      setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    readUploadedImage(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
-        if (dataUrl) {
-          onInsertImageLayer(dataUrl, {
-            title: file.name.replace(/\.[^/.]+$/, ''),
-            clipShape: selectedClipShape,
-          });
-        }
-      };
-      reader.readAsDataURL(file);
+      readUploadedImage(file);
+    } else if (file) {
+      reportUploadError('Por favor selecciona un archivo de imagen válido (PNG, JPG, WebP o SVG).');
     }
   };
+
+  const mediaCount = selectedScope === 'user' ? filteredUserMedia.length : filteredPhotos.length;
 
   return (
     <div className="flex flex-col h-full bg-[#001219] text-slate-100 font-sans select-none overflow-hidden">
@@ -127,7 +200,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
             </div>
           </div>
           <span className="text-[10px] font-mono text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded-md border border-brand-cyan/20">
-            {filteredPhotos.length} fotos
+            {mediaCount} {selectedScope === 'user' ? 'recursos' : 'fotos'}
           </span>
         </div>
 
@@ -163,6 +236,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
          <p className="mt-0.5 text-[10px] text-slate-400">
            Arrastra aquí o haz clic (PNG, JPG, WebP, SVG)
          </p>
+         {uploadError && <p className="mt-2 text-[10px] font-semibold text-rose-300">{uploadError}</p>}
         </div>
 
         {/* BUSCADOR */}
@@ -228,7 +302,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
             <button
               key={shape.id}
               type="button"
-              onClick={() => setSelectedClipShape(shape.id as any)}
+              onClick={() => setSelectedClipShape(shape.id as typeof selectedClipShape)}
               className={`px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all ${
                 selectedClipShape === shape.id
                   ? 'bg-brand-cyan text-slate-950 shadow-xs'
@@ -267,15 +341,70 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
           </nav>
         )}
         {/* GRID DE FOTOGRAFÍAS */}
-        {selectedScope !== 'organization' || filteredPhotos.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-800 p-8 text-center bg-slate-950/40">
-            <ImageIcon className="size-8 text-slate-600 mx-auto mb-2" />
+        {selectedScope === 'user' ? (
+          isHydrating ? (
+            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/40 p-8 text-center text-[10px] text-slate-500">
+              Cargando tus medios…
+            </div>
+          ) : (
+          filteredUserMedia.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/40 p-8 text-center">
+              <ImageIcon className="mx-auto mb-2 size-8 text-slate-600" />
+              <h4 className="text-xs font-bold text-slate-300">Aún no tienes medios guardados</h4>
+              <p className="mt-1 text-[10px] text-slate-500">Sube una imagen para verla aquí y reutilizarla.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2.5">
+              {filteredUserMedia.map((media) => (
+                <div
+                  key={media.id}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1624] transition-all hover:border-brand-cyan/60 hover:shadow-lg"
+                >
+                  <div className="relative h-32 w-full overflow-hidden bg-slate-950">
+                    <img src={media.dataUrl} alt={media.title} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                    <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => onInsertImageLayer(media.dataUrl, { title: media.title, clipShape: selectedClipShape })}
+                        className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary py-1.5 text-[11px] font-black text-white shadow-md transition-colors hover:bg-teal-600"
+                      >
+                        <Sparkles className="size-3 text-brand-cyan" />
+                        <span>+ Añadir Capa</span>
+                      </button>
+                      {onSetBackgroundImage && (
+                        <button
+                          type="button"
+                          onClick={() => onSetBackgroundImage(media.dataUrl)}
+                          className="w-full rounded-lg border border-slate-700/80 bg-slate-900/90 py-1 text-[10px] font-bold text-slate-300 transition-colors hover:bg-slate-800"
+                        >
+                          🖼️ Poner de fondo
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => void deleteStoredImageMediaAsync(media.id)}
+                        className="flex w-full items-center justify-center gap-1 rounded-lg border border-rose-900/70 bg-slate-900/90 py-1 text-[10px] font-bold text-rose-300 transition-colors hover:bg-rose-950/70"
+                      >
+                        <Trash2 className="size-3" />
+                        <span>Eliminar de Míos</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-800/80 bg-[#080e18] p-2">
+                    <strong className="block truncate text-[11px] font-bold text-slate-200" title={media.title}>{media.title}</strong>
+                    <span className="mt-0.5 block truncate text-[9px] text-slate-400">{media.fileName}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))
+        ) : selectedScope === 'system' || filteredPhotos.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/40 p-8 text-center">
+            <ImageIcon className="mx-auto mb-2 size-8 text-slate-600" />
             <h4 className="text-xs font-bold text-slate-300">
-              {selectedScope === 'system' ? 'No hay medios universales todavía' : selectedScope === 'user' ? 'Aún no tienes medios guardados' : 'No se encontraron fotos'}
+              {selectedScope === 'system' ? 'No hay medios universales todavía' : 'No se encontraron fotos'}
             </h4>
-            <p className="text-[10px] text-slate-500 mt-1">
-              Prueba buscando con otros términos o cambia de categoría.
-            </p>
+            <p className="mt-1 text-[10px] text-slate-500">Prueba buscando con otros términos o cambia de categoría.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">

@@ -585,10 +585,116 @@ export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
           label: 'Contacto WhatsApp',
           showLabel: false,
           ringColor: '#94D2BD',
-          glowColor: 'rgba(148, 210, 189, 0.55)',
-          strokeColor: '#FFFFFF',
           accentColor: '#94D2BD',
           isFullCover: true,
+        },
+      },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'template-consular-certificate-guide-carousel',
+    title: 'Carrusel: Paso a Paso Certificado Consular (Instagram 4:5)',
+    preset: IMAGE_FORMAT_PRESETS[3], // instagram-carousel-portrait (5400x1350)
+    background: {
+      type: 'mesh',
+      gradient: 'linear-gradient(90deg, #001219 0%, #002d38 25%, #005F73 50%, #002d38 75%, #001219 100%)',
+      color: '#001219',
+    },
+    brandTokens: defaultMotionBrandTokens,
+    layers: [
+      {
+        id: 'layer-carousel-s1-hero',
+        type: 'block',
+        blockType: 'InsuranceProductHero',
+        title: 'Slide 1: Hook Portada',
+        position: { x: 10, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 640,
+        props: {
+          badges: ['PASO A PASO EXTRANJERÍA', 'GUÍA 2026'],
+          title: 'Cómo Conseguir tu Certificado Consular',
+          description: 'El documento exacto que te pide el consulado para aprobar tu visado a España.',
+          primaryAction: 'Desliza para ver la guía 👉',
+          highlights: ['100% Válido en Consulados', 'Emisión Inmediata en PDF'],
+        },
+      },
+      {
+        id: 'layer-carousel-s2-requirements',
+        type: 'block',
+        blockType: 'InsuranceCoverageGrid',
+        title: 'Slide 2: Requisitos Clave',
+        position: { x: 30, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 520,
+        props: {
+          eyebrow: 'PASO 1: VERIFICA CLÁUSULAS',
+          title: 'Las 3 Cláusulas Obligatorias',
+          items: [
+            { title: 'Sin Copagos', description: '0€ adicionales por consulta o prueba.' },
+            { title: 'Sin Carencias', description: 'Activo desde el primer día de viaje.' },
+            { title: 'Repatriación', description: 'Cobertura ilimitada de restos y sanitaria.' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s3-comparison',
+        type: 'block',
+        blockType: 'InsurancePlanComparison',
+        title: 'Slide 3: Aseguradoras',
+        position: { x: 50, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 920,
+        height: 680,
+        props: {
+          eyebrow: 'PASO 2: ELIGE ASEGURADORA',
+          title: 'Aseguradoras Homologadas',
+          description: 'Certificados emitidos en español y formato oficial.',
+          plans: [
+            { name: 'Sanitas', subtitle: 'Estudiantes & Visados', description: 'Certificado directo en 24h sin carencias.', priceText: 'Recomendado', isFeatured: true },
+            { name: 'Adeslas', subtitle: 'Nómadas & Residencia', description: 'Amplia red médica en toda España.', priceText: 'Popular' },
+            { name: 'DKV', subtitle: 'Familias', description: 'Cobertura dental incluida.', priceText: 'Consultar' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s4-trust',
+        type: 'block',
+        blockType: 'InsuranceTrustBar',
+        title: 'Slide 4: Validación y Descarga',
+        position: { x: 70, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 320,
+        props: {
+          items: [
+            { title: 'Firma Digital Oficial', description: 'Código seguro de verificación (CSV).' },
+            { title: 'Bilingüe ES/EN', description: 'Aceptado en consulados de todo el mundo.' },
+            { title: 'Garantía de Devolución', description: '100% reembolso si deniegan el visado.' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s5-cta',
+        type: 'block',
+        blockType: 'InsuranceAdvisorCta',
+        title: 'Slide 5: CTA Comparador',
+        position: { x: 90, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 500,
+        props: {
+          title: '¿Tramitando tu visado a España?',
+          description: 'Compara las mejores opciones y obtén tu certificado listo para entregar.',
+          ctaText: 'Calcular mi Seguro con Certificado',
         },
       },
     ],
@@ -603,12 +709,14 @@ export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
  * compositions here (rather than deriving them in the drawer) means every
  * catalog item has its own editable layers, preset and background.
  */
-const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9') => {
+const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1' | '9:16 (Multi)') => {
   const presetId = {
     '1:1': 'instagram-square',
     '4:5': 'instagram-portrait',
     '9:16': 'story-vertical',
     '16:9': 'landscape-banner',
+    '4:1': 'instagram-carousel-portrait',
+    '9:16 (Multi)': 'tiktok-carousel-photo',
   }[aspectRatio];
   return IMAGE_FORMAT_PRESETS.find((preset) => preset.id === presetId) ?? IMAGE_FORMAT_PRESETS[0];
 };
@@ -778,7 +886,7 @@ const companyBlockLayer = (
 const createCompanyProject = (
   id: string,
   title: string,
-  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9',
+  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1',
   background: string,
   layers: ImageLayer[],
 ): ImageProject => ({
@@ -825,6 +933,20 @@ export const EMPRESA_IMAGE_TEMPLATES: ImageProject[] = [
   createCompanyProject('campaign-cover', 'Portada de campaña VitaBlue', '16:9', 'linear-gradient(110deg, rgba(0, 95, 115, 0.95), #001219 82%)', [
     companyBlockLayer('vitablue-campaign-cover', 'hero', 'Portada de campaña', 'InsuranceProductHero', { x: 38, y: 50 }, { badges: ['CAMPAÑA VITABLUE', 'SEGUROS 2026'], title: 'Tu próxima decisión, más clara', description: 'Compara seguros y cuenta con una asesora cuando lo necesites.', primaryAction: 'Empezar ahora', secondaryAction: 'Conocer VitaBlue', highlights: ['Opciones comparables', 'Atención personalizada'] }, 900, 620, 2),
     companyBlockLayer('vitablue-campaign-cover', 'providers', 'Proveedores de campaña', 'InsuranceProviderBar', { x: 82, y: 51 }, { eyebrow: 'NUESTRAS OPCIONES', providers: ['Sanitas', 'Adeslas', 'DKV'] }, 500, 300, 3),
+  ]),
+  createCompanyProject('seamless-educational-carousel', 'Carrusel Oficial: Guía 5 Pasos Visado', '4:1', 'linear-gradient(90deg, #001219 0%, #005F73 50%, #001219 100%)', [
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide1', 'Slide 1: Hook Portada', 'InsuranceProductHero', { x: 10, y: 50 }, { badges: ['GUÍA OFICIAL 2026'], title: 'Requisitos de Seguro para Visados', description: 'Todo lo que Extranjería exige para aprobar tu expediente.', primaryAction: 'Desliza para ver los 5 pasos 👉' }, 900, 600, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide2', 'Slide 2: Coberturas Clave', 'InsuranceCoverageGrid', { x: 30, y: 50 }, { eyebrow: 'PASO 1 & 2', title: 'Sin Copagos y Sin Carencias', items: [{ title: '0€ Copago', description: 'Acceso ilimitado sin pagos extra.' }, { title: 'Día 1', description: 'Válido desde la llegada a España.' }] }, 900, 500, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide3', 'Slide 3: Comparativa', 'InsurancePlanComparison', { x: 50, y: 50 }, { eyebrow: 'PASO 3', title: 'Opciones de Aseguradoras', description: 'Aprobadas por Consulados y Extranjería.', plans: [{ name: 'Sanitas', subtitle: 'Estudiantes', description: 'Certificado directo visado.' }, { name: 'Adeslas', subtitle: 'Nómadas', description: 'Cobertura completa.' }] }, 900, 550, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide4', 'Slide 4: Confianza y Repatriación', 'InsuranceTrustBar', { x: 70, y: 50 }, { items: [{ title: 'Repatriación 100%', description: 'Incluida obligatoria.' }, { title: '30.000€ Mínimo', description: 'Cumple normativa Schengen.' }] }, 900, 300, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide5', 'Slide 5: CTA Final', 'InsuranceAdvisorCta', { x: 90, y: 50 }, { title: '¿Dudas con tu visado?', description: 'Calcula tu precio o habla con una asesora experta.', ctaText: 'Calcular Seguro en 1 Minuto' }, 900, 480, 2),
+  ]),
+  createCompanyProject('consular-certificate-guide-carousel', 'Carrusel: Paso a Paso Certificado Consular', '4:1', 'linear-gradient(90deg, #001219 0%, #002d38 25%, #005F73 50%, #002d38 75%, #001219 100%)', [
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide1', 'Slide 1: Hook Portada', 'InsuranceProductHero', { x: 10, y: 50 }, { badges: ['PASO A PASO EXTRANJERÍA', 'GUÍA 2026'], title: 'Cómo Conseguir tu Certificado Consular', description: 'El documento exacto que te pide el consulado para aprobar tu visado a España.', primaryAction: 'Desliza para ver la guía 👉', highlights: ['100% Válido en Consulados', 'Emisión Inmediata en PDF'] }, 900, 640, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide2', 'Slide 2: Requisitos Clave', 'InsuranceCoverageGrid', { x: 30, y: 50 }, { eyebrow: 'PASO 1: VERIFICA CLÁUSULAS', title: 'Las 3 Cláusulas Obligatorias', items: [{ title: 'Sin Copagos', description: '0€ adicionales por consulta o prueba.' }, { title: 'Sin Carencias', description: 'Activo desde el primer día de viaje.' }, { title: 'Repatriación', description: 'Cobertura ilimitada de restos y sanitaria.' }] }, 900, 520, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide3', 'Slide 3: Aseguradoras', 'InsurancePlanComparison', { x: 50, y: 50 }, { eyebrow: 'PASO 2: ELIGE ASEGURADORA', title: 'Aseguradoras Homologadas', description: 'Certificados emitidos en español y formato oficial.', plans: [{ name: 'Sanitas', subtitle: 'Estudiantes & Visados', description: 'Certificado directo en 24h sin carencias.', priceText: 'Recomendado', isFeatured: true }, { name: 'Adeslas', subtitle: 'Nómadas & Residencia', description: 'Amplia red médica en toda España.', priceText: 'Popular' }, { name: 'DKV', subtitle: 'Familias', description: 'Cobertura dental incluida.', priceText: 'Consultar' }] }, 920, 680, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide4', 'Slide 4: Validación y Descarga', 'InsuranceTrustBar', { x: 70, y: 50 }, { items: [{ title: 'Firma Digital Oficial', description: 'Código seguro de verificación (CSV).' }, { title: 'Bilingüe ES/EN', description: 'Aceptado en consulados de todo el mundo.' }, { title: 'Garantía de Devolución', description: '100% reembolso si deniegan el visado.' }] }, 900, 320, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide5', 'Slide 5: CTA Comparador', 'InsuranceAdvisorCta', { x: 90, y: 50 }, { title: '¿Tramitando tu visado a España?', description: 'Compara las mejores opciones y obtén tu certificado listo para entregar.', ctaText: 'Calcular mi Seguro con Certificado' }, 900, 500, 2),
   ]),
 ];
 

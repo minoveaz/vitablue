@@ -6,6 +6,7 @@ import { BlockPropsHandler } from './AdvisorBlocks';
 export const ComparisonHeaderBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
   <div className="flex items-center justify-center w-full h-full">
     <InlineEditableText
+      layerId={layerId}
       text={String(props.title ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?')}
       onSave={(newVal) => onUpdateProps?.(layerId, { title: newVal })}
       className="font-display text-sm font-black text-white tracking-tight uppercase text-center w-full block"
@@ -21,6 +22,7 @@ export const ComparisonWrongBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, 
         <X className="size-3" />
       </span>
       <InlineEditableText
+        layerId={layerId}
         text={String(props.wrongOptionTitle ?? 'Seguro de Viaje Común')}
         onSave={(newVal) => onUpdateProps?.(layerId, { wrongOptionTitle: newVal })}
         as="span"
@@ -28,6 +30,7 @@ export const ComparisonWrongBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, 
     </div>
     <div className="pl-6">
       <InlineEditableText
+        layerId={layerId}
         text={String(props.wrongOptionDesc ?? 'No válido para extranjeros')}
         onSave={(newVal) => onUpdateProps?.(layerId, { wrongOptionDesc: newVal })}
         className="text-[11px] text-rose-200/80 leading-relaxed block"
@@ -44,6 +47,7 @@ export const ComparisonCorrectBoxBlock: React.FC<BlockPropsHandler> = ({ layerId
         <Check className="size-3" />
       </span>
       <InlineEditableText
+        layerId={layerId}
         text={String(props.correctOptionTitle ?? 'Seguro VitaBlue Extranjería')}
         onSave={(newVal) => onUpdateProps?.(layerId, { correctOptionTitle: newVal })}
         as="span"
@@ -51,6 +55,7 @@ export const ComparisonCorrectBoxBlock: React.FC<BlockPropsHandler> = ({ layerId
     </div>
     <div className="pl-6">
       <InlineEditableText
+        layerId={layerId}
         text={String(props.correctOptionDesc ?? 'Cumple 100% con los requisitos consulares')}
         onSave={(newVal) => onUpdateProps?.(layerId, { correctOptionDesc: newVal })}
         className="text-[11px] text-emerald-100 font-medium leading-relaxed block"

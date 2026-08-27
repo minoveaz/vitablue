@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import {
+  IMAGE_PROJECTS_UPDATED_EVENT,
   getUserSavedImageProjects,
   duplicateStoredImageProject,
   deleteStoredImageProject,
@@ -41,9 +42,11 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
   // Escuchar cambios reactivos cross-project
   useEffect(() => {
     const handleStorageUpdate = () => triggerRefresh();
+    window.addEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleStorageUpdate);
     window.addEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
     window.addEventListener('storage', handleStorageUpdate);
     return () => {
+      window.removeEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleStorageUpdate);
       window.removeEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
       window.removeEventListener('storage', handleStorageUpdate);
     };

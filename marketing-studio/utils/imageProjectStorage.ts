@@ -1,177 +1,186 @@
-import { ImageProject, IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
+/**
+ * Compatibility facade for the Image Studio project API.
+ *
+ * All durable work is implemented by imagePersistence.ts.  The synchronous
+ * functions remain for older integrations and update the repository's
+ * in-memory render cache immediately; editor and hub code use the async
+ * variants when transaction completion matters.
+ */
+import type { ImageProject } from '../types/imageStudio';
+import { IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from './imageTemplates';
+import {
+  clearImageRecovery,
+  deleteImageProject,
+  getRecoveryImageProjectAsync,
+  getRecoveryImageProjectSync,
+  getStoredImageProjectsAsync as loadStoredImageProjectsAsync,
+  getStoredImageProjectsSync,
+  initializeImagePersistence,
+  persistImageProject,
+  persistImageRecovery,
+  normalizeStoredProject,
+  serializeStoredProject,
+  IMAGE_PROJECTS_UPDATED_EVENT,
+  IMAGE_RECOVERY_UPDATED_EVENT,
+  IMAGE_STUDIO_RECOVERY_KEY,
+  IMAGE_STUDIO_STORAGE_KEY,
+  type ImageRecoverySnapshot,
+  type PersistResult,
+  type SaveProjectOptions,
+} from './imagePersistence';
 import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import { createDefaultLayoutMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 
-export const IMAGE_STUDIO_STORAGE_KEY = 'vitablue_image_studio_projects';
-export const IMAGE_STUDIO_RECOVERY_KEY = 'vitablue_image_studio_recovery';
+export {
+  IMAGE_PROJECTS_UPDATED_EVENT,
+  IMAGE_RECOVERY_UPDATED_EVENT,
+  IMAGE_STUDIO_STORAGE_KEY,
+  IMAGE_STUDIO_RECOVERY_KEY,
+  normalizeStoredProject,
+  serializeStoredProject,
+  initializeImagePersistence,
+};
+export type { ImageRecoverySnapshot, PersistResult, SaveProjectOptions };
 
-let inMemoryCache: ImageProject[] = INITIAL_IMAGE_TEMPLATES.map((project) => ({
-  ...project,
-  layout: createDefaultLayoutMetadata(),
-}));
-
-const normalizeStoredProject = (project: ImageProject): ImageProject => ({
-  ...project,
-  layout: {
-    ...createDefaultLayoutMetadata(),
-    ...(project.layout ?? {}),
-  },
-});
-
-/**
- * Retrieves all stored image projects from localStorage.
- * If none exist, seeds the storage with INITIAL_IMAGE_TEMPLATES.
- */
 export function getStoredImageProjects(): ImageProject[] {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-    return inMemoryCache;
-  }
-
-  try {
-    const raw = localStorage.getItem(IMAGE_STUDIO_STORAGE_KEY);
-    if (!raw) {
-      const seeded = INITIAL_IMAGE_TEMPLATES.map(normalizeStoredProject);
-      localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(seeded));
-      inMemoryCache = seeded;
-      return seeded;
-    }
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      // Si hay nuevas plantillas oficiales que no existen en el almacenamiento local, las agregamos al inicio
-      const normalizedParsed = parsed.map(normalizeStoredProject);
-      const existingIds = new Set(normalizedParsed.map((p: ImageProject) => p.id));
-      const missingInitialTemplates = INITIAL_IMAGE_TEMPLATES.filter((t) => !existingIds.has(t.id));
-      if (missingInitialTemplates.length > 0) {
-        const merged = [...missingInitialTemplates.map(normalizeStoredProject), ...normalizedParsed];
-        localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(merged));
-        inMemoryCache = merged;
-        return merged;
-      }
-      inMemoryCache = normalizedParsed;
-      return normalizedParsed;
-    }
-    const seeded = INITIAL_IMAGE_TEMPLATES.map(normalizeStoredProject);
-    localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(seeded));
-    inMemoryCache = seeded;
-    return seeded;
-  } catch (error) {
-    console.error('Error loading image studio projects from localStorage:', error);
-    return inMemoryCache;
-  }
+  return getStoredImageProjectsSync();
 }
 
-/**
- * Retrieves only user-created, user-modified or duplicated projects (excludes system initial templates).
- */
+export async function getStoredImageProjectsAsync(): Promise<ImageProject[]> {
+  return loadStoredImageProjectsAsync();
+}
+
 export function getUserSavedImageProjects(): ImageProject[] {
-  const all = getStoredImageProjects();
-  const systemTemplateIds = new Set(INITIAL_IMAGE_TEMPLATES.map((t) => t.id));
-  return all.filter((p) => !systemTemplateIds.has(p.id));
+  const systemTemplateIds = new Set(INITIAL_IMAGE_TEMPLATES.map((template) => template.id));
+  return getStoredImageProjects().filter((project) => !systemTemplateIds.has(project.id));
+}
+
+export async function getUserSavedImageProjectsAsync(): Promise<ImageProject[]> {
+  const systemTemplateIds = new Set(INITIAL_IMAGE_TEMPLATES.map((template) => template.id));
+  return (await getStoredImageProjectsAsync()).filter(
+    (project) => !systemTemplateIds.has(project.id),
+  );
+}
+
+export async function saveStoredImageProjectAsync(
+  project: ImageProject,
+  options: SaveProjectOptions = {},
+): Promise<ImageProject> {
+  const result = await persistImageProject(project, {
+    ...options,
+    touchUpdatedAt: options.touchUpdatedAt ?? true,
+  });
+  if (!result.durable) {
+    throw result.error ?? new Error('No se pudo guardar el proyecto.');
+  }
+  return result.value;
 }
 
 /**
- * Saves or updates a project in localStorage.
+ * Historical API.  It never made callers await a storage operation, so keep
+ * it non-throwing while returning a promise for callers that want to observe
+ * completion.
  */
-export function saveStoredImageProject(project: ImageProject): void {
-  const projects = getStoredImageProjects();
-  const existingIndex = projects.findIndex((p) => p.id === project.id);
-  const updated = {
-    ...project,
-    updatedAt: new Date().toISOString(),
-  };
-
-  let nextProjects: ImageProject[];
-  if (existingIndex >= 0) {
-    nextProjects = [...projects];
-    nextProjects[existingIndex] = updated;
-  } else {
-    nextProjects = [updated, ...projects];
-  }
-
-  inMemoryCache = nextProjects;
-
-  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(nextProjects));
-    } catch (error) {
-      console.error('Error saving image studio project to localStorage:', error);
+export function saveStoredImageProject(project: ImageProject): Promise<ImageProject> {
+  return saveStoredImageProjectAsync(project, { touchUpdatedAt: true }).catch((error) => {
+    if ((error as { code?: string })?.code !== 'unavailable') {
+      console.warn('Could not durably save image project:', error);
     }
-  }
+    return normalizeStoredProject(project);
+  });
 }
 
-export function saveRecoveryImageProject(project: ImageProject): void {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
-  try {
-    localStorage.setItem(IMAGE_STUDIO_RECOVERY_KEY, JSON.stringify({ project, savedAt: new Date().toISOString() }));
-  } catch (error) {
-    console.error('Error saving image studio recovery snapshot:', error);
-  }
+export function getRecoveryImageProject(): ImageRecoverySnapshot | null {
+  return getRecoveryImageProjectSync();
 }
 
-export function getRecoveryImageProject(): { project: ImageProject; savedAt: string } | null {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(IMAGE_STUDIO_RECOVERY_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed?.project && parsed?.savedAt ? parsed : null;
-  } catch {
+export async function getAsyncRecoveryImageProject(): Promise<ImageRecoverySnapshot | null> {
+  return getRecoveryImageProjectAsync();
+}
+
+export async function saveRecoveryImageProjectAsync(
+  project: ImageProject,
+): Promise<ImageRecoverySnapshot> {
+  const result = await persistImageRecovery(project);
+  if (!result.durable) {
+    throw result.error ?? new Error('No se pudo guardar la recuperación.');
+  }
+  return result.value;
+}
+
+export function saveRecoveryImageProject(project: ImageProject): Promise<ImageRecoverySnapshot | null> {
+  return saveRecoveryImageProjectAsync(project).catch((error) => {
+    if ((error as { code?: string })?.code !== 'unavailable') {
+      console.warn('Could not durably save image recovery:', error);
+    }
     return null;
-  }
+  });
+}
+
+export async function clearRecoveryImageProjectAsync(): Promise<void> {
+  const result = await clearImageRecovery();
+  if (!result.durable && result.error) throw result.error;
 }
 
 export function clearRecoveryImageProject(): void {
-  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-    localStorage.removeItem(IMAGE_STUDIO_RECOVERY_KEY);
-  }
-}
-
-/**
- * Deletes a project from localStorage by ID.
- */
-export function deleteStoredImageProject(id: string): void {
-  const projects = getStoredImageProjects();
-  const filtered = projects.filter((p) => p.id !== id);
-  inMemoryCache = filtered;
-
-  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(IMAGE_STUDIO_STORAGE_KEY, JSON.stringify(filtered));
-    } catch (error) {
-      console.error('Error deleting image studio project from localStorage:', error);
+  void clearRecoveryImageProjectAsync().catch((error) => {
+    if ((error as { code?: string })?.code !== 'unavailable') {
+      console.warn('Could not clear image recovery:', error);
     }
-  }
+  });
 }
 
-/**
- * Duplicates an existing project with a new ID and timestamp.
- */
+export async function deleteStoredImageProjectAsync(id: string): Promise<void> {
+  const result = await deleteImageProject(id);
+  if (!result.durable && result.error) throw result.error;
+}
+
+export function deleteStoredImageProject(id: string): void {
+  void deleteStoredImageProjectAsync(id).catch((error) => {
+    if ((error as { code?: string })?.code !== 'unavailable') {
+      console.warn('Could not delete image project:', error);
+    }
+  });
+}
+
+const createProjectId = (prefix: string): string =>
+  `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+const duplicateProject = (target: ImageProject): ImageProject => ({
+  ...target,
+  id: createProjectId('project'),
+  title: `${target.title} (Copia)`,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+});
+
 export function duplicateStoredImageProject(id: string): ImageProject | null {
-  const projects = getStoredImageProjects();
-  const target = projects.find((p) => p.id === id);
+  const target = getStoredImageProjects().find((project) => project.id === id);
   if (!target) return null;
-
-  const duplicated: ImageProject = {
-    ...target,
-    id: `project-${Date.now()}`,
-    title: `${target.title} (Copia)`,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  saveStoredImageProject(duplicated);
+  const duplicated = duplicateProject(target);
+  void saveStoredImageProject(duplicated);
   return duplicated;
 }
 
-/**
- * Creates a new blank project for a given format preset.
- */
-export function createBlankImageProject(presetId: string, title?: string): ImageProject {
-  const preset = IMAGE_FORMAT_PRESETS.find((p) => p.id === presetId) ?? IMAGE_FORMAT_PRESETS[0];
+export async function duplicateStoredImageProjectAsync(
+  id: string,
+): Promise<ImageProject | null> {
+  const target = (await getStoredImageProjectsAsync()).find((project) => project.id === id);
+  if (!target) return null;
+  const duplicated = duplicateProject(target);
+  return saveStoredImageProjectAsync(duplicated, { touchUpdatedAt: false });
+}
 
-  const blank: ImageProject = {
-    id: `project-${Date.now()}`,
+const buildBlankImageProject = (
+  presetId: string,
+  title?: string,
+  projectId?: string,
+): ImageProject => {
+  const preset = IMAGE_FORMAT_PRESETS.find((item) => item.id === presetId) ?? IMAGE_FORMAT_PRESETS[0];
+  const timestamp = new Date().toISOString();
+  return {
+    id: projectId ?? createProjectId('project'),
     title: title || `Nuevo Diseño ${preset.name} (${preset.aspectRatio})`,
     preset,
     background: {
@@ -182,10 +191,28 @@ export function createBlankImageProject(presetId: string, title?: string): Image
     brandTokens: defaultMotionBrandTokens,
     layout: createDefaultLayoutMetadata(),
     layers: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: timestamp,
+    updatedAt: timestamp,
   };
+};
 
-  saveStoredImageProject(blank);
+export const createBlankImageProjectDraft = buildBlankImageProject;
+
+export function createBlankImageProject(
+  presetId: string,
+  title?: string,
+  projectId?: string,
+): ImageProject {
+  const blank = buildBlankImageProject(presetId, title, projectId);
+  void saveStoredImageProject(blank);
   return blank;
+}
+
+export async function createBlankImageProjectAsync(
+  presetId: string,
+  title?: string,
+  projectId?: string,
+): Promise<ImageProject> {
+  const blank = buildBlankImageProject(presetId, title, projectId);
+  return saveStoredImageProjectAsync(blank, { touchUpdatedAt: false });
 }

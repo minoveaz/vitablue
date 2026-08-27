@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Logo from '@/components/atoms/Logo';
+import Logo from '../atoms/Logo';
 
 export interface PlatformHeaderProps {
   suiteTitle?: string;

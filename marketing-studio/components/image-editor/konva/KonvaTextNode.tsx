@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Text, Group } from 'react-konva';
 import Konva from 'konva';
 import { ImageLayer } from '../../../types/imageStudio';
+import { htmlToPlainText, isTiptapHtml } from '../../../utils/tiptapHtml';
 
 interface KonvaTextNodeProps {
   layer: ImageLayer;
@@ -16,7 +17,8 @@ export const KonvaTextNode: React.FC<KonvaTextNodeProps> = ({
 }) => {
   const textRef = useRef<Konva.Text>(null);
 
-  const textContent = String(layer.props.text ?? layer.title ?? 'Texto');
+  const rawTextContent = String(layer.props.text ?? layer.title ?? 'Texto');
+  const textContent = isTiptapHtml(rawTextContent) ? htmlToPlainText(rawTextContent) : rawTextContent;
   const fontSize = layer.fontSize ?? Number(layer.props.fontSize ?? 28);
   const fontFamily = layer.fontFamily ?? 'Poppins, Inter, sans-serif';
   const fill = layer.fill ?? String(layer.props.color ?? '#FFFFFF');

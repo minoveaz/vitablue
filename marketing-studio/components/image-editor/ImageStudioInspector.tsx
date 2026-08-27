@@ -24,6 +24,10 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Strikethrough,
   FolderHeart,
   BookmarkCheck,
   Check,
@@ -43,8 +47,12 @@ import { ImageCanvasFormatsModal } from './modals/ImageCanvasFormatsModal';
 import { SmartCanvasComposerModal } from './modals/SmartCanvasComposerModal';
 import { SmartComposerOptions } from '../../utils/smartCanvasComposer';
 import { correctSpanishText } from '../../utils/spellingCorrector';
+import { stripTextFormatting } from '../../utils/textFormatter';
 import { EditorPanelSection } from './EditorPanelSection';
 import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog';
+import { InlineTextControls } from './InlineEditableText';
+import { useActiveInlineEditor, useInlineTextFormatting } from './InlineEditorContext';
+import { htmlToPlainText, isTiptapHtml, normalizeTiptapHtml } from '../../utils/tiptapHtml';
 
 interface NumberInputProps {
   value?: number;
@@ -218,6 +226,7 @@ const HexColorPickerField: React.FC<HexColorPickerFieldProps> = ({
             key={swatch.hex}
             type="button"
             title={swatch.label}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
               setLocalHex(swatch.hex.toUpperCase());
               onChange(swatch.hex);
@@ -351,6 +360,9 @@ export interface ImageStudioInspectorProps {
   onUpdateLayerClipShape?: (id: string, clipShape: ImageLayer['clipShape']) => void;
   onToggleFlipHorizontal?: (id: string) => void;
   onToggleFlipVertical?: (id: string) => void;
+  onFitToActiveSlide?: (id: string, slideIndex: number) => void;
+  onResetAdjustments?: (id: string) => void;
+  activeSlideIndex?: number;
   onUpdateLayerOpacity?: (id: string, opacity: number) => void;
   onUpdateLayerShadowPreset?: (id: string, preset: ImageLayer['shadowPreset']) => void;
   onUpdateLayerBorder?: (id: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => void;
@@ -383,6 +395,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateLayerClipShape,
   onToggleFlipHorizontal,
   onToggleFlipVertical,
+  onFitToActiveSlide,
+  onResetAdjustments,
+  activeSlideIndex = 0,
   onUpdateLayerOpacity,
   onUpdateLayerShadowPreset,
   onUpdateLayerBorder,
@@ -397,6 +412,8 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   onUpdateBackground,
   onClose,
 }) => {
+  const activeInlineEditor = useActiveInlineEditor();
+  const formatting = useInlineTextFormatting();
   const avatarOptions = [
     { name: 'Sofía', url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop' },
     { name: 'Elena', url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&auto=format&fit=crop' },
@@ -412,7 +429,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   React.useEffect(() => {
     setReplacementImageUrl(
-      selectedLayer?.type === 'image'
+      selectedLayer && (selectedLayer.type === 'image' || selectedLayer.props.imageUrl || selectedLayer.src)
         ? String(selectedLayer.props.imageUrl ?? selectedLayer.src ?? '')
         : ''
     );
@@ -693,6 +710,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 }
 
   const props = selectedLayer.props as Record<string, unknown>;
+  const activeEditor = activeInlineEditor?.editor;
+  const activeTextStyle = activeEditor?.getAttributes('textStyle') as {
+    color?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontWeight?: string;
+  } | undefined;
+  const activeBlockName = activeEditor?.state.selection.$from.parent.type.name === 'heading' ? 'heading' : 'paragraph';
+  const activeBlockAttributes = activeEditor && activeBlockName
+    ? activeEditor.getAttributes(activeBlockName) as { textAlign?: string; lineHeight?: string }
+    : undefined;
+  const applyTextStyle = formatting.applyTextStyle;
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(selectedLayer.blockType ?? '');
   const textBearingBlockTypes = [
     'CustomText',
@@ -706,8 +735,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
     'AdvisorSubline',
     'ComparisonWrongBox',
     'ComparisonCorrectBox',
+    'InsuranceProductHero',
+    'InsuranceCoverageGrid',
+    'InsurancePlanComparison',
+    'InsuranceTrustBar',
+    'InsuranceAdvisorCta',
+    'MotionAdvisorCard',
+    'MotionTrustBadge',
+    'MotionComparisonCard',
+    'MotionProviderGrid',
   ];
-  const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '');
+  const isTextType = selectedLayer.type === 'text' || textBearingBlockTypes.includes(selectedLayer.blockType ?? '') || Boolean(props.text || props.title || props.subtitle || props.description || props.badge || props.ctaText);
+  const isImageType = selectedLayer.type === 'image' || Boolean(props.imageUrl || selectedLayer.src);
 
   const handleSaveCurrentLayer = () => {
     onSaveToMyDesigns?.(selectedLayer.id);
@@ -716,6 +755,19 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   };
 
   const handleAutoSpellcheck = () => {
+    if (activeInlineEditor) {
+      const currentText = htmlToPlainText(activeInlineEditor.editor.getHTML());
+      const { correctedText, changesCount } = correctSpanishText(currentText);
+      if (changesCount > 0) {
+        activeInlineEditor.editor.commands.setContent(normalizeTiptapHtml(correctedText), { emitUpdate: false });
+        activeInlineEditor.save();
+        setSpellingFeedback(`✓ ${changesCount} ${changesCount === 1 ? 'corrección aplicada' : 'correcciones aplicadas'}`);
+      } else {
+        setSpellingFeedback('✓ Ortografía y gramática impecables');
+      }
+      setTimeout(() => setSpellingFeedback(null), 3000);
+      return;
+    }
     const currentText = String(
       props.text ??
       props.ctaText ??
@@ -727,7 +779,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
       selectedLayer.title ??
       ''
     );
-    const { correctedText, changesCount } = correctSpanishText(currentText);
+    const { correctedText, changesCount } = correctSpanishText(isTiptapHtml(currentText) ? htmlToPlainText(currentText) : currentText);
     if (changesCount > 0) {
       onUpdateLayerProps(selectedLayer.id, {
         text: correctedText,
@@ -747,6 +799,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
   };
 
   return (
+    <div data-inline-editor-inspector="true" className="h-full min-h-0 min-w-0">
     <ModuleContextPanel
       label={`Bloque: ${selectedLayer.title}`}
       width="standard"
@@ -1033,6 +1086,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <span>Ilustración Web Vectorial</span>
               </span>
             </div>
+            <InlineTextControls compact />
 
             {/* SELECTOR DE ILUSTRACIÓN */}
             <div>
@@ -1260,7 +1314,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               )}
 
               <textarea
-                value={String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? '')}
+                value={activeEditor
+                  ? activeEditor.getText({ blockSeparator: '\n' })
+                  : stripTextFormatting(String(props.text ?? props.ctaText ?? props.whatsAppText ?? props.verifiedLabel ?? props.highlight ?? props.badge ?? props.title ?? selectedLayer.title ?? ''))}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (onReplaceLayerContent) {
@@ -1278,16 +1334,19 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     });
                   }
                 }}
+                readOnly={Boolean(activeEditor)}
                 disabled={selectedLayer.locked}
                 rows={2}
-                placeholder="Escribe el texto aquí..."
+                placeholder={activeEditor ? 'Edita el texto directamente en el lienzo…' : 'Escribe el texto aquí...'}
                 spellCheck={true}
                 lang="es"
-                className="w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed"
+                className={`w-full rounded-xl border border-slate-800 bg-slate-900 p-2.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-cyan focus:outline-none leading-relaxed ${activeEditor ? 'cursor-not-allowed opacity-70' : ''}`}
               />
-              <span className="text-[9px] text-slate-500 mt-1 block">
-                💡 Tip: Escribe <code className="text-amber-400 font-mono">[Palabra](#COLOR)</code> o <code className="text-amber-400 font-mono">**Palabra**</code> para colorear términos individuales.
-              </span>
+              {activeEditor && (
+                <div className="mt-1 rounded-lg border border-brand-cyan/30 bg-primary/10 px-2 py-1 text-[10px] font-medium text-brand-cyan">
+                  Edita y selecciona texto en el lienzo para aplicar formato sin perder la selección.
+                </div>
+              )}
             </div>
 
             {/* FUENTE Y PESO */}
@@ -1297,10 +1356,17 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   Fuente
                 </label>
                 <select
-                  value={selectedLayer.fontFamily ?? 'Poppins, sans-serif'}
-                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontFamily: e.target.value })}
+                  value={activeEditor ? String(activeTextStyle?.fontFamily ?? '') : (selectedLayer.fontFamily ?? 'Poppins, sans-serif')}
+                  onChange={(e) => {
+                    if (activeInlineEditor) {
+                      applyTextStyle({ fontFamily: e.target.value || null });
+                      return;
+                    }
+                    onUpdateLayerProps(selectedLayer.id, { fontFamily: e.target.value });
+                  }}
                   className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
                 >
+                  <option value="">Fuente (mixta)</option>
                   <option value="Poppins, sans-serif">Poppins (Display)</option>
                   <option value="Inter, sans-serif">Inter (Sans)</option>
                   <option value="Montserrat, sans-serif">Montserrat (Bold)</option>
@@ -1316,10 +1382,17 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   Grosor
                 </label>
                 <select
-                  value={selectedLayer.fontWeight ?? '700'}
-                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontWeight: e.target.value })}
+                  value={activeEditor ? String(activeTextStyle?.fontWeight ?? '') : (selectedLayer.fontWeight ?? '700')}
+                  onChange={(e) => {
+                    if (activeInlineEditor) {
+                      applyTextStyle({ fontWeight: e.target.value || null });
+                      return;
+                    }
+                    onUpdateLayerProps(selectedLayer.id, { fontWeight: e.target.value });
+                  }}
                   className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
                 >
+                  <option value="">Grosor (mixto)</option>
                   <option value="400">Regular (400)</option>
                   <option value="600">Semibold (600)</option>
                   <option value="700">Bold (700)</option>
@@ -1338,9 +1411,18 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     <NumberInput
                       min={10}
                       max={200}
-                      value={selectedLayer.fontSize ?? 24}
-                      placeholder="24"
-                      onChange={(val) => onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 24 })}
+                      value={activeEditor
+                        ? (parseInt(String(activeTextStyle?.fontSize ?? '').replace('px', ''), 10) || undefined)
+                        : (selectedLayer.fontSize ?? 24)}
+                      placeholder={activeEditor ? 'Mixto' : '24'}
+                      onChange={(val) => {
+                        if (activeInlineEditor) {
+                          const fontSize = val === undefined ? null : `${val}px`;
+                          applyTextStyle({ fontSize });
+                          return;
+                        }
+                        onUpdateLayerProps(selectedLayer.id, { fontSize: val ?? 24 });
+                      }}
                       className="w-11 bg-slate-900 border border-slate-700 rounded text-center text-[10px] font-mono text-brand-cyan px-1 py-0.5 focus:outline-none focus:border-brand-cyan"
                     />
                     <span className="text-[9px] text-slate-500">px</span>
@@ -1351,28 +1433,45 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   min={12}
                   max={120}
                   step={1}
-                  value={selectedLayer.fontSize ?? 24}
-                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { fontSize: parseInt(e.target.value, 10) })}
+                  value={activeEditor
+                    ? (parseInt(String(activeTextStyle?.fontSize ?? '').replace('px', ''), 10) || 24)
+                    : (selectedLayer.fontSize ?? 24)}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (activeInlineEditor) {
+                      applyTextStyle({ fontSize: `${value}px` });
+                      return;
+                    }
+                    onUpdateLayerProps(selectedLayer.id, { fontSize: value });
+                  }}
                   className="w-full accent-teal-400"
                 />
               </div>
 
               <div>
-                <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1">Alineación</span>
-                <div className="grid grid-cols-3 gap-1">
+                <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1">Alineación & Formato</span>
+                <div className="flex items-center gap-1">
                   {[
-                    { id: 'left', icon: AlignLeft },
-                    { id: 'center', icon: AlignCenter },
-                    { id: 'right', icon: AlignRight },
+                    { id: 'left', icon: AlignLeft, title: 'Alinear a la izquierda' },
+                    { id: 'center', icon: AlignCenter, title: 'Centrar' },
+                    { id: 'right', icon: AlignRight, title: 'Alinear a la derecha' },
                   ].map((al) => {
                     const Icon = al.icon;
                     return (
                       <button
                         key={al.id}
                         type="button"
-                        onClick={() => onUpdateLayerProps(selectedLayer.id, { textAlign: al.id, align: al.id })}
-                        className={`flex h-7 items-center justify-center rounded-lg border text-xs transition-colors ${
-                          (selectedLayer.align ?? String(props.textAlign ?? 'center')) === al.id
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          if (activeInlineEditor) {
+                            formatting.updateBlockAttributes({ textAlign: al.id });
+                            return;
+                          }
+                          onUpdateLayerProps(selectedLayer.id, { textAlign: al.id, align: al.id });
+                        }}
+                        title={al.title}
+                        className={`flex-1 h-7 items-center justify-center rounded-lg border text-xs transition-colors flex ${
+                          (activeEditor ? activeBlockAttributes?.textAlign : (selectedLayer.align ?? String(props.textAlign ?? 'center'))) === al.id
                             ? 'border-brand-cyan bg-primary/30 text-brand-cyan'
                             : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
                         }`}
@@ -1382,6 +1481,100 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                     );
                   })}
                 </div>
+              </div>
+            </div>
+
+            {/* ESTILOS RÁPIDOS: LOS COMANDOS SIEMPRE USAN LA SELECCIÓN TIPTAP ACTIVA */}
+            <div className="pt-1.5 border-t border-slate-900">
+              <span className="block text-[10px] text-slate-400 font-bold uppercase mb-1.5">
+                Estilo de texto
+              </span>
+              <div className="grid grid-cols-4 gap-1.5">
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (activeInlineEditor) {
+                      formatting.toggleMark('bold');
+                      return;
+                    }
+                    const currentWeight = selectedLayer.fontWeight ?? '700';
+                    const nextWeight = currentWeight === '700' || currentWeight === '800' || currentWeight === '900' ? '400' : '700';
+                    onUpdateLayerProps(selectedLayer.id, { fontWeight: nextWeight });
+                  }}
+                  className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${
+                    (activeEditor ? activeEditor.isActive('bold') : ((selectedLayer.fontWeight ?? '700') === '700' || (selectedLayer.fontWeight ?? '700') === '800' || (selectedLayer.fontWeight ?? '700') === '900'))
+                      ? 'border-amber-400/50 bg-amber-500/20 text-amber-300 shadow-xs'
+                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                  }`}
+                  title="Aplicar negrita a la selección activa"
+                >
+                  <Bold className="size-3.5" />
+                  <span>Negrita</span>
+                </button>
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (activeInlineEditor) {
+                      formatting.toggleMark('italic');
+                      return;
+                    }
+                    onUpdateLayerProps(selectedLayer.id, {
+                      fontStyle: selectedLayer.fontStyle === 'italic' ? 'normal' : 'italic',
+                    });
+                  }}
+                  className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${activeEditor?.isActive('italic') ? 'border-brand-cyan bg-primary/30 text-brand-cyan' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800'}`}
+                  title="Aplicar cursiva a la selección activa"
+                >
+                  <Italic className="size-3.5" />
+                  <span>Cursiva</span>
+                </button>
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (activeInlineEditor) {
+                      formatting.toggleMark('underline');
+                      return;
+                    }
+                    const current = String(props.textDecoration ?? '');
+                    onUpdateLayerProps(selectedLayer.id, {
+                      textDecoration: current.includes('underline')
+                        ? current.replace(/\s*underline/, '').trim() || 'none'
+                        : `${current === 'none' ? '' : current} underline`.trim(),
+                    });
+                  }}
+                  className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${activeEditor?.isActive('underline') ? 'border-brand-cyan bg-primary/30 text-brand-cyan' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-brand-cyan hover:text-brand-cyan hover:bg-slate-800'}`}
+                  title="Aplicar subrayado a la selección activa"
+                >
+                  <UnderlineIcon className="size-3.5" />
+                  <span>Subrayar</span>
+                </button>
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (activeInlineEditor) {
+                      formatting.toggleMark('strike');
+                      return;
+                    }
+                    const current = String(props.textDecoration ?? '');
+                    onUpdateLayerProps(selectedLayer.id, {
+                      textDecoration: current.includes('line-through')
+                        ? current.replace(/\s*line-through/, '').trim() || 'none'
+                        : `${current === 'none' ? '' : current} line-through`.trim(),
+                    });
+                  }}
+                  className={`flex h-8 items-center justify-center gap-1 rounded-xl border text-[11px] font-bold transition-all ${activeEditor?.isActive('strike') ? 'border-rose-400 bg-rose-500/20 text-rose-300' : 'border-slate-800 bg-slate-900 text-white hover:border-rose-400 hover:text-rose-300 hover:bg-slate-800'}`}
+                  title="Aplicar tachado a la selección activa"
+                >
+                  <Strikethrough className="size-3.5" />
+                  <span>Tachar</span>
+                </button>
               </div>
             </div>
 
@@ -1434,12 +1627,36 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             {/* COLOR DE LETRA PRINCIPAL */}
             <div className="pt-2 border-t border-slate-900">
               <HexColorPickerField
-                label="Color de Letra"
-                value={String(selectedLayer.fill ?? props.color ?? props.textColor ?? '#FFFFFF')}
+                label={activeEditor ? 'Color de la selección' : 'Color de Letra'}
+                value={activeEditor
+                  ? String(activeTextStyle?.color ?? '#FFFFFF')
+                  : String(selectedLayer.fill ?? props.color ?? props.textColor ?? '#FFFFFF')}
                 allowTransparent={false}
-                onChange={(hex) => onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex })}
+                onChange={(hex) => {
+                  if (activeInlineEditor) {
+                    formatting.setColor(hex);
+                    return;
+                  }
+                  onUpdateLayerProps(selectedLayer.id, { fill: hex, color: hex, textColor: hex });
+                }}
               />
             </div>
+
+            {/* RESALTADO TIPTAP: NO SE CREA ESTADO PARA PALABRAS LEGACY */}
+            {activeEditor ? (
+              <HexColorPickerField
+                label="Resaltado de la selección"
+                value={String(activeEditor.getAttributes('highlight').color ?? '#fff3a3')}
+                allowTransparent={false}
+                onChange={(hex) => {
+                  if (activeInlineEditor) formatting.setHighlight(hex);
+                }}
+              />
+            ) : (
+              <p className="border-t border-slate-900 pt-2 text-[10px] text-slate-500">
+                El resaltado parcial está disponible al editar y seleccionar texto en el lienzo.
+              </p>
+            )}
 
             {/* ESPACIADO & INTERLINEADO */}
             <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-900">
@@ -1462,15 +1679,22 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               <div>
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase mb-1">
                   <span>Interlineado</span>
-                  <span className="font-mono text-slate-300">{selectedLayer.lineHeight ?? 1.25}</span>
+                  <span className="font-mono text-slate-300">{activeEditor ? (activeBlockAttributes?.lineHeight ?? 'Mixto') : (selectedLayer.lineHeight ?? 1.25)}</span>
                 </div>
                 <input
                   type="range"
                   min={0.9}
                   max={2.0}
                   step={0.05}
-                  value={selectedLayer.lineHeight ?? 1.25}
-                  onChange={(e) => onUpdateLayerProps(selectedLayer.id, { lineHeight: parseFloat(e.target.value) })}
+                  value={activeEditor ? (parseFloat(String(activeBlockAttributes?.lineHeight ?? '')) || 1.25) : (selectedLayer.lineHeight ?? 1.25)}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (activeInlineEditor) {
+                      formatting.updateBlockAttributes({ lineHeight: String(value) });
+                      return;
+                    }
+                    onUpdateLayerProps(selectedLayer.id, { lineHeight: value });
+                  }}
                   className="w-full accent-teal-400"
                 />
               </div>
@@ -1999,7 +2223,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
 
-        {selectedLayer.type === 'image' && (
+        {isImageType && (
           <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 space-y-2">
             <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-slate-400">
               <Crop className="size-3.5 text-brand-cyan" />
@@ -2038,8 +2262,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 <button
                   key={fit}
                   type="button"
+                  disabled={selectedLayer.locked}
                   onClick={() => onUpdateLayerProps(selectedLayer.id, { objectFit: fit })}
-                  className={`rounded-lg border py-1 text-[10px] font-bold ${
+                  className={`rounded-lg border py-1 text-[10px] font-bold disabled:cursor-not-allowed disabled:opacity-40 ${
                     ((props.objectFit as string) ?? 'cover') === fit
                       ? 'border-brand-cyan bg-primary/20 text-brand-cyan'
                       : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
@@ -2056,6 +2281,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 min="0"
                 max="100"
                 value={Number((props.focalPoint as { x?: number } | undefined)?.x ?? 50)}
+                disabled={selectedLayer.locked}
                 onChange={(e) =>
                   onUpdateLayerProps(selectedLayer.id, {
                     focalPoint: {
@@ -2074,6 +2300,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 min="0"
                 max="100"
                 value={Number((props.focalPoint as { y?: number } | undefined)?.y ?? 50)}
+                disabled={selectedLayer.locked}
                 onChange={(e) =>
                   onUpdateLayerProps(selectedLayer.id, {
                     focalPoint: {
@@ -2085,6 +2312,28 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 className="mt-1 w-full accent-brand-cyan"
               />
             </label>
+            <div className="flex flex-wrap gap-1.5 border-t border-slate-800/80 pt-2">
+              {onFitToActiveSlide && (
+                <button
+                  type="button"
+                  disabled={selectedLayer.locked}
+                  onClick={() => onFitToActiveSlide(selectedLayer.id, activeSlideIndex)}
+                  className="flex-1 rounded-lg border border-primary/40 bg-primary/20 px-2 py-1.5 text-[10px] font-bold text-brand-cyan transition-colors hover:bg-primary/30 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Ajustar al slide activo
+                </button>
+              )}
+              {onResetAdjustments && (
+                <button
+                  type="button"
+                  disabled={selectedLayer.locked}
+                  onClick={() => onResetAdjustments(selectedLayer.id)}
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-[10px] font-bold text-slate-300 transition-colors hover:border-amber-400/50 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Restablecer ajustes
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -2162,5 +2411,6 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         </div>
       </div>
     </ModuleContextPanel>
+    </div>
   );
 };

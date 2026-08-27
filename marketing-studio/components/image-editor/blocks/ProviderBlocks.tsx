@@ -9,12 +9,14 @@ export const ProviderGridHeaderBlock: React.FC<BlockPropsHandler> = ({ layerId, 
       <Building2 className="size-5" />
     </div>
     <InlineEditableText
+      layerId={layerId}
       text={String(props.title ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS')}
       onSave={(newVal) => onUpdateProps?.(layerId, { title: newVal })}
       className="font-display text-base font-black text-white tracking-tight block w-full text-center"
       as="h3"
     />
     <InlineEditableText
+      layerId={layerId}
       text={String(props.subtitle ?? 'Aceptadas oficialmente por Extranjería y Consulados')}
       onSave={(newVal) => onUpdateProps?.(layerId, { subtitle: newVal })}
       className="mt-1 text-xs text-[#94D2BD] block w-full text-center"
@@ -32,6 +34,7 @@ export const ProviderBadgeBlock: React.FC<BlockPropsHandler> = ({ layerId, props
     }`}
   >
     <InlineEditableText
+      layerId={layerId}
       text={String(props.name ?? 'ASEGURADORA')}
       onSave={(newVal) => onUpdateProps?.(layerId, { name: newVal })}
       className="font-display text-sm font-black tracking-wider uppercase"
@@ -47,6 +50,7 @@ export const ProviderBadgeBlock: React.FC<BlockPropsHandler> = ({ layerId, props
       >
         <Check className="size-2.5" />
         <InlineEditableText
+          layerId={layerId}
           text={String(props.badge)}
           onSave={(newVal) => onUpdateProps?.(layerId, { badge: newVal })}
         />

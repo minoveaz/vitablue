@@ -5,6 +5,8 @@ import {
   autoLayoutLayers,
   createDefaultGuideSettings,
   fitTextLayer,
+  getCarouselGeometry,
+  getCarouselSlideFrame,
   getGuideSnapLines,
   getPlatformGuideProfile,
   replaceLayerContent,
@@ -14,6 +16,9 @@ import { calculateSnapping } from '../hooks/useKonvaSnapping';
 
 const portrait = IMAGE_FORMAT_PRESETS.find((preset) => preset.id === 'instagram-portrait')!;
 const story = IMAGE_FORMAT_PRESETS.find((preset) => preset.id === 'story-vertical')!;
+const carousel = IMAGE_FORMAT_PRESETS.find((preset) => preset.id === 'instagram-carousel-portrait')!;
+const squareCarousel = IMAGE_FORMAT_PRESETS.find((preset) => preset.id === 'instagram-carousel-square')!;
+const tiktokCarousel = IMAGE_FORMAT_PRESETS.find((preset) => preset.id === 'tiktok-carousel-photo')!;
 
 const layer = (id: string, overrides: Partial<ImageLayer> = {}): ImageLayer => ({
   id,
@@ -31,6 +36,40 @@ const layer = (id: string, overrides: Partial<ImageLayer> = {}): ImageLayer => (
 });
 
 describe('Image Studio professional design system', () => {
+  it('keeps panorama and slide geometry explicit for carousel ratios', () => {
+    const geometry = getCarouselGeometry(carousel);
+
+    expect(geometry.panoramaWidth).toBe(5400);
+    expect(geometry.panoramaHeight).toBe(1350);
+    expect(geometry.slideWidth).toBe(1080);
+    expect(geometry.slideHeight).toBe(1350);
+    expect(geometry.slideCount).toBe(5);
+
+    expect(getCarouselGeometry(squareCarousel).panoramaHeight).toBe(1080);
+    expect(getCarouselGeometry(tiktokCarousel).panoramaHeight).toBe(1920);
+    expect(getCarouselGeometry(tiktokCarousel).slideWidth).toBe(1080);
+  });
+
+  it('centers image fitting on the active slide instead of the panorama', () => {
+    const frame = getCarouselSlideFrame(carousel, 3);
+
+    expect(frame.index).toBe(3);
+    expect(frame.width).toBe(1080);
+    expect(frame.height).toBe(1350);
+    expect(frame.center).toEqual({ x: 70, y: 50 });
+    expect(getCarouselSlideFrame(carousel, 99).center.x).toBe(90);
+    expect(getCarouselSlideFrame(portrait, 4).center).toEqual({ x: 50, y: 50 });
+  });
+
+  it('places built-in guide snap lines in every slide coordinate system', () => {
+    const targets = getGuideSnapLines(carousel, createDefaultGuideSettings(carousel));
+    const expectedLeftEdges = [0, 1080, 2160, 3240, 4320];
+
+    expectedLeftEdges.forEach((offset) => expect(targets.vertical).toContain(offset + 43));
+    expect(targets.horizontal).toContain(108);
+    expect(targets.horizontal).toContain(1188);
+  });
+
   it('resolves platform safe zones, columns, margins and ruler settings', () => {
     const profile = getPlatformGuideProfile(story);
     const settings = createDefaultGuideSettings(story);

@@ -21,6 +21,7 @@ export const TrustHighlightPillBlock: React.FC<BlockPropsHandler> = ({ layerId, 
         style={{ backgroundColor: bg, color: textColor }}
       >
         <InlineEditableText
+          layerId={layerId}
           text={text}
           onSave={(newVal) => onUpdateProps?.(layerId, { highlight: newVal, text: newVal, verifiedLabel: newVal })}
           as="span"
@@ -33,6 +34,7 @@ export const TrustHighlightPillBlock: React.FC<BlockPropsHandler> = ({ layerId, 
 export const TrustBadgeTitleBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
   <div className="flex items-center justify-center w-full h-full">
     <InlineEditableText
+      layerId={layerId}
       text={String(props.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
       onSave={(newVal) => onUpdateProps?.(layerId, { title: newVal })}
       className="font-display text-lg font-black text-white tracking-tight leading-snug text-center w-full block"
@@ -44,6 +46,7 @@ export const TrustBadgeTitleBlock: React.FC<BlockPropsHandler> = ({ layerId, pro
 export const TrustBadgeSubtitleBlock: React.FC<BlockPropsHandler> = ({ layerId, props, onUpdateProps }) => (
   <div className="flex items-center justify-center w-full h-full">
     <InlineEditableText
+      layerId={layerId}
       text={String(props.subtitle ?? 'Sin Copagos · Cobertura Completa · Repatriación Incluida')}
       onSave={(newVal) => onUpdateProps?.(layerId, { subtitle: newVal })}
       className="text-xs font-semibold text-[#94D2BD] leading-relaxed text-center w-full block"
@@ -65,6 +68,7 @@ export const TrustVerifiedPillBlock: React.FC<BlockPropsHandler> = ({ layerId, p
       >
         <CheckCircle2 className="size-4 shrink-0" />
         <InlineEditableText
+          layerId={layerId}
           text={text}
           onSave={(newVal) => onUpdateProps?.(layerId, { verifiedLabel: newVal, text: newVal, highlight: newVal })}
           as="span"

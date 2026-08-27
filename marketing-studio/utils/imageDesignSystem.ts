@@ -5,6 +5,7 @@ import {
   ImagePlatformGuideId,
   ImageStyleVariantId,
   ImageTextFit,
+  CarouselGeometry,
 } from '../types/imageStudio';
 import {
   getLayerLayoutConstraints,
@@ -12,6 +13,7 @@ import {
   type LayoutCanvasSize,
   resizeLayerForFormat,
 } from '../../packages/video-studio/src/domain/layoutConstraints';
+import { normalizeTiptapHtml } from './tiptapHtml';
 
 export interface PlatformGuideProfile {
   id: ImagePlatformGuideId;
@@ -35,6 +37,57 @@ export interface AutoLayoutOptions {
 export { getLayerLayoutConstraints, resizeLayerForFormat };
 export type { LayerLayoutConstraints, LayoutCanvasSize };
 
+export const getCarouselGeometry = (
+  preset: ImageFormatPreset,
+  slideCountOverride?: number
+): CarouselGeometry => {
+  const slideCount = preset.isCarousel
+    ? Math.max(
+        1,
+        slideCountOverride ??
+          preset.defaultSlideCount ??
+          Math.round(preset.width / (preset.slideWidth ?? preset.width)),
+      )
+    : 1;
+  const slideWidth = preset.slideWidth ?? (preset.isCarousel ? preset.width / slideCount : preset.width);
+  const slideHeight = preset.slideHeight ?? preset.height;
+
+  return {
+    slideCount,
+    slideWidth,
+    slideHeight,
+    panoramaWidth: preset.isCarousel ? slideWidth * slideCount : preset.width,
+    panoramaHeight: preset.isCarousel ? slideHeight : preset.height,
+  };
+};
+
+export interface CarouselSlideFrame {
+  index: number;
+  width: number;
+  height: number;
+  center: { x: number; y: number };
+}
+
+/** Returns the active slide's frame in panorama-relative coordinates. */
+export const getCarouselSlideFrame = (
+  preset: ImageFormatPreset,
+  activeSlideIndex: number,
+  slideCountOverride?: number
+): CarouselSlideFrame => {
+  const geometry = getCarouselGeometry(preset, slideCountOverride);
+  const index = Math.max(0, Math.min(geometry.slideCount - 1, Math.floor(activeSlideIndex)));
+
+  return {
+    index,
+    width: geometry.slideWidth,
+    height: geometry.slideHeight,
+    center: {
+      x: ((index + 0.5) * geometry.slideWidth / geometry.panoramaWidth) * 100,
+      y: 50,
+    },
+  };
+};
+
 export interface ContentReplacement {
   text?: string;
   imageUrl?: string;
@@ -55,6 +108,10 @@ const pctInsets = (
 });
 
 export const resolvePlatformGuideId = (preset: ImageFormatPreset): ImagePlatformGuideId => {
+  if (preset.id === 'instagram-carousel-portrait' || preset.id === 'instagram-carousel-square') return 'instagram-carousel';
+  if (preset.id === 'tiktok-carousel-photo') return 'tiktok-photo';
+  if (preset.id === 'linkedin-carousel-doc') return 'linkedin-document';
+  if (preset.isCarousel) return 'instagram-carousel';
   if (preset.id === 'story-vertical') return 'meta-story';
   if (preset.id === 'facebook-cover') return 'facebook-cover';
   if (preset.category === 'instagram' || preset.category === 'facebook') return 'meta-feed';
@@ -71,91 +128,122 @@ export const getPlatformGuideProfile = (
   preset: ImageFormatPreset,
   requestedId: ImagePlatformGuideId | 'auto' = 'auto'
 ): PlatformGuideProfile => {
+  const geometry = getCarouselGeometry(preset);
+  const guidePreset = preset.isCarousel
+    ? { ...preset, width: geometry.slideWidth, height: geometry.slideHeight, isCarousel: false }
+    : preset;
   const id = requestedId === 'auto' ? resolvePlatformGuideId(preset) : requestedId;
-  const margin = pctInsets(preset, 0.05, 0.05, 0.05, 0.05);
+  const margin = pctInsets(guidePreset, 0.05, 0.05, 0.05, 0.05);
   const common = { id, margins: margin };
 
   switch (id) {
+    case 'instagram-carousel':
+      return {
+        ...common,
+        label: 'Carrusel de Instagram / Meta',
+        description: 'Safe zones para carruseles de Instagram con recorte 1:1 en portada y paginador.',
+        safeInsets: pctInsets(guidePreset, 0.08, 0.04, 0.12, 0.04),
+        columns: 4,
+        columnGap: Math.round(geometry.slideWidth * 0.02),
+      };
+    case 'tiktok-photo':
+      return {
+        ...common,
+        label: 'TikTok Photo Mode',
+        description: 'Protege contenido del carrusel frente al panel de interacción y footer de audio.',
+        safeInsets: pctInsets(guidePreset, 0.08, 0.12, 0.22, 0.056),
+        columns: 4,
+        columnGap: Math.round(geometry.slideWidth * 0.02),
+      };
+    case 'linkedin-document':
+      return {
+        ...common,
+        label: 'Carrusel de LinkedIn (Doc)',
+        description: 'Protege áreas superior e inferior del visor de documentos interactivos de LinkedIn.',
+        safeInsets: pctInsets(guidePreset, 0.06, 0.05, 0.08, 0.05),
+        columns: 4,
+        columnGap: Math.round(geometry.slideWidth * 0.018),
+      };
     case 'meta-story':
       return {
         ...common,
         label: 'Meta Stories / Reels',
         description: 'Protege texto y CTA de la cabecera y los controles inferiores.',
-        safeInsets: pctInsets(preset, 0.13, 0.056, 0.177, 0.056),
+        safeInsets: pctInsets(guidePreset, 0.13, 0.056, 0.177, 0.056),
         columns: 4,
-        columnGap: Math.round(preset.width * 0.022),
+        columnGap: Math.round(guidePreset.width * 0.022),
       };
     case 'tiktok':
       return {
         ...common,
         label: 'TikTok',
         description: 'Evita navegación, descripción y acciones laterales de TikTok.',
-        safeInsets: pctInsets(preset, 0.08, 0.1, 0.2, 0.056),
+        safeInsets: pctInsets(guidePreset, 0.08, 0.1, 0.2, 0.056),
         columns: 4,
-        columnGap: Math.round(preset.width * 0.022),
+        columnGap: Math.round(guidePreset.width * 0.022),
       };
     case 'facebook-cover':
       return {
         ...common,
         label: 'Portada de Facebook',
         description: 'Conserva el contenido principal en el recorte móvil central.',
-        safeInsets: pctInsets(preset, 0.04, 0.11, 0.04, 0.11),
+        safeInsets: pctInsets(guidePreset, 0.04, 0.11, 0.04, 0.11),
         columns: 8,
-        columnGap: Math.round(preset.width * 0.018),
+        columnGap: Math.round(guidePreset.width * 0.018),
       };
     case 'linkedin':
       return {
         ...common,
         label: 'LinkedIn Feed',
         description: 'Área de lectura segura para publicaciones profesionales.',
-        safeInsets: pctInsets(preset, 0.06, 0.05, 0.06, 0.05),
+        safeInsets: pctInsets(guidePreset, 0.06, 0.05, 0.06, 0.05),
         columns: 12,
-        columnGap: Math.round(preset.width * 0.018),
+        columnGap: Math.round(guidePreset.width * 0.018),
       };
     case 'x':
       return {
         ...common,
         label: 'X / Twitter',
         description: 'Mantiene el mensaje clave fuera de recortes de vista previa.',
-        safeInsets: pctInsets(preset, 0.07, 0.06, 0.07, 0.06),
+        safeInsets: pctInsets(guidePreset, 0.07, 0.06, 0.07, 0.06),
         columns: preset.width / preset.height > 2 ? 12 : 8,
-        columnGap: Math.round(preset.width * 0.016),
+        columnGap: Math.round(guidePreset.width * 0.016),
       };
     case 'youtube':
       return {
         ...common,
         label: 'YouTube',
         description: 'Composición segura para miniaturas y vídeo horizontal.',
-        safeInsets: pctInsets(preset, 0.05, 0.05, 0.05, 0.05),
+        safeInsets: pctInsets(guidePreset, 0.05, 0.05, 0.05, 0.05),
         columns: 12,
-        columnGap: Math.round(preset.width * 0.018),
+        columnGap: Math.round(guidePreset.width * 0.018),
       };
     case 'email':
       return {
         ...common,
         label: 'Email marketing',
         description: 'Márgenes compatibles con clientes de correo y bloques responsivos.',
-        safeInsets: pctInsets(preset, 0.06, 0.06, 0.06, 0.06),
+        safeInsets: pctInsets(guidePreset, 0.06, 0.06, 0.06, 0.06),
         columns: 6,
-        columnGap: Math.round(preset.width * 0.02),
+        columnGap: Math.round(guidePreset.width * 0.02),
       };
     case 'document':
       return {
         ...common,
         label: 'Documento / Informe',
         description: 'Respeta sangrado visual y zona editorial de lectura.',
-        safeInsets: pctInsets(preset, 0.07, 0.07, 0.07, 0.07),
+        safeInsets: pctInsets(guidePreset, 0.07, 0.07, 0.07, 0.07),
         columns: 12,
-        columnGap: Math.round(preset.width * 0.018),
+        columnGap: Math.round(guidePreset.width * 0.018),
       };
     case 'web':
       return {
         ...common,
         label: 'Web / Display',
         description: 'Zona flexible para banners y cabeceras adaptativas.',
-        safeInsets: pctInsets(preset, 0.06, 0.06, 0.06, 0.06),
+        safeInsets: pctInsets(guidePreset, 0.06, 0.06, 0.06, 0.06),
         columns: 12,
-        columnGap: Math.round(preset.width * 0.018),
+        columnGap: Math.round(guidePreset.width * 0.018),
       };
     default:
       return {
@@ -163,9 +251,9 @@ export const getPlatformGuideProfile = (
         id: 'meta-feed',
         label: 'Meta Feed',
         description: 'Zona segura para publicaciones y anuncios de Meta.',
-        safeInsets: pctInsets(preset, 0.05, 0.05, 0.05, 0.05),
+        safeInsets: pctInsets(guidePreset, 0.05, 0.05, 0.05, 0.05),
         columns: preset.aspectRatio === '1:1' ? 6 : 4,
-        columnGap: Math.round(preset.width * 0.022),
+        columnGap: Math.round(guidePreset.width * 0.022),
       };
   }
 };
@@ -193,32 +281,45 @@ export const getGuideSnapLines = (
 ): { vertical: number[]; horizontal: number[] } => {
   const resolved = settings ?? createDefaultGuideSettings(preset);
   const profile = getPlatformGuideProfile(preset, resolved.profileId);
+  const geometry = getCarouselGeometry(preset);
   const vertical = new Set<number>();
   const horizontal = new Set<number>();
+  const slideOffsets = preset.isCarousel
+    ? Array.from({ length: geometry.slideCount }, (_, index) => index * geometry.slideWidth)
+    : [0];
+  const addPerSlideVertical = (value: number) => {
+    slideOffsets.forEach((offset) => vertical.add(Math.round(offset + value)));
+  };
 
   if (resolved.showMargins) {
-    vertical.add(profile.margins.left);
-    vertical.add(preset.width - profile.margins.right);
+    addPerSlideVertical(profile.margins.left);
+    addPerSlideVertical(geometry.slideWidth - profile.margins.right);
     horizontal.add(profile.margins.top);
-    horizontal.add(preset.height - profile.margins.bottom);
+    horizontal.add(geometry.slideHeight - profile.margins.bottom);
   }
   if (resolved.showSafeZone) {
-    vertical.add(profile.safeInsets.left);
-    vertical.add(preset.width - profile.safeInsets.right);
+    addPerSlideVertical(profile.safeInsets.left);
+    addPerSlideVertical(geometry.slideWidth - profile.safeInsets.right);
     horizontal.add(profile.safeInsets.top);
-    horizontal.add(preset.height - profile.safeInsets.bottom);
+    horizontal.add(geometry.slideHeight - profile.safeInsets.bottom);
   }
   if (resolved.showColumns) {
     const columns = Math.max(1, resolved.columns);
-    const contentWidth = preset.width - profile.margins.left - profile.margins.right;
+    const contentWidth = geometry.slideWidth - profile.margins.left - profile.margins.right;
     const columnWidth = (contentWidth - resolved.columnGap * (columns - 1)) / columns;
-    for (let index = 0; index <= columns; index += 1) {
-      const x = profile.margins.left + index * (columnWidth + resolved.columnGap);
-      vertical.add(Math.round(Math.min(preset.width, x)));
-    }
+    slideOffsets.forEach((offset) => {
+      for (let index = 0; index <= columns; index += 1) {
+        const x = profile.margins.left + index * (columnWidth + resolved.columnGap);
+        vertical.add(Math.round(Math.min(offset + geometry.slideWidth, offset + x)));
+      }
+    });
   }
-  resolved.customVerticalGuides.forEach((percent) => vertical.add((percent / 100) * preset.width));
-  resolved.customHorizontalGuides.forEach((percent) => horizontal.add((percent / 100) * preset.height));
+  resolved.customVerticalGuides.forEach((percent) =>
+    vertical.add((percent / 100) * geometry.panoramaWidth)
+  );
+  resolved.customHorizontalGuides.forEach((percent) =>
+    horizontal.add((percent / 100) * geometry.slideHeight)
+  );
 
   return { vertical: [...vertical], horizontal: [...horizontal] };
 };
@@ -385,7 +486,7 @@ export const replaceLayerContent = (layer: ImageLayer, replacement: ContentRepla
       'buttonText',
     ].filter((key) => key in props);
     (contentKeys.length > 0 ? contentKeys : ['text']).forEach((key) => {
-      props[key] = replacement.text;
+      props[key] = normalizeTiptapHtml(replacement.text!);
     });
   }
   return {

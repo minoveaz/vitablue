@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
 import {
   EMPRESA_IMAGE_TEMPLATES,
@@ -55,10 +55,10 @@ describe('ImageStudio Presets & Templates', () => {
 
   it('maps every marketing catalog item to an independent project with the correct aspect', () => {
     expect(UNIVERSAL_IMAGE_TEMPLATES).toHaveLength(8);
-    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(8);
+    expect(EMPRESA_IMAGE_TEMPLATES).toHaveLength(10);
 
     const marketingCatalog = TEMPLATE_CATALOG;
-    expect(marketingCatalog).toHaveLength(16);
+    expect(marketingCatalog).toHaveLength(17);
     marketingCatalog.forEach((item) => {
       const project = MARKETING_TEMPLATE_PROJECT_BY_ID.get(item.projectId);
       expect(project, item.id).toBeDefined();
@@ -89,6 +89,142 @@ describe('ImageStudio Project Storage (LocalStorage & Routing)', () => {
     const copy = duplicateStoredImageProject(blank.id);
     expect(copy).toBeDefined();
     expect(copy?.title).toContain('(Copia)');
+  });
+
+  it('persists uploaded image media for reuse without duplicating identical data URLs', async () => {
+    const {
+      getStoredImageMedia,
+      saveUploadedImageMedia,
+    } = await import('../utils/imageMediaStorage');
+    const dataUrl = 'data:image/png;base64,' + 'a'.repeat(128);
+    const first = saveUploadedImageMedia(dataUrl, {
+      title: 'Logo propio',
+      fileName: 'logo.png',
+      mimeType: 'image/png',
+    });
+    const second = saveUploadedImageMedia(dataUrl, {
+      title: 'Logo propio',
+      fileName: 'logo.png',
+      mimeType: 'image/png',
+    });
+
+    expect(first.media).toBeDefined();
+    expect(second.media?.id).toBe(first.media?.id);
+    expect(getStoredImageMedia().filter((media) => media.dataUrl === dataUrl)).toHaveLength(1);
+  });
+
+  it('rejects oversized uploads before they can fill the media library', async () => {
+    const { MAX_IMAGE_MEDIA_ITEM_BYTES, saveUploadedImageMedia } = await import('../utils/imageMediaStorage');
+    const oversizedDataUrl = 'data:image/png;base64,' + 'a'.repeat(MAX_IMAGE_MEDIA_ITEM_BYTES * 2);
+    const result = saveUploadedImageMedia(oversizedDataUrl, {
+      title: 'Grande',
+      fileName: 'grande.png',
+      mimeType: 'image/png',
+    });
+
+    expect(result.media).toBeNull();
+    expect(result.error).toMatch(/demasiado grande/i);
+  });
+
+  it('keeps an uploaded data URL in the persisted project snapshot', async () => {
+    const {
+      getStoredImageProjects,
+      saveStoredImageProject,
+      createBlankImageProject,
+    } = await import('../utils/imageProjectStorage');
+    const project = createBlankImageProject('instagram-square', 'Proyecto con imagen');
+    const dataUrl = 'data:image/png;base64,' + 'b'.repeat(128);
+    saveStoredImageProject({
+      ...project,
+      layers: [{
+        id: 'uploaded-layer',
+        type: 'image',
+        title: 'Logo propio',
+        props: { imageUrl: dataUrl },
+        position: { x: 50, y: 50 },
+        zIndex: 1,
+        scale: 1,
+      }],
+    });
+
+    const reloaded = getStoredImageProjects().find((item) => item.id === project.id);
+    expect(reloaded?.layers[0].props.imageUrl).toBe(dataUrl);
+  });
+
+  it('stores a compact media reference instead of duplicating a persisted data URL in projects', async () => {
+    const {
+      IMAGE_MEDIA_STORAGE_KEY,
+      saveUploadedImageMedia,
+    } = await import('../utils/imageMediaStorage');
+    const {
+      IMAGE_STUDIO_STORAGE_KEY,
+      createBlankImageProject,
+      getStoredImageProjects,
+      saveStoredImageProject,
+    } = await import('../utils/imageProjectStorage');
+    const values = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        values.set(key, value);
+      },
+      removeItem: (key: string) => {
+        values.delete(key);
+      },
+    };
+    vi.stubGlobal('localStorage', storage);
+    vi.stubGlobal('window', { dispatchEvent: vi.fn() });
+
+    const dataUrl = 'data:image/png;base64,' + 'c'.repeat(128);
+    saveUploadedImageMedia(dataUrl, {
+      title: 'Logo persistente',
+      fileName: 'logo.png',
+      mimeType: 'image/png',
+    });
+    const project = createBlankImageProject('instagram-square', 'Referencia compacta');
+    saveStoredImageProject({
+      ...project,
+      layers: [{
+        id: 'uploaded-layer',
+        type: 'image',
+        title: 'Logo persistente',
+        props: { imageUrl: dataUrl },
+        position: { x: 50, y: 50 },
+        zIndex: 1,
+        scale: 1,
+      }],
+    });
+
+    expect(values.get(IMAGE_MEDIA_STORAGE_KEY)).toContain(dataUrl);
+    expect(values.get(IMAGE_STUDIO_STORAGE_KEY)).not.toContain(dataUrl);
+    expect(getStoredImageProjects().find((item) => item.id === project.id)?.layers[0].props.imageUrl).toBe(dataUrl);
+    vi.unstubAllGlobals();
+  });
+
+  it('keeps an upload usable when the browser quota rejects the media write', async () => {
+    const { getStoredImageMedia, saveUploadedImageMedia } = await import('../utils/imageMediaStorage');
+    const values = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: () => {
+        throw new DOMException('quota', 'QuotaExceededError');
+      },
+      removeItem: (key: string) => values.delete(key),
+    });
+    vi.stubGlobal('window', { dispatchEvent: vi.fn() });
+
+    const result = saveUploadedImageMedia('data:image/png;base64,' + 'd'.repeat(128), {
+      title: 'Disponible en el diseño',
+      fileName: 'quota.png',
+      mimeType: 'image/png',
+    });
+
+    expect(result.media).toBeDefined();
+    expect(result.persisted).toBe(false);
+    expect(result.warning).toMatch(/disponible en este diseño/i);
+    expect(result.error).toBeUndefined();
+    expect(getStoredImageMedia().some((media) => media.id === result.media?.id)).toBe(true);
+    vi.unstubAllGlobals();
   });
 
   describe('ImageStudio core validation contracts', () => {
