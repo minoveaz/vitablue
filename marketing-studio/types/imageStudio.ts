@@ -22,6 +22,43 @@ export type CarouselPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'facebook' 
 
 export type CarouselSlideRole = 'hook' | 'content' | 'comparison' | 'proof' | 'cta';
 
+export type CarouselLayoutSlot =
+  | 'eyebrow'
+  | 'title'
+  | 'body'
+  | 'badge'
+  | 'media'
+  | 'metric'
+  | 'cta'
+  | 'decorative';
+
+export interface CarouselElementSlot {
+  id: string;
+  type: CarouselLayoutSlot;
+  required?: boolean;
+  continuity?: 'local' | 'start' | 'middle' | 'end' | 'any';
+  maxLines?: number;
+}
+
+export interface CarouselSlideLayout {
+  id: string;
+  role: CarouselSlideRole;
+  label: string;
+  slots: CarouselElementSlot[];
+}
+
+export interface CarouselLayout {
+  id: string;
+  name: string;
+  description: string;
+  category: 'educational' | 'conversion' | 'comparison' | 'editorial';
+  minSlides: number;
+  maxSlides: number;
+  recommendedSlides: number[];
+  slides: CarouselSlideLayout[];
+  supportedPlatforms: CarouselPlatform[];
+}
+
 export type ImagePreviewMode = 'normal' | 'focus' | 'guides' | 'overview';
 
 export interface CarouselGeometry {
