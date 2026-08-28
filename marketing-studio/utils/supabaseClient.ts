@@ -2,8 +2,19 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration credentials extracted from the sibling loopdev project
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://sukjcsylkljiyvfklxvj.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_y7LKtWICauXvyWo6Aa9pSA_ylMUg845';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL?.trim();
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+
+if (!SUPABASE_URL) {
+  throw new Error(
+    'Supabase is not configured: set VITE_SUPABASE_URL before starting VitaBlue.',
+  );
+}
+
+if (!SUPABASE_ANON_KEY) {
+  throw new Error(
+    'Supabase is not configured: set VITE_SUPABASE_ANON_KEY before starting VitaBlue.',
+  );
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

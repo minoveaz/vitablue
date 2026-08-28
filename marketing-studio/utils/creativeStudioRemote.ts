@@ -7,17 +7,26 @@ import {
   type CreativeScope,
 } from '../contracts/creativePersistence';
 import type { ImageProject } from '../types/imageStudio';
-import { createSupabaseCreativeProjectRepository, type CreativeProjectRepository } from './creativeProjectRepository';
+import {
+  createSupabaseCreativeProjectRepository,
+  CreativeProjectConflictError,
+  getCreativePersistenceErrorDetails,
+  normalizeSupabaseTimestamp,
+  type CreativeProjectRepository,
+} from './creativeProjectRepository';
 import { supabase } from './supabaseClient';
 
-export const CREATIVE_SOURCE_BUCKET = 'marketing-creative-sources';
-export const CREATIVE_EXPORT_BUCKET = 'marketing-creative-exports';
-export const CREATIVE_FONT_BUCKET = 'marketing-creative-fonts';
+export const CREATIVE_BUCKET = 'marketing-creative';
+// Kept as aliases for callers that distinguish the asset purpose. LoopDev
+// uses one private bucket and scopes objects by the path's kind segment.
+export const CREATIVE_SOURCE_BUCKET = CREATIVE_BUCKET;
+export const CREATIVE_EXPORT_BUCKET = CREATIVE_BUCKET;
+export const CREATIVE_FONT_BUCKET = CREATIVE_BUCKET;
 /** Persist this opaque reference in compositions; signed URLs are runtime-only. */
 export const CREATIVE_ASSET_REFERENCE_PREFIX = 'creative-asset:';
 
 export class CreativeStudioScopeError extends Error {
-  constructor(message = 'Tu sesión no contiene un scope de organización, workspace y marca.') {
+  constructor(message = 'No se encontró una organización, workspace y marca disponibles para tu sesión.') {
     super(message);
     this.name = 'CreativeStudioScopeError';
   }
@@ -27,62 +36,119 @@ const isUuid = (value: unknown): value is string =>
   typeof value === 'string' &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
-const claim = (user: User, key: string): unknown =>
-  user.app_metadata?.[key];
+export const isCreativeProjectId = (value: unknown): value is string => isUuid(value);
 
-const claimsScope = (claims: Record<string, unknown>): CreativeScope => {
-  const metadata = claims.app_metadata && typeof claims.app_metadata === 'object'
-    ? claims.app_metadata as Record<string, unknown>
-    : {};
-  const scope = {
-    organizationId: claims.organization_id ?? metadata.organization_id,
-    workspaceId: claims.workspace_id ?? metadata.workspace_id,
-    brandId: claims.brand_id ?? metadata.brand_id,
-  };
-  if (!isUuid(scope.organizationId) || !isUuid(scope.workspaceId) || !isUuid(scope.brandId)) {
-    throw new CreativeStudioScopeError();
-  }
-  return scope as CreativeScope;
+export const getCreativeProjectSaveId = (
+  projectId: string | undefined,
+  createNew = false,
+): string | undefined => (createNew || !isUuid(projectId) ? undefined : projectId);
+
+type MembershipRow = { organization_id: string; status?: string | null };
+type WorkspaceRow = { id: string; organization_id: string; status?: string | null };
+type WorkspaceBrandRow = { workspace_id: string; organization_id: string; brand_id: string };
+type BrandRow = { id: string; organization_id: string };
+
+const readRows = async <T>(query: PromiseLike<{ data: T[] | null; error: unknown | null }>): Promise<T[]> => {
+  const { data, error } = await query;
+  if (error) throw error;
+  return data ?? [];
 };
 
-const decodeAccessTokenClaims = (accessToken: string): Record<string, unknown> => {
-  const payload = accessToken.split('.')[1];
-  if (!payload) throw new Error('JWT sin payload');
-  const normalized = payload.replace(/-/g, '+').replace(/_/g, '/').padEnd(
-    Math.ceil(payload.length / 4) * 4,
-    '=',
+const safeErrorCode = (error: unknown): string | null => {
+  if (!error || typeof error !== 'object') return null;
+  const candidate = error as { code?: unknown; status?: unknown; name?: unknown };
+  for (const value of [candidate.code, candidate.status, candidate.name]) {
+    if (typeof value === 'string' || typeof value === 'number') return String(value);
+  }
+  return null;
+};
+
+/**
+ * LoopDev's local Supabase auth does not put tenancy in JWT claims. Resolve a
+ * usable marketing scope through RLS-visible membership, workspace and brand
+ * rows instead. The permission decision remains in LoopDev's RLS policies and
+ * `has_organization_permission`, not in this client-side selection.
+ */
+const scopeFromMembership = async (client: SupabaseClient, user: User): Promise<CreativeScope> => {
+  const memberships = await readRows<MembershipRow>(
+    client.from('organization_memberships')
+      .select('organization_id,status')
+      .eq('user_id', user.id)
+      .eq('status', 'active'),
   );
-  const bytes = Uint8Array.from(atob(normalized), (character) => character.charCodeAt(0));
-  return JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>;
-};
-
-export const scopeFromUser = (user: User | null): CreativeScope => {
-  if (!user) throw new CreativeStudioScopeError('Inicia sesión para usar Creative Studio.');
-  const scope = {
-    organizationId: claim(user, 'organization_id'),
-    workspaceId: claim(user, 'workspace_id'),
-    brandId: claim(user, 'brand_id'),
-  };
-  if (!isUuid(scope.organizationId) || !isUuid(scope.workspaceId) || !isUuid(scope.brandId)) {
-    throw new CreativeStudioScopeError();
+  const organizationIds = memberships
+    .map((membership) => membership.organization_id)
+    .filter(isUuid)
+    .sort();
+  if (!organizationIds.length) {
+    throw new CreativeStudioScopeError('Tu usuario no tiene una membresía activa en LoopDev.');
   }
-  return scope as CreativeScope;
+
+  const workspaces = await readRows<WorkspaceRow>(
+    client.from('workspaces')
+      .select('id,organization_id,status')
+      .in('organization_id', organizationIds)
+      .eq('suite_key', 'marketing')
+      .eq('status', 'active'),
+  );
+  const usableWorkspaces = workspaces
+    .filter((workspace) => isUuid(workspace.id) && organizationIds.includes(workspace.organization_id))
+    .sort((left, right) => left.organization_id.localeCompare(right.organization_id) || left.id.localeCompare(right.id));
+  if (!usableWorkspaces.length) {
+    throw new CreativeStudioScopeError('Tu organización no tiene un workspace de Marketing activo.');
+  }
+
+  const workspaceIds = usableWorkspaces.map((workspace) => workspace.id);
+  const [workspaceBrands, brands] = await Promise.all([
+    readRows<WorkspaceBrandRow>(
+      client.from('workspace_brands')
+        .select('workspace_id,organization_id,brand_id')
+        .in('workspace_id', workspaceIds),
+    ),
+    readRows<BrandRow>(
+      client.from('brands')
+        .select('id,organization_id')
+        .in('organization_id', organizationIds),
+    ),
+  ]);
+  const validBrands = brands
+    .filter((brand) => isUuid(brand.id) && organizationIds.includes(brand.organization_id))
+    .sort((left, right) => left.organization_id.localeCompare(right.organization_id) || left.id.localeCompare(right.id));
+
+  for (const workspace of usableWorkspaces) {
+    const workspaceLinks = workspaceBrands
+      .filter((link) => link.workspace_id === workspace.id && link.organization_id === workspace.organization_id);
+    const linkedBrandIds = workspaceLinks
+      .filter((link) => isUuid(link.brand_id))
+      .map((link) => link.brand_id)
+      .sort();
+    const brandId = workspaceLinks.length > 0
+      ? linkedBrandIds.find((id) => validBrands.some((brand) => brand.id === id && brand.organization_id === workspace.organization_id))
+      : validBrands.find((brand) => brand.organization_id === workspace.organization_id)?.id;
+    if (brandId) {
+      return { organizationId: workspace.organization_id, workspaceId: workspace.id, brandId };
+    }
+  }
+
+  throw new CreativeStudioScopeError('Tu workspace de Marketing no tiene una marca disponible.');
 };
 
 export const getCreativeScope = async (client: SupabaseClient = supabase): Promise<{ scope: CreativeScope; user: User }> => {
-  const [{ data: sessionData, error: sessionError }, { data: userData, error: userError }] = await Promise.all([
-    client.auth.getSession(),
-    client.auth.getUser(),
-  ]);
-  const { session } = sessionData;
-  const { user } = userData;
-  if (sessionError || userError || !session?.access_token || !user) {
+  const { data: userData, error: userError } = await client.auth.getUser();
+  const user = userData?.user;
+  if (userError || !user) {
     throw new CreativeStudioScopeError('No se pudo validar tu sesión.');
   }
   try {
-    return { scope: claimsScope(decodeAccessTokenClaims(session.access_token)), user };
-  } catch {
-    throw new CreativeStudioScopeError('No se pudo leer el scope del token de acceso.');
+    return { scope: await scopeFromMembership(client, user), user };
+  } catch (error) {
+    if (error instanceof CreativeStudioScopeError) throw error;
+    const code = safeErrorCode(error);
+    throw new CreativeStudioScopeError(
+      import.meta.env.DEV && code
+        ? `No se pudo resolver el scope de LoopDev (${code}).`
+        : 'No se pudo resolver el scope de LoopDev.',
+    );
   }
 };
 
@@ -130,6 +196,11 @@ const imageStudioComposition = (project: ImageProject): Record<string, unknown> 
   if (containsInline(copy)) {
     throw new Error('Sube las imágenes al Storage privado antes de guardar el proyecto.');
   }
+  // Audit timestamps belong to the project row, not the editable document.
+  delete copy.createdAt;
+  delete copy.updatedAt;
+  delete copy.currentVersionNumber;
+  delete copy.autosaveRevision;
   return { schemaVersion: 1, imageStudio: copy };
 };
 
@@ -154,13 +225,16 @@ const replaceInlinePayloads = async (value: unknown, projectId: string, client: 
 };
 
 const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
-  const composition = project.composition as Record<string, unknown> & { imageStudio?: ImageProject };
+  const composition = project.draftDocument as Record<string, unknown> & { imageStudio?: ImageProject };
+  const creativeStatus = project.status === 'approved' ? 'ready' : project.status === 'in_review' ? 'draft' : project.status;
   if (composition.imageStudio) {
     return {
       ...clone(composition.imageStudio),
       id: project.id,
       title: project.name,
-      creativeStatus: project.status,
+      creativeStatus,
+      currentVersionNumber: project.currentVersionNumber,
+      autosaveRevision: project.autosaveRevision,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
     };
@@ -169,7 +243,9 @@ const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
   return {
     id: project.id,
     title: project.name,
-    creativeStatus: project.status,
+    creativeStatus,
+    currentVersionNumber: project.currentVersionNumber,
+    autosaveRevision: project.autosaveRevision,
     preset: (composition.preset ?? {}) as ImageProject['preset'],
     background: (composition.background ?? { type: 'solid', color: '#001219' }) as ImageProject['background'],
     layers: (composition.layers ?? []) as ImageProject['layers'],
@@ -199,8 +275,7 @@ const resolveAssetReferences = async (
   const rows = (data ?? []) as Array<{ id: string; storage_path: string }>;
   const urls = new Map<string, string>();
   await Promise.all(rows.map(async (row) => {
-    const [bucket, ...parts] = row.storage_path.split('/');
-    const { data: signed, error: signedError } = await client.storage.from(bucket).createSignedUrl(parts.join('/'), 3600);
+    const { data: signed, error: signedError } = await client.storage.from(CREATIVE_BUCKET).createSignedUrl(row.storage_path, 3600);
     if (!signedError && signed?.signedUrl) {
       urls.set(`${CREATIVE_ASSET_REFERENCE_PREFIX}${row.id}`, signed.signedUrl);
       signedAssetReferences.set(signed.signedUrl, `${CREATIVE_ASSET_REFERENCE_PREFIX}${row.id}`);
@@ -216,8 +291,10 @@ const resolveAssetReferences = async (
   }) as ImageProject;
 };
 
-const projectType = (project: ImageProject): 'image' | 'carousel' =>
-  project.carouselConfig?.enabled || (project.carouselPages ?? 0) > 1 ? 'carousel' : 'image';
+/** LoopDev stores the canonical creative type/status vocabulary. */
+const canonicalProjectType = (_project: ImageProject): 'social_post' => 'social_post';
+const canonicalProjectStatus = (status: ImageProject['creativeStatus']): 'draft' | 'approved' | 'archived' =>
+  status === 'ready' ? 'approved' : status ?? 'draft';
 
 const repositoryFor = (client: SupabaseClient): CreativeProjectRepository =>
   createSupabaseCreativeProjectRepository(client);
@@ -236,26 +313,31 @@ export const getCreativeProject = async (id: string, client: SupabaseClient = su
 
 export const saveCreativeProject = async (
   project: ImageProject,
-  options: { expectedUpdatedAt?: string; changeSummary?: string | null; clientMutationId?: string } = {},
+  options: {
+    expectedUpdatedAt?: string;
+    changeSummary?: string | null;
+    clientMutationId?: string;
+    createNew?: boolean;
+  } = {},
   client: SupabaseClient = supabase,
 ): Promise<ImageProject> => {
   const { scope, user } = await getCreativeScope(client);
+  const persistedId = getCreativeProjectSaveId(project.id, options.createNew);
   const input = CreateCreativeProjectInputSchema.parse({
-    id: isUuid(project.id) ? project.id : undefined,
+    id: persistedId,
     ...scope,
     ownerUserId: user.id,
     name: project.title,
-    creativeType: projectType(project),
-    status: project.creativeStatus ?? 'draft',
-    composition: imageStudioComposition(project),
-    metadata: { presetId: project.preset.id, aspectRatio: project.preset.aspectRatio },
+    type: canonicalProjectType(project),
+    status: canonicalProjectStatus(project.creativeStatus),
+    draftDocument: imageStudioComposition(project),
     expectedUpdatedAt: options.expectedUpdatedAt,
     changeSummary: options.changeSummary,
     clientMutationId: options.clientMutationId,
   });
   const row = await repositoryFor(client).save({
     ...input,
-    id: isUuid(project.id) ? project.id : undefined,
+    id: persistedId,
     expectedUpdatedAt: options.expectedUpdatedAt,
     changeSummary: options.changeSummary,
     clientMutationId: options.clientMutationId,
@@ -269,13 +351,66 @@ export const migrateLegacyCreativeProject = async (
 ): Promise<ImageProject> => {
   const projectId = crypto.randomUUID();
   const migrated = await replaceInlinePayloads(clone(project), projectId, client) as ImageProject;
-  return saveCreativeProject({ ...migrated, id: projectId }, {}, client);
+  return saveCreativeProject({ ...migrated, id: projectId }, { createNew: true }, client);
 };
 
-export const deleteCreativeProject = async (id: string, client: SupabaseClient = supabase): Promise<void> => {
-  const { scope } = await getCreativeScope(client);
-  await repositoryFor(client).remove(id, scope);
+export const archiveCreativeProject = async (
+  id: string,
+  expectedUpdatedAt?: string,
+  client: SupabaseClient = supabase,
+): Promise<void> => {
+  const { scope, user } = await getCreativeScope(client);
+  let current: Awaited<ReturnType<CreativeProjectRepository['get']>>;
+  try {
+    current = await repositoryFor(client).get(id, scope);
+  } catch (error) {
+    const details = getCreativePersistenceErrorDetails(error);
+    const suffix = import.meta.env.DEV && details.code ? ` [${details.code}]` : '';
+    const safeError = new Error(`No se pudo archivar la creatividad.${suffix}`);
+    (safeError as Error & { cause?: unknown }).cause = error;
+    throw safeError;
+  }
+  if (!current) throw new Error('No se pudo archivar la creatividad.');
+  if (expectedUpdatedAt && current.updatedAt !== expectedUpdatedAt) {
+    throw new CreativeProjectConflictError();
+  }
+  const updatedAt = new Date().toISOString();
+  let query = client.from('marketing_creative_projects')
+    .update({
+      status: 'archived',
+      updated_by: user.id,
+      updated_at: updatedAt,
+    })
+    .eq('id', id)
+    .eq('organization_id', scope.organizationId)
+    .eq('workspace_id', scope.workspaceId)
+    .eq('brand_id', scope.brandId);
+  query = query.eq('autosave_revision', current.autosaveRevision);
+
+  const { data, error } = await (query as unknown as {
+    select: (columns: string) => {
+      maybeSingle: () => Promise<{ data: { id: string } | null; error: unknown | null }>;
+    };
+  }).select('id').maybeSingle();
+  if (error) {
+    const details = getCreativePersistenceErrorDetails(error);
+    if (details.code === 'PGRST116' || details.code === '40001') {
+      throw new CreativeProjectConflictError(undefined, error);
+    }
+    const suffix = import.meta.env.DEV && details.code ? ` [${details.code}]` : '';
+    const safeError = new Error(`No se pudo archivar la creatividad.${suffix}`);
+    (safeError as Error & { cause?: unknown }).cause = error;
+    throw safeError;
+  }
+  if (!data) {
+    if (expectedUpdatedAt) throw new CreativeProjectConflictError();
+    throw new Error('No se pudo archivar la creatividad.');
+  }
 };
+
+/** @deprecated Use archiveCreativeProject; LoopDev does not permit project DELETE. */
+export const deleteCreativeProject = async (id: string, client: SupabaseClient = supabase): Promise<void> =>
+  archiveCreativeProject(id, undefined, client);
 
 export const listCreativeProjectVersions = async (
   id: string,
@@ -293,14 +428,14 @@ export const restoreCreativeProjectVersion = async (
   const current = await getCreativeProject(id, client);
   if (!current) throw new Error('Proyecto creativo no encontrado.');
   const versions = await listCreativeProjectVersions(id, client);
-  const selected = versions.find((item) => item.version === version);
+  const selected = versions.find((item) => item.versionNumber === version);
   if (!selected) throw new Error('Versión creativa no encontrada.');
-  const composition = selected.snapshot.composition as { imageStudio?: ImageProject };
+  const composition = selected.document as { imageStudio?: ImageProject };
   if (!composition.imageStudio) throw new Error('La versión no contiene una composición compatible.');
   return saveCreativeProject({
     ...clone(composition.imageStudio),
     id: current.id,
-    title: selected.snapshot.name,
+    title: current.title,
     createdAt: current.createdAt,
     updatedAt: current.updatedAt,
   }, { expectedUpdatedAt: current.updatedAt, changeSummary: `Restaurada versión ${version}` }, client);
@@ -323,6 +458,7 @@ export interface CreativeAssetUpload {
   mimeType: string;
   projectId?: string;
   storageClass?: 'source' | 'font' | 'export';
+  kind?: 'source' | 'export' | 'thumbnail';
   type?: CreativeAsset['type'];
 }
 
@@ -336,21 +472,28 @@ const extensionFor = (name: string, mimeType: string): string => {
   return extension && /^[a-z0-9]+$/.test(extension) ? extension : (mimeType.split('/')[1] ?? 'bin');
 };
 
+const sha256 = async (file: Blob): Promise<string> => {
+  if (!globalThis.crypto?.subtle) throw new Error('Este navegador no admite hashes de assets.');
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
 export const uploadCreativeAsset = async (
   input: CreativeAssetUpload,
   client: SupabaseClient = supabase,
 ): Promise<RuntimeCreativeAsset> => {
   const { scope, user } = await getCreativeScope(client);
   const storageClass = input.storageClass ?? 'source';
-  const bucket = storageClass === 'export' ? CREATIVE_EXPORT_BUCKET : storageClass === 'font' ? CREATIVE_FONT_BUCKET : CREATIVE_SOURCE_BUCKET;
   const id = crypto.randomUUID();
-  const path = `${scope.organizationId}/${scope.workspaceId}/${scope.brandId}/${input.projectId ?? 'unassigned'}/${id}.${extensionFor(input.name, input.mimeType)}`;
-  const { error: uploadError } = await client.storage.from(bucket).upload(path, input.file, {
+  const contentHash = await sha256(input.file);
+  const kind = input.kind ?? (storageClass === 'export' ? 'export' : 'source');
+  const path = `org/${scope.organizationId}/workspace/${scope.workspaceId}/${kind}/${contentHash}-${id}.${extensionFor(input.name, input.mimeType)}`;
+  const { error: uploadError } = await client.storage.from(CREATIVE_BUCKET).upload(path, input.file, {
     contentType: input.mimeType,
     upsert: false,
   });
   if (uploadError) throw uploadError;
-  const { data: signed, error: signedError } = await client.storage.from(bucket).createSignedUrl(path, 3600);
+  const { data: signed, error: signedError } = await client.storage.from(CREATIVE_BUCKET).createSignedUrl(path, 3600);
   if (signedError || !signed?.signedUrl) throw signedError ?? new Error('No se pudo crear la URL privada del asset.');
   const now = new Date().toISOString();
   const parsed = CreativeAssetSchema.parse({
@@ -363,35 +506,36 @@ export const uploadCreativeAsset = async (
     storageClass,
     origin: storageClass === 'export' ? 'export' : 'upload',
     status: 'ready',
-    storagePath: `${bucket}/${path}`,
+    storagePath: path,
     mimeType: input.mimeType,
     sizeBytes: input.file.size,
     format: extensionFor(input.name, input.mimeType),
-    metadata: { bucket },
+    metadata: { bucket: CREATIVE_BUCKET },
     createdAt: now,
     updatedAt: now,
   });
-  // Keep the metadata row and Storage object atomic from the client's perspective.
+  // Remove the object when its metadata row cannot be created.
   const { error: metadataError } = await client.from('marketing_creative_assets').insert({
     id: parsed.id,
     organization_id: scope.organizationId,
     workspace_id: scope.workspaceId,
     brand_id: scope.brandId,
-    owner_user_id: user.id,
     project_id: input.projectId ?? null,
-    name: parsed.name,
-    type: parsed.type,
-    storage_class: parsed.storageClass,
-    origin: parsed.origin,
-    status: parsed.status,
+    kind,
+    status: 'active',
     storage_path: parsed.storagePath,
     mime_type: parsed.mimeType,
     size_bytes: parsed.sizeBytes,
-    format: parsed.format,
-    metadata: parsed.metadata,
+    content_hash: contentHash,
+    compressed: kind === 'thumbnail',
+    width: null,
+    height: null,
+    expires_at: kind === 'export' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null,
+    created_by: user.id,
+    updated_by: user.id,
   });
   if (metadataError) {
-    await client.storage.from(bucket).remove([path]);
+    await client.storage.from(CREATIVE_BUCKET).remove([path]);
     throw metadataError;
   }
   const assetRef = `${CREATIVE_ASSET_REFERENCE_PREFIX}${parsed.id}`;
@@ -432,6 +576,7 @@ export const uploadCreativeThumbnail = async (
     name: `thumbnail-${projectId}.png`,
     mimeType: 'image/png',
     storageClass: 'source',
+    kind: 'thumbnail',
     type: 'thumbnail',
   }, client);
 
@@ -455,16 +600,21 @@ export const listCreativeAssets = async (client: SupabaseClient = supabase): Pro
     .eq('organization_id', scope.organizationId).order('updated_at', { ascending: false });
   if (error) throw error;
   return Promise.all(((data ?? []) as Record<string, unknown>[]).map(async (row) => {
+    const kind = row.kind as 'source' | 'export' | 'thumbnail';
+    const storageClass = kind === 'export' ? 'export' : 'source';
     const asset = CreativeAssetSchema.parse({
       id: row.id, organizationId: row.organization_id, workspaceId: row.workspace_id, brandId: row.brand_id,
-      ownerUserId: row.owner_user_id, projectId: row.project_id, versionId: row.version_id, variantId: row.variant_id,
-      name: row.name, type: row.type, storageClass: row.storage_class, origin: row.origin, status: row.status,
+      projectId: row.project_id, versionId: null, variantId: null,
+      name: row.storage_path, type: kind === 'thumbnail' ? 'thumbnail' : row.mime_type?.toString().startsWith('image/') ? 'image' : 'other',
+      storageClass, origin: kind === 'export' ? 'export' : 'upload', status: row.status === 'active' ? 'ready' : 'archived',
       storagePath: row.storage_path, mimeType: row.mime_type, sizeBytes: row.size_bytes, checksum: row.checksum,
-      format: row.format, width: row.width, height: row.height, durationMs: row.duration_ms, platform: row.platform,
-      metadata: row.metadata, createdBy: row.created_by, updatedBy: row.updated_by, createdAt: row.created_at, updatedAt: row.updated_at,
+      format: row.storage_path?.toString().split('.').pop(), width: row.width, height: row.height,
+      metadata: { kind: row.kind, contentHash: row.content_hash, compressed: row.compressed },
+      createdBy: row.created_by, updatedBy: row.updated_by,
+      createdAt: normalizeSupabaseTimestamp(row.created_at, 'created_at'),
+      updatedAt: normalizeSupabaseTimestamp(row.updated_at, 'updated_at'),
     });
-    const [bucket, ...parts] = asset.storagePath.split('/');
-    const { data: signed } = await client.storage.from(bucket).createSignedUrl(parts.join('/'), 3600);
+    const { data: signed } = await client.storage.from(CREATIVE_BUCKET).createSignedUrl(asset.storagePath, 3600);
     const signedUrl = signed?.signedUrl ?? '';
     const assetRef = `${CREATIVE_ASSET_REFERENCE_PREFIX}${asset.id}`;
     if (signedUrl) signedAssetReferences.set(signedUrl, assetRef);
@@ -473,9 +623,12 @@ export const listCreativeAssets = async (client: SupabaseClient = supabase): Pro
 };
 
 export const removeCreativeAsset = async (asset: CreativeAsset, client: SupabaseClient = supabase): Promise<void> => {
-  const [bucket, ...parts] = asset.storagePath.split('/');
-  const { scope } = await getCreativeScope(client);
-  const { error } = await client.from('marketing_creative_assets').delete().eq('id', asset.id).eq('organization_id', scope.organizationId);
+  const { scope, user } = await getCreativeScope(client);
+  const { error } = await client.from('marketing_creative_assets').update({
+    status: 'orphaned',
+    orphaned_at: new Date().toISOString(),
+    updated_by: user.id,
+    updated_at: new Date().toISOString(),
+  }).eq('id', asset.id).eq('organization_id', scope.organizationId);
   if (error) throw error;
-  await client.storage.from(bucket).remove([parts.join('/')]);
 };

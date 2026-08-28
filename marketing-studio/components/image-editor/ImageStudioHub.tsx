@@ -4,7 +4,7 @@ import {
   Search,
   Image as ImageIcon,
   Copy,
-  Trash2,
+  Archive,
   Sparkles,
   Calendar,
   X,
@@ -20,7 +20,7 @@ import {
   getUserSavedImageProjectsAsync,
 } from '../../utils/imageProjectStorage';
 import {
-  deleteCreativeProject,
+  archiveCreativeProject,
   listCreativeProjects,
   saveCreativeProject,
   migrateLegacyCreativeProject,
@@ -120,7 +120,11 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
     let active = true;
     void refreshProjects().catch((error) => {
       if (active) {
-        setHubError(error instanceof Error ? error.message : 'No se pudo conectar con LoopDev.');
+        setHubError(error instanceof Error
+          ? import.meta.env.DEV
+            ? `${error.message} [${error.name}]`
+            : error.message
+          : 'No se pudo conectar con LoopDev.');
         setIsHydrating(false);
       }
     });
@@ -140,7 +144,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         title: `${target.title} (Copia)`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      }, { createNew: true });
       await refreshProjects();
     } catch (error) {
       setHubError(error instanceof Error ? error.message : 'No se pudo duplicar la creatividad.');
@@ -152,13 +156,26 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
     setPendingDelete(project);
   };
 
-  const performDeleteProject = async (project: ImageProject) => {
+  const performArchiveProject = async (project: ImageProject) => {
     try {
-      await deleteCreativeProject(project.id);
+      await archiveCreativeProject(project.id, project.updatedAt);
       await refreshProjects();
       setPendingDelete(null);
     } catch (error) {
-      setHubError(error instanceof Error ? error.message : 'No se pudo eliminar la creatividad.');
+      setHubError(error instanceof Error ? error.message : 'No se pudo archivar la creatividad.');
+    }
+  };
+
+  const handleReactivate = async (project: ImageProject, event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      await saveCreativeProject(
+        { ...project, creativeStatus: 'draft' },
+        { expectedUpdatedAt: project.updatedAt, changeSummary: 'Reactivado' },
+      );
+      await refreshProjects();
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo reactivar el diseño.');
     }
   };
 
@@ -168,8 +185,8 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         createBlankImageProjectDraft(
           selectedPresetId,
           newProjectTitle.trim() || undefined,
-          crypto.randomUUID(),
         ),
+        { createNew: true },
       );
       await refreshProjects();
       setIsCreateModalOpen(false);
@@ -187,7 +204,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         title: newProjectTitle.trim() || `${template.title} (Nuevo)`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      }, { createNew: true });
       await refreshProjects();
       setIsCreateModalOpen(false);
       onOpenProject(newProj.id);
@@ -223,22 +240,6 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
     }
   };
 
-  const archiveProject = async (project: ImageProject, event: React.MouseEvent) => {
-    event.stopPropagation();
-    try {
-      await saveCreativeProject(
-        { ...project, creativeStatus: project.creativeStatus === 'archived' ? 'draft' : 'archived' },
-        {
-          expectedUpdatedAt: project.updatedAt,
-          changeSummary: project.creativeStatus === 'archived' ? 'Reactivado' : 'Archivado',
-        },
-      );
-      await refreshProjects();
-    } catch (error) {
-      setHubError(error instanceof Error ? error.message : 'No se pudo actualizar el estado.');
-    }
-  };
-
   // Filtrado de proyectos
   const filteredProjects = projects.filter((proj) => {
     const matchesSearch =
@@ -251,7 +252,10 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
       proj.preset.id === selectedFormatFilter ||
       proj.preset.aspectRatio === selectedFormatFilter;
 
-    const matchesStatus = selectedStatusFilter === 'all' || (proj.creativeStatus ?? 'draft') === selectedStatusFilter;
+    const projectStatus = proj.creativeStatus ?? 'draft';
+    const matchesStatus = selectedStatusFilter === 'all'
+      ? projectStatus !== 'archived'
+      : projectStatus === selectedStatusFilter;
     return matchesSearch && matchesFormat && matchesStatus;
   });
 
@@ -465,17 +469,25 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       <Copy size={13} />
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={(e) => handleDelete(project, e)}
-                      title="Eliminar diseño"
-                      className="rounded-xl border border-rose-100 p-2 text-rose-500 transition-colors hover:bg-rose-50"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                    <button type="button" onClick={(e) => void archiveProject(project, e)} title={project.creativeStatus === 'archived' ? 'Reactivar diseño' : 'Archivar diseño'} className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-colors hover:bg-slate-100">
-                      {project.creativeStatus === 'archived' ? '↩' : '⌁'}
-                    </button>
+                    {project.creativeStatus !== 'archived' ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleDelete(project, e)}
+                        title="Archivar diseño"
+                        className="rounded-xl border border-amber-100 p-2 text-amber-600 transition-colors hover:bg-amber-50"
+                      >
+                        <Archive size={13} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => void handleReactivate(project, e)}
+                        title="Reactivar diseño"
+                        className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-colors hover:bg-slate-100"
+                      >
+                        ↩
+                      </button>
+                    )}
                   </div>
                 </div>
               </article>
@@ -739,20 +751,20 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         </div>
       )}
 
-      {/* MODAL DE CONFIRMACIÓN PARA ELIMINAR DISEÑO */}
+      {/* MODAL DE CONFIRMACIÓN PARA ARCHIVAR DISEÑO */}
       <ConfirmModal
         open={Boolean(pendingDelete)}
         variant="danger"
-        title="Eliminar diseño"
+        title="Archivar diseño"
         description={
           pendingDelete
-            ? `¿Seguro que deseas eliminar el diseño "${pendingDelete.title}"? Esta acción no se puede deshacer.`
+            ? `¿Archivar el diseño "${pendingDelete.title}"? Podrás reactivarlo después desde el filtro de archivados.`
             : undefined
         }
-        confirmLabel="Eliminar diseño"
+        confirmLabel="Archivar diseño"
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
-          if (pendingDelete) performDeleteProject(pendingDelete);
+          if (pendingDelete) performArchiveProject(pendingDelete);
         }}
       />
     </div>

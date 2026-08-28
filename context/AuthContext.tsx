@@ -5,8 +5,8 @@ import { supabase } from '@/marketing-studio/utils/supabaseClient';
 interface AuthContextValue {
   session: Session | null;
   user: User | null;
-  role: 'admin' | 'editor' | 'viewer' | null;
   isLoading: boolean;
+  authError: string | null;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
 }
@@ -15,51 +15,45 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState<AuthContextValue['role']>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
+    let initialized = false;
 
-    const loadRole = async (nextSession: Session | null) => {
+    const applySession = (nextSession: Session | null) => {
       if (!active) return;
       setSession(nextSession);
-      if (!nextSession) {
-        setRole(null);
-        setIsLoading(false);
-        return;
-      }
+      setAuthError(null);
+      setIsLoading(false);
+    };
+
+    const initialize = async () => {
       try {
-        const { data, error } = await supabase.rpc('get_my_marketing_role');
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        initialized = true;
+        applySession(data.session);
+      } catch (error) {
         if (!active) return;
-        if (error) console.error('Error loading Marketing Studio role:', error.message);
-        setRole(data === 'admin' || data === 'editor' || data === 'viewer' ? data : null);
-      } catch (err) {
-        console.error('Error fetching role:', err);
-      } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        initialized = true;
+        const message = error instanceof Error ? error.message : 'Unknown authentication error';
+        console.error('Error initializing Supabase authentication:', message);
+        setSession(null);
+        setAuthError('No se pudo inicializar la autenticación. Revisa la configuración de Supabase.');
+        setIsLoading(false);
       }
     };
 
-    supabase.auth.getSession().then(({ data }) => loadRole(data.session));
+    void initialize();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-        setSession(nextSession);
-        return;
-      }
-
-      if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setRole(null);
-        setIsLoading(false);
-        return;
-      }
-
-      // Background session changes update state gracefully without unmounting the UI
-      void loadRole(nextSession);
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!active) return;
+      setSession(nextSession);
+      if (!initialized) return;
+      setAuthError(null);
+      setIsLoading(false);
     });
 
     return () => {
@@ -71,16 +65,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = useMemo<AuthContextValue>(() => ({
     session,
     user: session?.user ?? null,
-    role,
     isLoading,
+    authError,
     signIn: async (email, password) => {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      return error ? { error: error.message } : {};
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        return error ? { error: error.message } : {};
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'No se pudo iniciar sesión.' };
+      }
     },
     signOut: async () => {
       await supabase.auth.signOut();
     },
-  }), [isLoading, role, session]);
+  }), [authError, isLoading, session]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

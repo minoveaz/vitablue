@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { ImageFormatPreset, ImagePreviewMode, ImageProject } from '../../types/imageStudio';
 import { useActiveInlineEditor } from './InlineEditorContext';
+import { formatRelativeSavedTime } from '../../utils/relativeTime';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -36,6 +37,7 @@ export interface ImageEditorToolbarProps {
   isInspectorOpen: boolean;
   lastSavedAt?: string;
   saveState?: 'saved' | 'saving' | 'recovery' | 'error';
+  onRetrySave?: () => void;
   onBackToHub?: () => void;
   onToggleInspector: () => void;
   onToggleSafeZones: () => void;
@@ -62,6 +64,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   isInspectorOpen,
   lastSavedAt,
   saveState,
+  onRetrySave,
   onBackToHub,
   onToggleInspector,
   onToggleSafeZones,
@@ -81,6 +84,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [damSaved, setDamSaved] = useState(false);
+  const [relativeSavedTime, setRelativeSavedTime] = useState(() => formatRelativeSavedTime(lastSavedAt));
 
   const exportRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
@@ -97,6 +101,13 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const updateRelativeSavedTime = () => setRelativeSavedTime(formatRelativeSavedTime(lastSavedAt));
+    updateRelativeSavedTime();
+    const interval = window.setInterval(updateRelativeSavedTime, 60_000);
+    return () => window.clearInterval(interval);
+  }, [lastSavedAt]);
 
   const handleSaveDam = () => {
     onSaveToDam();
@@ -139,6 +150,9 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
 
         {/* INDICADOR DINÁMICO DE AUTOGUARDADO */}
         <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
           className={`flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 border transition-all ${
             saveState === 'saving'
               ? 'text-amber-400 bg-amber-950/40 border-amber-500/30'
@@ -154,7 +168,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               : saveState === 'error'
               ? 'No se pudieron guardar los cambios'
               : lastSavedAt
-              ? `Guardado: ${new Date(lastSavedAt).toLocaleTimeString()}`
+              ? relativeSavedTime
               : 'Guardado'
           }
         >
@@ -176,8 +190,18 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               ? 'Restaurado'
               : saveState === 'error'
               ? 'Error al guardar'
-              : 'Guardado'}
+              : relativeSavedTime}
           </span>
+          {saveState === 'error' && onRetrySave && (
+            <button
+              type="button"
+              onClick={() => { onRetrySave(); }}
+              className="rounded px-1.5 py-0.5 font-sans text-[10px] font-bold text-rose-100 underline underline-offset-2 hover:bg-rose-900/60"
+              aria-label="Reintentar guardado"
+            >
+              Reintentar
+            </button>
+          )}
         </div>
       </div>
 

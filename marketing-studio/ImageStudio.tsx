@@ -21,7 +21,7 @@ import {
   getCreativeProject,
   saveCreativeProject,
   listCreativeProjects,
-  deleteCreativeProject,
+  archiveCreativeProject,
   CreativeStudioScopeError,
   uploadCreativeImage,
   uploadCreativeExport,
@@ -29,6 +29,7 @@ import {
   removeCreativeAsset,
   createCreativeThumbnailBlob,
   uploadCreativeThumbnail,
+  isCreativeProjectId,
 } from './utils/creativeStudioRemote';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
@@ -64,9 +65,10 @@ export const ImageStudio: React.FC = () => {
   const [remoteProject, setRemoteProject] = useState<ImageProject | undefined>(undefined);
 
   useEffect(() => {
-    if (!assetId) {
+    if (!assetId || !isCreativeProjectId(assetId)) {
       setRemoteProject(undefined);
       setPersistenceReady(true);
+      if (assetId) setSearchParams({}, { replace: true });
       return;
     }
     let active = true;
@@ -87,12 +89,14 @@ export const ImageStudio: React.FC = () => {
         if (!active) return;
         setPersistenceError(error instanceof CreativeStudioScopeError
           ? error.message
-          : 'No se pudo conectar con LoopDev.');
+          : import.meta.env.DEV && error instanceof Error
+            ? `No se pudo conectar con LoopDev (${error.name}).`
+            : 'No se pudo conectar con LoopDev.');
       });
     return () => {
       active = false;
     };
-  }, [assetId]);
+  }, [assetId, setSearchParams]);
 
   const persistRemoteProject = React.useCallback(
     (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) =>
@@ -113,6 +117,7 @@ export const ImageStudio: React.FC = () => {
   const editor = useImageProjectEditor(remoteProject, {
     persistenceReady,
     persistProject: persistRemoteProject,
+    reloadProject: getCreativeProject,
     onExported: (blob, format) => persistRemoteExport(blob, format),
   });
   const uploadImage = React.useCallback(
@@ -128,8 +133,11 @@ export const ImageStudio: React.FC = () => {
     title: `${project.title} (Copia)`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  }).then(() => undefined), []);
-  const deleteProject = React.useCallback((project: ImageProject) => deleteCreativeProject(project.id), []);
+  }, { createNew: true }).then(() => undefined), []);
+  const archiveProject = React.useCallback(
+    (project: ImageProject) => archiveCreativeProject(project.id, project.updatedAt),
+    [],
+  );
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [cropEditingLayerId, setCropEditingLayerId] = useState<string | null>(null);
   const [cropDraft, setCropDraft] = useState<ImageCrop>(DEFAULT_IMAGE_CROP);
@@ -357,7 +365,13 @@ export const ImageStudio: React.FC = () => {
 
   const handleLoadTemplate = (template: typeof editor.project) => {
     if (template.id !== editor.project.id) {
-      setSearchParams({ assetId: template.id });
+      editor.loadTemplate({
+        ...template,
+        id: editor.project.id,
+        createdAt: editor.project.createdAt,
+        updatedAt: new Date().toISOString(),
+      });
+      showToast('Plantilla cargada con éxito');
       return;
     }
     editor.loadTemplate(template);
@@ -561,7 +575,7 @@ export const ImageStudio: React.FC = () => {
           onDeleteImage={deleteImage}
           onListProjects={listProjects}
           onDuplicateProject={duplicateProject}
-          onDeleteProject={deleteProject}
+          onArchiveProject={archiveProject}
         />
       }
       toolbar={
@@ -575,6 +589,7 @@ export const ImageStudio: React.FC = () => {
           isInspectorOpen={isInspectorOpen}
           lastSavedAt={editor.lastSavedAt}
           saveState={editor.saveState}
+          onRetrySave={editor.retrySave}
           onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
           onToggleSafeZones={() => {

@@ -663,6 +663,9 @@ export interface ImageProject {
   carouselConfig?: CarouselConfig;
   /** Optional generated lower-layer composition; absent on legacy projects. */
   carouselBackground?: CarouselBackgroundComposition;
+  /** Server concurrency metadata; omitted by legacy/local projects. */
+  currentVersionNumber?: number;
+  autosaveRevision?: number;
   createdAt: string;
   updatedAt: string;
 }

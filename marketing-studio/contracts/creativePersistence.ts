@@ -44,18 +44,12 @@ const BinaryFreeJsonObjectSchema = JsonObjectSchema.superRefine((value, context)
 export const CreativeCompositionSchema = BinaryFreeJsonObjectSchema;
 export type CreativeComposition = z.infer<typeof CreativeCompositionSchema>;
 
-export const CreativeProjectStatusSchema = z.enum(['draft', 'ready', 'archived']);
+/** Values accepted by LoopDev's marketing_creative_projects.status check. */
+export const CreativeProjectStatusSchema = z.enum(['draft', 'in_review', 'approved', 'archived']);
 export type CreativeProjectStatus = z.infer<typeof CreativeProjectStatusSchema>;
 
-export const CreativeTypeSchema = z.enum([
-  'image',
-  'carousel',
-  'video',
-  'document',
-  'social_post',
-  'story',
-  'advertisement',
-]);
+/** Values accepted by LoopDev's marketing_creative_projects.type check. */
+export const CreativeTypeSchema = z.enum(['social_post', 'story', 'advertisement', 'banner', 'other']);
 export type CreativeType = z.infer<typeof CreativeTypeSchema>;
 
 export const CreativePlatformSchema = z.enum([
@@ -101,12 +95,12 @@ const CreativeAuditSchema = z.object({
 const CreativeProjectBaseSchema = z.object({
   id: CreativeIdSchema,
   name: z.string().trim().min(1).max(160),
-  creativeType: CreativeTypeSchema,
+  type: CreativeTypeSchema,
   status: CreativeProjectStatusSchema.default('draft'),
-  campaignId: CreativeIdSchema.nullable().optional(),
-  currentVersion: z.number().int().positive().default(1),
-  composition: CreativeCompositionSchema,
-  metadata: BinaryFreeJsonObjectSchema.default({}),
+  description: z.string().nullable().optional(),
+  currentVersionNumber: z.number().int().nonnegative().default(0),
+  autosaveRevision: z.number().int().nonnegative().default(0),
+  draftDocument: CreativeCompositionSchema.default({}),
 });
 
 export const CreativeProjectSchema = CreativeProjectBaseSchema
@@ -115,10 +109,10 @@ export const CreativeProjectSchema = CreativeProjectBaseSchema
 export type CreativeProject = z.infer<typeof CreativeProjectSchema>;
 
 export const CreateCreativeProjectInputSchema = CreativeProjectBaseSchema
-  .omit({ id: true, currentVersion: true })
+  .omit({ id: true, currentVersionNumber: true, autosaveRevision: true })
   .merge(CreativeProjectOwnershipSchema)
   .extend({
-    currentVersion: z.number().int().positive().default(1),
+    currentVersionNumber: z.number().int().nonnegative().default(0),
   });
 export type CreateCreativeProjectInput = z.infer<typeof CreateCreativeProjectInputSchema>;
 
@@ -127,7 +121,7 @@ export type CreateCreativeProjectInput = z.infer<typeof CreateCreativeProjectInp
  * token but never accept organization, workspace, or brand reassignment.
  */
 export const UpdateCreativeProjectInputSchema = CreativeProjectBaseSchema
-  .omit({ id: true, currentVersion: true })
+  .omit({ id: true, currentVersionNumber: true, autosaveRevision: true })
   .partial()
   .extend({ expectedUpdatedAt: CreativeTimestampSchema.optional() })
   .strict();
@@ -136,9 +130,8 @@ export type UpdateCreativeProjectInput = z.infer<typeof UpdateCreativeProjectInp
 export const CreativeProjectSnapshotSchema = z.object({
   schemaVersion: z.literal(1),
   name: z.string().trim().min(1).max(160),
-  creativeType: CreativeTypeSchema,
-  composition: CreativeCompositionSchema,
-  metadata: BinaryFreeJsonObjectSchema.default({}),
+  type: CreativeTypeSchema,
+  document: CreativeCompositionSchema,
 });
 export type CreativeProjectSnapshot = z.infer<typeof CreativeProjectSnapshotSchema>;
 
@@ -148,18 +141,20 @@ export const CreativeProjectVersionSchema = z.object({
   organizationId: CreativeIdSchema,
   workspaceId: CreativeIdSchema,
   brandId: CreativeIdSchema,
-  version: z.number().int().positive(),
-  snapshot: CreativeProjectSnapshotSchema,
+  versionNumber: z.number().int().positive(),
+  document: CreativeCompositionSchema,
   changeSummary: z.string().trim().max(500).nullable().optional(),
   createdBy: CreativeIdSchema.nullable().optional(),
+  updatedBy: CreativeIdSchema.nullable().optional(),
   createdAt: CreativeTimestampSchema,
+  updatedAt: CreativeTimestampSchema,
 });
 export type CreativeProjectVersion = z.infer<typeof CreativeProjectVersionSchema>;
 
 export const CreativeVariantKindSchema = z.enum(['format', 'platform', 'color', 'copy', 'cta', 'image']);
 export type CreativeVariantKind = z.infer<typeof CreativeVariantKindSchema>;
 
-export const CreativeVariantStatusSchema = z.enum(['draft', 'ready', 'archived']);
+export const CreativeVariantStatusSchema = z.enum(['draft', 'approved', 'archived']);
 export type CreativeVariantStatus = z.infer<typeof CreativeVariantStatusSchema>;
 
 export const CreativeProjectVariantSchema = z.object({
@@ -168,15 +163,15 @@ export const CreativeProjectVariantSchema = z.object({
   organizationId: CreativeIdSchema,
   workspaceId: CreativeIdSchema,
   brandId: CreativeIdSchema,
-  sourceVersion: z.number().int().positive(),
-  kind: CreativeVariantKindSchema,
+  projectVersionId: CreativeIdSchema,
+  key: z.string().trim().min(1).max(160),
+  channel: z.enum(['facebook', 'instagram', 'linkedin', 'tiktok', 'x', 'email', 'other']),
+  format: z.enum(['square', 'portrait', 'landscape', 'story', 'custom']),
   name: z.string().trim().min(1).max(160),
   status: CreativeVariantStatusSchema.default('draft'),
-  platform: CreativePlatformSchema.nullable().optional(),
-  aspectRatio: z.string().trim().regex(/^\d+(?::\d+)?$/).nullable().optional(),
   width: z.number().int().positive().nullable().optional(),
   height: z.number().int().positive().nullable().optional(),
-  overrides: BinaryFreeJsonObjectSchema.default({}),
+  payload: BinaryFreeJsonObjectSchema.default({}),
   createdBy: CreativeIdSchema.nullable().optional(),
   updatedBy: CreativeIdSchema.nullable().optional(),
   createdAt: CreativeTimestampSchema,

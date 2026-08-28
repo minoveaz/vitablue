@@ -94,10 +94,20 @@ marca; un workspace sin filas conserva el alcance organizativo de Loopdev.
 | `viewer` | sí | no | no | no | no |
 
 La plataforma puede conceder bypass a administradores de plataforma, pero las
-filas siguen filtrándose por organización. `editor` solo es una compatibilidad
-temporal con `public.user_roles`; no es un nuevo rol de Loopdev. En Fase 2 las
-operaciones usarán `marketing.read` y `marketing.manage` mediante RPC/RLS,
-nunca una decisión únicamente del cliente.
+filas siguen filtrándose por organización. En LoopDev, `owner` y `admin` pueden
+gestionar Marketing, mientras que `agent` puede leerlo. En Fase 2 las
+operaciones usan `marketing.read` y `marketing.manage` mediante RPC/RLS, nunca
+una decisión únicamente del cliente.
+
+### Retirada segura
+
+LoopDev no expone `DELETE` para proyectos creativos, versiones ni variantes:
+sus grants y políticas de `marketing.manage` permiten conservar el historial y
+actualizar el estado. VitaBlue retira un proyecto mediante `status = 'archived'`
+con `organization_id`, `workspace_id`, `brand_id` y `updated_at` esperados; los
+conflictos se muestran como una actualización concurrente, sin mostrar detalles
+del error remoto. Las referencias de assets permanecen protegidas por sus FKs y
+los assets solo se limpian mediante el flujo de huérfanos permitido por LoopDev.
 
 ## Implementación de Fase 1
 
@@ -123,19 +133,23 @@ debounce; no usa IndexedDB ni localStorage para proyectos, medios o recovery.
 VitaBlue es actualmente una SPA Vite: no existe un servidor HTTP ni un
 directorio de route handlers. Por eso no se añadió una falsa API `/api`; el
 repositorio es el contrato/adaptador que puede conectarse a una Edge Function
-o backend server-side cuando se defina esa frontera. La migración exige que la
-plataforma de tenancy publique `organization_id`, `workspace_id` y `brand_id`
-en los claims JWT. El `user_roles` actual solo tiene roles globales y no puede
-autorizar organizaciones por sí mismo.
+o backend server-side cuando se defina esa frontera. La integración local de
+LoopDev no publica un scope de tenancy en claims JWT: `getCreativeScope`
+consulta las filas visibles de `organization_memberships`, `workspaces`,
+`workspace_brands` y `brands`, siempre con el cliente publishable.
 
-La interfaz de VitaBlue obtiene el scope de los claims JWT
-(`organization_id`, `workspace_id`, `brand_id`) y delega autorización en RLS.
+La interfaz de VitaBlue solo usa esas filas para elegir una organización,
+workspace de Marketing y marca disponibles. La autorización real se mantiene
+en RLS y en `has_organization_permission` (`marketing.read` /
+`marketing.manage`); el cliente no decide permisos ni acepta claims
+`organization_id`, `workspace_id` o `brand_id`.
 Los uploads usan buckets privados y registran metadata en
 `marketing_creative_assets`; los paquetes ligeros contienen JSON sin binarios.
 La migración `20260827230000_create_marketing_creative_persistence.sql` provisiona
 la tabla, los tres buckets privados y las políticas tenant-scoped compatibles
-con LoopDev. El scope se lee del access-token JWT (claims raíz o
-`app_metadata`), nunca de `user_metadata` ni de `service_role`.
+con LoopDev. Requiere las tablas de Platform Core y sus funciones de membresía/
+permisos. El scope se resuelve con consultas RLS del usuario autenticado,
+nunca desde `user_metadata`, `service_role` ni claims personalizados.
 La importación de datos legacy solo se inicia mediante la acción explícita
 “Importar diseños del navegador”, permite seleccionar proyectos y conserva los
 originales para poder revertir.

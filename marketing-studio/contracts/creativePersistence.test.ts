@@ -26,8 +26,8 @@ const projectInput = {
   brandId,
   ownerUserId: userId,
   name: 'Campaña de viaje',
-  creativeType: 'carousel' as const,
-  composition: {
+  type: 'social_post' as const,
+  draftDocument: {
     schemaVersion: 1,
     presetId: 'instagram-carousel-portrait',
     layers: [{ id: 'title', type: 'text', props: { text: 'Viaja protegido' } }],
@@ -41,7 +41,8 @@ describe('Creative Studio persistence contracts', () => {
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data.status).toBe('draft');
-    expect(result.data.currentVersion).toBe(1);
+    expect(result.data.currentVersionNumber).toBe(0);
+    expect(result.data).not.toHaveProperty('autosaveRevision');
     expect(CreativeProjectSchema.safeParse({
       id: projectId,
       ...result.data,
@@ -53,7 +54,7 @@ describe('Creative Studio persistence contracts', () => {
   it('rejects inline data URLs in editable compositions', () => {
     const result = CreateCreativeProjectInputSchema.safeParse({
       ...projectInput,
-      composition: { layers: [{ props: { src: 'data:image/png;base64,AAAA' } }] },
+      draftDocument: { layers: [{ props: { src: 'data:image/png;base64,AAAA' } }] },
     });
 
     expect(result.success).toBe(false);
@@ -68,6 +69,12 @@ describe('Creative Studio persistence contracts', () => {
     expect(result.success).toBe(false);
   });
 
+  it('does not allow clients to set the server-owned autosave revision', () => {
+    expect(UpdateCreativeProjectInputSchema.safeParse({
+      autosaveRevision: 12,
+    }).success).toBe(false);
+  });
+
   it('validates immutable versions, variants, assets, and layer references', () => {
     expect(CreativeProjectVersionSchema.safeParse({
       id: versionId,
@@ -75,14 +82,10 @@ describe('Creative Studio persistence contracts', () => {
       organizationId,
       workspaceId,
       brandId,
-      version: 1,
-      snapshot: {
-        schemaVersion: 1,
-        name: 'Campaña de viaje',
-        creativeType: 'carousel',
-        composition: projectInput.composition,
-      },
+      versionNumber: 1,
+      document: projectInput.draftDocument,
       createdAt: now,
+      updatedAt: now,
     }).success).toBe(true);
 
     expect(CreativeProjectVariantSchema.safeParse({
@@ -91,8 +94,10 @@ describe('Creative Studio persistence contracts', () => {
       organizationId,
       workspaceId,
       brandId,
-      sourceVersion: 1,
-      kind: 'format',
+      projectVersionId: versionId,
+      key: 'instagram-portrait',
+      channel: 'instagram',
+      format: 'portrait',
       name: 'Instagram 4:5',
       aspectRatio: '4:5',
       width: 1080,
