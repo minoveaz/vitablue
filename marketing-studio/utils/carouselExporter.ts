@@ -1,10 +1,128 @@
 import { toPng } from 'html-to-image';
-import { ImageProject } from '../types/imageStudio';
-import { getCarouselGeometry, isCarouselProject } from './imageDesignSystem';
+import type { ImageProject } from '../types/imageStudio';
+import { getCarouselAspectRatio, getCarouselGeometry, isCarouselProject, validateCarouselGeometry } from './imageDesignSystem';
 
-const compressForZip = async (data: Uint8Array): Promise<Uint8Array> => {
+export type CarouselExportFormat = 'zip' | 'pdf' | 'png' | 'panorama' | 'full';
+
+export interface CarouselSliceRect {
+  index: number;
+  sourceX: number;
+  sourceY: 0;
+  width: number;
+  height: number;
+}
+
+/** Integer-only source rectangles prevent anti-aliased seams at slide cuts. */
+export const getCarouselSliceRect = (
+  plan: CarouselExportPlan,
+  index: number,
+): CarouselSliceRect => {
+  if (
+    !Number.isInteger(plan.slideCount) ||
+    !Number.isInteger(plan.slideWidth) ||
+    !Number.isInteger(plan.slideHeight) ||
+    plan.slideCount < 1 ||
+    plan.slideWidth < 1 ||
+    plan.slideHeight < 1 ||
+    plan.panoramaWidth !== plan.slideWidth * plan.slideCount ||
+    plan.panoramaHeight !== plan.slideHeight
+  ) {
+    throw new RangeError('Carousel export plan must use positive integer, gapless geometry');
+  }
+  if (!Number.isInteger(index) || index < 0 || index >= plan.slideCount) {
+    throw new RangeError(`Carousel slide index ${index} is out of bounds`);
+  }
+  return {
+    index,
+    sourceX: index * plan.slideWidth,
+    sourceY: 0,
+    width: plan.slideWidth,
+    height: plan.slideHeight,
+  };
+};
+
+export const isCarouselExportExcluded = (node: Node): boolean => {
+  let current: Node | null = node;
+  while (current) {
+    const element = current as Node & {
+      dataset?: { editorOverlay?: string; exportExclude?: string };
+      getAttribute?: (name: string) => string | null;
+    };
+    if (
+      element.dataset?.editorOverlay === 'true' ||
+      element.dataset?.exportExclude === 'true' ||
+      element.getAttribute?.('data-editor-overlay') === 'true' ||
+      element.getAttribute?.('data-export-exclude') === 'true'
+    ) {
+        return true;
+    }
+    current = current.parentNode;
+  }
+  return false;
+};
+
+/** Removes only editor-selection utility classes; user layer classes stay intact. */
+export const getCarouselExportSafeClassName = (className: string): string =>
+  className
+    .split(/\s+/)
+    .filter((token) => token && !token.startsWith('ring-') && token !== 'shadow-2xl')
+    .join(' ');
+
+/**
+ * Temporarily removes editor chrome that is applied as a style on a content
+ * layer (selection rings and handles). The DOM is restored even when the
+ * renderer rejects, so exporting never changes the editor state.
+ */
+const prepareCarouselExportDom = (root: HTMLElement): (() => void) => {
+  const hiddenNodes = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-editor-overlay="true"], [data-export-exclude="true"]'),
+  );
+  const hiddenStyles = hiddenNodes.map((node) => ({
+    node,
+    display: node.style.display,
+    visibility: node.style.visibility,
+  }));
+  hiddenNodes.forEach((node) => {
+    node.style.display = 'none';
+    node.style.visibility = 'hidden';
+  });
+
+  const selectedLayers = Array.from(root.querySelectorAll<HTMLElement>('.canvas-layer-item')).filter((layer) =>
+    Array.from(layer.classList).some((className) => className.startsWith('ring-')),
+  );
+  const selectionStyles = selectedLayers.map((layer) => ({
+    layer,
+    className: layer.className,
+    boxShadow: layer.style.boxShadow,
+  }));
+  selectedLayers.forEach((layer) => {
+    layer.className = getCarouselExportSafeClassName(layer.className);
+    layer.style.boxShadow = 'none';
+  });
+
+  return () => {
+    hiddenStyles.forEach(({ node, display, visibility }) => {
+      node.style.display = display;
+      node.style.visibility = visibility;
+    });
+    selectionStyles.forEach(({ layer, className, boxShadow }) => {
+      layer.className = className;
+      layer.style.boxShadow = boxShadow;
+    });
+  };
+};
+
+export const dataUrlToBytes = (dataUrl: string): Uint8Array => {
+  const encoded = dataUrl.split(',', 2)[1] ?? '';
+  const binary = atob(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return bytes;
+};
+
+const compressForZip = async (data: Uint8Array): Promise<{ data: Uint8Array; method: 0 | 8 }> => {
   if (typeof CompressionStream === 'undefined') {
-    throw new Error('ZIP compression is not supported by this browser');
+    return { data, method: 0 };
   }
 
   const stream = new CompressionStream('deflate');
@@ -17,7 +135,7 @@ const compressForZip = async (data: Uint8Array): Promise<Uint8Array> => {
   if (compressed.length < 6) {
     throw new Error('ZIP compression returned an invalid DEFLATE stream');
   }
-  return compressed.slice(2, -4);
+  return { data: compressed.slice(2, -4), method: 8 };
 };
 
 class SimpleZipBuilder {
@@ -35,7 +153,8 @@ class SimpleZipBuilder {
     for (const file of this.files) {
       const nameBytes = new TextEncoder().encode(file.name);
       const dataBytes = file.data;
-      const compressedData = await compressForZip(dataBytes);
+      const compressed = await compressForZip(dataBytes);
+      const compressedData = compressed.data;
       const crc = this.computeCRC32(dataBytes);
 
       // Local file header (30 bytes + name + data)
@@ -44,7 +163,7 @@ class SimpleZipBuilder {
       lv.setUint32(0, 0x04034b50, true); // Local file header signature
       lv.setUint16(4, 20, true); // Version needed to extract
       lv.setUint16(6, 0, true); // General purpose bit flag
-      lv.setUint16(8, 8, true); // Compression method (8 = deflate)
+      lv.setUint16(8, compressed.method, true);
       lv.setUint16(10, 0, true); // Mod time
       lv.setUint16(12, 0, true); // Mod date
       lv.setUint32(14, crc, true); // CRC-32
@@ -61,7 +180,7 @@ class SimpleZipBuilder {
       cv.setUint16(4, 20, true); // Version made by
       cv.setUint16(6, 20, true); // Version needed to extract
       cv.setUint16(8, 0, true); // General purpose bit flag
-      cv.setUint16(10, 8, true); // Compression method (8 = deflate)
+      cv.setUint16(10, compressed.method, true);
       cv.setUint16(12, 0, true); // Mod time
       cv.setUint16(14, 0, true); // Mod date
       cv.setUint32(16, crc, true); // CRC-32
@@ -113,6 +232,15 @@ class SimpleZipBuilder {
   }
 }
 
+/** Creates a standards-compliant ZIP without touching the DOM or triggering a download. */
+export const createCarouselZip = async (
+  files: ReadonlyArray<{ name: string; data: Uint8Array }>,
+): Promise<Blob> => {
+  const zip = new SimpleZipBuilder();
+  files.forEach((file) => zip.addFile(file.name, file.data));
+  return zip.generateZip();
+};
+
 // CRC32 Lookup Table
 const CRC32_TABLE = new Uint32Array(256);
 for (let i = 0; i < 256; i++) {
@@ -123,95 +251,77 @@ for (let i = 0; i < 256; i++) {
   CRC32_TABLE[i] = c;
 }
 
-/**
- * Pure client-side PDF Generator for multi-page slide documents (LinkedIn Carousels)
- */
-function createMinimalPdf(slicesJpg: string[], widthPt: number, heightPt: number): Blob {
-  const pdfChunks: string[] = [];
-  const xref: number[] = [];
+/** Pure client-side PDF generator for multi-page slide documents. */
+export function createCarouselPdf(
+  slicesJpg: string[],
+  widthPt: number,
+  heightPt: number,
+  imageWidth = Math.round(widthPt),
+  imageHeight = Math.round(heightPt),
+): Blob {
+  const encoder = new TextEncoder();
+  const chunks: Uint8Array[] = [encoder.encode('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n')];
+  const offsets: number[] = [0];
+  let byteOffset = chunks[0].length;
+  const pageIds: number[] = [];
+  const pageCount = slicesJpg.length;
+  const pagesId = 2;
+  let nextId = 3;
 
-  let currentBytePos = 0;
-  const addChunk = (str: string) => {
-    pdfChunks.push(str);
-    currentBytePos += new TextEncoder().encode(str).length;
+  const addObject = (id: number, header: string, body: Uint8Array | string, suffix = '\nendobj\n') => {
+    const bodyBytes = typeof body === 'string' ? encoder.encode(body) : body;
+    const prefix = encoder.encode(`${id} 0 obj\n${header}`);
+    const end = encoder.encode(suffix);
+    offsets[id] = byteOffset;
+    chunks.push(prefix, bodyBytes, end);
+    byteOffset += prefix.length + bodyBytes.length + end.length;
   };
 
-  addChunk('%PDF-1.4\n');
+  addObject(1, '<< /Type /Catalog /Pages 2 0 R >>\n', '');
 
-  const pageObjIds: number[] = [];
-  let objIndex = 1;
-
-  // Obj 1: Catalog
-  xref.push(currentBytePos);
-  addChunk(`${objIndex} 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);
-  objIndex++;
-
-  // Obj 2: Pages container (placeholder, will fill refs)
-  const pagesObjIndex = objIndex;
-  objIndex++;
-
-  const imageObjRefs: number[] = [];
-  const contentObjRefs: number[] = [];
-
-  // For each slide, create Image XObject, Content Stream, and Page Object
-  for (let i = 0; i < slicesJpg.length; i++) {
-    const rawDataUrl = slicesJpg[i];
-    const base64Data = rawDataUrl.replace(/^data:image\/jpeg;base64,/, '');
-    const binaryData = atob(base64Data);
-    const dataLength = binaryData.length;
-
-    // Image Object
-    const imgObjId = objIndex++;
-    imageObjRefs.push(imgObjId);
-    xref.push(currentBytePos);
-    addChunk(
-      `${imgObjId} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${Math.round(widthPt)} /Height ${Math.round(heightPt)} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${dataLength} >>\nstream\n`
+  const imageIds = slicesJpg.map(() => nextId++);
+  const contentIds = slicesJpg.map(() => nextId++);
+  slicesJpg.forEach((slice, index) => {
+    const image = dataUrlToBytes(slice);
+    addObject(
+      imageIds[index],
+      `<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${image.length} >>\nstream\n`,
+      image,
+      '\nendstream\nendobj\n',
     );
-    addChunk(binaryData);
-    addChunk('\nendstream\nendobj\n');
+    const content = `q\n${widthPt} 0 0 ${heightPt} 0 0 cm\n/Im${index + 1} Do\nQ\n`;
+    addObject(contentIds[index], `<< /Length ${encoder.encode(content).length} >>\nstream\n`, content, 'endstream\nendobj\n');
+    pageIds.push(nextId++);
+  });
 
-    // Content Stream (Draws image scaled to full page)
-    const contentObjId = objIndex++;
-    contentObjRefs.push(contentObjId);
-    const streamContent = `q\n${widthPt} 0 0 ${heightPt} 0 0 cm\n/Im${i + 1} Do\nQ\n`;
-    xref.push(currentBytePos);
-    addChunk(
-      `${contentObjId} 0 obj\n<< /Length ${streamContent.length} >>\nstream\n${streamContent}endstream\nendobj\n`
-    );
+  addObject(
+    pagesId,
+    `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pageCount} >>\n`,
+    '',
+  );
 
-    // Page Object
-    const pageObjId = objIndex++;
-    pageObjIds.push(pageObjId);
-    xref.push(currentBytePos);
-    addChunk(
-      `${pageObjId} 0 obj\n<< /Type /Page /Parent ${pagesObjIndex} 0 R /MediaBox [0 0 ${widthPt} ${heightPt}] /Resources << /XObject << /Im${i + 1} ${imgObjId} 0 R >> >> /Contents ${contentObjId} 0 R >>\nendobj\n`
+  pageIds.forEach((pageId, index) => {
+    addObject(
+      pageId,
+      `<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${widthPt} ${heightPt}] /Resources << /XObject << /Im${index + 1} ${imageIds[index]} 0 R >> >> /Contents ${contentIds[index]} 0 R >>\n`,
+      '',
     );
+  });
+
+  const startXref = byteOffset;
+  const xref = [`xref\n0 ${nextId}\n`, '0000000000 65535 f \n'];
+  for (let id = 1; id < nextId; id += 1) {
+    xref.push(`${String(offsets[id] ?? 0).padStart(10, '0')} 00000 n \n`);
   }
-
-  // Backfill Obj 2: Pages
-  const pagesKidsStr = pageObjIds.map((id) => `${id} 0 R`).join(' ');
-  const pagesStr = `${pagesObjIndex} 0 obj\n<< /Type /Pages /Kids [${pagesKidsStr}] /Count ${pageObjIds.length} >>\nendobj\n`;
-  // Insert Pages object at its recorded index
-  xref.splice(1, 0, currentBytePos);
-  addChunk(pagesStr);
-
-  // XRef Table
-  const startXref = currentBytePos;
-  addChunk('xref\n');
-  addChunk(`0 ${objIndex}\n`);
-  addChunk('0000000000 65535 f \n');
-  for (let i = 0; i < xref.length; i++) {
-    const offsetStr = String(xref[i]).padStart(10, '0');
-    addChunk(`${offsetStr} 00000 n \n`);
-  }
-
-  // Trailer
-  addChunk(`trailer\n<< /Size ${objIndex} /Root 1 0 R >>\nstartxref\n${startXref}\n%%EOF\n`);
-
-  return new Blob([new TextEncoder().encode(pdfChunks.join(''))], { type: 'application/pdf' });
+  const trailer = `trailer\n<< /Size ${nextId} /Root 1 0 R >>\nstartxref\n${startXref}\n%%EOF\n`;
+  chunks.push(encoder.encode(xref.join('')), encoder.encode(trailer));
+  return new Blob(chunks, { type: 'application/pdf' });
 }
 
 export interface CarouselExportResult {
+  panoramaBlob?: Blob;
+  /** Alias kept for callers that label the panorama as a PNG export. */
+  pngBlob?: Blob;
   zipBlob?: Blob;
   pdfBlob?: Blob;
   fullImageBlob?: Blob;
@@ -238,13 +348,16 @@ export const getCarouselExportPlan = (project: ImageProject): CarouselExportPlan
     project.carouselConfig?.enabled,
   );
 
-  return {
+  const plan = {
     slideCount: geometry.slideCount,
     slideWidth: project.carouselConfig?.slideWidth ?? geometry.slideWidth,
     slideHeight: project.carouselConfig?.slideHeight ?? geometry.slideHeight,
     panoramaWidth: (project.carouselConfig?.slideWidth ?? geometry.slideWidth) * geometry.slideCount,
     panoramaHeight: project.carouselConfig?.slideHeight ?? geometry.slideHeight,
   };
+  const validation = validateCarouselGeometry(plan, getCarouselAspectRatio(project.preset));
+  if (!validation.valid) throw new Error(`Invalid carousel geometry: ${validation.errors.join('; ')}`);
+  return plan;
 };
 
 export const getCarouselDownloadName = (
@@ -262,37 +375,49 @@ export const getCarouselDownloadName = (
 export async function exportCarouselSlices(
   canvasElement: HTMLElement,
   project: ImageProject,
-  targetFormat: 'zip' | 'pdf' | 'full' = 'zip'
-): Promise<void> {
+  targetFormat: CarouselExportFormat = 'zip',
+): Promise<CarouselExportResult> {
   const { slideCount, slideWidth, slideHeight, panoramaHeight } = getCarouselExportPlan(project);
-  const totalHeight = panoramaHeight;
 
   // 1. Render the full panoramic stage to PNG with html-to-image at native resolution
-  const fullDataUrl = await toPng(canvasElement, {
-    pixelRatio: 1,
-    cacheBust: true,
-    filter: (domNode) => {
-      // Ignore editor guides and overlays during capture
-      if (domNode instanceof HTMLElement) {
-        if (domNode.getAttribute('data-editor-overlay') === 'true') return false;
-      }
-      return true;
-    },
-  });
+  const restoreExportDom = prepareCarouselExportDom(canvasElement);
+  let fullDataUrl: string;
+  try {
+    fullDataUrl = await toPng(canvasElement, {
+      pixelRatio: 1,
+      cacheBust: true,
+      width: slideWidth * slideCount,
+      height: panoramaHeight,
+      canvasWidth: slideWidth * slideCount,
+      canvasHeight: panoramaHeight,
+      filter: (domNode) => {
+        return !isCarouselExportExcluded(domNode);
+      },
+    });
+  } finally {
+    restoreExportDom();
+  }
 
   // If full panoramic image is requested, download directly
-  if (targetFormat === 'full') {
+  if (targetFormat === 'full' || targetFormat === 'png' || targetFormat === 'panorama') {
+    const panoramaBlob = new Blob([dataUrlToBytes(fullDataUrl)], { type: 'image/png' });
     const link = document.createElement('a');
     link.download = getCarouselDownloadName(project, 'panorama', 'png');
     link.href = fullDataUrl;
     link.click();
-    return;
+    return { panoramaBlob, pngBlob: panoramaBlob, fullImageBlob: panoramaBlob, slicesCount: slideCount };
   }
 
   // 2. Load the captured image into an in-memory Canvas to perform slicing
   const img = new Image();
   await new Promise<void>((resolve, reject) => {
-    img.onload = () => resolve();
+    img.onload = () => {
+      if (img.naturalWidth !== slideWidth * slideCount || img.naturalHeight !== panoramaHeight) {
+        reject(new Error(`Panorama raster is ${img.naturalWidth}×${img.naturalHeight}; expected ${slideWidth * slideCount}×${panoramaHeight}`));
+        return;
+      }
+      resolve();
+    };
     img.onerror = reject;
     img.src = fullDataUrl;
   });
@@ -307,18 +432,22 @@ export async function exportCarouselSlices(
     sliceCanvas.height = slideHeight;
     const ctx = sliceCanvas.getContext('2d');
     if (!ctx) continue;
+    // A source and destination rectangle of equal integer dimensions should
+    // copy pixels verbatim, never interpolate neighbouring slide edges.
+    ctx.imageSmoothingEnabled = false;
 
-    // Draw slice area from source image
+    const rect = getCarouselSliceRect({ slideCount, slideWidth, slideHeight, panoramaWidth: slideWidth * slideCount, panoramaHeight }, idx);
+    // Draw integer-aligned source pixels; no overlap or interpolation at boundaries.
     ctx.drawImage(
       img,
-      idx * slideWidth, // sx
-      0, // sy
-      slideWidth, // sWidth
-      slideHeight, // sHeight
-      0, // dx
-      0, // dy
-      slideWidth, // dWidth
-      slideHeight // dHeight
+      rect.sourceX,
+      rect.sourceY,
+      rect.width,
+      rect.height,
+      0,
+      0,
+      rect.width,
+      rect.height,
     );
 
     if (targetFormat === 'pdf') {
@@ -335,19 +464,20 @@ export async function exportCarouselSlices(
       }
 
       const paddedIndex = String(idx + 1).padStart(2, '0');
-      const filename = `slide_${paddedIndex}_${slideWidth}x${totalHeight}.png`;
+      const filename = `slide_${paddedIndex}.png`;
       zip.addFile(filename, bytes);
     }
   }
 
   // 4. Download file according to requested format
   if (targetFormat === 'pdf') {
-    const pdfBlob = createMinimalPdf(jpgDataUrls, slideWidth * 0.75, slideHeight * 0.75);
+    const pdfBlob = createCarouselPdf(jpgDataUrls, slideWidth * 0.75, slideHeight * 0.75, slideWidth, slideHeight);
     const link = document.createElement('a');
     link.download = getCarouselDownloadName(project, 'linkedin_carousel', 'pdf');
     link.href = URL.createObjectURL(pdfBlob);
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 3000);
+    return { pdfBlob, slicesCount: jpgDataUrls.length };
   } else {
     const zipBlob = await zip.generateZip();
     const link = document.createElement('a');
@@ -355,5 +485,6 @@ export async function exportCarouselSlices(
     link.href = URL.createObjectURL(zipBlob);
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 3000);
+    return { zipBlob, slicesCount: slideCount };
   }
 }

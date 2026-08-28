@@ -1,5 +1,22 @@
 import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
+import type { CarouselBackgroundComposition } from './carouselBackgroundComposition';
+export { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from './carouselBackgroundComposition';
+export type {
+  CarouselBackgroundColorVariant,
+  CarouselBackgroundColorVariantDefinition,
+  CarouselBackgroundComposition,
+  CarouselBackgroundCompositionInput,
+  CarouselBackgroundContinuity,
+  CarouselBackgroundLayer,
+  CarouselBackgroundLayerMetadata,
+  CarouselBackgroundMask,
+  CarouselBackgroundSafeZone,
+  CarouselBackgroundShadow,
+  CarouselBackgroundShapeType,
+  CarouselBackgroundTrajectory,
+  CarouselBackgroundTrajectoryType,
+} from './carouselBackgroundComposition';
 
 export interface ImageFormatPreset {
   id: string;
@@ -21,6 +38,72 @@ export interface ImageFormatPreset {
 export type CarouselPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter';
 
 export type CarouselSlideRole = 'hook' | 'content' | 'comparison' | 'proof' | 'cta';
+
+/** Supported semantic aspect ratios for social carousel variants. */
+export type CarouselAspectRatio = '1:1' | '4:5' | '9:16' | '16:9';
+export const CAROUSEL_ASPECT_RATIOS: readonly CarouselAspectRatio[] = ['1:1', '4:5', '9:16', '16:9'];
+
+/** Native slide dimensions used by the composition and export engines. */
+export const CAROUSEL_ASPECT_RATIO_DIMENSIONS: Readonly<
+  Record<CarouselAspectRatio, { width: number; height: number }>
+> = {
+  '1:1': { width: 1080, height: 1080 },
+  '4:5': { width: 1080, height: 1350 },
+  '9:16': { width: 1080, height: 1920 },
+  // 608px keeps the common 1080px social raster integer-aligned.
+  '16:9': { width: 1080, height: 608 },
+};
+
+export type CarouselVariantKind = 'layout' | 'color' | 'copy' | 'cta' | 'image';
+
+export interface CarouselCreativeVariant {
+  id: string;
+  kind: CarouselVariantKind;
+  label: string;
+  description: string;
+  layoutId?: string;
+  styleVariant?: ImageStyleVariantId;
+  copyPreset?: 'educational' | 'direct' | 'proof';
+  ctaText?: string;
+  imageTreatment?: ImageLayer['filter'];
+}
+
+export type CarouselLayoutSlot =
+  | 'eyebrow'
+  | 'title'
+  | 'body'
+  | 'badge'
+  | 'media'
+  | 'metric'
+  | 'cta'
+  | 'decorative';
+
+export interface CarouselElementSlot {
+  id: string;
+  type: CarouselLayoutSlot;
+  required?: boolean;
+  continuity?: 'local' | 'start' | 'middle' | 'end' | 'any';
+  maxLines?: number;
+}
+
+export interface CarouselSlideLayout {
+  id: string;
+  role: CarouselSlideRole;
+  label: string;
+  slots: CarouselElementSlot[];
+}
+
+export interface CarouselLayout {
+  id: string;
+  name: string;
+  description: string;
+  category: 'educational' | 'conversion' | 'comparison' | 'editorial';
+  minSlides: number;
+  maxSlides: number;
+  recommendedSlides: number[];
+  slides: CarouselSlideLayout[];
+  supportedPlatforms: CarouselPlatform[];
+}
 
 export type ImagePreviewMode = 'normal' | 'focus' | 'guides' | 'overview';
 
@@ -45,6 +128,8 @@ export interface CarouselConfig {
   slideCount: number;
   slideWidth: number;
   slideHeight: number;
+  /** Layout catalog entry used to compose the carousel (optional for legacy projects). */
+  layoutId?: string;
   currentSlideIndex: number;
   slides: CarouselSlideMetadata[];
   showSlideDividers: boolean;
@@ -81,7 +166,7 @@ export interface CanvasGuideSettings {
   customHorizontalGuides: number[];
 }
 
-export type ImageStyleVariantId = 'ocean' | 'gold' | 'mint' | 'midnight';
+export type ImageStyleVariantId = 'ocean' | 'gold' | 'mint' | 'midnight' | 'white';
 
 export interface ImageTextFit {
   mode: 'auto' | 'fixed';
@@ -564,6 +649,8 @@ export interface CanvasBackground {
 export interface ImageProject {
   id: string;
   title: string;
+  /** Remote Creative Project lifecycle state. */
+  creativeStatus?: 'draft' | 'ready' | 'archived';
   preset: ImageFormatPreset;
   background: CanvasBackground;
   layers: ImageLayer[];
@@ -574,6 +661,8 @@ export interface ImageProject {
   carouselPages?: number;
   currentSlide?: number;
   carouselConfig?: CarouselConfig;
+  /** Optional generated lower-layer composition; absent on legacy projects. */
+  carouselBackground?: CarouselBackgroundComposition;
   createdAt: string;
   updatedAt: string;
 }

@@ -12,13 +12,9 @@ import {
   Trash2,
 } from 'lucide-react';
 import { CURATED_STOCK_PHOTOS, STOCK_CATEGORIES } from '../../../data/stockPhotos';
-import {
-  getStoredImageMediaAsync,
-  IMAGE_MEDIA_UPDATED_EVENT,
-  deleteStoredImageMediaAsync,
-  saveUploadedImageMediaAsync,
-  UploadedImageMedia,
-} from '../../../utils/imageMediaStorage';
+import type { RuntimeCreativeAsset } from '../../../utils/creativeStudioRemote';
+
+type RemoteImageMedia = RuntimeCreativeAsset;
 
 export interface ImageStudioMediaDrawerProps {
   onInsertImageLayer: (
@@ -31,11 +27,17 @@ export interface ImageStudioMediaDrawerProps {
     }
   ) => void;
   onSetBackgroundImage?: (imageUrl: string) => void;
+  onUploadImage?: (file: File) => Promise<RemoteImageMedia>;
+  onListImages?: () => Promise<RemoteImageMedia[]>;
+  onDeleteImage?: (asset: RemoteImageMedia) => Promise<void>;
 }
 
 export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
   onInsertImageLayer,
   onSetBackgroundImage,
+  onUploadImage,
+  onListImages,
+  onDeleteImage,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -43,15 +45,19 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
   const [selectedClipShape, setSelectedClipShape] = useState<'squircle' | 'circle' | 'rounded-2xl' | 'none' | 'hexagon'>('rounded-2xl');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [userMedia, setUserMedia] = useState<UploadedImageMedia[]>([]);
+  const [userMedia, setUserMedia] = useState<RemoteImageMedia[]>([]);
   const [isHydrating, setIsHydrating] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
     const refreshMedia = async () => {
+      if (!onListImages) {
+        setIsHydrating(false);
+        return;
+      }
       try {
-        const media = await getStoredImageMediaAsync();
+        const media = await onListImages();
         if (active) {
           setUserMedia(media);
           setIsHydrating(false);
@@ -61,15 +67,10 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
       }
     };
     void refreshMedia();
-    const handleMediaUpdate = () => void refreshMedia();
-    window.addEventListener(IMAGE_MEDIA_UPDATED_EVENT, handleMediaUpdate);
-    window.addEventListener('storage', handleMediaUpdate);
     return () => {
       active = false;
-      window.removeEventListener(IMAGE_MEDIA_UPDATED_EVENT, handleMediaUpdate);
-      window.removeEventListener('storage', handleMediaUpdate);
     };
-  }, []);
+  }, [onListImages]);
 
   const categoryCounts = STOCK_CATEGORIES.reduce((counts, category) => {
     counts.set(
@@ -99,7 +100,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
     const q = searchQuery.toLowerCase().trim();
     if (!q) return userMedia;
     return userMedia.filter((media) =>
-      [media.title, media.fileName].some((value) => value.toLowerCase().includes(q)),
+      [media.name, media.storagePath].some((value) => value.toLowerCase().includes(q)),
     );
   }, [searchQuery, userMedia]);
 
@@ -107,26 +108,13 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
     setUploadError(message);
   };
 
-  const insertUploadedImage = async (file: File, dataUrl: string) => {
-    const result = await saveUploadedImageMediaAsync(dataUrl, {
-      title: file.name.replace(/\.[^/.]+$/, ''),
-      fileName: file.name,
-      mimeType: file.type,
-    });
-    if (!result.media) {
-      reportUploadError(result.error ?? 'No se pudo guardar la imagen.');
-      // Keep the editor's original insertion behavior even when browser
-      // storage is full; the image can still be used in the current project.
-      onInsertImageLayer(dataUrl, {
-        title: file.name.replace(/\.[^/.]+$/, ''),
-        clipShape: selectedClipShape,
-      });
-      return;
-    }
-    setUploadError(result.warning ?? null);
-    setUserMedia(await getStoredImageMediaAsync());
-    onInsertImageLayer(result.media.dataUrl, {
-      title: result.media.title,
+  const insertUploadedImage = async (file: File) => {
+    if (!onUploadImage) throw new Error('Storage remoto no disponible.');
+    const result = await onUploadImage(file);
+    setUploadError(null);
+    setUserMedia((current) => [result, ...current.filter((item) => item.id !== result.id)]);
+    onInsertImageLayer(result.signedUrl, {
+      title: result.name,
       clipShape: selectedClipShape,
     });
   };
@@ -139,7 +127,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
       try {
         const dataUrl = typeof event.target?.result === 'string' ? event.target.result : '';
         if (dataUrl) {
-          await insertUploadedImage(file, dataUrl);
+          await insertUploadedImage(file);
         } else {
           reportUploadError('No se pudo leer la imagen.');
         }
@@ -361,11 +349,11 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
                   className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1624] transition-all hover:border-brand-cyan/60 hover:shadow-lg"
                 >
                   <div className="relative h-32 w-full overflow-hidden bg-slate-950">
-                    <img src={media.dataUrl} alt={media.title} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                    <img src={media.signedUrl} alt={media.name} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                     <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
                       <button
                         type="button"
-                        onClick={() => onInsertImageLayer(media.dataUrl, { title: media.title, clipShape: selectedClipShape })}
+                        onClick={() => onInsertImageLayer(media.signedUrl, { title: media.name, clipShape: selectedClipShape })}
                         className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary py-1.5 text-[11px] font-black text-white shadow-md transition-colors hover:bg-teal-600"
                       >
                         <Sparkles className="size-3 text-brand-cyan" />
@@ -374,7 +362,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
                       {onSetBackgroundImage && (
                         <button
                           type="button"
-                          onClick={() => onSetBackgroundImage(media.dataUrl)}
+                          onClick={() => onSetBackgroundImage(media.signedUrl)}
                           className="w-full rounded-lg border border-slate-700/80 bg-slate-900/90 py-1 text-[10px] font-bold text-slate-300 transition-colors hover:bg-slate-800"
                         >
                           🖼️ Poner de fondo
@@ -382,7 +370,7 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
                       )}
                       <button
                         type="button"
-                        onClick={() => void deleteStoredImageMediaAsync(media.id)}
+                        onClick={() => void (onDeleteImage ? onDeleteImage(media).then(() => setUserMedia((current) => current.filter((item) => item.id !== media.id)) ) : undefined)}
                         className="flex w-full items-center justify-center gap-1 rounded-lg border border-rose-900/70 bg-slate-900/90 py-1 text-[10px] font-bold text-rose-300 transition-colors hover:bg-rose-950/70"
                       >
                         <Trash2 className="size-3" />
@@ -391,8 +379,8 @@ export const ImageStudioMediaDrawer: React.FC<ImageStudioMediaDrawerProps> = ({
                     </div>
                   </div>
                   <div className="border-t border-slate-800/80 bg-[#080e18] p-2">
-                    <strong className="block truncate text-[11px] font-bold text-slate-200" title={media.title}>{media.title}</strong>
-                    <span className="mt-0.5 block truncate text-[9px] text-slate-400">{media.fileName}</span>
+                    <strong className="block truncate text-[11px] font-bold text-slate-200" title={media.name}>{media.name}</strong>
+                    <span className="mt-0.5 block truncate text-[9px] text-slate-400">{media.name}</span>
                   </div>
                 </div>
               ))}

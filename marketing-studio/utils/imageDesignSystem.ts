@@ -6,6 +6,9 @@ import {
   ImageStyleVariantId,
   ImageTextFit,
   CarouselGeometry,
+  CAROUSEL_ASPECT_RATIOS,
+  CAROUSEL_ASPECT_RATIO_DIMENSIONS,
+  CarouselAspectRatio,
 } from '../types/imageStudio';
 import {
   getLayerLayoutConstraints,
@@ -41,6 +44,64 @@ export const isCarouselProject = (
   preset: ImageFormatPreset,
   carouselEnabled?: boolean,
 ): boolean => Boolean(preset.isCarousel || carouselEnabled);
+
+/** Returns the canonical carousel ratio, accepting legacy "(Multi)" labels. */
+export const getCarouselAspectRatio = (preset: ImageFormatPreset): CarouselAspectRatio | undefined => {
+  const ratio = preset.aspectRatio.replace(/\s*\(Multi\)\s*$/, '');
+  return (CAROUSEL_ASPECT_RATIOS as readonly string[]).includes(ratio)
+    ? (ratio as CarouselAspectRatio)
+    : undefined;
+};
+
+export interface CarouselGeometryValidation {
+  valid: boolean;
+  errors: string[];
+}
+
+/**
+ * Validates integer, gapless panorama geometry before a render/export.
+ * Fractional dimensions are rejected because they can create one-pixel seams.
+ */
+export const validateCarouselGeometry = (
+  geometry: CarouselGeometry,
+  expectedAspectRatio?: CarouselAspectRatio,
+): CarouselGeometryValidation => {
+  const errors: string[] = [];
+  const values = [geometry.slideCount, geometry.slideWidth, geometry.slideHeight, geometry.panoramaWidth, geometry.panoramaHeight];
+  if (!values.every(Number.isInteger)) errors.push('Carousel dimensions must be integers');
+  if (geometry.slideCount < 1 || geometry.slideWidth < 1 || geometry.slideHeight < 1) {
+    errors.push('Carousel dimensions must be positive');
+  }
+  if (geometry.panoramaWidth !== geometry.slideWidth * geometry.slideCount) {
+    errors.push('Panorama width must equal slide width multiplied by slide count');
+  }
+  if (geometry.panoramaHeight !== geometry.slideHeight) {
+    errors.push('Panorama height must equal slide height');
+  }
+  if (expectedAspectRatio) {
+    const dimensions = CAROUSEL_ASPECT_RATIO_DIMENSIONS[expectedAspectRatio];
+    const expected = dimensions.width / dimensions.height;
+    const actual = geometry.slideWidth / geometry.slideHeight;
+    if (Math.abs(actual - expected) > 0.002) errors.push(`Slide aspect ratio must be ${expectedAspectRatio}`);
+  }
+  return { valid: errors.length === 0, errors };
+};
+
+/** Builds a native, integer-aligned geometry for any supported carousel ratio. */
+export const getCarouselGeometryForAspectRatio = (
+  aspectRatio: CarouselAspectRatio,
+  slideCount = 5,
+): CarouselGeometry => {
+  const dimensions = CAROUSEL_ASPECT_RATIO_DIMENSIONS[aspectRatio];
+  const count = Math.max(1, Math.round(slideCount));
+  return {
+    slideCount: count,
+    slideWidth: dimensions.width,
+    slideHeight: dimensions.height,
+    panoramaWidth: dimensions.width * count,
+    panoramaHeight: dimensions.height,
+  };
+};
 
 export const getCarouselGeometry = (
   preset: ImageFormatPreset,
@@ -511,6 +572,7 @@ const STYLE_VARIANTS: Record<
   gold: { primary: '#EE9B00', accent: '#CA6702', text: '#001219', soft: '#FFF3D6', shadow: 'glow_gold' },
   mint: { primary: '#94D2BD', accent: '#005F73', text: '#001219', soft: '#E7F8F2', shadow: 'soft' },
   midnight: { primary: '#001219', accent: '#94D2BD', text: '#FFFFFF', soft: '#0B2831', shadow: 'deep' },
+  white: { primary: '#005F73', accent: '#EE9B00', text: '#001219', soft: '#F8FAFC', shadow: 'soft' },
 };
 
 export const applyLayerStyleVariant = (layer: ImageLayer, variantId: ImageStyleVariantId): ImageLayer => {

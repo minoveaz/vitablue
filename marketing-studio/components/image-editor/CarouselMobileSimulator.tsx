@@ -12,21 +12,41 @@ import {
   Music2,
   CheckCircle2,
   Sparkles,
+  Palette,
+  Type,
+  MousePointerClick,
+  Image as ImageIcon,
+  Monitor,
 } from 'lucide-react';
-import { ImageLayer, ImageProject } from '../../types/imageStudio';
+import type {
+  CarouselAspectRatio,
+  CarouselCreativeVariant,
+  ImageLayer,
+  ImageProject,
+} from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 import { getCarouselGeometry, isCarouselProject } from '../../utils/imageDesignSystem';
+import {
+  CAROUSEL_ASPECT_RATIOS,
+  CAROUSEL_CREATIVE_VARIANTS,
+} from '../../utils/carouselCreativeVariants';
 
 export interface CarouselMobileSimulatorProps {
   isOpen: boolean;
   onClose: () => void;
   project: ImageProject;
+  onApplyVariant?: (variant: CarouselCreativeVariant) => void;
+  onAdaptAspectRatio?: (aspectRatio: CarouselAspectRatio) => void;
+  comparisonBefore?: ImageProject | null;
 }
 
 export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = ({
   isOpen,
   onClose,
   project,
+  onApplyVariant,
+  onAdaptAspectRatio,
+  comparisonBefore,
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [platformMode, setPlatformMode] = useState<'instagram' | 'tiktok' | 'linkedin'>('instagram');
@@ -35,6 +55,8 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchDelta, setTouchDelta] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showComparison, setShowComparison] = useState(Boolean(comparisonBefore));
+  const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
 
   const isPanoramicCarousel = isCarouselProject(project.preset, project.carouselConfig?.enabled);
   const carouselConfig = project.carouselConfig;
@@ -84,6 +106,10 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
       setPlatformMode('instagram');
     }
   }, [project.carouselConfig?.platform, project.preset.carouselPlatform, project.preset.id]);
+
+  useEffect(() => {
+    setShowComparison(Boolean(comparisonBefore));
+  }, [comparisonBefore]);
 
   if (!isOpen) return null;
 
@@ -139,7 +165,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
 
   // Canvas background snapshot color / style
   const bgStyle = {
-    background: project.background.gradient ?? project.background.color ?? '#001219',
+    background: project.background.gradient ?? project.background.color ?? 'var(--color-secondary)',
   };
 
   const getFilterStyle = (layer: ImageLayer) => {
@@ -160,7 +186,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
     if (layer.shadowPreset === 'deep') return '0 25px 50px -12px rgba(0, 0, 0, 0.7)';
     if (layer.shadowPreset === 'glow_teal') return '0 0 25px rgba(148, 210, 189, 0.6), 0 0 10px rgba(0, 95, 115, 0.8)';
     if (layer.shadowPreset === 'glow_gold') return '0 0 25px rgba(238, 155, 0, 0.6), 0 0 10px rgba(202, 103, 2, 0.8)';
-    if (layer.shadowPreset === 'neon') return '0 0 5px #00FFFF, 0 0 20px #005F73, 0 0 40px #001219';
+    if (layer.shadowPreset === 'neon') return '0 0 5px var(--color-pastel), 0 0 20px var(--color-primary), 0 0 40px var(--color-secondary)';
     if (layer.shadowBlur || layer.shadowColor) {
       return `${layer.shadowOffsetX ?? 0}px ${layer.shadowOffsetY ?? 4}px ${layer.shadowBlur ?? 10}px ${layer.shadowColor ?? 'rgba(0,0,0,0.4)'}`;
     }
@@ -183,26 +209,95 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
     }
   };
 
+  const getPlatformLabel = () => {
+    if (platformMode === 'tiktok') return 'TikTok Photo Mode';
+    if (platformMode === 'linkedin') return 'LinkedIn documento';
+    return 'Instagram carrusel';
+  };
+
+  const currentAspectRatio: CarouselAspectRatio | undefined = CAROUSEL_ASPECT_RATIOS.find((ratio) => {
+    const [width, height] = ratio.id.split(':').map(Number);
+    return Math.abs(slideWidth / slideHeight - width / height) < 0.03;
+  })?.id;
+
+  const getVariants = (kind: CarouselCreativeVariant['kind']) =>
+    CAROUSEL_CREATIVE_VARIANTS.filter((variant) => variant.kind === kind);
+
+  const applyVariant = (variant: CarouselCreativeVariant) => {
+    setActiveVariantId(variant.id);
+    onApplyVariant?.(variant);
+    setShowComparison(true);
+  };
+
+  const renderComparisonSlide = (snapshot: ImageProject, label: string) => {
+    const snapshotGeometry = getCarouselGeometry(
+      snapshot.preset,
+      snapshot.carouselConfig?.slideCount,
+      snapshot.carouselConfig?.enabled,
+    );
+    const snapshotSlide = Math.min(currentSlide, snapshotGeometry.slideCount - 1);
+    const width = snapshot.carouselConfig?.slideWidth ?? snapshotGeometry.slideWidth;
+    const height = snapshot.carouselConfig?.slideHeight ?? snapshotGeometry.slideHeight;
+    const slideLayers = snapshot.layers.filter((layer) => {
+      const owner = layer.props?.slideIndex;
+      return typeof owner === 'number' ? owner === snapshotSlide : snapshotSlide === 0;
+    });
+
+    return (
+      <div className="min-w-0">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
+          <span className="font-mono text-[9px] text-slate-500">{snapshot.preset.aspectRatio}</span>
+        </div>
+        <div
+          className="relative mx-auto w-full overflow-hidden rounded-xl border border-slate-700 bg-primary-dark"
+          style={{ aspectRatio: `${width} / ${height}` }}
+          aria-label={`${label}: slide ${snapshotSlide + 1}`}
+        >
+          <div className="absolute inset-0" style={{ background: snapshot.background.gradient ?? snapshot.background.color }}>
+            {slideLayers.map((layer) => (
+              <div
+                key={layer.id}
+                className="pointer-events-none absolute overflow-hidden text-[4px] leading-tight text-white"
+                style={{
+                  left: `${(layer.position.x - snapshotSlide * 100)}%`,
+                  top: `${layer.position.y}%`,
+                  width: layer.width ? `${Math.max(8, (layer.width / width) * 100)}%` : '24%',
+                  height: layer.height ? `${Math.max(5, (layer.height / height) * 100)}%` : '14%',
+                  transform: `translate(-50%, -50%) scale(${layer.scale ?? 1})`,
+                  opacity: layer.opacity ?? 1,
+                  zIndex: layer.zIndex,
+                }}
+              >
+                <ImageLayerBlockRenderer layer={layer} brandTokens={snapshot.brandTokens} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fadeIn select-none">
       {/* Container Modal */}
-      <div className="relative flex flex-col md:flex-row items-center gap-6 max-w-4xl w-full justify-center">
+      <div className="relative flex w-full max-w-5xl flex-col items-center justify-center gap-5 md:flex-row md:items-start">
         
         {/* SIMULADOR SMARTPHONE */}
         <div className="relative flex flex-col items-center">
           {/* Marco iPhone Mockup */}
-          <div className="relative w-[340px] sm:w-[380px] h-[680px] sm:h-[720px] rounded-[3rem] border-[10px] border-slate-800 bg-black shadow-[0_25px_70px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col">
+          <div className="relative flex aspect-[9/19] w-full max-w-[22rem] flex-col overflow-hidden rounded-[2.5rem] border-8 border-slate-800 bg-black shadow-2xl">
             
             {/* Dynamic Island / Notch */}
             <div className="absolute top-2 inset-x-0 flex justify-center z-50 pointer-events-none">
-              <div className="h-4.5 w-24 rounded-full bg-black border border-slate-800/80 flex items-center justify-end px-2">
+              <div className="flex h-5 w-24 items-center justify-end rounded-full border border-slate-800/80 bg-black px-2">
                 <div className="size-2 rounded-full bg-slate-900 border border-slate-700" />
               </div>
             </div>
 
             {/* BARRA SUPERIOR DE RED SOCIAL SEGÚN PLATAFORMA */}
             {platformMode === 'instagram' && (
-              <div className="pt-8 px-4 pb-2 bg-black flex items-center justify-between z-40 text-white">
+              <div className="z-40 flex items-center justify-between bg-black px-4 pb-2 pt-8 text-white">
                 <div className="flex items-center gap-2">
                   <div className="size-8 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[1.5px]">
                     <div className="size-full rounded-full bg-black flex items-center justify-center text-[10px] font-bold">
@@ -221,16 +316,16 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
             )}
 
             {platformMode === 'tiktok' && (
-              <div className="pt-8 px-4 pb-1 bg-transparent flex items-center justify-center gap-6 z-40 text-white text-xs font-bold drop-shadow">
+              <div className="z-40 flex items-center justify-center gap-6 bg-black/30 px-4 pb-2 pt-8 text-xs font-bold text-white drop-shadow">
                 <span className="text-slate-400">Siguiendo</span>
                 <span className="border-b-2 border-white pb-0.5">Para ti</span>
               </div>
             )}
 
             {platformMode === 'linkedin' && (
-              <div className="pt-8 px-3 pb-2 bg-slate-900 flex items-center justify-between z-40 text-white border-b border-slate-800">
+              <div className="z-40 flex items-center justify-between border-b border-slate-800 bg-slate-900 px-3 pb-2 pt-8 text-white">
                 <div className="flex items-center gap-2">
-                  <div className="size-7 rounded-md bg-[#005F73] flex items-center justify-center text-[10px] font-bold text-white">
+                  <div className="flex size-7 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-white">
                     in
                   </div>
                   <div>
@@ -348,7 +443,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                     <button
                       type="button"
                       onClick={() => setIsLiked(!isLiked)}
-                      className="flex flex-col items-center text-[10px]"
+                      className="flex min-h-11 min-w-11 flex-col items-center justify-center text-[10px]"
                     >
                       <Heart className={`size-6 ${isLiked ? 'text-rose-500 fill-rose-500' : 'text-white'}`} />
                       <span>24.8K</span>
@@ -360,7 +455,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                     <button
                       type="button"
                       onClick={() => setIsSaved(!isSaved)}
-                      className="flex flex-col items-center text-[10px]"
+                      className="flex min-h-11 min-w-11 flex-col items-center justify-center text-[10px]"
                     >
                       <Bookmark className={`size-6 ${isSaved ? 'text-amber-400 fill-amber-400' : 'text-white'}`} />
                       <span>3.2K</span>
@@ -390,7 +485,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                 <div className="absolute inset-x-0 bottom-0 bg-black/95 px-4 pt-2 pb-5 z-40 text-white">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <button type="button" onClick={() => setIsLiked(!isLiked)}>
+                      <button type="button" onClick={() => setIsLiked(!isLiked)} className="flex min-h-11 min-w-11 items-center justify-center">
                         <Heart className={`size-5 ${isLiked ? 'text-rose-500 fill-rose-500' : 'text-white'}`} />
                       </button>
                       <MessageCircle className="size-5 text-white" />
@@ -400,8 +495,11 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                     {/* PAGINADOR DE PUNTOS INSTAGRAM */}
                     <div className="flex items-center gap-1">
                       {Array.from({ length: slideCount }, (_, i) => (
-                        <div
+                        <button
+                          type="button"
                           key={i}
+                          aria-label={`Ir al slide ${i + 1}`}
+                          onClick={() => setCurrentSlide(i)}
                           className={`rounded-full transition-all ${
                             i === currentSlide ? 'size-1.5 bg-brand-cyan' : 'size-1 bg-slate-700'
                           }`}
@@ -409,7 +507,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                       ))}
                     </div>
 
-                    <button type="button" onClick={() => setIsSaved(!isSaved)}>
+                    <button type="button" onClick={() => setIsSaved(!isSaved)} className="flex min-h-11 min-w-11 items-center justify-center">
                       <Bookmark className={`size-5 ${isSaved ? 'text-amber-400 fill-amber-400' : 'text-white'}`} />
                     </button>
                   </div>
@@ -425,10 +523,13 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
                   <span className="text-[10px] text-slate-300 font-bold">Página {currentSlide + 1} de {slideCount}</span>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: slideCount }, (_, i) => (
-                      <div
+                      <button
+                        type="button"
                         key={i}
+                        aria-label={`Ir a la página ${i + 1}`}
+                        onClick={() => setCurrentSlide(i)}
                         className={`h-1 rounded-full transition-all ${
-                          i === currentSlide ? 'w-4 bg-[#005F73]' : 'w-1.5 bg-slate-700'
+                          i === currentSlide ? 'w-4 bg-primary' : 'w-1.5 bg-slate-700'
                         }`}
                       />
                     ))}
@@ -467,14 +568,41 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
               <ChevronRight className="size-5" />
             </button>
           </div>
+          {slideCount > 1 && (
+            <div className="mt-3 flex w-full max-w-[380px] gap-2 overflow-x-auto pb-1" aria-label="Miniaturas del carrusel">
+              {Array.from({ length: slideCount }, (_, index) => {
+                const metadata = carouselConfig?.slides[index];
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setCurrentSlide(index)}
+                    aria-label={`Ir al slide ${index + 1}`}
+                    aria-current={currentSlide === index ? 'true' : undefined}
+                    className={`flex min-w-14 flex-col gap-1 rounded-lg border p-1 transition-all ${
+                      currentSlide === index ? 'border-brand-cyan ring-2 ring-brand-cyan/30' : 'border-slate-700 opacity-70'
+                    }`}
+                  >
+                    <span className="flex aspect-[4/5] items-center justify-center rounded bg-primary-dark text-[10px] font-bold text-white">
+                      {index + 1}
+                    </span>
+                    <span className="truncate text-[9px] font-medium text-slate-300">{metadata?.role ?? 'slide'}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* PANEL LATERAL DE CONFIGURACIÓN DEL SIMULADOR */}
-        <div className="flex flex-col gap-4 bg-slate-900/90 border border-slate-800 p-5 rounded-3xl w-full md:w-72 text-white">
+        <div className="flex max-h-[78vh] w-full flex-col gap-4 overflow-y-auto rounded-3xl border border-slate-800 bg-primary-dark/95 p-4 text-white sm:p-5 md:max-w-sm">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <Smartphone className="size-4 text-brand-cyan" />
-              <span className="text-xs font-bold">Simulador Interactivo</span>
+              <div>
+                <span className="block text-xs font-bold">Simulador Interactivo</span>
+                <span className="text-[10px] text-slate-400">{getPlatformLabel()}</span>
+              </div>
             </div>
             <button
               type="button"
@@ -487,16 +615,16 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
 
           {/* SELECTOR DE PLATAFORMA */}
           <div>
-            <label className="text-[11px] font-bold text-slate-400 mb-1.5 block">
+            <label className="mb-1.5 block text-[11px] font-bold text-slate-400">
               Vista previa de plataforma
             </label>
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs">
+            <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-slate-800 bg-slate-950 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setPlatformMode('instagram')}
-                className={`py-1.5 rounded-lg font-bold transition-all text-center ${
+                className={`min-h-11 rounded-lg text-center font-bold transition-all ${
                   platformMode === 'instagram'
-                    ? 'bg-gradient-to-r from-purple-600 to-rose-600 text-white shadow-xs'
+                    ? 'bg-primary text-white shadow-xs'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -505,7 +633,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
               <button
                 type="button"
                 onClick={() => setPlatformMode('tiktok')}
-                className={`py-1.5 rounded-lg font-bold transition-all text-center ${
+                className={`min-h-11 rounded-lg text-center font-bold transition-all ${
                   platformMode === 'tiktok'
                     ? 'bg-slate-800 text-brand-cyan shadow-xs'
                     : 'text-slate-400 hover:text-white'
@@ -516,9 +644,9 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
               <button
                 type="button"
                 onClick={() => setPlatformMode('linkedin')}
-                className={`py-1.5 rounded-lg font-bold transition-all text-center ${
+                className={`min-h-11 rounded-lg text-center font-bold transition-all ${
                   platformMode === 'linkedin'
-                    ? 'bg-[#005F73] text-white shadow-xs'
+                    ? 'bg-primary text-white shadow-xs'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -527,27 +655,101 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
             </div>
           </div>
 
-          {/* CHECKLIST DE CALIDAD VISUAL */}
-          <div className="space-y-2 text-xs bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="size-3 text-amber-400" /> Checklist de Retención
-            </span>
-            <div className="flex items-start gap-2 text-slate-300 text-[11px]">
-              <span className="text-emerald-400 font-bold">✓</span>
-              <span>Continuidad visual entre diapositivas comprobada.</span>
+          {/* ADAPTACIÓN SEMÁNTICA DE FORMATO */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Monitor className="size-3.5 text-brand-cyan" />
+              <span className="text-[11px] font-bold text-slate-300">Formato de publicación</span>
             </div>
-            <div className="flex items-start gap-2 text-slate-300 text-[11px]">
-              <span className="text-emerald-400 font-bold">✓</span>
-              <span>Textos clave centrados fuera de las zonas de botones.</span>
-            </div>
-            <div className="flex items-start gap-2 text-slate-300 text-[11px]">
-              <span className="text-emerald-400 font-bold">✓</span>
-              <span>Última slide con llamado a la acción claro.</span>
+            <div className="grid grid-cols-2 gap-2">
+              {CAROUSEL_ASPECT_RATIOS.map((ratio) => {
+                const active = currentAspectRatio === ratio.id;
+                return (
+                  <button
+                    key={ratio.id}
+                    type="button"
+                    onClick={() => onAdaptAspectRatio?.(ratio.id)}
+                    className={`flex min-h-11 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-colors ${
+                      active
+                        ? 'border-brand-cyan bg-primary/30 text-white'
+                        : 'border-slate-700 bg-slate-950/60 text-slate-300 hover:border-slate-500'
+                    }`}
+                    aria-pressed={active}
+                  >
+                    <span className="font-mono text-[11px] font-bold">{ratio.id}</span>
+                    <span className="text-[9px] text-slate-400">{ratio.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* VARIANTES DE DIRECCIÓN DE ARTE */}
+          <div className="space-y-3 border-t border-slate-800 pt-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-3.5 text-accent" />
+                <span className="text-[11px] font-bold text-slate-300">Variantes de composición</span>
+              </div>
+              {comparisonBefore && (
+                <button
+                  type="button"
+                  onClick={() => setShowComparison((visible) => !visible)}
+                  className="text-[10px] font-bold text-brand-cyan underline-offset-2 hover:underline"
+                >
+                  {showComparison ? 'Ocultar comparación' : 'Ver antes / después'}
+                </button>
+              )}
+            </div>
+            {[
+              { kind: 'layout' as const, label: 'Layout', icon: <Sparkles className="size-3" /> },
+              { kind: 'color' as const, label: 'Color', icon: <Palette className="size-3" /> },
+              { kind: 'copy' as const, label: 'Copy', icon: <Type className="size-3" /> },
+              { kind: 'cta' as const, label: 'CTA', icon: <MousePointerClick className="size-3" /> },
+              { kind: 'image' as const, label: 'Imagen', icon: <ImageIcon className="size-3" /> },
+            ].map((group) => (
+              <div key={group.kind} className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {group.icon}
+                  {group.label}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {getVariants(group.kind).map((variant) => (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => applyVariant(variant)}
+                      aria-pressed={activeVariantId === variant.id}
+                      title={variant.description}
+                      className={`min-h-10 rounded-lg border px-2.5 py-1.5 text-[10px] font-bold transition-colors ${
+                        activeVariantId === variant.id
+                          ? 'border-brand-cyan bg-primary text-white'
+                          : 'border-slate-700 bg-slate-950/70 text-slate-300 hover:border-slate-500 hover:text-white'
+                      }`}
+                    >
+                      {variant.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {comparisonBefore && showComparison && (
+            <div className="space-y-2 border-t border-slate-800 pt-3">
+              <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
+                <Sparkles className="size-3.5 text-accent" />
+                Antes / después
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {renderComparisonSlide(comparisonBefore, 'Antes')}
+                {renderComparisonSlide(project, 'Después')}
+              </div>
+            </div>
+          )}
+
           <div className="text-[10px] text-slate-400 text-center">
-            💡 Puedes arrastrar con el ratón o deslizar con el dedo sobre el teléfono para probar la fluidez.
+            💡 Arrastra o desliza sobre el teléfono para revisar cada corte y validar la lectura.
           </div>
         </div>
 

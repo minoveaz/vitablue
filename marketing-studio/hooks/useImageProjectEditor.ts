@@ -9,14 +9,12 @@ import {
   CanvasGuideSettings,
   ImageStyleVariantId,
   ImageCrop,
+  CarouselAspectRatio,
+  CarouselCreativeVariant,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
-import {
-  getAsyncRecoveryImageProject,
-  normalizeStoredProject,
-  saveRecoveryImageProjectAsync,
-  saveStoredImageProjectAsync,
-} from '../utils/imageProjectStorage';
+import { normalizeStoredProject } from '../utils/imageProjectStorage';
+import { CreativeProjectConflictError } from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
@@ -48,6 +46,21 @@ import {
 } from '../../packages/video-studio/src/domain/layoutConstraints';
 import type { ImagePreviewMode } from '../types/imageStudio';
 import { normalizeImageCrop } from '../utils/imageCrop';
+import { getCarouselLayout } from '../data/carouselLayoutCatalog';
+import {
+  changeCarouselLayout,
+  duplicateCarouselSlide,
+  reorderCarouselSlides,
+} from '../utils/carouselSlideOperations';
+import {
+  applyCarouselCreativeVariant,
+  getCarouselPresetForAspectRatio,
+} from '../utils/carouselCreativeVariants';
+import {
+  regenerateCarouselBackground as regenerateCarouselBackgroundProject,
+  isCarouselBackgroundLayer,
+} from '../utils/carouselBackgroundComposition';
+import type { CarouselBackgroundCompositionInput } from '../types/carouselBackgroundComposition';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...normalizeStoredProject(project),
@@ -63,9 +76,15 @@ const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => 
 
 export function useImageProjectEditor(
   initialProject?: ImageProject,
-  options: { persistenceReady?: boolean } = {},
+  options: {
+    persistenceReady?: boolean;
+    persistProject?: (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) => Promise<ImageProject>;
+    onExported?: (blob: Blob, format: string, project: ImageProject) => Promise<void>;
+  } = {},
 ) {
   const persistenceReady = options.persistenceReady ?? true;
+  const persistProject = options.persistProject;
+  const onExported = options.onExported;
   const [project, setProject] = useState<ImageProject>(
     withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0])
   );
@@ -93,58 +112,45 @@ export function useImageProjectEditor(
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
   useEffect(() => {
-    if (!initialProject || !persistenceReady) return;
-    let active = true;
-    const projectId = initialProject.id;
-    const projectUpdatedAt = initialProject.updatedAt;
-    void getAsyncRecoveryImageProject()
-      .then((recovery) => {
-        if (
-          active &&
-          recovery &&
-          recovery.project.id === projectId &&
-          recovery.savedAt > projectUpdatedAt
-        ) {
-          setProject(withProfessionalDesignDefaults(recovery.project));
-          setSaveState('recovery');
-          setValidationIssues(validateImageProject(recovery.project));
-        }
-      })
-      .catch((error) => {
-        if (active) console.warn('Could not load recovery project:', error);
-      });
-    return () => {
-      active = false;
-    };
-  }, [initialProject, persistenceReady]);
-
-  useEffect(() => {
     setValidationIssues(validateImageProject(project));
     const saveRequest = ++saveRequestRef.current;
-    if (!initialProject || !persistenceReady || project.id !== initialProject.id) return;
+    if (!initialProject || !persistenceReady || !persistProject || project.id !== initialProject.id) return;
     setSaveState('saving');
     const saveStartedAt = project.updatedAt;
     const timer = window.setTimeout(() => {
-      void Promise.all([
-        saveStoredImageProjectAsync(project, { touchUpdatedAt: false }),
-        saveRecoveryImageProjectAsync(project),
-      ])
-        .then(([savedProject]) => {
-          if (
-            saveRequest === saveRequestRef.current &&
-            savedProject.updatedAt === saveStartedAt
-          ) {
+      const saveWithRetries = async (): Promise<ImageProject> => {
+        let lastError: unknown;
+        const clientMutationId = crypto.randomUUID();
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            return await persistProject(project, saveStartedAt, clientMutationId);
+          } catch (error) {
+            lastError = error;
+            if (error instanceof CreativeProjectConflictError || attempt === 2) throw error;
+            await new Promise<void>((resolve) => window.setTimeout(resolve, 300 * (attempt + 1)));
+          }
+        }
+        throw lastError;
+      };
+      void saveWithRetries()
+        .then((savedProject) => {
+          if (saveRequest === saveRequestRef.current) {
+            setProject((current) =>
+              current.updatedAt === saveStartedAt
+                ? { ...current, id: savedProject.id, createdAt: savedProject.createdAt, updatedAt: savedProject.updatedAt }
+                : current,
+            );
             setSaveState('saved');
             setLastSavedAt(savedProject.updatedAt);
           }
         })
         .catch((error) => {
-          console.warn('Could not persist Image Studio changes:', error);
+          console.warn('Could not persist Image Studio changes remotely:', error);
           if (saveRequest === saveRequestRef.current) setSaveState('error');
         });
-    }, 180);
+    }, 500);
     return () => window.clearTimeout(timer);
-  }, [project, initialProject, persistenceReady]);
+  }, [project, initialProject, persistenceReady, persistProject]);
 
   // Re-sync whenever initialProject is supplied (e.g. mounting, routing from Hub, or URL param change)
   useEffect(() => {
@@ -564,8 +570,98 @@ export function useImageProjectEditor(
   }, [pushHistory]);
 
   const setCurrentSlide = useCallback((currentSlide: number) => {
-    setProject((prev) => ({ ...prev, currentSlide }));
+    setProject((prev) => ({
+      ...prev,
+      currentSlide,
+      carouselConfig: prev.carouselConfig
+        ? { ...prev.carouselConfig, currentSlideIndex: currentSlide }
+        : prev.carouselConfig,
+    }));
   }, []);
+
+  const reorderSlides = useCallback((fromIndex: number, toIndex: number) => {
+    setProject((prev) => {
+      const reordered = reorderCarouselSlides(prev, fromIndex, toIndex);
+      if (reordered === prev) return prev;
+      const next = { ...reordered, updatedAt: new Date().toISOString() };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const duplicateSlide = useCallback((slideIndex: number) => {
+    setProject((prev) => {
+      const duplicated = duplicateCarouselSlide(prev, slideIndex);
+      if (duplicated === prev) return prev;
+      const nextIndex = slideIndex + 1;
+      const next = {
+        ...duplicated,
+        currentSlide: nextIndex,
+        carouselConfig: duplicated.carouselConfig
+          ? { ...duplicated.carouselConfig, currentSlideIndex: nextIndex }
+          : duplicated.carouselConfig,
+        updatedAt: new Date().toISOString(),
+      };
+      const duplicatedIds = next.layers
+        .filter((layer) => layer.props?.slideIndex === nextIndex)
+        .map((layer) => layer.id);
+      setSelectedLayerIds(duplicatedIds);
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const updateCarouselLayout = useCallback((layoutId: string) => {
+    const layout = getCarouselLayout(layoutId);
+    if (!layout) return;
+    setProject((prev) => {
+      const next = changeCarouselLayout(prev, layout);
+      if (next === prev) return prev;
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const applyCarouselVariant = useCallback((variant: CarouselCreativeVariant) => {
+    setProject((prev) => {
+      const next = applyCarouselCreativeVariant(prev, variant);
+      if (next === prev) return prev;
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const adaptCarouselAspectRatio = useCallback((aspectRatio: CarouselAspectRatio) => {
+    setProject((prev) => {
+      if (!prev.carouselConfig?.enabled) return prev;
+      const preset = getCarouselPresetForAspectRatio(prev, aspectRatio);
+      const oldWidth = prev.preset.width;
+      const oldHeight = prev.preset.height;
+      const nextLayers = resizeLayersForFormat(
+        prev.layers,
+        { width: oldWidth, height: oldHeight },
+        { width: preset.width, height: preset.height },
+        prev.layout?.defaultLayerConstraints,
+      );
+      const next = {
+        ...prev,
+        preset,
+        layers: nextLayers,
+        carouselConfig: {
+          ...prev.carouselConfig,
+          slideWidth: preset.slideWidth ?? preset.width,
+          slideHeight: preset.slideHeight ?? preset.height,
+        },
+        guideSettings: {
+          ...createDefaultGuideSettings(preset),
+          ...(prev.guideSettings ?? {}),
+        },
+        updatedAt: new Date().toISOString(),
+      };
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
 
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     const applyStandardProps = (layer: ImageLayer): ImageLayer => {
@@ -827,7 +923,9 @@ export function useImageProjectEditor(
     const idsToToggle = targetLayerIds ?? [layerId];
     setProject((prev) => {
       const nextLayers = prev.layers.map((l) =>
-        idsToToggle.includes(l.id) ? { ...l, locked: forceState ?? !l.locked } : l
+        idsToToggle.includes(l.id) && !isCarouselBackgroundLayer(l)
+          ? { ...l, locked: forceState ?? !l.locked }
+          : l,
       );
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
@@ -1113,7 +1211,7 @@ export function useImageProjectEditor(
 
   const toggleAllLayersLock = useCallback((locked: boolean) => {
     setProject((prev) => {
-      const nextLayers = prev.layers.map((l) => ({ ...l, locked }));
+      const nextLayers = prev.layers.map((l) => (isCarouselBackgroundLayer(l) ? { ...l, locked: true } : { ...l, locked }));
       const next = { ...prev, layers: nextLayers, updatedAt: new Date().toISOString() };
       pushHistory(next);
       return next;
@@ -1461,6 +1559,29 @@ export function useImageProjectEditor(
     });
   }, [pushHistory]);
 
+  const regenerateCarouselBackground = useCallback((composition: CarouselBackgroundCompositionInput) => {
+    setProject((prev) => {
+      if (!prev.carouselConfig?.enabled && !prev.preset.isCarousel) return prev;
+      const next = regenerateCarouselBackgroundProject(prev, composition);
+      const nextProject = {
+        ...next,
+        background: {
+          ...next.background,
+          gradient: undefined,
+          color:
+            next.carouselBackground?.colorVariant === 'white'
+              ? '#FFFFFF'
+              : next.carouselBackground?.colorVariant === 'ocean'
+                ? '#005F73'
+                : '#001219',
+        },
+        updatedAt: new Date().toISOString(),
+      };
+      pushHistory(nextProject);
+      return nextProject;
+    });
+  }, [pushHistory]);
+
   const exportImage = useCallback(async (
     node: HTMLElement | null,
     format: 'png' | 'jpeg' | 'svg' = 'png'
@@ -1492,12 +1613,20 @@ export function useImageProjectEditor(
       link.download = `${project.title.toLowerCase().replace(/\s+/g, '-')}-${project.preset.aspectRatio.replace(':', 'x')}.${format}`;
       link.href = dataUrl;
       link.click();
+      if (onExported) {
+        try {
+          const exportedBlob = await (await fetch(dataUrl)).blob();
+          await onExported(exportedBlob, format, project);
+        } catch (error) {
+          console.warn('Could not persist creative export remotely:', error);
+        }
+      }
     } catch (err) {
       console.error('Error al exportar imagen:', err);
     } finally {
       setIsExporting(false);
     }
-  }, [project.title, project.preset.aspectRatio]);
+  }, [onExported, project, project.title, project.preset.aspectRatio]);
 
   const exportCanvasStage = useCallback(async (
     stage: unknown,
@@ -2100,6 +2229,7 @@ export function useImageProjectEditor(
     clearCanvas,
     composeSmartCanvas,
     updateBackground,
+    regenerateCarouselBackground,
     alignSelectedLayers,
     distributeSelectedLayers,
     updateLayerFilter,
@@ -2107,6 +2237,13 @@ export function useImageProjectEditor(
     updateLayerClipShape,
     setCarouselPages,
     setCurrentSlide,
+    reorderSlides,
+    duplicateSlide,
+    reorderCarouselSlides: reorderSlides,
+    duplicateCarouselSlide: duplicateSlide,
+    updateCarouselLayout,
+    applyCarouselVariant,
+    adaptCarouselAspectRatio,
     copyToClipboard,
     exportImage,
     exportCanvasStage,

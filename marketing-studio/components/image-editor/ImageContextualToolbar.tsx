@@ -12,7 +12,6 @@ import {
   X,
 } from 'lucide-react';
 import type { CarouselGeometry, ImageLayer } from '../../types/imageStudio';
-import { saveUploadedImageMediaAsync } from '../../utils/imageMediaStorage';
 import { isDefaultImageCrop } from '../../utils/imageCrop';
 
 export interface ImageContextualToolbarProps {
@@ -26,6 +25,7 @@ export interface ImageContextualToolbarProps {
   onToggleFlipVertical: (layerId: string) => void;
   onFitToActiveSlide: (layerId: string, slideIndex: number) => void;
   onReplaceLayerContent: (layerId: string, replacement: { imageUrl: string }) => void;
+  onUploadImage?: (file: File) => Promise<{ signedUrl: string }>;
   onResetAdjustments: (layerId: string) => void;
   cropEditing?: boolean;
   cropZoom?: number;
@@ -49,6 +49,7 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
   onToggleFlipVertical,
   onFitToActiveSlide,
   onReplaceLayerContent,
+  onUploadImage,
   onResetAdjustments,
   cropEditing = false,
   cropZoom = 1,
@@ -110,22 +111,12 @@ export const ImageContextualToolbar: React.FC<ImageContextualToolbarProps> = ({
       setReplacementError(null);
       setReplacementUrl(dataUrl);
       try {
-        const saved = await saveUploadedImageMediaAsync(dataUrl, {
-          title: file.name.replace(/\.[^/.]+$/, ''),
-          fileName: file.name,
-          mimeType: file.type,
-        });
-        if (!saved.media) {
-          setReplacementError(saved.error ?? 'No se pudo guardar la imagen en tu biblioteca.');
-        } else {
-          setReplacementError(saved.warning ?? null);
-        }
+        if (!onUploadImage) throw new Error('Storage remoto no disponible.');
+        const saved = await onUploadImage(file);
+        setReplacementUrl(saved.signedUrl);
+        onReplaceLayerContent(layer.id, { imageUrl: saved.signedUrl });
       } catch {
         setReplacementError('No se pudo guardar la imagen en tu biblioteca.');
-      } finally {
-        // Keep the current editing operation usable even when persistence is
-        // unavailable; the next project save can still capture the data URL.
-        onReplaceLayerContent(layer.id, { imageUrl: dataUrl });
       }
     };
     reader.onerror = () => setReplacementError('No se pudo leer la imagen.');

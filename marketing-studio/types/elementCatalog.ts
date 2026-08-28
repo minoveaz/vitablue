@@ -118,6 +118,7 @@ export type TraditionalShapeType =
   | 'blob-1'
   | 'blob-2'
   | 'blob-3'
+  | 'carousel-wave'
   | 'bracket-square-left'
   | 'bracket-square-right'
   | 'bracket-square-pair'

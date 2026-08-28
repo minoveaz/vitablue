@@ -149,6 +149,8 @@ export interface GeometricShapeGraphicProps {
   sides?: number;
   points?: number;
   innerRadius?: number;
+  waveStartY?: number;
+  waveEndY?: number;
   className?: string;
 }
 
@@ -161,6 +163,8 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
   sides = 7,
   points = 10,
   innerRadius = 40,
+  waveStartY = 48,
+  waveEndY = 48,
   className = 'h-full w-full',
 }) => {
   const visibleStroke = strokeWidth > 0 && stroke !== 'transparent' ? stroke : 'none';
@@ -281,6 +285,21 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
       return <svg {...svgProps}><path d="M9 35 C14 12 38 1 61 8 C85 15 100 36 92 59 C84 82 64 99 39 93 C14 88 3 60 9 35Z" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
     case 'blob-3':
       return <svg {...svgProps}><path d="M19 14 C35 2 51 10 62 9 C82 7 97 22 94 43 C91 62 100 74 82 88 C67 100 53 90 39 93 C17 98 3 82 7 61 C10 44 1 28 19 14Z" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
+    case 'carousel-wave': {
+      const start = Math.max(8, Math.min(92, waveStartY));
+      const end = Math.max(8, Math.min(92, waveEndY));
+      const control = Math.max(8, Math.min(92, (start + end) / 2 - 18));
+      return (
+        <svg {...svgProps}>
+          <path
+            d={`M0 ${start} C25 ${control} 25 ${control} 50 ${(start + end) / 2} C75 ${end + 18} 75 ${end + 18} 100 ${end} L100 100 L0 100Z`}
+            fill={fill}
+            stroke={visibleStroke}
+            strokeWidth={strokeWidth}
+          />
+        </svg>
+      );
+    }
     case 'bracket-square-left':
       return <svg {...svgProps}><path d="M74 5 H26 V95 H74" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" strokeLinejoin="round" /></svg>;
     case 'bracket-square-right':
@@ -342,6 +361,8 @@ export const GeometricShapeBlock: React.FC<GeometricShapeBlockProps> = ({ layer 
       sides={(blockProps.sides as number) ?? 7}
       points={(blockProps.points as number) ?? 10}
       innerRadius={(blockProps.innerRadius as number) ?? 40}
+      waveStartY={(blockProps.waveStartY as number) ?? 48}
+      waveEndY={(blockProps.waveEndY as number) ?? 48}
     />
   );
 };
