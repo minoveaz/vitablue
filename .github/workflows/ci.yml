@@ -59,7 +59,12 @@ jobs:
               - 'pages/**'
               - 'public/**'
               - 'e2e/**'
-              - '.github/workflows/ci.yml'
+              # Backoffice-only shell and authentication changes do not
+              # affect the public marketing surface.
+              - '!components/backoffice-shell/**'
+              - '!components/layouts/**'
+              - '!components/organisms/ProtectedRoute.tsx'
+              - '!pages/backoffice/**'
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 1: Build estático pre-renderizado (SSG)
