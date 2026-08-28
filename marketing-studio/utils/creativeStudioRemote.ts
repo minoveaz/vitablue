@@ -342,7 +342,7 @@ export const saveCreativeProject = async (
     changeSummary: options.changeSummary,
     clientMutationId: options.clientMutationId,
   });
-  return imageProjectFromCreative(row);
+  return resolveAssetReferences(imageProjectFromCreative(row), client);
 };
 
 export const migrateLegacyCreativeProject = async (
