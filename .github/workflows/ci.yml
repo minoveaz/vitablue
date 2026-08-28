@@ -55,16 +55,10 @@ jobs:
               - 'App.tsx'
               - 'index.html'
               - 'index.css'
-              - 'components/**'
-              - 'pages/**'
               - 'public/**'
               - 'e2e/**'
-              # Backoffice-only shell and authentication changes do not
-              # affect the public marketing surface.
-              - '!components/backoffice-shell/**'
-              - '!components/layouts/**'
-              - '!components/organisms/ProtectedRoute.tsx'
-              - '!pages/backoffice/**'
+              # Public route/component changes should be added here explicitly.
+              # Backoffice changes must not trigger public E2E or SEO jobs.
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 1: Build estático pre-renderizado (SSG)
