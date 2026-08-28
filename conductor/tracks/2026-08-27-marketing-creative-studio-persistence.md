@@ -130,8 +130,8 @@ point, recorte, máscara y reglas de sustitución.
 **Resultado:** el Marketing Studio actual de VitaBlue persiste contra LoopDev,
 sin construir todavía su frontend allí.
 
-- [x] Conectar proyectos con campañas, marcas, canales y publicaciones cuando
-      estén disponibles los claims de tenancy requeridos.
+- [x] Conectar proyectos con campañas, marcas, canales y publicaciones mediante
+      las membresías, workspaces y permisos de tenancy de LoopDev.
 - [x] Añadir estados, búsqueda, filtros y archivado.
 - [x] Persistir versiones, recuperación y cambios multi-slide.
 - [x] Migrar proyectos locales existentes seleccionados por el usuario, con

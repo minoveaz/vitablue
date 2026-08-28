@@ -1,6 +1,7 @@
 -- Marketing Creative Studio, fase 2.
 -- Esta migración es deliberadamente aditiva y no crea organizaciones/workspaces
--- de VitaBlue. Esas tablas y sus claims de tenancy deben existir antes de activarla.
+-- de VitaBlue. Esas tablas, membresías y permisos de LoopDev deben existir antes
+-- de activarla.
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -133,25 +134,7 @@ ON CONFLICT (id) DO UPDATE SET
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
-CREATE OR REPLACE FUNCTION public.creative_jwt_claim_uuid(p_key text)
-RETURNS uuid
-LANGUAGE plpgsql
-STABLE
-SECURITY INVOKER
-SET search_path = public
-AS $$
-DECLARE
-  value text;
-BEGIN
-  value := coalesce(auth.jwt() ->> p_key, auth.jwt() -> 'app_metadata' ->> p_key);
-  IF value ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN
-    RETURN value::uuid;
-  END IF;
-  RETURN NULL;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION public.marketing_creative_scope_matches_claims(
+CREATE OR REPLACE FUNCTION public.marketing_creative_scope_matches(
   p_organization_id uuid,
   p_workspace_id uuid,
   p_brand_id uuid
@@ -161,35 +144,40 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT
-    auth.uid() IS NOT NULL
-    AND public.creative_jwt_claim_uuid('organization_id') = p_organization_id
-    AND public.creative_jwt_claim_uuid('workspace_id') = p_workspace_id
-    AND public.creative_jwt_claim_uuid('brand_id') = p_brand_id;
+  SELECT auth.uid() IS NOT NULL
+    AND public.is_organization_member(p_organization_id)
+    AND (
+      (p_workspace_id IS NULL AND p_brand_id IS NULL)
+      OR EXISTS (
+        SELECT 1
+        FROM public.workspaces workspace
+        JOIN public.brands brand
+          ON brand.id = p_brand_id
+         AND brand.organization_id = p_organization_id
+        WHERE workspace.id = p_workspace_id
+          AND workspace.organization_id = p_organization_id
+          AND workspace.suite_key = 'marketing'
+          AND workspace.status = 'active'
+          AND (
+            NOT EXISTS (
+              SELECT 1
+              FROM public.workspace_brands linked
+              WHERE linked.workspace_id = workspace.id
+            )
+            OR EXISTS (
+              SELECT 1
+              FROM public.workspace_brands linked
+              WHERE linked.workspace_id = workspace.id
+                AND linked.organization_id = p_organization_id
+                AND linked.brand_id = p_brand_id
+            )
+          )
+      )
+    );
 $$;
 
-CREATE OR REPLACE FUNCTION public.has_marketing_creative_permission(required_role text)
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT
-    CASE
-      WHEN required_role = 'viewer' THEN public.has_marketing_role('viewer')
-      WHEN required_role = 'editor' THEN public.has_marketing_role('editor')
-      WHEN required_role = 'admin' THEN public.has_marketing_role('admin')
-      ELSE false
-    END;
-$$;
-
-REVOKE ALL ON FUNCTION public.marketing_creative_scope_matches_claims(uuid, uuid, uuid) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.has_marketing_creative_permission(text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.marketing_creative_scope_matches_claims(uuid, uuid, uuid) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.has_marketing_creative_permission(text) TO authenticated;
-REVOKE ALL ON FUNCTION public.creative_jwt_claim_uuid(text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.creative_jwt_claim_uuid(text) TO authenticated;
+REVOKE ALL ON FUNCTION public.marketing_creative_scope_matches(uuid, uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.marketing_creative_scope_matches(uuid, uuid, uuid) TO authenticated;
 
 ALTER TABLE public.marketing_creative_projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.marketing_creative_project_versions ENABLE ROW LEVEL SECURITY;
@@ -199,88 +187,88 @@ DROP POLICY IF EXISTS "Creative users can read projects in their tenant" ON publ
 CREATE POLICY "Creative users can read projects in their tenant"
   ON public.marketing_creative_projects FOR SELECT TO authenticated
   USING (
-    public.has_marketing_creative_permission('viewer')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.read')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can create projects in their tenant" ON public.marketing_creative_projects;
 CREATE POLICY "Creative editors can create projects in their tenant"
   ON public.marketing_creative_projects FOR INSERT TO authenticated
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can update projects in their tenant" ON public.marketing_creative_projects;
 CREATE POLICY "Creative editors can update projects in their tenant"
   ON public.marketing_creative_projects FOR UPDATE TO authenticated
   USING (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   )
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative admins can delete projects in their tenant" ON public.marketing_creative_projects;
 CREATE POLICY "Creative admins can delete projects in their tenant"
   ON public.marketing_creative_projects FOR DELETE TO authenticated
   USING (
-    public.has_marketing_creative_permission('admin')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative users can read project versions in their tenant" ON public.marketing_creative_project_versions;
 CREATE POLICY "Creative users can read project versions in their tenant"
   ON public.marketing_creative_project_versions FOR SELECT TO authenticated
   USING (
-    public.has_marketing_creative_permission('viewer')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.read')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can write project versions in their tenant" ON public.marketing_creative_project_versions;
 CREATE POLICY "Creative editors can write project versions in their tenant"
   ON public.marketing_creative_project_versions FOR INSERT TO authenticated
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative users can read variants in their tenant" ON public.marketing_creative_variants;
 CREATE POLICY "Creative users can read variants in their tenant"
   ON public.marketing_creative_variants FOR SELECT TO authenticated
   USING (
-    public.has_marketing_creative_permission('viewer')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.read')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can create variants in their tenant" ON public.marketing_creative_variants;
 CREATE POLICY "Creative editors can create variants in their tenant"
   ON public.marketing_creative_variants FOR INSERT TO authenticated
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can update variants in their tenant" ON public.marketing_creative_variants;
 CREATE POLICY "Creative editors can update variants in their tenant"
   ON public.marketing_creative_variants FOR UPDATE TO authenticated
   USING (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   )
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative admins can delete variants in their tenant" ON public.marketing_creative_variants;
 CREATE POLICY "Creative admins can delete variants in their tenant"
   ON public.marketing_creative_variants FOR DELETE TO authenticated
   USING (
-    public.has_marketing_creative_permission('admin')
-    AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 ALTER TABLE public.marketing_creative_assets ENABLE ROW LEVEL SECURITY;
@@ -289,36 +277,36 @@ DROP POLICY IF EXISTS "Creative users can read assets in their tenant" ON public
 CREATE POLICY "Creative users can read assets in their tenant"
   ON public.marketing_creative_assets FOR SELECT TO authenticated
   USING (
-    public.has_marketing_creative_permission('viewer')
-    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+    public.has_organization_permission(organization_id, 'marketing.read')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can create assets in their tenant" ON public.marketing_creative_assets;
 CREATE POLICY "Creative editors can create assets in their tenant"
   ON public.marketing_creative_assets FOR INSERT TO authenticated
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative editors can update assets in their tenant" ON public.marketing_creative_assets;
 CREATE POLICY "Creative editors can update assets in their tenant"
   ON public.marketing_creative_assets FOR UPDATE TO authenticated
   USING (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   )
   WITH CHECK (
-    public.has_marketing_creative_permission('editor')
-    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 DROP POLICY IF EXISTS "Creative admins can delete assets in their tenant" ON public.marketing_creative_assets;
 CREATE POLICY "Creative admins can delete assets in their tenant"
   ON public.marketing_creative_assets FOR DELETE TO authenticated
   USING (
-    public.has_marketing_creative_permission('admin')
-    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+    public.has_organization_permission(organization_id, 'marketing.manage')
+    AND public.marketing_creative_scope_matches(organization_id, workspace_id, brand_id)
   );
 
 -- Storage object names mirror the tenant scope:
@@ -336,8 +324,8 @@ BEGIN
     EXECUTE format(
       'CREATE POLICY %I ON storage.objects FOR SELECT TO authenticated
        USING (bucket_id = %L
-         AND public.has_marketing_creative_permission(''viewer'')
-         AND public.marketing_creative_scope_matches_claims(
+         AND public.has_organization_permission(NULLIF((storage.foldername(name))[1], '''')::uuid, ''marketing.read'')
+         AND public.marketing_creative_scope_matches(
            NULLIF((storage.foldername(name))[1], '''')::uuid,
            NULLIF((storage.foldername(name))[2], '''')::uuid,
            NULLIF((storage.foldername(name))[3], '''')::uuid
@@ -348,8 +336,8 @@ BEGIN
     EXECUTE format(
       'CREATE POLICY %I ON storage.objects FOR INSERT TO authenticated
        WITH CHECK (bucket_id = %L
-         AND public.has_marketing_creative_permission(''editor'')
-         AND public.marketing_creative_scope_matches_claims(
+         AND public.has_organization_permission(NULLIF((storage.foldername(name))[1], '''')::uuid, ''marketing.manage'')
+         AND public.marketing_creative_scope_matches(
            NULLIF((storage.foldername(name))[1], '''')::uuid,
            NULLIF((storage.foldername(name))[2], '''')::uuid,
            NULLIF((storage.foldername(name))[3], '''')::uuid
@@ -360,15 +348,15 @@ BEGIN
     EXECUTE format(
       'CREATE POLICY %I ON storage.objects FOR UPDATE TO authenticated
        USING (bucket_id = %L
-         AND public.has_marketing_creative_permission(''editor'')
-         AND public.marketing_creative_scope_matches_claims(
+         AND public.has_organization_permission(NULLIF((storage.foldername(name))[1], '''')::uuid, ''marketing.manage'')
+         AND public.marketing_creative_scope_matches(
            NULLIF((storage.foldername(name))[1], '''')::uuid,
            NULLIF((storage.foldername(name))[2], '''')::uuid,
            NULLIF((storage.foldername(name))[3], '''')::uuid
          ))
        WITH CHECK (bucket_id = %L
-         AND public.has_marketing_creative_permission(''editor'')
-         AND public.marketing_creative_scope_matches_claims(
+         AND public.has_organization_permission(NULLIF((storage.foldername(name))[1], '''')::uuid, ''marketing.manage'')
+         AND public.marketing_creative_scope_matches(
            NULLIF((storage.foldername(name))[1], '''')::uuid,
            NULLIF((storage.foldername(name))[2], '''')::uuid,
            NULLIF((storage.foldername(name))[3], '''')::uuid
@@ -379,8 +367,8 @@ BEGIN
     EXECUTE format(
       'CREATE POLICY %I ON storage.objects FOR DELETE TO authenticated
        USING (bucket_id = %L
-         AND public.has_marketing_creative_permission(''admin'')
-         AND public.marketing_creative_scope_matches_claims(
+         AND public.has_organization_permission(NULLIF((storage.foldername(name))[1], '''')::uuid, ''marketing.manage'')
+         AND public.marketing_creative_scope_matches(
            NULLIF((storage.foldername(name))[1], '''')::uuid,
            NULLIF((storage.foldername(name))[2], '''')::uuid,
            NULLIF((storage.foldername(name))[3], '''')::uuid
@@ -416,8 +404,8 @@ DECLARE
   snapshot jsonb;
   content_changed boolean;
 BEGIN
-  IF NOT public.has_marketing_creative_permission('editor')
-     OR NOT public.marketing_creative_scope_matches_claims(p_organization_id, p_workspace_id, p_brand_id) THEN
+  IF NOT public.has_organization_permission(p_organization_id, 'marketing.manage')
+     OR NOT public.marketing_creative_scope_matches(p_organization_id, p_workspace_id, p_brand_id) THEN
     RAISE EXCEPTION 'creative project authorization failed' USING ERRCODE = '42501';
   END IF;
 

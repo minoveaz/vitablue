@@ -24,7 +24,7 @@ interface SaaSShellProps {
 }
 
 const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyebrow = 'Panel de Administración', productName = 'Marketing Studio', workspaceLabel = 'Dev Workspace', hideNavigation = false, hideHeader = false }) => {
-  const { user, role, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { pathname, search } = useLocation();
   const navigationType = useNavigationType();
   const mainRef = useRef<HTMLElement>(null);
@@ -76,7 +76,7 @@ const SaaSShell: React.FC<SaaSShellProps> = ({ children, navigation, title, eyeb
           </nav>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/60 p-4 sm:p-6 lg:block lg:space-y-4">
-          <div className="rounded-xl border border-brand-cyan/20 bg-brand-cyan/5 px-3.5 py-2.5 text-center text-[10px] font-semibold leading-relaxed text-brand-cyan">{user?.email ?? 'Usuario autenticado'} · {role ?? 'sin rol'}</div>
+          <div className="rounded-xl border border-brand-cyan/20 bg-brand-cyan/5 px-3.5 py-2.5 text-center text-[10px] font-semibold leading-relaxed text-brand-cyan">{user?.email ?? 'Usuario autenticado'}</div>
           <div className="flex flex-wrap items-center gap-3 lg:block lg:space-y-3"><Link to="/" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 transition-colors hover:text-white">Salir al sitio <span aria-hidden="true">↗</span></Link><Button variant="ghost" size="sm" className="text-slate-400 hover:bg-slate-800 hover:text-white" onClick={() => { void signOut(); }}><LogOut className="mr-1.5 size-3.5" aria-hidden="true" />Cerrar sesión</Button></div>
         </div>
       </aside>}

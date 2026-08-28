@@ -79,7 +79,7 @@ export interface ImageStudioAssetDrawerContentProps {
   onDeleteImage?: (asset: RemoteImageMedia) => Promise<void>;
   onListProjects?: () => Promise<ImageProject[]>;
   onDuplicateProject?: (project: ImageProject) => Promise<void>;
-  onDeleteProject?: (project: ImageProject) => Promise<void>;
+  onArchiveProject?: (project: ImageProject) => Promise<void>;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -126,7 +126,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onDeleteImage,
   onListProjects,
   onDuplicateProject,
-  onDeleteProject,
+  onArchiveProject,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -137,7 +137,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
             onLoadProject={onLoadTemplate}
             onListProjects={onListProjects}
             onDuplicateProject={onDuplicateProject}
-            onDeleteProject={onDeleteProject}
+            onArchiveProject={onArchiveProject}
             onInsertSavedLayer={(layer) => {
               if (onInsertSavedLayer) {
                 onInsertSavedLayer(layer);

@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 const MarketingLogin: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { session, isLoading, signIn } = useAuth();
+  const { session, isLoading, authError, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +49,7 @@ const MarketingLogin: React.FC = () => {
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <InputText label="Email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} />
             <InputText label="Contraseña" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
+            {authError && <p className="text-sm font-semibold text-red-600" role="alert">{authError}</p>}
             {error && <p className="text-sm font-semibold text-red-600" role="alert">{error}</p>}
             <Button type="submit" size="lg" className="w-full" isLoading={isSubmitting || isLoading}>Entrar</Button>
           </form>

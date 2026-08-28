@@ -12,10 +12,10 @@ import {
   type UpdateCreativeProjectInput,
 } from '../contracts/creativePersistence';
 
-export interface CreativeProjectSaveInput extends Omit<CreateCreativeProjectInput, 'currentVersion' | 'status' | 'metadata'> {
+export interface CreativeProjectSaveInput extends Omit<CreateCreativeProjectInput, 'currentVersionNumber' | 'status'> {
   id?: string;
   status?: CreativeProject['status'];
-  metadata?: CreativeProject['metadata'];
+  currentVersionNumber?: number;
   expectedUpdatedAt?: string;
   changeSummary?: string | null;
   clientMutationId?: string;
@@ -34,9 +34,10 @@ export interface CreativeProjectRepository {
 }
 
 export class CreativeProjectConflictError extends Error {
-  constructor(message = 'El proyecto fue modificado en otra sesión.') {
+  constructor(message = 'El proyecto fue modificado en otra sesión.', cause?: unknown) {
     super(message);
     this.name = 'CreativeProjectConflictError';
+    if (cause !== undefined) (this as Error & { cause?: unknown }).cause = cause;
   }
 }
 
@@ -52,14 +53,13 @@ type ProjectRow = {
   organization_id: string;
   workspace_id: string;
   brand_id: string;
-  owner_user_id?: string | null;
-  campaign_id?: string | null;
   name: string;
-  creative_type: string;
+  description?: string | null;
+  type: string;
   status: string;
-  current_version: number;
-  composition: Record<string, unknown>;
-  metadata: Record<string, unknown>;
+  current_version_number: number;
+  autosave_revision?: number | null;
+  draft_document: Record<string, unknown>;
   created_by?: string | null;
   updated_by?: string | null;
   created_at: string;
@@ -72,12 +72,13 @@ type VersionRow = {
   organization_id: string;
   workspace_id: string;
   brand_id: string;
-  version: number;
-  snapshot: Record<string, unknown>;
+  version_number: number;
+  document: Record<string, unknown>;
   change_summary?: string | null;
-  client_mutation_id?: string | null;
   created_by?: string | null;
   created_at: string;
+  updated_by?: string | null;
+  updated_at: string;
 };
 
 type VariantRow = {
@@ -86,20 +87,96 @@ type VariantRow = {
   organization_id: string;
   workspace_id: string;
   brand_id: string;
-  source_version: number;
-  kind: string;
+  project_version_id: string;
+  key: string;
+  channel: string;
+  format: string;
   name: string;
   status: string;
-  platform?: string | null;
-  aspect_ratio?: string | null;
   width?: number | null;
   height?: number | null;
-  overrides: Record<string, unknown>;
+  payload: Record<string, unknown>;
   created_by?: string | null;
   updated_by?: string | null;
   created_at: string;
   updated_at: string;
 };
+
+/**
+ * Supabase/PostgREST can serialize PostgreSQL timestamptz values with a
+ * space separator, UTC offsets, and microseconds (for example
+ * `2026-08-28T14:36:07.790123+00:00`). Keep the domain contract strict and
+ * normalize only values that carry an explicit timezone and represent a real
+ * instant. Canonical LoopDev timestamps are NOT NULL, so null is rejected
+ * rather than replaced with an invented date.
+ */
+export const normalizeSupabaseTimestamp = (value: unknown, field: string): string => {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`Supabase devolvió ${field} sin timestamp.`);
+  }
+  const withIsoSeparator = value.trim().includes('T')
+    ? value.trim()
+    : value.trim().replace(' ', 'T');
+  const normalized = withIsoSeparator.replace(/\+00(?::?00)?$/, 'Z');
+  if (!/(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized)) {
+    throw new Error(`Supabase devolvió ${field} sin zona horaria explícita.`);
+  }
+  const parsed = new Date(normalized);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Supabase devolvió ${field} con un timestamp inválido.`);
+  }
+  return parsed.toISOString();
+};
+
+type CreativePersistenceErrorDetails = {
+  code: string | null;
+  status: string | null;
+  message: string | null;
+  details: string | null;
+};
+
+const SENSITIVE_ERROR_KEY = /(?:access[_-]?token|refresh[_-]?token|id[_-]?token|api[_-]?key|service[_-]?role|anon[_-]?key|authorization|password|passwd|secret|credential|token)/i;
+
+const redactSensitiveText = (value: string): string => value
+  .replace(/\bBearer\s+[^\s,;]+/gi, 'Bearer [REDACTED]')
+  .replace(/([?&](?:access_token|refresh_token|id_token|token|api_key|key|password|secret)=)[^&#\s]+/gi, '$1[REDACTED]')
+  .replace(/(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|api[_-]?key|service[_-]?role|anon[_-]?key|authorization|password|passwd|secret|credential|token)\b\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^\s,;}"']+)/gi, '$1[REDACTED]')
+  .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED_TOKEN]');
+
+const toSafeString = (value: unknown): string | null => {
+  if (typeof value === 'string' || typeof value === 'number') return redactSensitiveText(String(value));
+  return null;
+};
+
+const stringifySafeDetails = (value: unknown): string | null => {
+  const scalar = toSafeString(value);
+  if (scalar !== null || value === null || value === undefined) return scalar;
+  try {
+    const serialized = JSON.stringify(value, (key, nested) => {
+      if (key && SENSITIVE_ERROR_KEY.test(key)) return '[REDACTED]';
+      if (typeof nested === 'bigint') return String(nested);
+      return typeof nested === 'string' ? redactSensitiveText(nested) : nested;
+    });
+    return typeof serialized === 'string' ? redactSensitiveText(serialized) : null;
+  } catch {
+    return '[unserializable details]';
+  }
+};
+
+export const getCreativePersistenceErrorDetails = (error: unknown): CreativePersistenceErrorDetails => {
+  if (!error || typeof error !== 'object') return { code: null, status: null, message: null, details: null };
+  const candidate = error as { code?: unknown; status?: unknown; message?: unknown; details?: unknown; cause?: unknown };
+  const source = candidate.cause && typeof candidate.cause === 'object' ? candidate.cause as { code?: unknown; status?: unknown; message?: unknown; details?: unknown } : candidate;
+  return {
+    code: toSafeString(source.code),
+    status: toSafeString(source.status),
+    message: toSafeString(source.message),
+    details: stringifySafeDetails(source.details),
+  };
+};
+
+export const serializeCreativePersistenceError = (error: unknown): string =>
+  JSON.stringify(getCreativePersistenceErrorDetails(error));
 
 const projectFromRow = (row: ProjectRow): CreativeProject =>
   CreativeProjectSchema.parse({
@@ -107,18 +184,18 @@ const projectFromRow = (row: ProjectRow): CreativeProject =>
     organizationId: row.organization_id,
     workspaceId: row.workspace_id,
     brandId: row.brand_id,
-    ownerUserId: row.owner_user_id,
-    campaignId: row.campaign_id,
+    ownerUserId: row.created_by,
     name: row.name,
-    creativeType: row.creative_type,
+    description: row.description,
+    type: row.type,
     status: row.status,
-    currentVersion: row.current_version,
-    composition: row.composition,
-    metadata: row.metadata,
+    currentVersionNumber: row.current_version_number,
+    autosaveRevision: row.autosave_revision ?? 0,
+    draftDocument: row.draft_document,
     createdBy: row.created_by,
     updatedBy: row.updated_by,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: normalizeSupabaseTimestamp(row.created_at, 'created_at'),
+    updatedAt: normalizeSupabaseTimestamp(row.updated_at, 'updated_at'),
   });
 
 const versionFromRow = (row: VersionRow): CreativeProjectVersion =>
@@ -128,11 +205,13 @@ const versionFromRow = (row: VersionRow): CreativeProjectVersion =>
     organizationId: row.organization_id,
     workspaceId: row.workspace_id,
     brandId: row.brand_id,
-    version: row.version,
-    snapshot: row.snapshot,
+    versionNumber: row.version_number,
+    document: row.document,
     changeSummary: row.change_summary,
     createdBy: row.created_by,
-    createdAt: row.created_at,
+    updatedBy: row.updated_by,
+    createdAt: normalizeSupabaseTimestamp(row.created_at, 'created_at'),
+    updatedAt: normalizeSupabaseTimestamp(row.updated_at, 'updated_at'),
   });
 
 const variantFromRow = (row: VariantRow): CreativeProjectVariant =>
@@ -142,23 +221,23 @@ const variantFromRow = (row: VariantRow): CreativeProjectVariant =>
     organizationId: row.organization_id,
     workspaceId: row.workspace_id,
     brandId: row.brand_id,
-    sourceVersion: row.source_version,
-    kind: row.kind,
+    projectVersionId: row.project_version_id,
+    key: row.key,
+    channel: row.channel,
+    format: row.format,
     name: row.name,
     status: row.status,
-    platform: row.platform,
-    aspectRatio: row.aspect_ratio,
     width: row.width,
     height: row.height,
-    overrides: row.overrides,
+    payload: row.payload,
     createdBy: row.created_by,
     updatedBy: row.updated_by,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: normalizeSupabaseTimestamp(row.created_at, 'created_at'),
+    updatedAt: normalizeSupabaseTimestamp(row.updated_at, 'updated_at'),
   });
 
 type FilterableQuery = {
-  eq: (column: string, value: string) => FilterableQuery;
+  eq: (column: string, value: unknown) => FilterableQuery;
 };
 
 const scopeFilters = (query: FilterableQuery, scope: CreativeScope): FilterableQuery =>
@@ -171,7 +250,7 @@ const newUuid = (): string => {
 
 const isConflict = (error: unknown): boolean => {
   const candidate = error as { code?: string; message?: string };
-  return candidate?.code === '40001' || candidate?.code === 'P0001'
+  return candidate?.code === '40001' || candidate?.code === 'P0001' || candidate?.code === 'PGRST116'
     || candidate?.message?.toLowerCase().includes('modified by another client') === true;
 };
 
@@ -182,10 +261,21 @@ const isNetworkFailure = (error: unknown): boolean => {
     || candidate?.message?.toLowerCase().includes('fetch') === true;
 };
 
-/**
- * Supabase adapter. The browser must only use the publishable client; RLS and
- * `save_marketing_creative_project` perform the authorization and atomic save.
- */
+const stableComposition = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(stableComposition);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => key !== 'createdAt' && key !== 'updatedAt')
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => [key, stableComposition(item)]),
+  );
+};
+
+const isSameComposition = (left: Record<string, unknown>, right: Record<string, unknown>): boolean =>
+  JSON.stringify(stableComposition(left)) === JSON.stringify(stableComposition(right));
+
+/** Supabase adapter for LoopDev's table/RLS contract (there is no save RPC). */
 export const createSupabaseCreativeProjectRepository = (client: SupabaseClient): CreativeProjectRepository => ({
   async list(scope) {
     const query = client.from('marketing_creative_projects').select('*').order('updated_at', { ascending: false });
@@ -195,8 +285,9 @@ export const createSupabaseCreativeProjectRepository = (client: SupabaseClient):
   },
 
   async get(id, scope) {
-    const query = client.from('marketing_creative_projects').select('*').eq('id', id).maybeSingle();
-    const { data, error } = await scopeFilters(query as unknown as FilterableQuery, scope) as unknown as { data: ProjectRow | null; error: Error | null };
+    const query = client.from('marketing_creative_projects').select('*').eq('id', id);
+    const scoped = scopeFilters(query as unknown as FilterableQuery, scope);
+    const { data, error } = await (scoped as unknown as { maybeSingle: () => Promise<{ data: ProjectRow | null; error: Error | null }> }).maybeSingle();
     if (error) throw error;
     return data ? projectFromRow(data) : null;
   },
@@ -205,31 +296,120 @@ export const createSupabaseCreativeProjectRepository = (client: SupabaseClient):
     const parsed = CreateCreativeProjectInputSchema.parse({
       ...input,
       id: undefined,
-      currentVersion: 1,
+      currentVersionNumber: 0,
     });
     const id = input.id ?? newUuid();
-    const { data, error } = await client.rpc('save_marketing_creative_project', {
-      p_project_id: id,
-      p_organization_id: parsed.organizationId,
-      p_workspace_id: parsed.workspaceId,
-      p_brand_id: parsed.brandId,
-      p_owner_user_id: parsed.ownerUserId ?? null,
-      p_campaign_id: parsed.campaignId ?? null,
-      p_name: parsed.name,
-      p_creative_type: parsed.creativeType,
-      p_status: parsed.status,
-      p_composition: parsed.composition,
-      p_metadata: parsed.metadata,
-      p_expected_updated_at: input.expectedUpdatedAt ?? null,
-      p_change_summary: input.changeSummary ?? null,
-      p_client_mutation_id: input.clientMutationId ?? null,
-    });
-    if (error) {
-      if (isConflict(error)) throw new CreativeProjectConflictError();
-      throw error;
+    let versionNumber = 1;
+    const projectValues = {
+      id,
+      organization_id: parsed.organizationId,
+      workspace_id: parsed.workspaceId,
+      brand_id: parsed.brandId,
+      name: parsed.name,
+      description: parsed.description ?? null,
+      type: parsed.type,
+      status: parsed.status,
+      current_version_number: 0,
+      autosave_revision: 1,
+      autosaved_at: new Date().toISOString(),
+      draft_document: parsed.draftDocument,
+      created_by: parsed.ownerUserId ?? null,
+      updated_by: parsed.ownerUserId ?? null,
+    };
+
+    if (!input.id) {
+      const { data: created, error: createError } = await client
+        .from('marketing_creative_projects')
+        .insert(projectValues)
+        .select('*')
+        .single();
+      if (createError) throw createError;
+      if (!created) throw new Error('Supabase no devolvió el proyecto creado.');
+    } else {
+      const current = await this.get(id, {
+        organizationId: parsed.organizationId,
+        workspaceId: parsed.workspaceId,
+        brandId: parsed.brandId,
+      });
+      if (!current) throw new Error('Proyecto creativo no encontrado.');
+      if (input.expectedUpdatedAt && current.updatedAt !== input.expectedUpdatedAt) {
+        throw new CreativeProjectConflictError();
+      }
+      const contentChanged = current.name !== parsed.name
+        || (current.description ?? null) !== (parsed.description ?? null)
+        || current.type !== parsed.type
+        || current.status !== parsed.status
+        || !isSameComposition(current.draftDocument, parsed.draftDocument);
+      if (!contentChanged) return current;
+      versionNumber = current.currentVersionNumber + 1;
+      const autosaveRevision = current.autosaveRevision + 1;
+      const autosavedAt = new Date().toISOString();
+      const { data: updated, error: updateError } = await client
+        .from('marketing_creative_projects')
+        .update({
+          name: parsed.name,
+          description: parsed.description ?? null,
+          type: parsed.type,
+          status: parsed.status,
+          draft_document: parsed.draftDocument,
+          current_version_number: current.currentVersionNumber + 1,
+          autosave_revision: autosaveRevision,
+          autosaved_at: autosavedAt,
+          updated_by: parsed.ownerUserId ?? null,
+          updated_at: autosavedAt,
+        })
+        .eq('id', id)
+        .eq('organization_id', parsed.organizationId)
+        .eq('workspace_id', parsed.workspaceId)
+        .eq('brand_id', parsed.brandId)
+        .eq('autosave_revision', current.autosaveRevision)
+        .select('id')
+        .single();
+      if (updateError) {
+        if (isConflict(updateError)) throw new CreativeProjectConflictError(undefined, updateError);
+        throw updateError;
+      }
+      if (!updated) throw new CreativeProjectConflictError();
     }
-    if (!data || typeof data !== 'object') throw new Error('Supabase no devolvió el proyecto guardado.');
-    return projectFromRow(data as ProjectRow);
+
+    const { error: versionError } = await client.from('marketing_creative_project_versions').insert({
+      id: newUuid(),
+      project_id: id,
+      organization_id: parsed.organizationId,
+      workspace_id: parsed.workspaceId,
+      brand_id: parsed.brandId,
+      version_number: versionNumber,
+      document: parsed.draftDocument,
+      change_summary: input.changeSummary ?? null,
+      created_by: parsed.ownerUserId ?? null,
+      updated_by: parsed.ownerUserId ?? null,
+    });
+    if (versionError) {
+      if (isConflict(versionError)) throw new CreativeProjectConflictError();
+      throw versionError;
+    }
+    if (!input.id) {
+      const { error: finalizeError } = await client
+        .from('marketing_creative_projects')
+        .update({
+          current_version_number: 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .eq('organization_id', parsed.organizationId)
+        .eq('workspace_id', parsed.workspaceId)
+        .eq('brand_id', parsed.brandId)
+        .select('id')
+        .single();
+      if (finalizeError) throw finalizeError;
+    }
+    const saved = await this.get(id, {
+      organizationId: parsed.organizationId,
+      workspaceId: parsed.workspaceId,
+      brandId: parsed.brandId,
+    });
+    if (!saved) throw new Error('Supabase no devolvió el proyecto guardado.');
+    return saved;
   },
 
   async update(id, input, scope) {
@@ -247,14 +427,14 @@ export const createSupabaseCreativeProjectRepository = (client: SupabaseClient):
   },
 
   async remove(id, scope) {
-    const query = client.from('marketing_creative_projects').delete().eq('id', id);
-    const { error } = await scopeFilters(query as unknown as FilterableQuery, scope) as unknown as { error: Error | null };
-    if (error) throw error;
+    void id;
+    void scope;
+    throw new Error('LoopDev no admite DELETE de proyectos creativos; archiva el proyecto para retirarlo.');
   },
 
   async listVersions(projectId, scope) {
     const query = client.from('marketing_creative_project_versions').select('*')
-      .eq('project_id', projectId).order('version', { ascending: false });
+      .eq('project_id', projectId).order('version_number', { ascending: false });
     const { data, error } = await scopeFilters(query as unknown as FilterableQuery, scope) as unknown as { data: VersionRow[] | null; error: Error | null };
     if (error) throw error;
     return (data ?? []).map(versionFromRow);
@@ -270,24 +450,26 @@ export const createSupabaseCreativeProjectRepository = (client: SupabaseClient):
 
   async saveVariant(variant, scope) {
     const parsed = CreativeProjectVariantSchema.parse(variant);
-    const query = client.from('marketing_creative_variants').upsert({
+    const query = client.from('marketing_creative_variants').insert({
       id: parsed.id,
       project_id: parsed.projectId,
       organization_id: parsed.organizationId,
       workspace_id: parsed.workspaceId,
       brand_id: parsed.brandId,
-      source_version: parsed.sourceVersion,
-      kind: parsed.kind,
+      project_version_id: parsed.projectVersionId,
+      key: parsed.key,
+      channel: parsed.channel,
+      format: parsed.format,
       name: parsed.name,
       status: parsed.status,
-      platform: parsed.platform ?? null,
-      aspect_ratio: parsed.aspectRatio ?? null,
       width: parsed.width ?? null,
       height: parsed.height ?? null,
-      overrides: parsed.overrides,
-      updated_at: parsed.updatedAt,
-    }).select('*').single();
-    const { data, error } = await scopeFilters(query as unknown as FilterableQuery, scope) as unknown as { data: VariantRow | null; error: Error | null };
+      payload: parsed.payload,
+      created_by: parsed.createdBy ?? null,
+      updated_by: parsed.updatedBy ?? null,
+    });
+    const scoped = scopeFilters(query as unknown as FilterableQuery, scope);
+    const { data, error } = await (scoped as unknown as { select: (columns: string) => { single: () => Promise<{ data: VariantRow | null; error: Error | null }> } }).select('*').single();
     if (error) throw error;
     if (!data) throw new Error('Supabase no devolvió la variante guardada.');
     return variantFromRow(data);
@@ -423,13 +605,12 @@ const persistLocalProject = async (project: LocalRecord): Promise<void> => {
   }
 };
 
-const snapshotOf = (project: Pick<CreativeProject, 'name' | 'creativeType' | 'composition' | 'metadata'>): string =>
+const snapshotOf = (project: Pick<CreativeProject, 'name' | 'type' | 'draftDocument'>): string =>
   JSON.stringify({
     schemaVersion: 1,
     name: project.name,
-    creativeType: project.creativeType,
-    composition: project.composition,
-    metadata: project.metadata,
+    type: project.type,
+    document: project.draftDocument,
   });
 
 const nextTimestamp = (previous: string | undefined): string => {
@@ -453,7 +634,7 @@ export const createIndexedDbCreativeProjectRepository = (): CreativeProjectRepos
   },
   async save(input) {
     await hydrateLocalStore();
-    const parsed = CreateCreativeProjectInputSchema.parse({ ...input, currentVersion: 1 });
+    const parsed = CreateCreativeProjectInputSchema.parse({ ...input, currentVersionNumber: 0 });
     const id = input.id ?? newUuid();
     const current = localProjects.get(id);
     const duplicate = input.clientMutationId && [...localVersions.values()].find((version) => version.clientMutationId === input.clientMutationId);
@@ -464,7 +645,8 @@ export const createIndexedDbCreativeProjectRepository = (): CreativeProjectRepos
     const next: LocalRecord = {
       ...parsed,
       id,
-      currentVersion: contentChanged ? (current?.currentVersion ?? 0) + 1 : current.currentVersion,
+      currentVersionNumber: contentChanged ? (current?.currentVersionNumber ?? 0) + 1 : current?.currentVersionNumber ?? 0,
+      autosaveRevision: contentChanged ? (current?.autosaveRevision ?? 0) + 1 : current?.autosaveRevision ?? 0,
       createdAt: current?.createdAt ?? now,
       updatedAt: now,
       createdBy: current?.createdBy,
@@ -478,11 +660,14 @@ export const createIndexedDbCreativeProjectRepository = (): CreativeProjectRepos
         organizationId: next.organizationId,
         workspaceId: next.workspaceId,
         brandId: next.brandId,
-        version: next.currentVersion,
-        snapshot: JSON.parse(snapshotOf(next)) as CreativeProjectVersion['snapshot'],
+        versionNumber: next.currentVersionNumber,
+        document: next.draftDocument,
         changeSummary: input.changeSummary,
         clientMutationId: input.clientMutationId,
+        createdBy: next.createdBy,
+        updatedBy: next.updatedBy,
         createdAt: now,
+        updatedAt: now,
       };
       localVersions.set(version.id, version);
       try { await idbWrite(CREATIVE_VERSION_STORE, version); } catch { /* local memory is still available */ }
@@ -519,7 +704,7 @@ export const createIndexedDbCreativeProjectRepository = (): CreativeProjectRepos
     await hydrateLocalStore();
     const project = await this.get(projectId, scope);
     if (!project) return [];
-    return [...localVersions.values()].filter((version) => version.projectId === projectId).sort((a, b) => b.version - a.version);
+    return [...localVersions.values()].filter((version) => version.projectId === projectId).sort((a, b) => b.versionNumber - a.versionNumber);
   },
   async listVariants(projectId, scope) {
     await hydrateLocalStore();
@@ -548,8 +733,8 @@ export const createIndexedDbCreativeProjectRepository = (): CreativeProjectRepos
 
 /**
  * Remote-first repository with an offline IndexedDB/localStorage queue.
- * A failed remote write is intentionally not retried here: callers can retry
- * with the same clientMutationId, preventing duplicate versions.
+ * A failed remote write is intentionally not retried here. LoopDev's canonical
+ * version table has no client idempotency key, so a retry can create a version.
  */
 export const createResilientCreativeProjectRepository = (
   remote: CreativeProjectRepository,

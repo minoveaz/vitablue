@@ -14,7 +14,9 @@ import {
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
 import { normalizeStoredProject } from '../utils/imageProjectStorage';
-import { CreativeProjectConflictError } from '../utils/creativeProjectRepository';
+import {
+  serializeCreativePersistenceError,
+} from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
@@ -46,6 +48,11 @@ import {
 } from '../../packages/video-studio/src/domain/layoutConstraints';
 import type { ImagePreviewMode } from '../types/imageStudio';
 import { normalizeImageCrop } from '../utils/imageCrop';
+import {
+  createImageProjectAutosaveQueue,
+  sameImageProjectContent,
+  type ImageProjectAutosaveQueue,
+} from '../utils/imageProjectAutosave';
 import { getCarouselLayout } from '../data/carouselLayoutCatalog';
 import {
   changeCarouselLayout,
@@ -79,11 +86,13 @@ export function useImageProjectEditor(
   options: {
     persistenceReady?: boolean;
     persistProject?: (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) => Promise<ImageProject>;
+    reloadProject?: (projectId: string) => Promise<ImageProject | null>;
     onExported?: (blob: Blob, format: string, project: ImageProject) => Promise<void>;
   } = {},
 ) {
   const persistenceReady = options.persistenceReady ?? true;
   const persistProject = options.persistProject;
+  const reloadProject = options.reloadProject;
   const onExported = options.onExported;
   const [project, setProject] = useState<ImageProject>(
     withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0])
@@ -105,51 +114,95 @@ export function useImageProjectEditor(
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'recovery' | 'error'>('saved');
 
   const lastLoadedProjectRef = useRef<string>('');
-  const saveRequestRef = useRef(0);
+  const currentProjectRef = useRef(project);
+  const serverProjectRef = useRef<ImageProject | null>(
+    initialProject ? withProfessionalDesignDefaults(initialProject) : null,
+  );
+  const autosaveQueueRef = useRef<ImageProjectAutosaveQueue | null>(null);
+  const mountedRef = useRef(false);
   const historyRef = useRef<ImageProject[]>([JSON.parse(JSON.stringify(project))]);
   const historyIndexRef = useRef<number>(0);
   const [historyLength, setHistoryLength] = useState<number>(1);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
   useEffect(() => {
-    setValidationIssues(validateImageProject(project));
-    const saveRequest = ++saveRequestRef.current;
-    if (!initialProject || !persistenceReady || !persistProject || project.id !== initialProject.id) return;
-    setSaveState('saving');
-    const saveStartedAt = project.updatedAt;
-    const timer = window.setTimeout(() => {
-      const saveWithRetries = async (): Promise<ImageProject> => {
-        let lastError: unknown;
-        const clientMutationId = crypto.randomUUID();
-        for (let attempt = 0; attempt < 3; attempt += 1) {
-          try {
-            return await persistProject(project, saveStartedAt, clientMutationId);
-          } catch (error) {
-            lastError = error;
-            if (error instanceof CreativeProjectConflictError || attempt === 2) throw error;
-            await new Promise<void>((resolve) => window.setTimeout(resolve, 300 * (attempt + 1)));
+    currentProjectRef.current = project;
+  }, [project]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!persistProject || !persistenceReady) {
+      autosaveQueueRef.current?.dispose();
+      autosaveQueueRef.current = null;
+      return;
+    }
+    const initialServerProject = initialProject
+      ? withProfessionalDesignDefaults(initialProject)
+      : serverProjectRef.current ?? currentProjectRef.current;
+    const queue = createImageProjectAutosaveQueue({
+      initialServerProject,
+      save: persistProject,
+      reload: reloadProject,
+      getCurrentProject: () => currentProjectRef.current,
+      onSaved: (savedProject, savedSnapshot, { hasPendingChanges }) => {
+        // Keep the acknowledgement baseline in the same normalized shape as
+        // the state update below, so defaults added by the editor are not
+        // mistaken for a new local edit on the next effect pass.
+        const normalizedSavedProject = withProfessionalDesignDefaults(savedProject);
+        serverProjectRef.current = normalizedSavedProject;
+        setProject((current) => {
+          const hasLocalChanges = !sameImageProjectContent(current, savedSnapshot);
+          if (hasLocalChanges) {
+            return {
+              ...current,
+              id: savedProject.id,
+              createdAt: savedProject.createdAt,
+              updatedAt: savedProject.updatedAt,
+              currentVersionNumber: savedProject.currentVersionNumber,
+              autosaveRevision: savedProject.autosaveRevision,
+            };
           }
-        }
-        throw lastError;
-      };
-      void saveWithRetries()
-        .then((savedProject) => {
-          if (saveRequest === saveRequestRef.current) {
-            setProject((current) =>
-              current.updatedAt === saveStartedAt
-                ? { ...current, id: savedProject.id, createdAt: savedProject.createdAt, updatedAt: savedProject.updatedAt }
-                : current,
-            );
-            setSaveState('saved');
-            setLastSavedAt(savedProject.updatedAt);
-          }
-        })
-        .catch((error) => {
-          console.warn('Could not persist Image Studio changes remotely:', error);
-          if (saveRequest === saveRequestRef.current) setSaveState('error');
+          return normalizedSavedProject;
         });
-    }, 500);
-    return () => window.clearTimeout(timer);
+        if (hasPendingChanges) {
+          setSaveState('saving');
+        } else {
+          setSaveState('saved');
+          setLastSavedAt(savedProject.updatedAt);
+        }
+      },
+      onConflictMerge: (mergedProject, remoteProject) => {
+        serverProjectRef.current = remoteProject;
+        setProject(mergedProject);
+        setSaveState('saving');
+      },
+      onError: (error) => {
+        console.warn('Could not persist Image Studio changes remotely:', serializeCreativePersistenceError(error));
+        setSaveState('error');
+      },
+      onCancelled: () => {
+        if (mountedRef.current) setSaveState('saved');
+      },
+    });
+    autosaveQueueRef.current = queue;
+    return () => {
+      queue.dispose();
+      if (autosaveQueueRef.current === queue) autosaveQueueRef.current = null;
+    };
+  }, [initialProject, persistProject, persistenceReady, reloadProject]);
+
+  useEffect(() => {
+    setValidationIssues(validateImageProject(project));
+    if (!initialProject || !persistenceReady || !persistProject || project.id !== initialProject.id) return;
+    if (serverProjectRef.current && sameImageProjectContent(project, serverProjectRef.current)) return;
+    const queued = autosaveQueueRef.current?.enqueue(project) ?? false;
+    if (queued) setSaveState('saving');
   }, [project, initialProject, persistenceReady, persistProject]);
 
   // Re-sync whenever initialProject is supplied (e.g. mounting, routing from Hub, or URL param change)
@@ -159,6 +212,7 @@ export function useImageProjectEditor(
       if (projectFingerprint !== lastLoadedProjectRef.current) {
         lastLoadedProjectRef.current = projectFingerprint;
         const normalizedProject = withProfessionalDesignDefaults(initialProject);
+        serverProjectRef.current = normalizedProject;
         setProject(normalizedProject);
         setSelectedLayerIds(initialProject.layers[0]?.id ? [initialProject.layers[0].id] : []);
         const cloned = JSON.parse(JSON.stringify(normalizedProject));
@@ -2155,6 +2209,11 @@ export function useImageProjectEditor(
   }, [pushHistory]);
 
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId) ?? null;
+  const retrySave = useCallback(() => {
+    const retried = autosaveQueueRef.current?.retry() ?? false;
+    if (retried) setSaveState('saving');
+    return retried;
+  }, []);
 
   return {
     project,
@@ -2170,6 +2229,7 @@ export function useImageProjectEditor(
     isExporting,
     lastSavedAt,
     saveState,
+    retrySave,
     validationIssues,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < historyLength - 1,

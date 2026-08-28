@@ -11,6 +11,7 @@ import {
   Layers,
   X,
   ExternalLink,
+  Archive,
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import {
@@ -23,7 +24,7 @@ export interface ImageStudioMyDesignsDrawerProps {
   onInsertSavedLayer: (layer: ImageLayer) => void;
   onListProjects?: () => Promise<ImageProject[]>;
   onDuplicateProject?: (project: ImageProject) => Promise<void>;
-  onDeleteProject?: (project: ImageProject) => Promise<void>;
+  onArchiveProject?: (project: ImageProject) => Promise<void>;
 }
 
 export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProps> = ({
@@ -31,12 +32,13 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
   onInsertSavedLayer,
   onListProjects,
   onDuplicateProject,
-  onDeleteProject,
+  onArchiveProject,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'all' | 'projects' | 'blocks' | 'texts'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [refreshTick, setRefreshTick] = useState<number>(0);
   const [storedProjects, setStoredProjects] = useState<ImageProject[]>([]);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!onListProjects) return;
@@ -82,11 +84,18 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
     if (project && onDuplicateProject) void onDuplicateProject(project).then(() => setRefreshTick((tick) => tick + 1));
   };
 
-  const handleDeleteProject = (id: string, e: React.MouseEvent) => {
+  const handleArchiveProject = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm('¿Seguro que deseas eliminar este proyecto de tus diseños?')) {
+    if (window.confirm('¿Archivar este proyecto? Podrás reactivarlo desde el filtro de archivados.')) {
+      setActionError(null);
       const project = storedProjects.find((item) => item.id === id);
-      if (project && onDeleteProject) void onDeleteProject(project).then(() => setRefreshTick((tick) => tick + 1));
+      if (project && onArchiveProject) {
+        void onArchiveProject(project)
+          .then(() => setRefreshTick((tick) => tick + 1))
+          .catch((error) => setActionError(
+            error instanceof Error ? error.message : 'No se pudo archivar el proyecto.',
+          ));
+      }
     }
   };
 
@@ -172,6 +181,11 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
 
       {/* 2. ZONA DE RESULTADOS */}
       <div className="flex-1 overflow-y-auto p-3.5 custom-scrollbar space-y-4 bg-[#050B14]/40">
+        {actionError && (
+          <div role="alert" className="rounded-xl border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-[11px] font-semibold text-rose-200">
+            {actionError}
+          </div>
+        )}
         {/* SECCIÓN A: PROYECTOS COMPLETOS */}
         {filteredProjects.length > 0 && (
           <div className="space-y-2.5">
@@ -214,11 +228,11 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
                       </button>
                       <button
                         type="button"
-                        onClick={(e) => handleDeleteProject(proj.id, e)}
-                        className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
-                        title="Eliminar proyecto"
+                        onClick={(e) => handleArchiveProject(proj.id, e)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-slate-800 transition-colors"
+                        title="Archivar proyecto"
                       >
-                        <Trash2 className="size-3.5" />
+                        <Archive className="size-3.5" />
                       </button>
                       <button
                         type="button"
