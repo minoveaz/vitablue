@@ -13,12 +13,8 @@ import {
   CarouselCreativeVariant,
 } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from '../utils/imageTemplates';
-import {
-  getAsyncRecoveryImageProject,
-  normalizeStoredProject,
-  saveRecoveryImageProjectAsync,
-  saveStoredImageProjectAsync,
-} from '../utils/imageProjectStorage';
+import { normalizeStoredProject } from '../utils/imageProjectStorage';
+import { CreativeProjectConflictError } from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
 import { TextPresetItem } from '../data/textPresets';
@@ -80,9 +76,15 @@ const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => 
 
 export function useImageProjectEditor(
   initialProject?: ImageProject,
-  options: { persistenceReady?: boolean } = {},
+  options: {
+    persistenceReady?: boolean;
+    persistProject?: (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) => Promise<ImageProject>;
+    onExported?: (blob: Blob, format: string, project: ImageProject) => Promise<void>;
+  } = {},
 ) {
   const persistenceReady = options.persistenceReady ?? true;
+  const persistProject = options.persistProject;
+  const onExported = options.onExported;
   const [project, setProject] = useState<ImageProject>(
     withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0])
   );
@@ -110,58 +112,45 @@ export function useImageProjectEditor(
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
   useEffect(() => {
-    if (!initialProject || !persistenceReady) return;
-    let active = true;
-    const projectId = initialProject.id;
-    const projectUpdatedAt = initialProject.updatedAt;
-    void getAsyncRecoveryImageProject()
-      .then((recovery) => {
-        if (
-          active &&
-          recovery &&
-          recovery.project.id === projectId &&
-          recovery.savedAt > projectUpdatedAt
-        ) {
-          setProject(withProfessionalDesignDefaults(recovery.project));
-          setSaveState('recovery');
-          setValidationIssues(validateImageProject(recovery.project));
-        }
-      })
-      .catch((error) => {
-        if (active) console.warn('Could not load recovery project:', error);
-      });
-    return () => {
-      active = false;
-    };
-  }, [initialProject, persistenceReady]);
-
-  useEffect(() => {
     setValidationIssues(validateImageProject(project));
     const saveRequest = ++saveRequestRef.current;
-    if (!initialProject || !persistenceReady || project.id !== initialProject.id) return;
+    if (!initialProject || !persistenceReady || !persistProject || project.id !== initialProject.id) return;
     setSaveState('saving');
     const saveStartedAt = project.updatedAt;
     const timer = window.setTimeout(() => {
-      void Promise.all([
-        saveStoredImageProjectAsync(project, { touchUpdatedAt: false }),
-        saveRecoveryImageProjectAsync(project),
-      ])
-        .then(([savedProject]) => {
-          if (
-            saveRequest === saveRequestRef.current &&
-            savedProject.updatedAt === saveStartedAt
-          ) {
+      const saveWithRetries = async (): Promise<ImageProject> => {
+        let lastError: unknown;
+        const clientMutationId = crypto.randomUUID();
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          try {
+            return await persistProject(project, saveStartedAt, clientMutationId);
+          } catch (error) {
+            lastError = error;
+            if (error instanceof CreativeProjectConflictError || attempt === 2) throw error;
+            await new Promise<void>((resolve) => window.setTimeout(resolve, 300 * (attempt + 1)));
+          }
+        }
+        throw lastError;
+      };
+      void saveWithRetries()
+        .then((savedProject) => {
+          if (saveRequest === saveRequestRef.current) {
+            setProject((current) =>
+              current.updatedAt === saveStartedAt
+                ? { ...current, id: savedProject.id, createdAt: savedProject.createdAt, updatedAt: savedProject.updatedAt }
+                : current,
+            );
             setSaveState('saved');
             setLastSavedAt(savedProject.updatedAt);
           }
         })
         .catch((error) => {
-          console.warn('Could not persist Image Studio changes:', error);
+          console.warn('Could not persist Image Studio changes remotely:', error);
           if (saveRequest === saveRequestRef.current) setSaveState('error');
         });
-    }, 180);
+    }, 500);
     return () => window.clearTimeout(timer);
-  }, [project, initialProject, persistenceReady]);
+  }, [project, initialProject, persistenceReady, persistProject]);
 
   // Re-sync whenever initialProject is supplied (e.g. mounting, routing from Hub, or URL param change)
   useEffect(() => {
@@ -1624,12 +1613,20 @@ export function useImageProjectEditor(
       link.download = `${project.title.toLowerCase().replace(/\s+/g, '-')}-${project.preset.aspectRatio.replace(':', 'x')}.${format}`;
       link.href = dataUrl;
       link.click();
+      if (onExported) {
+        try {
+          const exportedBlob = await (await fetch(dataUrl)).blob();
+          await onExported(exportedBlob, format, project);
+        } catch (error) {
+          console.warn('Could not persist creative export remotely:', error);
+        }
+      }
     } catch (err) {
       console.error('Error al exportar imagen:', err);
     } finally {
       setIsExporting(false);
     }
-  }, [project.title, project.preset.aspectRatio]);
+  }, [onExported, project, project.title, project.preset.aspectRatio]);
 
   const exportCanvasStage = useCallback(async (
     stage: unknown,

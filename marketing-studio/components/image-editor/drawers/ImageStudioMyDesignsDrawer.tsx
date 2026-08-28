@@ -14,12 +14,6 @@ import {
 } from 'lucide-react';
 import { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import {
-  IMAGE_PROJECTS_UPDATED_EVENT,
-  getUserSavedImageProjects,
-  duplicateStoredImageProject,
-  deleteStoredImageProject,
-} from '../../../utils/imageProjectStorage';
-import {
   getSavedCustomElements,
   deleteSavedCustomElement,
 } from '../../../utils/savedElementsStorage';
@@ -27,40 +21,33 @@ import {
 export interface ImageStudioMyDesignsDrawerProps {
   onLoadProject: (project: ImageProject) => void;
   onInsertSavedLayer: (layer: ImageLayer) => void;
+  onListProjects?: () => Promise<ImageProject[]>;
+  onDuplicateProject?: (project: ImageProject) => Promise<void>;
+  onDeleteProject?: (project: ImageProject) => Promise<void>;
 }
 
 export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProps> = ({
   onLoadProject,
   onInsertSavedLayer,
+  onListProjects,
+  onDuplicateProject,
+  onDeleteProject,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'all' | 'projects' | 'blocks' | 'texts'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [refreshTick, setRefreshTick] = useState<number>(0);
+  const [storedProjects, setStoredProjects] = useState<ImageProject[]>([]);
 
-  const triggerRefresh = () => setRefreshTick((prev) => prev + 1);
-
-  // Escuchar cambios reactivos cross-project
   useEffect(() => {
-    const handleStorageUpdate = () => triggerRefresh();
-    window.addEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleStorageUpdate);
-    window.addEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
-    window.addEventListener('storage', handleStorageUpdate);
+    if (!onListProjects) return;
+    void onListProjects().then(setStoredProjects).catch(() => setStoredProjects([]));
     return () => {
-      window.removeEventListener(IMAGE_PROJECTS_UPDATED_EVENT, handleStorageUpdate);
-      window.removeEventListener('vitablue_saved_elements_updated', handleStorageUpdate);
-      window.removeEventListener('storage', handleStorageUpdate);
+      // The project list is remote and refreshed on demand after mutations.
     };
-  }, []);
-
-  // Proyectos guardados exclusivamente por el usuario
-  const storedProjects = useMemo(() => {
-    return getUserSavedImageProjects();
-  }, [refreshTick]);
+  }, [onListProjects, refreshTick]);
 
   // Elementos / bloques guardados exclusivamente por el usuario
-  const savedElements = useMemo(() => {
-    return getSavedCustomElements();
-  }, [refreshTick]);
+  const savedElements = getSavedCustomElements();
 
   // Filtrado de proyectos
   const filteredProjects = useMemo(() => {
@@ -91,22 +78,22 @@ export const ImageStudioMyDesignsDrawer: React.FC<ImageStudioMyDesignsDrawerProp
 
   const handleDuplicateProject = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    duplicateStoredImageProject(id);
-    triggerRefresh();
+    const project = storedProjects.find((item) => item.id === id);
+    if (project && onDuplicateProject) void onDuplicateProject(project).then(() => setRefreshTick((tick) => tick + 1));
   };
 
   const handleDeleteProject = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm('¿Seguro que deseas eliminar este proyecto de tus diseños?')) {
-      deleteStoredImageProject(id);
-      triggerRefresh();
+      const project = storedProjects.find((item) => item.id === id);
+      if (project && onDeleteProject) void onDeleteProject(project).then(() => setRefreshTick((tick) => tick + 1));
     }
   };
 
   const handleDeleteElement = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     deleteSavedCustomElement(id);
-    triggerRefresh();
+    setRefreshTick((tick) => tick + 1);
   };
 
   const totalCount = storedProjects.length + savedElements.length;

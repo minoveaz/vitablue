@@ -82,6 +82,75 @@ CREATE INDEX IF NOT EXISTS marketing_creative_project_versions_project_idx
 CREATE INDEX IF NOT EXISTS marketing_creative_variants_project_idx
   ON public.marketing_creative_variants (project_id, updated_at DESC);
 
+-- Assets are metadata for objects in the private buckets below.  The first
+-- three path segments are always organization/workspace/brand, so Storage RLS
+-- can enforce the same tenant boundary as the relational tables.
+CREATE TABLE IF NOT EXISTS public.marketing_creative_assets (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id uuid NOT NULL,
+  workspace_id uuid,
+  brand_id uuid,
+  owner_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  project_id uuid,
+  version_id uuid,
+  variant_id uuid,
+  name text NOT NULL CHECK (char_length(btrim(name)) BETWEEN 1 AND 240),
+  type text NOT NULL CHECK (type IN ('image', 'video', 'audio', 'document', 'font', 'archive', 'panorama', 'thumbnail', 'other')),
+  storage_class text NOT NULL CHECK (storage_class IN ('source', 'font', 'export')),
+  origin text NOT NULL CHECK (origin IN ('upload', 'import', 'generated', 'export')),
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'ready', 'archived')),
+  storage_path text NOT NULL UNIQUE,
+  mime_type text NOT NULL,
+  size_bytes bigint NOT NULL CHECK (size_bytes >= 0),
+  checksum text,
+  format text,
+  width integer CHECK (width IS NULL OR width > 0),
+  height integer CHECK (height IS NULL OR height > 0),
+  duration_ms bigint CHECK (duration_ms IS NULL OR duration_ms >= 0),
+  platform text,
+  metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS marketing_creative_assets_scope_idx
+  ON public.marketing_creative_assets (organization_id, workspace_id, brand_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS marketing_creative_assets_project_idx
+  ON public.marketing_creative_assets (project_id, updated_at DESC);
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES
+  ('marketing-creative-sources', 'marketing-creative-sources', false, 52428800,
+    ARRAY['image/*', 'video/*', 'audio/*', 'application/octet-stream']),
+  ('marketing-creative-fonts', 'marketing-creative-fonts', false, 10485760,
+    ARRAY['font/*', 'application/font-woff', 'application/font-woff2', 'application/octet-stream']),
+  ('marketing-creative-exports', 'marketing-creative-exports', false, 104857600,
+    ARRAY['image/*', 'application/pdf', 'application/zip', 'application/octet-stream'])
+ON CONFLICT (id) DO UPDATE SET
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+CREATE OR REPLACE FUNCTION public.creative_jwt_claim_uuid(p_key text)
+RETURNS uuid
+LANGUAGE plpgsql
+STABLE
+SECURITY INVOKER
+SET search_path = public
+AS $$
+DECLARE
+  value text;
+BEGIN
+  value := coalesce(auth.jwt() ->> p_key, auth.jwt() -> 'app_metadata' ->> p_key);
+  IF value ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN
+    RETURN value::uuid;
+  END IF;
+  RETURN NULL;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION public.marketing_creative_scope_matches_claims(
   p_organization_id uuid,
   p_workspace_id uuid,
@@ -94,18 +163,9 @@ SET search_path = public
 AS $$
   SELECT
     auth.uid() IS NOT NULL
-    AND (
-      (auth.jwt() ->> 'organization_id')::uuid = p_organization_id
-      OR (auth.jwt() -> 'app_metadata' ->> 'organization_id')::uuid = p_organization_id
-    )
-    AND (
-      (auth.jwt() ->> 'workspace_id') IS NULL
-      OR (auth.jwt() ->> 'workspace_id')::uuid = p_workspace_id
-    )
-    AND (
-      (auth.jwt() ->> 'brand_id') IS NULL
-      OR (auth.jwt() ->> 'brand_id')::uuid = p_brand_id
-    );
+    AND public.creative_jwt_claim_uuid('organization_id') = p_organization_id
+    AND public.creative_jwt_claim_uuid('workspace_id') = p_workspace_id
+    AND public.creative_jwt_claim_uuid('brand_id') = p_brand_id;
 $$;
 
 CREATE OR REPLACE FUNCTION public.has_marketing_creative_permission(required_role text)
@@ -128,6 +188,8 @@ REVOKE ALL ON FUNCTION public.marketing_creative_scope_matches_claims(uuid, uuid
 REVOKE ALL ON FUNCTION public.has_marketing_creative_permission(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.marketing_creative_scope_matches_claims(uuid, uuid, uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.has_marketing_creative_permission(text) TO authenticated;
+REVOKE ALL ON FUNCTION public.creative_jwt_claim_uuid(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.creative_jwt_claim_uuid(text) TO authenticated;
 
 ALTER TABLE public.marketing_creative_projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.marketing_creative_project_versions ENABLE ROW LEVEL SECURITY;
@@ -220,6 +282,113 @@ CREATE POLICY "Creative admins can delete variants in their tenant"
     public.has_marketing_creative_permission('admin')
     AND public.marketing_creative_scope_matches_claims(organization_id, workspace_id, brand_id)
   );
+
+ALTER TABLE public.marketing_creative_assets ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Creative users can read assets in their tenant" ON public.marketing_creative_assets;
+CREATE POLICY "Creative users can read assets in their tenant"
+  ON public.marketing_creative_assets FOR SELECT TO authenticated
+  USING (
+    public.has_marketing_creative_permission('viewer')
+    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+  );
+
+DROP POLICY IF EXISTS "Creative editors can create assets in their tenant" ON public.marketing_creative_assets;
+CREATE POLICY "Creative editors can create assets in their tenant"
+  ON public.marketing_creative_assets FOR INSERT TO authenticated
+  WITH CHECK (
+    public.has_marketing_creative_permission('editor')
+    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+  );
+
+DROP POLICY IF EXISTS "Creative editors can update assets in their tenant" ON public.marketing_creative_assets;
+CREATE POLICY "Creative editors can update assets in their tenant"
+  ON public.marketing_creative_assets FOR UPDATE TO authenticated
+  USING (
+    public.has_marketing_creative_permission('editor')
+    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+  )
+  WITH CHECK (
+    public.has_marketing_creative_permission('editor')
+    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+  );
+
+DROP POLICY IF EXISTS "Creative admins can delete assets in their tenant" ON public.marketing_creative_assets;
+CREATE POLICY "Creative admins can delete assets in their tenant"
+  ON public.marketing_creative_assets FOR DELETE TO authenticated
+  USING (
+    public.has_marketing_creative_permission('admin')
+    AND public.marketing_creative_scope_matches_claims(organization_id, coalesce(workspace_id, public.creative_jwt_claim_uuid('workspace_id')), coalesce(brand_id, public.creative_jwt_claim_uuid('brand_id')))
+  );
+
+-- Storage object names mirror the tenant scope:
+-- organization_id/workspace_id/brand_id/project_id/asset-id.ext
+DO $$
+DECLARE
+  bucket text;
+BEGIN
+  FOREACH bucket IN ARRAY ARRAY[
+    'marketing-creative-sources',
+    'marketing-creative-fonts',
+    'marketing-creative-exports'
+  ] LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects', 'Creative users can read ' || bucket);
+    EXECUTE format(
+      'CREATE POLICY %I ON storage.objects FOR SELECT TO authenticated
+       USING (bucket_id = %L
+         AND public.has_marketing_creative_permission(''viewer'')
+         AND public.marketing_creative_scope_matches_claims(
+           NULLIF((storage.foldername(name))[1], '''')::uuid,
+           NULLIF((storage.foldername(name))[2], '''')::uuid,
+           NULLIF((storage.foldername(name))[3], '''')::uuid
+         ))',
+      'Creative users can read ' || bucket, bucket
+    );
+    EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects', 'Creative editors can upload ' || bucket);
+    EXECUTE format(
+      'CREATE POLICY %I ON storage.objects FOR INSERT TO authenticated
+       WITH CHECK (bucket_id = %L
+         AND public.has_marketing_creative_permission(''editor'')
+         AND public.marketing_creative_scope_matches_claims(
+           NULLIF((storage.foldername(name))[1], '''')::uuid,
+           NULLIF((storage.foldername(name))[2], '''')::uuid,
+           NULLIF((storage.foldername(name))[3], '''')::uuid
+         ))',
+      'Creative editors can upload ' || bucket, bucket
+    );
+    EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects', 'Creative editors can update ' || bucket);
+    EXECUTE format(
+      'CREATE POLICY %I ON storage.objects FOR UPDATE TO authenticated
+       USING (bucket_id = %L
+         AND public.has_marketing_creative_permission(''editor'')
+         AND public.marketing_creative_scope_matches_claims(
+           NULLIF((storage.foldername(name))[1], '''')::uuid,
+           NULLIF((storage.foldername(name))[2], '''')::uuid,
+           NULLIF((storage.foldername(name))[3], '''')::uuid
+         ))
+       WITH CHECK (bucket_id = %L
+         AND public.has_marketing_creative_permission(''editor'')
+         AND public.marketing_creative_scope_matches_claims(
+           NULLIF((storage.foldername(name))[1], '''')::uuid,
+           NULLIF((storage.foldername(name))[2], '''')::uuid,
+           NULLIF((storage.foldername(name))[3], '''')::uuid
+         ))',
+      'Creative editors can update ' || bucket, bucket, bucket
+    );
+    EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects', 'Creative admins can delete ' || bucket);
+    EXECUTE format(
+      'CREATE POLICY %I ON storage.objects FOR DELETE TO authenticated
+       USING (bucket_id = %L
+         AND public.has_marketing_creative_permission(''admin'')
+         AND public.marketing_creative_scope_matches_claims(
+           NULLIF((storage.foldername(name))[1], '''')::uuid,
+           NULLIF((storage.foldername(name))[2], '''')::uuid,
+           NULLIF((storage.foldername(name))[3], '''')::uuid
+         ))',
+      'Creative admins can delete ' || bucket, bucket
+    );
+  END LOOP;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.save_marketing_creative_project(
   p_project_id uuid,

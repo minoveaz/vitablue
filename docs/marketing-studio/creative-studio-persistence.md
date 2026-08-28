@@ -1,8 +1,8 @@
 # Contratos de persistencia de Creative Studio
 
 **Fecha:** 2026-08-27  
-**Fases:** 1 — contratos y tenancy; 2 — persistencia de proyectos  
-**Estado:** contratos definidos y adaptadores de Fase 2 preparados
+**Fases:** 1–4 — contratos, persistencia e integración remota
+**Estado:** VitaBlue conectado al repositorio y Storage privados de LoopDev
 
 ## Referencias revisadas
 
@@ -67,7 +67,9 @@ sustitución (`none`, `manual`, `same_type`, `tag`).
 
 No se aceptan URLs `data:` ni `blob:` en composiciones o rutas de assets.
 Imágenes, blobs y exportaciones viven en Storage; el JSON editable guarda
-referencias y metadata.
+referencias y metadata. Las URLs firmadas solo existen durante la sesión: al
+cargar un proyecto o la biblioteca se renuevan desde el `storage_path`, y los
+exports de carrusel (ZIP, PDF y panorama) se registran como assets remotos.
 
 ## Ownership y acceso
 
@@ -105,30 +107,35 @@ Los contratos Zod y sus tipos inferidos están en
 payloads inline, inmutabilidad del scope, entidades relacionadas y la matriz
 de permisos. Las migraciones de proyectos, versiones y variantes están en
 `supabase/migrations/20260827230000_create_marketing_creative_persistence.sql`.
-El repositorio Supabase y el fallback IndexedDB/localStorage están en
-`marketing-studio/utils/creativeProjectRepository.ts`.
+El repositorio Supabase está en
+`marketing-studio/utils/creativeProjectRepository.ts`; los adaptadores locales
+se conservan únicamente para leer migraciones legacy explícitas.
 
-## Fase 2: límites de la arquitectura actual
+## Integración remota de VitaBlue
 
 El repositorio remoto usa el cliente publishable de Supabase y delega la
 autorización en RLS y en `save_marketing_creative_project`, que hace el
 autosave con `expected_updated_at` y `client_mutation_id` de forma atómica.
-Los reintentos con el mismo mutation id no crean versiones duplicadas. Cuando
-no hay red, el adaptador conserva el proyecto en IndexedDB (con localStorage
-como último fallback); la sincronización explícita seguirá siendo necesaria al
-conectar el editor en Fase 4.
+Los reintentos con el mismo mutation id no crean versiones duplicadas. El editor
+mantiene el documento únicamente en memoria y reintenta el autosave remoto con
+debounce; no usa IndexedDB ni localStorage para proyectos, medios o recovery.
 
 VitaBlue es actualmente una SPA Vite: no existe un servidor HTTP ni un
 directorio de route handlers. Por eso no se añadió una falsa API `/api`; el
 repositorio es el contrato/adaptador que puede conectarse a una Edge Function
 o backend server-side cuando se defina esa frontera. La migración exige que la
-plataforma de tenancy publique `organization_id` (y opcionalmente
-`workspace_id`/`brand_id`) en los claims JWT. El `user_roles` actual solo tiene
-roles globales y no puede autorizar organizaciones por sí mismo.
+plataforma de tenancy publique `organization_id`, `workspace_id` y `brand_id`
+en los claims JWT. El `user_roles` actual solo tiene roles globales y no puede
+autorizar organizaciones por sí mismo.
 
-No se ejecutaron migraciones ni se levantó Docker/Supabase. Para activar el
-guardado remoto y validar RLS se necesitan Docker/Supabase activos y los claims
-de tenancy disponibles, además de aplicar antes `06_marketing_auth_roles.sql`
-(la migración usa `has_marketing_role`). Hasta entonces el editor existente
-mantiene IndexedDB como ruta local; la integración del editor con el repositorio
-remoto queda para la siguiente iteración.
+La interfaz de VitaBlue obtiene el scope de los claims JWT
+(`organization_id`, `workspace_id`, `brand_id`) y delega autorización en RLS.
+Los uploads usan buckets privados y registran metadata en
+`marketing_creative_assets`; los paquetes ligeros contienen JSON sin binarios.
+La migración `20260827230000_create_marketing_creative_persistence.sql` provisiona
+la tabla, los tres buckets privados y las políticas tenant-scoped compatibles
+con LoopDev. El scope se lee del access-token JWT (claims raíz o
+`app_metadata`), nunca de `user_metadata` ni de `service_role`.
+La importación de datos legacy solo se inicia mediante la acción explícita
+“Importar diseños del navegador”, permite seleccionar proyectos y conserva los
+originales para poder revertir.

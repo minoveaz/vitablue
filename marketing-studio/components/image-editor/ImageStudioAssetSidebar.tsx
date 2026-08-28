@@ -20,6 +20,9 @@ import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
 import { ImageStudioBackgroundDrawer } from './drawers/ImageStudioBackgroundDrawer';
 import type { CarouselBackgroundCompositionInput } from '../../types/carouselBackgroundComposition';
+import type { RuntimeCreativeAsset } from '../../utils/creativeStudioRemote';
+
+type RemoteImageMedia = RuntimeCreativeAsset;
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -71,6 +74,12 @@ export interface ImageStudioAssetDrawerContentProps {
   ) => void;
   onPrepareVideo?: (settings: VideoPreparationSettings) => void;
   onRegenerateBackground?: (composition: CarouselBackgroundCompositionInput) => void;
+  onUploadImage?: (file: File) => Promise<RemoteImageMedia>;
+  onListImages?: () => Promise<RemoteImageMedia[]>;
+  onDeleteImage?: (asset: RemoteImageMedia) => Promise<void>;
+  onListProjects?: () => Promise<ImageProject[]>;
+  onDuplicateProject?: (project: ImageProject) => Promise<void>;
+  onDeleteProject?: (project: ImageProject) => Promise<void>;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -112,6 +121,12 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onUpdateLayerBorder,
   onPrepareVideo,
   onRegenerateBackground,
+  onUploadImage,
+  onListImages,
+  onDeleteImage,
+  onListProjects,
+  onDuplicateProject,
+  onDeleteProject,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -120,6 +135,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         <div className="-m-4 h-[calc(100vh-140px)]">
           <ImageStudioMyDesignsDrawer
             onLoadProject={onLoadTemplate}
+            onListProjects={onListProjects}
+            onDuplicateProject={onDuplicateProject}
+            onDeleteProject={onDeleteProject}
             onInsertSavedLayer={(layer) => {
               if (onInsertSavedLayer) {
                 onInsertSavedLayer(layer);
@@ -225,6 +243,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
                 '#001219'
               );
             }}
+            onUploadImage={onUploadImage}
+            onListImages={onListImages}
+            onDeleteImage={onDeleteImage}
           />
         </div>
       )}

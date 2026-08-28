@@ -649,6 +649,8 @@ export interface CanvasBackground {
 export interface ImageProject {
   id: string;
   title: string;
+  /** Remote Creative Project lifecycle state. */
+  creativeStatus?: 'draft' | 'ready' | 'archived';
   preset: ImageFormatPreset;
   background: CanvasBackground;
   layers: ImageLayer[];
