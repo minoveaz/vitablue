@@ -9,6 +9,12 @@ export interface EditableVectorPoint {
   y: number;
 }
 
+export type EditableArrowheadStyle = 'none' | 'triangle' | 'open' | 'circle' | 'bar';
+export type EditableLineJoin = 'miter' | 'round' | 'bevel';
+export type EditableLineCap = 'butt' | 'round' | 'square';
+
+export type EditableVectorAnchor = EditableVectorPoint;
+
 export interface EditableVectorGeometry {
   version: 1;
   kind: 'bezier' | 'path';
@@ -18,6 +24,10 @@ export interface EditableVectorGeometry {
   path?: string;
   closed?: boolean;
   fillRule?: 'nonzero' | 'evenodd';
+  /** Optional line styling persisted with freeform geometry. */
+  lineJoin?: EditableLineJoin;
+  lineCap?: EditableLineCap;
+  curvature?: number;
 }
 
 /**
@@ -40,6 +50,13 @@ export interface EditableVectorShapeOptions {
   waveCycles?: number;
   waveAnchor?: 'top' | 'bottom';
   wavePath?: string;
+  headStyle?: EditableArrowheadStyle;
+  tailStyle?: EditableArrowheadStyle;
+  lineJoin?: EditableLineJoin;
+  lineCap?: EditableLineCap;
+  curvature?: number;
+  startAnchor?: EditableVectorAnchor;
+  endAnchor?: EditableVectorAnchor;
 }
 
 /** Input accepted by editors before the persistence version is stamped. */

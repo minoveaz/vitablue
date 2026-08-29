@@ -54,6 +54,7 @@ import { InlineTextControls } from './InlineEditableText';
 import { useActiveInlineEditor, useInlineTextFormatting } from './InlineEditorContext';
 import { htmlToPlainText, isTiptapHtml, normalizeTiptapHtml } from '../../utils/tiptapHtml';
 import { getEditableVectorPath, normalizeEditableVectorGeometry } from '../../utils/vectorGeometry';
+import type { EditableVectorGeometry, EditableVectorPoint } from '../../types/vectorGeometry';
 
 interface NumberInputProps {
   value?: number;
@@ -124,6 +125,120 @@ const NumberInput: React.FC<NumberInputProps> = ({
       onKeyDown={handleKeyDown}
       className={className}
     />
+  );
+};
+
+const ESSENTIAL_GEOMETRY_OPTIONS = [
+  ['rounded_rect', 'Rectángulo redondeado'],
+  ['rectangle', 'Rectángulo'],
+  ['circle', 'Círculo'],
+  ['blob-1', 'Blob'],
+  ['star-5', 'Estrella'],
+  ['brace-pair', 'Llaves'],
+  ['frame-rounded', 'Marco'],
+] as const;
+
+const LINE_GEOMETRY_OPTIONS = [
+  ['line', 'Línea sólida'],
+  ['line-dashed', 'Línea discontinua'],
+  ['line-dotted', 'Línea punteada'],
+  ['curve', 'Curva'],
+  ['polyline', 'Polilínea'],
+] as const;
+
+const ARROW_GEOMETRY_OPTIONS = [
+  ['arrow-right', 'Derecha'],
+  ['arrow-left', 'Izquierda'],
+  ['arrow-up', 'Arriba'],
+  ['arrow-down', 'Abajo'],
+  ['arrow-both', 'Bidireccional'],
+  ['line-arrow-right', 'Línea con flecha'],
+  ['line-arrow-both', 'Línea con flechas'],
+] as const;
+
+const CONNECTOR_GEOMETRY_OPTIONS = [
+  ['connector-elbow', 'En ángulo'],
+  ['connector-curved', 'Curvo'],
+] as const;
+
+const DECORATIVE_GEOMETRY_OPTIONS = [
+  ['ring', 'Anillo'],
+  ['arc', 'Arco'],
+  ['carousel-wave', 'Onda'],
+  ['separator-wave', 'Separador ondulado'],
+  ['separator-curve', 'Separador curvo'],
+  ['separator-zigzag', 'Separador zigzag'],
+  ['separator-dots', 'Separador de puntos'],
+  ['separator-diamond', 'Separador con diamante'],
+  ['star-parametric', 'Estrella paramétrica'],
+  ['polygon-parametric', 'Polígono paramétrico'],
+] as const;
+
+const ALL_GEOMETRY_OPTIONS = [
+  ...ESSENTIAL_GEOMETRY_OPTIONS,
+  ['full-rectangle', 'Rectángulo a sangre'],
+  ['top-semicircle', 'Semicírculo'],
+  ['triangle', 'Triángulo'],
+  ['triangle-down', 'Triángulo abajo'],
+  ['diamond', 'Rombo'],
+  ['hexagon', 'Hexágono'],
+  ['pentagon', 'Pentágono'],
+  ...DECORATIVE_GEOMETRY_OPTIONS,
+  ['blob-2', 'Blob fluido'],
+  ['blob-3', 'Blob nube'],
+  ['blob-4', 'Blob editorial'],
+  ['blob-5', 'Blob orbital'],
+  ['blob-6', 'Blob orgánico'],
+  ['frame-simple', 'Marco clásico'],
+  ['frame-circle', 'Marco ovalado'],
+  ['frame-corners', 'Esquinas editoriales'],
+  ['frame-polaroid', 'Marco instantáneo'],
+  ['frame-film', 'Tira de película'],
+  ['mask-circle', 'Máscara circular'],
+  ['mask-rounded', 'Máscara redondeada'],
+  ['mask-hexagon', 'Máscara hexagonal'],
+  ['mask-arch', 'Máscara de arco'],
+  ['mask-blob', 'Máscara orgánica'],
+  ['mask-heart', 'Máscara corazón'],
+  ['speech_bubble', 'Bocadillo de diálogo'],
+  ['heart', 'Corazón'],
+  ['shield', 'Escudo'],
+  ['brace-left', 'Llave izquierda'],
+  ['brace-right', 'Llave derecha'],
+] as const;
+
+const VectorPointsEditor: React.FC<{
+  geometry: EditableVectorGeometry;
+  onChange: (geometry: EditableVectorGeometry) => void;
+}> = ({ geometry, onChange }) => {
+  if (!geometry.points) return null;
+  const points = geometry.points;
+  const updatePoint = (index: number, axis: 'x' | 'y', value: number | undefined) => {
+    if (value === undefined) return;
+    const nextPoints: EditableVectorPoint[] = points.map((point, pointIndex) => (
+      pointIndex === index ? { ...point, [axis]: Math.max(0, Math.min(1, value / 100)) } : point
+    ));
+    onChange({ ...geometry, points: nextPoints });
+  };
+
+  return (
+    <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-900/60 p-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Puntos editables</span>
+        <button type="button" disabled={points.length >= 64} onClick={() => onChange({ ...geometry, points: [...points, { x: 0.5, y: 0.5 }] })} className="rounded-md border border-brand-cyan/40 px-2 py-1 text-[10px] font-semibold text-brand-cyan disabled:opacity-40">+ Punto</button>
+      </div>
+      <div className="space-y-1.5">
+        {points.map((point, index) => (
+          <div key={`${index}-${point.x}-${point.y}`} className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-1">
+            <span className="w-5 text-[9px] text-slate-500">P{index + 1}</span>
+            <NumberInput aria-label={`Punto ${index + 1} X`} value={Math.round(point.x * 100)} min={0} max={100} onChange={(value) => updatePoint(index, 'x', value)} className="w-full rounded-md border border-slate-800 bg-slate-950 px-1.5 py-1 text-[10px] text-white" />
+            <NumberInput aria-label={`Punto ${index + 1} Y`} value={Math.round(point.y * 100)} min={0} max={100} onChange={(value) => updatePoint(index, 'y', value)} className="w-full rounded-md border border-slate-800 bg-slate-950 px-1.5 py-1 text-[10px] text-white" />
+            <button type="button" disabled={points.length <= 2} aria-label={`Eliminar punto ${index + 1}`} onClick={() => onChange({ ...geometry, points: points.filter((_, pointIndex) => pointIndex !== index) })} className="flex size-6 items-center justify-center rounded-md text-rose-200 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-30">×</button>
+          </div>
+        ))}
+      </div>
+      <p className="text-[9px] text-slate-500">Coordenadas relativas al lienzo (0–100%).</p>
+    </div>
   );
 };
 
@@ -715,6 +830,24 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   const props = selectedLayer.props as Record<string, unknown>;
   const geometricShapeType = String(props.shapeType ?? 'rectangle');
+  const isArrowGeometry = geometricShapeType.includes('arrow') || geometricShapeType.startsWith('arrow');
+  const isConnectorGeometry = geometricShapeType.startsWith('connector');
+  const isDecorativeGeometry = geometricShapeType === 'ring'
+    || geometricShapeType === 'arc'
+    || geometricShapeType.startsWith('separator')
+    || geometricShapeType === 'carousel-wave'
+    || geometricShapeType.includes('parametric')
+    || geometricShapeType.startsWith('blob');
+  const isEditableStroke = ['line', 'line-dashed', 'line-dotted', 'line-arrow-right', 'line-arrow-both', 'curve', 'polyline', 'separator-wave', 'separator-curve', 'separator-zigzag', 'connector-elbow', 'connector-curved'].includes(geometricShapeType);
+  const contextualGeometryOptions = isConnectorGeometry
+    ? CONNECTOR_GEOMETRY_OPTIONS
+    : isArrowGeometry
+      ? ARROW_GEOMETRY_OPTIONS
+      : isDecorativeGeometry
+        ? DECORATIVE_GEOMETRY_OPTIONS
+        : geometricShapeType === 'line' || geometricShapeType === 'line-dashed' || geometricShapeType === 'line-dotted' || geometricShapeType === 'curve' || geometricShapeType === 'polyline'
+          ? LINE_GEOMETRY_OPTIONS
+          : ESSENTIAL_GEOMETRY_OPTIONS;
   const activeEditor = activeInlineEditor?.editor;
   const activeTextStyle = activeEditor?.getAttributes('textStyle') as {
     color?: string;
@@ -1004,72 +1137,44 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           >
             <EditorPanelSection title={<><Shapes className="size-3.5" /> Propiedades de Forma Geométrica</>} tone="cyan" />
 
-            {/* TIPO DE FORMA */}
+            {/* TIPO DE FORMA: show only choices that make sense for the selected role. */}
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                Tipo de Geometría
+                {isConnectorGeometry ? 'Tipo de conector' : isArrowGeometry ? 'Dirección de flecha' : isDecorativeGeometry ? 'Tipo decorativo' : geometricShapeType.startsWith('line') || geometricShapeType === 'curve' || geometricShapeType === 'polyline' ? 'Tipo de línea' : 'Tipo de forma'}
               </label>
               <select
                 value={String(props.shapeType ?? 'rectangle')}
                 onChange={(e) => onUpdateLayerProps(selectedLayer.id, { shapeType: e.target.value })}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
               >
-                <optgroup label="Básicas">
-                  <option value="rounded_rect">🔲 Rectángulo Redondeado</option>
-                  <option value="rectangle">⬛ Rectángulo / Cuadrado</option>
-                  <option value="full-rectangle">▰ Rectángulo a Sangre</option>
-                  <option value="circle">⚪ Círculo / Elipse</option>
-                  <option value="top-semicircle">◒ Semicírculo Superior</option>
-                  <option value="triangle">🔺 Triángulo</option>
-                  <option value="triangle-down">🔻 Triángulo abajo</option>
-                  <option value="diamond">💎 Rombo / Diamante</option>
-                  <option value="hexagon">⬡ Hexágono</option>
-                </optgroup>
-                <optgroup label="Vectores decorativos">
-                  <option value="ring">⭕ Anillo</option>
-                  <option value="arc">◠ Arco configurable</option>
-                  <option value="curve">〰 Curva Bézier</option>
-                  <option value="carousel-wave">🌊 Onda de carrusel</option>
-                  <option value="blob-1">Blob suave</option>
-                  <option value="blob-2">Blob fluido</option>
-                  <option value="blob-3">Blob nube</option>
-                  <option value="blob-4">Blob editorial</option>
-                  <option value="blob-5">Blob orbital</option>
-                  <option value="blob-6">Blob orgánico</option>
-                </optgroup>
-                <optgroup label="Marcos y máscaras">
-                  <option value="frame-simple">Marco clásico</option>
-                  <option value="frame-rounded">Marco redondeado</option>
-                  <option value="frame-circle">Marco ovalado</option>
-                  <option value="frame-corners">Esquinas editoriales</option>
-                  <option value="frame-polaroid">Marco instantáneo</option>
-                  <option value="frame-film">Tira de película</option>
-                  <option value="mask-circle">Máscara circular</option>
-                  <option value="mask-rounded">Máscara redondeada</option>
-                  <option value="mask-hexagon">Máscara hexagonal</option>
-                  <option value="mask-arch">Máscara de arco</option>
-                  <option value="mask-blob">Máscara orgánica</option>
-                  <option value="mask-heart">Máscara corazón</option>
-                </optgroup>
-                <optgroup label="Líneas y separadores">
-                  <option value="line">➖ Línea divisoria</option>
-                  <option value="line-dashed">Línea discontinua</option>
-                  <option value="line-dotted">Línea punteada</option>
-                  <option value="separator-wave">Separador ondulado</option>
-                  <option value="separator-curve">Separador curvo</option>
-                  <option value="separator-zigzag">Separador zigzag</option>
-                  <option value="separator-dots">Separador de puntos</option>
-                  <option value="separator-diamond">Separador con diamante</option>
-                </optgroup>
-                <optgroup label="Símbolos">
-                  <option value="star">⭐ Estrella (5 puntas)</option>
-                  <option value="star-parametric">Estrella paramétrica</option>
-                  <option value="speech_bubble">💬 Bocadillo de diálogo</option>
-                  <option value="heart">❤️ Corazón</option>
-                  <option value="shield">Escudo protector</option>
-                  <option value="arrow">➡️ Flecha indicadora</option>
-                </optgroup>
+                {contextualGeometryOptions.map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+                {!contextualGeometryOptions.some(([value]) => value === geometricShapeType) && (
+                  <option value={geometricShapeType}>{geometricShapeType}</option>
+                )}
               </select>
+              <details className="mt-2 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-2">
+                <summary className="cursor-pointer text-[10px] font-semibold text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan">
+                  Cambiar a otra geometría
+                </summary>
+                <div className="mt-2 grid grid-cols-2 gap-1.5">
+                  {ALL_GEOMETRY_OPTIONS.map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => onUpdateLayerProps(selectedLayer.id, { shapeType: value })}
+                      className={`rounded-md border px-2 py-1.5 text-left text-[10px] ${
+                        geometricShapeType === value
+                          ? 'border-brand-cyan/50 bg-primary/20 text-brand-cyan'
+                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </details>
             </div>
 
             {/* COLOR DE RELLENO */}
@@ -1211,25 +1316,99 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               </div>
             )}
 
+            {isEditableStroke && (
+              <div className="space-y-2 rounded-xl border border-brand-cyan/20 bg-slate-900/40 p-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="text-[10px] text-slate-400">
+                    Curvatura ({String(props.curvature ?? 0)})
+                    <input type="range" min={-100} max={100} value={Number(props.curvature ?? 0)} onChange={(event) => onUpdateLayerProps(selectedLayer.id, { curvature: Number(event.target.value) })} className="mt-1 w-full accent-brand-cyan" />
+                  </label>
+                  <label className="text-[10px] text-slate-400">
+                    Unión
+                    <select value={String(props.lineJoin ?? 'round')} onChange={(event) => onUpdateLayerProps(selectedLayer.id, { lineJoin: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] text-white">
+                      <option value="round">Redonda</option>
+                      <option value="miter">Inglete</option>
+                      <option value="bevel">Bisel</option>
+                    </select>
+                  </label>
+                  <label className="text-[10px] text-slate-400">
+                    Terminación
+                    <select value={String(props.lineCap ?? 'round')} onChange={(event) => onUpdateLayerProps(selectedLayer.id, { lineCap: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] text-white">
+                      <option value="round">Redonda</option>
+                      <option value="butt">Cortada</option>
+                      <option value="square">Cuadrada</option>
+                    </select>
+                  </label>
+                </div>
+                {(geometricShapeType.includes('arrow') || geometricShapeType.startsWith('connector')) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="text-[10px] text-slate-400">
+                      Cabeza
+                      <select value={String(props.headStyle ?? 'triangle')} onChange={(event) => onUpdateLayerProps(selectedLayer.id, { headStyle: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] text-white">
+                        <option value="none">Ninguna</option>
+                        <option value="triangle">Triángulo</option>
+                        <option value="open">Abierta</option>
+                        <option value="circle">Círculo</option>
+                        <option value="bar">Barra</option>
+                      </select>
+                    </label>
+                    <label className="text-[10px] text-slate-400">
+                      Cola
+                      <select value={String(props.tailStyle ?? 'none')} onChange={(event) => onUpdateLayerProps(selectedLayer.id, { tailStyle: event.target.value })} className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] text-white">
+                        <option value="none">Ninguna</option>
+                        <option value="triangle">Triángulo</option>
+                        <option value="open">Abierta</option>
+                        <option value="circle">Círculo</option>
+                        <option value="bar">Barra</option>
+                      </select>
+                    </label>
+                  </div>
+                )}
+                {(geometricShapeType.startsWith('connector') || geometricShapeType.includes('arrow')) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {(['startAnchor', 'endAnchor'] as const).map((key) => {
+                      const anchor = (props[key] as { x?: number; y?: number } | undefined) ?? { x: key === 'startAnchor' ? 0.06 : 0.94, y: key === 'startAnchor' ? 0.16 : 0.84 };
+                      return (
+                        <div key={key} className="rounded-lg border border-slate-800 bg-slate-950 p-1.5">
+                          <span className="text-[9px] text-slate-500">{key === 'startAnchor' ? 'Inicio' : 'Final'} (0–100)</span>
+                          <div className="mt-1 grid grid-cols-2 gap-1">
+                            {(['x', 'y'] as const).map((axis) => (
+                              <NumberInput key={axis} aria-label={`${key} ${axis}`} value={Math.round(Number(anchor[axis] ?? 0.5) * 100)} min={0} max={100} onChange={(value) => onUpdateLayerProps(selectedLayer.id, { [key]: { ...anchor, [axis]: (value ?? 50) / 100 } })} className="w-full rounded-md border border-slate-800 bg-slate-900 px-1.5 py-1 text-[10px] text-white" />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
             {normalizeEditableVectorGeometry(props.vectorGeometry) && (
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Ruta SVG reutilizable
-                <textarea
-                  aria-label="Ruta SVG reutilizable"
-                  rows={3}
-                  value={getEditableVectorPath(normalizeEditableVectorGeometry(props.vectorGeometry)!)}
-                  onChange={(event) => {
-                    const path = event.target.value;
-                    const geometry = normalizeEditableVectorGeometry({
-                      kind: 'path',
-                      path,
-                      closed: /[Zz]\s*$/.test(path.trim()),
-                    });
-                    onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry });
-                  }}
-                  className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 font-mono text-[10px] text-white"
+              <>
+                <VectorPointsEditor
+                  geometry={normalizeEditableVectorGeometry(props.vectorGeometry)!}
+                  onChange={(geometry) => onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry })}
                 />
-              </label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Ruta SVG reutilizable
+                  <textarea
+                    aria-label="Ruta SVG reutilizable"
+                    rows={3}
+                    value={getEditableVectorPath(normalizeEditableVectorGeometry(props.vectorGeometry)!)}
+                    onChange={(event) => {
+                      const path = event.target.value;
+                      const geometry = normalizeEditableVectorGeometry({
+                        kind: 'path',
+                        path,
+                        closed: /[Zz]\s*$/.test(path.trim()),
+                      });
+                      onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry });
+                    }}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 font-mono text-[10px] text-white"
+                  />
+                </label>
+              </>
             )}
           </fieldset>
         )}

@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest';
 import {
   ELEMENT_CATALOG_CATEGORIES,
   ELEMENT_CATALOG_RESOURCES,
+  ELEMENT_PRIMARY_TOOLS,
   filterElementCatalog,
+  getElementCatalogTool,
   normalizeElementPreset,
 } from '../data/elementCatalog';
 import { ELEMENT_SHAPE_SECTIONS } from '../data/elementShapes';
@@ -148,6 +150,48 @@ describe('Image Studio element catalog', () => {
     expect(shapeTypes).toContain('ring');
     ['blob-4', 'blob-5', 'blob-6', 'carousel-wave']
       .forEach((shapeType) => expect(shapeTypes).toContain(shapeType));
+  });
+
+  it('separates editing roles and exposes rapid drawing controls', () => {
+    const find = (id: string) => ELEMENT_CATALOG_RESOURCES.find((resource) => resource.id === `system-${id}`);
+    expect(find('draw-polyline')).toMatchObject({ editorRole: 'rapid-draw', kind: 'line' });
+    expect(find('connector-elbow')).toMatchObject({
+      editorRole: 'connector',
+      kind: 'connector',
+      editableFields: expect.arrayContaining(['startAnchor', 'endAnchor', 'headStyle', 'tailStyle']),
+    });
+
+    expect(find('shape-arrow-right')).toMatchObject({
+      editorRole: 'arrow',
+      kind: 'arrow',
+      editableFields: expect.arrayContaining(['strokeWidth', 'curvature', 'lineJoin']),
+    });
+
+  });
+
+  it('organizes creation resources into the simplified primary tools', () => {
+    expect(ELEMENT_PRIMARY_TOOLS.map((tool) => tool.label)).toEqual([
+      'Forma',
+      'Línea',
+      'Flecha',
+      'Conector',
+    ]);
+
+    const resource = (id: string) => ELEMENT_CATALOG_RESOURCES.find((item) => item.id === `system-${id}`)!;
+    expect(['shape-square', 'shape-circle', 'shape-blob-soft', 'shape-star-5', 'brace-pair', 'frame-rounded']
+      .map((id) => getElementCatalogTool(resource(id)))).toEqual([
+        'forma',
+        'forma',
+        'forma',
+        'forma',
+        'forma',
+        'forma',
+      ]);
+    expect(getElementCatalogTool(resource('line-solid'))).toBe('linea');
+    expect(getElementCatalogTool(resource('shape-arrow-right'))).toBe('flecha');
+    expect(getElementCatalogTool(resource('connector-curved'))).toBe('conector');
+    expect(getElementCatalogTool(resource('shape-carousel-wave'))).toBe('decorativas');
+    expect(getElementCatalogTool(resource('draw-polyline'))).toBe('rapid-draw');
   });
 
   it('registers advanced reusable shape resources with editable geometry metadata', () => {

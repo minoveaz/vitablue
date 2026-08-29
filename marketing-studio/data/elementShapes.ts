@@ -3,7 +3,12 @@ import {
   ElementResourceKind,
   TraditionalShapeType,
 } from '../types/elementCatalog';
-import type { EditableVectorGeometry } from '../types/vectorGeometry';
+import type {
+  EditableArrowheadStyle,
+  EditableLineCap,
+  EditableLineJoin,
+  EditableVectorGeometry,
+} from '../types/vectorGeometry';
 
 const UNIVERSAL_FILL = '#475569';
 const UNIVERSAL_ACCENT = '#F59E0B';
@@ -37,6 +42,14 @@ export interface ShapeCatalogItem {
   defaultWavePath?: string;
   /** Optional reusable geometry override for this catalog resource. */
   defaultVectorGeometry?: EditableVectorGeometry;
+  editorRole?: 'shape' | 'stroke' | 'arrow' | 'connector' | 'rapid-draw';
+  defaultHeadStyle?: EditableArrowheadStyle;
+  defaultTailStyle?: EditableArrowheadStyle;
+  defaultCurvature?: number;
+  defaultLineJoin?: EditableLineJoin;
+  defaultLineCap?: EditableLineCap;
+  defaultStartAnchor?: { x: number; y: number };
+  defaultEndAnchor?: { x: number; y: number };
 }
 
 export interface ShapeCatalogSection {
@@ -56,6 +69,7 @@ export interface ShapeCatalogSection {
     | 'universal_surfaces';
   title: string;
   items: ShapeCatalogItem[];
+  editorRole?: ShapeCatalogItem['editorRole'];
 }
 
 const shape = (
@@ -72,6 +86,7 @@ const shape = (
   shapeType,
   kind: 'shape',
   category: 'forms_lines',
+  editorRole: 'shape',
   tags: [],
   defaultWidth,
   defaultHeight,
@@ -84,24 +99,54 @@ const line = (
   name: string,
   shapeType: TraditionalShapeType,
   extra: Partial<ShapeCatalogItem> = {},
-) => shape(id, name, shapeType, 400, 40, 'transparent', {
-  kind: 'line',
-  defaultStroke: '#FFFFFF',
-  defaultStrokeWidth: 4,
-  ...extra,
-});
+) => {
+  const isConnector = shapeType.startsWith('connector');
+  const isArrow = shapeType.includes('arrow');
+  const isRapidDraw = id.startsWith('draw-');
+  const role = isConnector ? 'connector' : isArrow ? 'arrow' : isRapidDraw ? 'rapid-draw' : 'stroke';
+  const supportsEditablePoints = ['line', 'line-dashed', 'line-dotted', 'line-arrow-right', 'line-arrow-both', 'curve', 'polyline', 'separator-wave', 'separator-curve', 'separator-zigzag'].includes(shapeType);
+  const defaultVectorGeometry = shapeType === 'connector-elbow'
+    ? { version: 1 as const, kind: 'path' as const, path: 'M 4 16 H 52 V 84 H 96' }
+    : shapeType === 'connector-curved'
+      ? { version: 1 as const, kind: 'path' as const, path: 'M 4 16 C 62 16 38 84 96 84' }
+      : shapeType === 'curve' || shapeType === 'separator-curve'
+        ? { version: 1 as const, kind: 'bezier' as const, points: [{ x: 0.03, y: 0.72 }, { x: 0.32, y: 0.2 }, { x: 0.68, y: 0.2 }, { x: 0.97, y: 0.72 }] }
+        : shapeType === 'polyline' || shapeType === 'separator-zigzag'
+          ? { version: 1 as const, kind: 'bezier' as const, points: [{ x: 0.03, y: 0.62 }, { x: 0.18, y: 0.38 }, { x: 0.34, y: 0.62 }, { x: 0.5, y: 0.38 }, { x: 0.66, y: 0.62 }, { x: 0.82, y: 0.38 }, { x: 0.97, y: 0.62 }] }
+          : shapeType === 'separator-wave'
+            ? { version: 1 as const, kind: 'bezier' as const, points: [{ x: 0.03, y: 0.5 }, { x: 0.2, y: 0.2 }, { x: 0.38, y: 0.5 }, { x: 0.56, y: 0.8 }, { x: 0.74, y: 0.5 }, { x: 0.97, y: 0.5 }] }
+          : supportsEditablePoints
+            ? { version: 1 as const, kind: 'bezier' as const, points: [{ x: 0.03, y: 0.5 }, { x: 0.97, y: 0.5 }] }
+            : undefined;
+  return shape(id, name, shapeType, 400, 40, 'transparent', {
+    kind: 'line',
+    editorRole: role,
+    defaultStroke: '#FFFFFF',
+    defaultStrokeWidth: 4,
+    defaultVectorGeometry,
+    defaultHeadStyle: isArrow || isConnector ? 'triangle' : 'none',
+    defaultTailStyle: shapeType === 'line-arrow-both' ? 'triangle' : 'none',
+    defaultLineJoin: 'round',
+    defaultLineCap: 'round',
+    ...extra,
+  });
+};
 
 export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
   {
     id: 'lines',
-    title: 'Líneas',
+    title: 'Trazos y líneas',
+    editorRole: 'stroke',
     items: [
       line('line-solid', 'Línea sólida', 'line', { defaultHeight: 12 }),
       line('line-dashed', 'Línea discontinua', 'line-dashed', { defaultHeight: 12 }),
       line('line-dotted', 'Línea punteada', 'line-dotted', { defaultHeight: 12 }),
-      line('line-arrow-right', 'Línea con flecha', 'line-arrow-right', { defaultHeight: 28 }),
-      line('line-arrow-both', 'Línea con flecha doble', 'line-arrow-both', { defaultHeight: 28 }),
+      line('line-arrow-right', 'Línea con flecha', 'line-arrow-right', { defaultHeight: 28, kind: 'arrow' }),
+      line('line-arrow-both', 'Línea con flecha doble', 'line-arrow-both', { defaultHeight: 28, kind: 'arrow' }),
       line('line-curve', 'Curva Bézier', 'curve', { defaultHeight: 140 }),
+      line('draw-line', 'Dibujo rápido · línea', 'line', { editorRole: 'rapid-draw', tags: ['dibujo', 'rápido'] }),
+      line('draw-curve', 'Dibujo rápido · curva', 'curve', { editorRole: 'rapid-draw', defaultHeight: 140, tags: ['dibujo', 'rápido'] }),
+      line('draw-polyline', 'Dibujo rápido · polilínea', 'polyline', { editorRole: 'rapid-draw', defaultHeight: 140, tags: ['dibujo', 'rápido', 'puntos'] }),
       line('line-arc', 'Arco configurable', 'arc', {
         defaultHeight: 160,
         defaultRingRadius: 42,
@@ -122,9 +167,20 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
   {
     id: 'connectors',
     title: 'Conectores',
+    editorRole: 'connector',
     items: [
-      line('connector-elbow', 'Conector en ángulo', 'connector-elbow', { defaultHeight: 160 }),
-      line('connector-curved', 'Conector curvo', 'connector-curved', { defaultHeight: 160 }),
+      line('connector-elbow', 'Conector en ángulo', 'connector-elbow', {
+        kind: 'connector',
+        defaultHeight: 160,
+        defaultStartAnchor: { x: 0.04, y: 0.16 },
+        defaultEndAnchor: { x: 0.96, y: 0.84 },
+      }),
+      line('connector-curved', 'Conector curvo', 'connector-curved', {
+        kind: 'connector',
+        defaultHeight: 160,
+        defaultStartAnchor: { x: 0.04, y: 0.16 },
+        defaultEndAnchor: { x: 0.96, y: 0.84 },
+      }),
     ],
   },
   {
@@ -171,12 +227,13 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
   {
     id: 'arrows',
     title: 'Flechas',
+    editorRole: 'arrow',
     items: [
-      shape('shape-arrow-right', 'Flecha derecha', 'arrow-right', 220, 120),
-      shape('shape-arrow-left', 'Flecha izquierda', 'arrow-left', 220, 120),
-      shape('shape-arrow-up', 'Flecha arriba', 'arrow-up', 120, 220),
-      shape('shape-arrow-down', 'Flecha abajo', 'arrow-down', 120, 220),
-      shape('shape-arrow-both', 'Flecha bidireccional', 'arrow-both', 240, 120),
+      shape('shape-arrow-right', 'Flecha derecha', 'arrow-right', 220, 120, UNIVERSAL_FILL, { kind: 'arrow', editorRole: 'arrow', defaultHeadStyle: 'triangle', defaultStartAnchor: { x: 0.02, y: 0.5 }, defaultEndAnchor: { x: 0.98, y: 0.5 } }),
+      shape('shape-arrow-left', 'Flecha izquierda', 'arrow-left', 220, 120, UNIVERSAL_FILL, { kind: 'arrow', editorRole: 'arrow', defaultHeadStyle: 'triangle', defaultStartAnchor: { x: 0.98, y: 0.5 }, defaultEndAnchor: { x: 0.02, y: 0.5 } }),
+      shape('shape-arrow-up', 'Flecha arriba', 'arrow-up', 120, 220, UNIVERSAL_FILL, { kind: 'arrow', editorRole: 'arrow', defaultHeadStyle: 'triangle', defaultStartAnchor: { x: 0.5, y: 0.98 }, defaultEndAnchor: { x: 0.5, y: 0.02 } }),
+      shape('shape-arrow-down', 'Flecha abajo', 'arrow-down', 120, 220, UNIVERSAL_FILL, { kind: 'arrow', editorRole: 'arrow', defaultHeadStyle: 'triangle', defaultStartAnchor: { x: 0.5, y: 0.02 }, defaultEndAnchor: { x: 0.5, y: 0.98 } }),
+      shape('shape-arrow-both', 'Flecha bidireccional', 'arrow-both', 240, 120, UNIVERSAL_FILL, { kind: 'arrow', editorRole: 'arrow', defaultHeadStyle: 'triangle', defaultTailStyle: 'triangle', defaultStartAnchor: { x: 0.02, y: 0.5 }, defaultEndAnchor: { x: 0.98, y: 0.5 } }),
     ],
   },
   {
@@ -225,6 +282,9 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
       line('bracket-square-right', 'Corchete derecho', 'bracket-square-right', { defaultWidth: 100, defaultHeight: 220 }),
       line('bracket-square-pair', 'Par de corchetes', 'bracket-square-pair', { defaultWidth: 260, defaultHeight: 220 }),
       line('bracket-curly-pair', 'Par de llaves', 'bracket-curly-pair', { defaultWidth: 260, defaultHeight: 220 }),
+      line('brace-left', 'Llave izquierda', 'brace-left', { defaultWidth: 100, defaultHeight: 220 }),
+      line('brace-right', 'Llave derecha', 'brace-right', { defaultWidth: 100, defaultHeight: 220 }),
+      line('brace-pair', 'Par de llaves tipográficas', 'brace-pair', { defaultWidth: 260, defaultHeight: 220 }),
     ],
   },
   {

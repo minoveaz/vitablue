@@ -82,7 +82,12 @@ export type {
   EditableVectorPoint,
   EditableVectorShapeOptions,
 } from './vectorGeometry';
-import type { EditableVectorGeometry } from './vectorGeometry';
+import type {
+  EditableArrowheadStyle,
+  EditableLineCap,
+  EditableLineJoin,
+  EditableVectorGeometry,
+} from './vectorGeometry';
 
 export type TraditionalShapeType =
   | 'line'
@@ -90,6 +95,7 @@ export type TraditionalShapeType =
   | 'line-dotted'
   | 'line-arrow-right'
   | 'line-arrow-both'
+  | 'polyline'
   | 'curve'
   | 'arc'
   | 'connector-elbow'
@@ -136,6 +142,9 @@ export type TraditionalShapeType =
   | 'bracket-square-right'
   | 'bracket-square-pair'
   | 'bracket-curly-pair'
+  | 'brace-left'
+  | 'brace-right'
+  | 'brace-pair'
   | 'separator-wave'
   | 'separator-curve'
   | 'separator-zigzag'
@@ -158,6 +167,9 @@ export type TraditionalShapeType =
 export type ElementResourceKind =
   | 'shape'
   | 'line'
+  | 'stroke'
+  | 'arrow'
+  | 'connector'
   | 'icon'
   | 'symbol'
   | 'frame'
@@ -170,6 +182,9 @@ export type ElementResourceKind =
   | 'button'
   | 'component'
   | 'saved_element';
+
+/** Editing role keeps strokes, arrows, connectors and decorative shapes distinct. */
+export type ElementEditorRole = 'shape' | 'stroke' | 'arrow' | 'connector' | 'rapid-draw';
 
 export type ElementPreviewMetadata =
   | {
@@ -194,6 +209,13 @@ export type ElementPreviewMetadata =
       wavePath?: string;
       /** Optional persisted geometry override shared by all vector resources. */
       vectorGeometry?: EditableVectorGeometry;
+      headStyle?: EditableArrowheadStyle;
+      tailStyle?: EditableArrowheadStyle;
+      curvature?: number;
+      lineJoin?: EditableLineJoin;
+      lineCap?: EditableLineCap;
+      startAnchor?: { x: number; y: number };
+      endAnchor?: { x: number; y: number };
     }
   | { renderer: 'illustration'; illustrationId: string }
   | { renderer: 'label'; variant: 'badge' | 'button'; text: string }
@@ -225,6 +247,7 @@ export interface ElementCatalogMetadata {
   locked: boolean;
   recommended?: boolean;
   sourcePackage: 'universal' | 'organization' | 'workspace' | 'user';
+  editorRole?: ElementEditorRole;
 }
 
 export interface ElementCatalogResource<TPayload = unknown> extends ElementCatalogMetadata {

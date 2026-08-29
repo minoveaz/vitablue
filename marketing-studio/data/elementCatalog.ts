@@ -24,8 +24,96 @@ export interface ElementCatalogCategory {
   description: string;
 }
 
+export const ELEMENT_PRIMARY_TOOL_IDS = [
+  'forma',
+  'linea',
+  'flecha',
+  'conector',
+] as const;
+
+export type ElementPrimaryToolId = (typeof ELEMENT_PRIMARY_TOOL_IDS)[number];
+export type ElementCatalogToolId = ElementPrimaryToolId | 'decorativas' | 'rapid-draw' | 'more';
+
+export const ELEMENT_PRIMARY_TOOLS: Array<{
+  id: ElementPrimaryToolId;
+  label: string;
+  description: string;
+}> = [
+  { id: 'forma', label: 'Forma', description: 'Las seis formas esenciales para empezar' },
+  { id: 'linea', label: 'Línea', description: 'Trazos y líneas editables' },
+  { id: 'flecha', label: 'Flecha', description: 'Direcciones y llamadas visuales' },
+  { id: 'conector', label: 'Conector', description: 'Conecta elementos del lienzo' },
+];
+
+const DECORATIVE_SHAPE_TYPES = new Set<TraditionalShapeType>([
+  'arc',
+  'ring',
+  'carousel-wave',
+  'separator-wave',
+  'separator-curve',
+  'separator-zigzag',
+  'separator-dots',
+  'separator-diamond',
+  'star-parametric',
+  'polygon-parametric',
+  'burst-12',
+  'blob-1',
+  'blob-2',
+  'blob-3',
+  'blob-4',
+  'blob-5',
+  'blob-6',
+  'frame-simple',
+  'frame-circle',
+  'frame-corners',
+  'frame-polaroid',
+  'frame-film',
+  'mask-circle',
+  'mask-rounded',
+  'mask-hexagon',
+  'mask-arch',
+  'mask-blob',
+  'mask-heart',
+  'brace-left',
+  'brace-right',
+]);
+
+const ESSENTIAL_FORM_IDS = new Set([
+  'shape-square',
+  'shape-circle',
+  'shape-blob-soft',
+  'shape-star-5',
+  'brace-pair',
+  'frame-rounded',
+]);
+
+/**
+ * Maps a catalog resource to the simplified creation tools without changing
+ * its legacy category. Legacy categories remain available through search and
+ * "Más recursos" so saved projects and deep links keep working.
+ */
+export function getElementCatalogTool(
+  resource: Pick<ElementCatalogResource, 'id' | 'editorRole' | 'kind' | 'preview'>,
+): ElementCatalogToolId | undefined {
+  const resourceId = resource.id.replace(/^system-/, '');
+  if (resource.editorRole === 'rapid-draw') return 'rapid-draw';
+  if (resource.editorRole === 'arrow' || resource.kind === 'arrow') return 'flecha';
+  if (resource.editorRole === 'connector' || resource.kind === 'connector') return 'conector';
+  if (ESSENTIAL_FORM_IDS.has(resourceId)) return 'forma';
+  if (resource.editorRole === 'stroke' || resource.kind === 'line') {
+    if (resource.preview.renderer === 'graphic' && DECORATIVE_SHAPE_TYPES.has(resource.preview.shapeType)) {
+      return 'decorativas';
+    }
+    return 'linea';
+  }
+  if (resource.preview.renderer === 'graphic' && DECORATIVE_SHAPE_TYPES.has(resource.preview.shapeType)) {
+    return 'decorativas';
+  }
+  return undefined;
+}
+
 export const ELEMENT_CATALOG_CATEGORIES: ElementCatalogCategory[] = [
-  { id: 'forms_lines', label: 'Formas y líneas', shortLabel: 'Formas', description: 'Geometría, flechas y divisores' },
+  { id: 'forms_lines', label: 'Formas, trazos y conectores', shortLabel: 'Formas', description: 'Formas, trazos, flechas y conectores funcionales' },
   { id: 'icons_symbols', label: 'Iconos y símbolos', shortLabel: 'Iconos', description: 'Símbolos visuales reutilizables' },
   { id: 'frames_masks', label: 'Marcos y máscaras', shortLabel: 'Marcos', description: 'Contenedores y recortes visuales' },
   { id: 'illustrations', label: 'Ilustraciones', shortLabel: 'Ilustraciones', description: 'Recursos gráficos y escenas' },
@@ -187,7 +275,11 @@ const createUniversalShapeResource = (
   title: item.name,
   description: `${sectionTitle} de la biblioteca universal`,
   resourceType:
-    item.kind === 'line'
+    item.kind === 'connector'
+      ? 'Conector'
+      : item.kind === 'arrow'
+        ? 'Flecha'
+        : item.kind === 'line'
       ? 'Línea'
       : item.kind === 'symbol'
         ? 'Símbolo'
@@ -214,6 +306,9 @@ const createUniversalShapeResource = (
     ...(item.shapeType === 'ring' ? ['ringRadius', 'ringThickness'] : []),
     ...(item.shapeType === 'arc' ? ['ringRadius', 'arcStartAngle', 'arcEndAngle'] : []),
     ...(item.shapeType === 'carousel-wave' ? ['waveStartY', 'waveEndY', 'waveAmplitude', 'waveCycles', 'waveAnchor', 'wavePath'] : []),
+    ...(item.editorRole === 'stroke' || item.editorRole === 'rapid-draw' ? ['points', 'curvature', 'lineJoin', 'lineCap'] : []),
+    ...(item.editorRole === 'arrow' ? ['points', 'strokeWidth', 'headStyle', 'tailStyle', 'curvature', 'lineJoin', 'startAnchor', 'endAnchor'] : []),
+    ...(item.editorRole === 'connector' ? ['points', 'startAnchor', 'endAnchor', 'headStyle', 'tailStyle', 'strokeWidth', 'lineJoin'] : []),
   ],
   lockedFields: [],
   supportedFormats: ['image', 'video'],
@@ -229,6 +324,7 @@ const createUniversalShapeResource = (
     'mask-blob',
   ].includes(item.id),
   sourcePackage: 'universal',
+  editorRole: item.editorRole,
   preview: {
     renderer: 'graphic',
     shapeType: item.shapeType,
@@ -250,6 +346,13 @@ const createUniversalShapeResource = (
     waveAnchor: item.defaultWaveAnchor,
     wavePath: item.defaultWavePath,
     vectorGeometry: item.defaultVectorGeometry,
+    headStyle: item.defaultHeadStyle,
+    tailStyle: item.defaultTailStyle,
+    curvature: item.defaultCurvature,
+    lineJoin: item.defaultLineJoin,
+    lineCap: item.defaultLineCap,
+    startAnchor: item.defaultStartAnchor,
+    endAnchor: item.defaultEndAnchor,
   },
   payload: { source: 'shape', item },
 });

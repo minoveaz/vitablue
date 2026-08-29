@@ -168,6 +168,33 @@ describe('reusable vector geometry', () => {
       ringThickness: 1,
       waveCycles: 8,
     });
+
+  });
+
+  it('normalizes editable stroke controls and supports multiple points', () => {
+    const props = normalizeGeometricShapeProps({
+        curvature: 140,
+        lineJoin: 'bevel',
+        lineCap: 'square',
+        headStyle: 'open',
+        tailStyle: 'circle',
+        startAnchor: { x: -1, y: 0.4 },
+        endAnchor: { x: 2, y: 0.8 },
+        vectorGeometry: {
+          kind: 'bezier',
+          points: [{ x: 0, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 1, y: 0.2 }],
+        },
+    });
+    expect(props).toMatchObject({
+        curvature: 100,
+        lineJoin: 'bevel',
+        lineCap: 'square',
+        headStyle: 'open',
+        tailStyle: 'circle',
+        startAnchor: { x: 0, y: 0.4 },
+        endAnchor: { x: 1, y: 0.8 },
+    });
+    expect(getEditableVectorPath(props.vectorGeometry as never)).toContain('C');
   });
 
   it('renders configurable rings, arcs, and carousel waves without fallback output', () => {

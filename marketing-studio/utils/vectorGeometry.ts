@@ -1,4 +1,7 @@
 import type {
+  EditableArrowheadStyle,
+  EditableLineCap,
+  EditableLineJoin,
   EditableVectorGeometry,
   EditableVectorPoint,
   EditableVectorShapeOptions,
@@ -55,6 +58,14 @@ const normalizeOptionalNumber = (
   return integer ? Math.round(bounded) : bounded;
 };
 
+const normalizeAnchor = (value: unknown): { x: number; y: number } | undefined => {
+  const point = normalizePoint(value);
+  return point;
+};
+
+const normalizeEnum = <T extends string>(value: unknown, values: readonly T[]): T | undefined =>
+  typeof value === 'string' && values.includes(value as T) ? value as T : undefined;
+
 /**
  * Normalizes configurable built-in shape props without dropping unrelated
  * block props. This is used at insert, edit, load, and render boundaries.
@@ -78,6 +89,7 @@ export const normalizeGeometricShapeProps = (
     ['waveEndY', 0, 100],
     ['waveAmplitude', 0, 48],
     ['waveCycles', 1, 8, true],
+    ['curvature', -100, 100],
   ];
   numericFields.forEach(([key, min, max, integer]) => {
     if (!(key in normalized)) return;
@@ -93,6 +105,38 @@ export const normalizeGeometricShapeProps = (
     const path = isSafePathData(normalized.wavePath) ? normalized.wavePath.trim() : undefined;
     if (path) normalized.wavePath = path;
     else delete normalized.wavePath;
+  }
+  const headStyle = normalizeEnum<EditableArrowheadStyle>(
+    normalized.headStyle,
+    ['none', 'triangle', 'open', 'circle', 'bar'],
+  );
+  if ('headStyle' in normalized) {
+    if (headStyle) normalized.headStyle = headStyle;
+    else delete normalized.headStyle;
+  }
+  const tailStyle = normalizeEnum<EditableArrowheadStyle>(
+    normalized.tailStyle,
+    ['none', 'triangle', 'open', 'circle', 'bar'],
+  );
+  if ('tailStyle' in normalized) {
+    if (tailStyle) normalized.tailStyle = tailStyle;
+    else delete normalized.tailStyle;
+  }
+  const lineJoin = normalizeEnum<EditableLineJoin>(normalized.lineJoin, ['miter', 'round', 'bevel']);
+  if ('lineJoin' in normalized) {
+    if (lineJoin) normalized.lineJoin = lineJoin;
+    else delete normalized.lineJoin;
+  }
+  const lineCap = normalizeEnum<EditableLineCap>(normalized.lineCap, ['butt', 'round', 'square']);
+  if ('lineCap' in normalized) {
+    if (lineCap) normalized.lineCap = lineCap;
+    else delete normalized.lineCap;
+  }
+  for (const key of ['startAnchor', 'endAnchor'] as const) {
+    if (!(key in normalized)) continue;
+    const anchor = normalizeAnchor(normalized[key]);
+    if (anchor) normalized[key] = anchor;
+    else delete normalized[key];
   }
   if ('vectorGeometry' in normalized) {
     const geometry = normalizeEditableVectorGeometry(normalized.vectorGeometry);
@@ -129,6 +173,15 @@ export const normalizeEditableVectorGeometry = (
     ...(points ? { points } : {}),
     ...(path ? { path } : {}),
     ...(closed !== undefined ? { closed } : {}),
+    ...(normalizeEnum<EditableLineJoin>(source.lineJoin, ['miter', 'round', 'bevel'])
+      ? { lineJoin: normalizeEnum<EditableLineJoin>(source.lineJoin, ['miter', 'round', 'bevel']) }
+      : {}),
+    ...(normalizeEnum<EditableLineCap>(source.lineCap, ['butt', 'round', 'square'])
+      ? { lineCap: normalizeEnum<EditableLineCap>(source.lineCap, ['butt', 'round', 'square']) }
+      : {}),
+    ...(normalizeOptionalNumber(source.curvature, -100, 100) !== undefined
+      ? { curvature: normalizeOptionalNumber(source.curvature, -100, 100) }
+      : {}),
     ...(source.fillRule === 'evenodd' || source.fillRule === 'nonzero'
       ? { fillRule: source.fillRule }
       : {}),
@@ -139,6 +192,7 @@ export const normalizeEditableVectorGeometry = (
 export const createEditableVectorBezierPath = (
   points: readonly EditableVectorPoint[],
   closed = false,
+  curvature = 0,
 ): string => {
   const normalized = normalizePoints(points) ?? [
     { x: 0, y: 0.5 },
@@ -150,19 +204,35 @@ export const createEditableVectorBezierPath = (
     const previous = normalized[index - 1];
     const current = normalized[index];
     const distance = (current.x - previous.x) / 2;
-    path += ` C ${(previous.x + distance) * 100} ${previous.y * 100}, ${(current.x - distance) * 100} ${
-      current.y * 100
+    const bend = Math.max(-0.5, Math.min(0.5, curvature / 100)) * Math.abs(current.x - previous.x);
+    path += ` C ${(previous.x + distance) * 100} ${(previous.y + bend) * 100}, ${(current.x - distance) * 100} ${
+      (current.y - bend) * 100
     }, ${current.x * 100} ${current.y * 100}`;
   }
   if (closed) path += ' Z';
   return path;
 };
 
+/** Creates a straight multi-point polyline from normalized editable anchors. */
+export const createEditableVectorPolylinePath = (
+  points: readonly EditableVectorPoint[],
+  closed = false,
+): string => {
+  const normalized = normalizePoints(points) ?? [
+    { x: 0, y: 0.5 },
+    { x: 1, y: 0.5 },
+  ];
+  const path = normalized.map((point, index) =>
+    `${index === 0 ? 'M' : 'L'} ${point.x * 100} ${point.y * 100}`,
+  ).join(' ');
+  return closed ? `${path} Z` : path;
+};
+
 export const getEditableVectorPath = (
   geometry: EditableVectorGeometry,
 ): string => geometry.kind === 'path' && geometry.path
   ? geometry.path
-  : createEditableVectorBezierPath(geometry.points ?? [], geometry.closed);
+  : createEditableVectorBezierPath(geometry.points ?? [], geometry.closed, geometry.curvature);
 
 export const createEditableVectorPathGeometry = (
   path: string,

@@ -4,11 +4,13 @@ import {
   CheckCircle2,
   Clock3,
   Component,
+  Heart,
   Frame,
   FolderHeart,
   Layers,
   LockKeyhole,
   MousePointerClick,
+  PenLine,
   Palette,
   Plus,
   Search,
@@ -20,7 +22,10 @@ import {
 import {
   ELEMENT_CATALOG_CATEGORIES,
   ELEMENT_CATALOG_RESOURCES,
+  ELEMENT_PRIMARY_TOOLS,
+  ElementCatalogToolId,
   filterElementCatalog,
+  getElementCatalogTool,
   StaticElementCatalogPayload,
 } from '../../../data/elementCatalog';
 import {
@@ -50,6 +55,30 @@ type DrawerResource = ElementCatalogResource<DrawerPayload>;
 type CatalogSelection = ElementCatalogCategoryId | 'all';
 type FormatFilter = ElementStudioFormat | 'all';
 type StateFilter = 'all' | 'approved' | 'locked';
+type ActiveTool = ElementCatalogToolId | 'all';
+
+const RECENT_STORAGE_KEY = 'vitablue:image-studio:element-recents';
+const FAVORITES_STORAGE_KEY = 'vitablue:image-studio:element-favorites';
+
+const readStoredIds = (key: string, fallback: string[]): string[] => {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const value = JSON.parse(window.localStorage.getItem(key) ?? 'null');
+    return Array.isArray(value) && value.every((item) => typeof item === 'string')
+      ? value.slice(0, 12)
+      : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const EDITOR_ROLE_LABELS = {
+  shape: 'Forma',
+  stroke: 'Trazo',
+  arrow: 'Flecha',
+  connector: 'Conector',
+  'rapid-draw': 'Dibujo rápido',
+} as const;
 
 const CATEGORY_ICONS: Record<ElementCatalogCategoryId, React.ComponentType<{ className?: string }>> = {
   forms_lines: Shapes,
@@ -105,7 +134,9 @@ function normalizeSavedElement(saved: SavedCustomElement): DrawerResource {
 const ResourceCard: React.FC<{
   resource: DrawerResource;
   onInsert: (resource: DrawerResource) => void;
-}> = ({ resource, onInsert }) => {
+  isFavorite: boolean;
+  onToggleFavorite: (resourceId: string) => void;
+}> = ({ resource, onInsert, isFavorite, onToggleFavorite }) => {
   const approvedLabel = resource.approvalStatus === 'approved'
     ? 'Aprobado'
     : resource.approvalStatus === 'not_required'
@@ -115,9 +146,22 @@ const ResourceCard: React.FC<{
         : 'Rechazado';
 
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900">
-      <div className="flex h-28 items-center justify-center overflow-hidden bg-primary-dark p-3">
+    <article className="relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900">
+      <div className="relative flex h-28 items-center justify-center overflow-hidden bg-primary-dark p-3">
         <ElementResourcePreview resource={resource} />
+        <button
+          type="button"
+          onClick={() => onToggleFavorite(resource.id)}
+          aria-label={isFavorite ? `Quitar ${resource.title} de favoritos` : `Añadir ${resource.title} a favoritos`}
+          aria-pressed={isFavorite}
+          className={`absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+            isFavorite
+              ? 'border-amber-300/70 bg-accent/25 text-amber-200'
+              : 'border-slate-700 bg-slate-950/75 text-slate-400 hover:border-amber-300/60 hover:text-amber-200'
+          }`}
+        >
+          <Heart className={`size-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+        </button>
       </div>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="min-w-0">
@@ -128,6 +172,11 @@ const ResourceCard: React.FC<{
           <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-300">
             {SCOPE_LABELS[resource.scope]}
           </span>
+          {resource.editorRole && (
+            <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[9px] font-medium text-amber-200">
+              {EDITOR_ROLE_LABELS[resource.editorRole]}
+            </span>
+          )}
           {resource.supportedFormats.map((format) => (
             <span key={format} className="rounded-md bg-primary/30 px-1.5 py-0.5 text-[9px] font-medium text-brand-cyan">
               {format === 'image' ? 'Image' : 'Video'}
@@ -163,16 +212,19 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
   onAddImageLayer,
   onInsertSavedLayer,
 }) => {
+  const [activeTool, setActiveTool] = useState<ActiveTool>('forma');
   const [selectedCategory, setSelectedCategory] = useState<CatalogSelection>('all');
   const [selectedScope, setSelectedScope] = useState<ElementResourceScope>('system');
   const [formatFilter, setFormatFilter] = useState<FormatFilter>('all');
   const [stateFilter, setStateFilter] = useState<StateFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [recentIds, setRecentIds] = useState<string[]>([
+  const [recentIds, setRecentIds] = useState<string[]>(() => readStoredIds(RECENT_STORAGE_KEY, [
     'system-shape-circle',
     'system-shape-rounded-rect',
     'system-line-solid',
-  ]);
+  ]));
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readStoredIds(FAVORITES_STORAGE_KEY, []));
+  const [showMoreResources, setShowMoreResources] = useState(false);
 
   const savedElements = useMemo(
     () => getSavedCustomElements().filter((element) => element.category !== 'text'),
@@ -193,12 +245,47 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     [resources, selectedScope, formatFilter, stateFilter],
   );
 
+  React.useEffect(() => {
+    try {
+      window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recentIds));
+      window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteIds));
+    } catch {
+      // Storage is optional; insertion should remain usable in private browsing.
+    }
+  }, [recentIds, favoriteIds]);
+
+  const toolResources = useMemo(
+    () => secondaryFilteredResources.filter((resource) => getElementCatalogTool(resource) === activeTool),
+    [secondaryFilteredResources, activeTool],
+  );
+
+  const essentialFormResources = useMemo(() => {
+    const essentialOrder = [
+      'system-shape-square',
+      'system-shape-circle',
+      'system-shape-blob-soft',
+      'system-shape-star-5',
+      'system-brace-pair',
+      'system-frame-rounded',
+    ];
+    return essentialOrder
+      .map((id) => secondaryFilteredResources.find((resource) => resource.id === id))
+      .filter((resource): resource is DrawerResource => Boolean(resource));
+  }, [secondaryFilteredResources]);
+
+  const favoriteResources = useMemo(
+    () => favoriteIds
+      .map((id) => secondaryFilteredResources.find((resource) => resource.id === id))
+    .filter((resource): resource is DrawerResource => resource ? !resource.locked : false),
+    [favoriteIds, secondaryFilteredResources],
+  );
+
   const visibleResources = useMemo(
     () => filterElementCatalog(secondaryFilteredResources, {
       query: searchQuery,
-      category: searchQuery.trim() ? 'all' : selectedCategory,
+      category: searchQuery.trim() || activeTool !== 'all' ? 'all' : selectedCategory,
     }),
-    [secondaryFilteredResources, searchQuery, selectedCategory],
+    [secondaryFilteredResources, searchQuery, selectedCategory, activeTool],
   );
 
   const categoryCounts = useMemo(() => new Map(
@@ -216,9 +303,18 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
   );
 
   const recommendedResources = useMemo(
-    () => secondaryFilteredResources.filter((resource) => resource.recommended && !resource.locked).slice(0, 4),
-    [secondaryFilteredResources],
+    () => (activeTool === 'all'
+      ? secondaryFilteredResources
+      : toolResources).filter((resource) => resource.recommended && !resource.locked).slice(0, 4),
+    [secondaryFilteredResources, activeTool, toolResources],
   );
+  const activeToolDisplayResources = activeTool === 'forma' ? essentialFormResources : toolResources;
+
+  const toggleFavorite = (resourceId: string) => {
+    setFavoriteIds((current) => current.includes(resourceId)
+      ? current.filter((id) => id !== resourceId)
+      : [resourceId, ...current].slice(0, 24));
+  };
 
   const handleInsert = (resource: DrawerResource) => {
     if (resource.locked) return;
@@ -245,6 +341,13 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
         waveAnchor: item.defaultWaveAnchor,
         wavePath: item.defaultWavePath,
         vectorGeometry: item.defaultVectorGeometry,
+        headStyle: item.defaultHeadStyle,
+        tailStyle: item.defaultTailStyle,
+        curvature: item.defaultCurvature,
+        lineJoin: item.defaultLineJoin,
+        lineCap: item.defaultLineCap,
+        startAnchor: item.defaultStartAnchor,
+        endAnchor: item.defaultEndAnchor,
         width: item.defaultWidth,
         height: item.defaultHeight,
       });
@@ -266,10 +369,10 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
     } else {
       onInsertSavedLayer?.(payload.saved.layer);
     }
-    setRecentIds((current) => [resource.id, ...current.filter((id) => id !== resource.id)].slice(0, 6));
+    setRecentIds((current) => [resource.id, ...current.filter((id) => id !== resource.id)].slice(0, 12));
   };
 
-  const showDiscovery = !searchQuery.trim() && selectedCategory === 'all';
+  const showDiscovery = !searchQuery.trim() && activeTool !== 'all' && !showMoreResources;
 
   return (
     <div className="flex h-full flex-col bg-primary-dark text-slate-100">
@@ -311,6 +414,8 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
                 onClick={() => {
                   setSelectedScope(scope);
                   setSelectedCategory(scope === 'user' ? 'saved_elements' : 'all');
+                  setActiveTool(scope === 'user' ? 'all' : 'forma');
+                  setShowMoreResources(scope === 'user');
                 }}
                 className={`min-h-9 rounded-lg border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
                   active
@@ -323,6 +428,30 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             );
           })}
         </nav>
+
+        <button
+          type="button"
+          onClick={() => onAddBlock('GeometricShape', {
+            shapeType: 'polyline',
+            fill: 'transparent',
+            stroke: '#94D2BD',
+            strokeWidth: 4,
+            width: 420,
+            height: 140,
+            vectorGeometry: {
+              version: 1,
+              kind: 'bezier',
+              points: [{ x: 0.04, y: 0.5 }, { x: 0.35, y: 0.25 }, { x: 0.68, y: 0.75 }, { x: 0.96, y: 0.5 }],
+            },
+            headStyle: 'none',
+            tailStyle: 'none',
+          })}
+          className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-accent/50 bg-accent/10 px-3 py-2 text-[11px] font-semibold text-amber-200 transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+          aria-label="Insertar dibujo rápido editable"
+        >
+          <PenLine className="size-4" />
+          Dibujo rápido
+        </button>
 
         <div className="flex flex-wrap gap-1.5" aria-label="Filtros secundarios">
           {([
@@ -366,48 +495,113 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-3">
-        <nav aria-label="Categorías de elementos" className="space-y-2">
+        <nav aria-label="Herramientas de elementos" className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            {ELEMENT_PRIMARY_TOOLS.map((tool) => {
+              const active = activeTool === tool.id && !showMoreResources;
+              const count = tool.id === 'forma'
+                ? essentialFormResources.length
+                : secondaryFilteredResources.filter((resource) => getElementCatalogTool(resource) === tool.id).length;
+              return (
+                <button
+                  key={tool.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTool(tool.id);
+                    setShowMoreResources(false);
+                    setSelectedCategory('all');
+                  }}
+                  aria-pressed={active}
+                  title={tool.description}
+                  className={`flex min-h-14 min-w-0 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                    active
+                      ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                      : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
+                  }`}
+                >
+                  <span className="truncate text-xs font-semibold">{tool.label}</span>
+                  <span className="shrink-0 text-[10px] text-slate-500">{count}</span>
+                </button>
+              );
+            })}
+          </div>
           <button
             type="button"
-            onClick={() => setSelectedCategory('all')}
-            aria-current={selectedCategory === 'all' ? 'page' : undefined}
+            onClick={() => {
+              setActiveTool('decorativas');
+              setShowMoreResources(false);
+              setSelectedCategory('all');
+            }}
+            aria-pressed={activeTool === 'decorativas' && !showMoreResources}
             className={`flex min-h-10 w-full items-center justify-between rounded-lg border px-3 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
-              selectedCategory === 'all'
-                ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
-                : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-600'
+              activeTool === 'decorativas' && !showMoreResources
+                ? 'border-accent/60 bg-accent/10 text-amber-200'
+                : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
             }`}
           >
-            <span className="flex items-center gap-2"><Sparkles className="size-4" /> Explorar todo</span>
-            <span className="text-[10px] text-slate-400">{secondaryFilteredResources.length}</span>
+            <span className="flex items-center gap-2"><Sparkles className="size-4" /> Decorativas</span>
+            <span className="text-[10px] text-slate-500">
+              {secondaryFilteredResources.filter((resource) => getElementCatalogTool(resource) === 'decorativas').length}
+            </span>
           </button>
-          <div className="grid grid-cols-2 gap-2">
-            {ELEMENT_CATALOG_CATEGORIES
-              .filter((category) => (categoryCounts.get(category.id) ?? 0) > 0)
-              .map((category) => {
-                const Icon = CATEGORY_ICONS[category.id];
-                const active = selectedCategory === category.id;
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(category.id)}
-                    aria-current={active ? 'page' : undefined}
-                    title={category.description}
-                    className={`flex min-h-16 min-w-0 flex-col justify-between rounded-lg border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
-                      active
-                        ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
-                        : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
-                    }`}
-                  >
-                    <span className="flex w-full items-center justify-between gap-2">
-                      <Icon className="size-4 shrink-0" />
-                      <span className="text-[9px] text-slate-500">{categoryCounts.get(category.id) ?? 0}</span>
-                    </span>
-                    <span className="truncate text-[10px] font-semibold">{category.shortLabel}</span>
-                  </button>
-                );
-              })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowMoreResources((current) => !current)}
+            aria-expanded={showMoreResources}
+            className="flex min-h-10 w-full items-center justify-between rounded-lg border border-slate-700 bg-slate-900 px-3 text-left text-xs font-semibold text-slate-300 transition-colors hover:border-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+          >
+            <span className="flex items-center gap-2"><Layers className="size-4" /> Más recursos</span>
+            <span className="text-[10px] text-slate-500">{secondaryFilteredResources.length}</span>
+          </button>
+          {showMoreResources && (
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTool('all');
+                  setSelectedCategory('all');
+                }}
+                aria-pressed={activeTool === 'all' && selectedCategory === 'all'}
+                className={`col-span-2 flex min-h-10 items-center justify-between rounded-lg border px-3 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                  activeTool === 'all' && selectedCategory === 'all'
+                    ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                    : 'border-slate-700 bg-slate-900 text-slate-300'
+                }`}
+              >
+                <span className="flex items-center gap-2"><Sparkles className="size-4" /> Explorar todo</span>
+                <span className="text-[10px] text-slate-400">{secondaryFilteredResources.length}</span>
+              </button>
+              {ELEMENT_CATALOG_CATEGORIES
+                .filter((category) => (categoryCounts.get(category.id) ?? 0) > 0)
+                .map((category) => {
+                  const Icon = CATEGORY_ICONS[category.id];
+                  const active = activeTool === 'all' && selectedCategory === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTool('all');
+                        setSelectedCategory(category.id);
+                      }}
+                      aria-current={active ? 'page' : undefined}
+                      title={category.description}
+                      className={`flex min-h-14 min-w-0 flex-col justify-between rounded-lg border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${
+                        active
+                          ? 'border-brand-cyan/50 bg-primary/40 text-brand-cyan'
+                          : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800'
+                      }`}
+                    >
+                      <span className="flex w-full items-center justify-between gap-2">
+                        <Icon className="size-4 shrink-0" />
+                        <span className="text-[9px] text-slate-500">{categoryCounts.get(category.id) ?? 0}</span>
+                      </span>
+                      <span className="truncate text-[10px] font-semibold">{category.shortLabel}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          )}
         </nav>
 
         {showDiscovery && recentResources.length > 0 && (
@@ -417,7 +611,13 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {recentResources.slice(0, 4).map((resource) => (
-                <ResourceCard key={`recent-${resource.id}`} resource={resource} onInsert={handleInsert} />
+                <ResourceCard
+                  key={`recent-${resource.id}`}
+                  resource={resource}
+                  onInsert={handleInsert}
+                  isFavorite={favoriteIds.includes(resource.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
               ))}
             </div>
           </section>
@@ -430,22 +630,60 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {recommendedResources.map((resource) => (
-                <ResourceCard key={`recommended-${resource.id}`} resource={resource} onInsert={handleInsert} />
+                <ResourceCard
+                  key={`recommended-${resource.id}`}
+                  resource={resource}
+                  onInsert={handleInsert}
+                  isFavorite={favoriteIds.includes(resource.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {showDiscovery && favoriteResources.length > 0 && (
+          <section className="space-y-2" aria-labelledby="favorite-elements">
+            <h2 id="favorite-elements" className="flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+              <Heart className="size-3.5 fill-current text-amber-200" /> Favoritos
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
+              {favoriteResources.slice(0, 4).map((resource) => (
+                <ResourceCard
+                  key={`favorite-${resource.id}`}
+                  resource={resource}
+                  onInsert={handleInsert}
+                  isFavorite
+                  onToggleFavorite={toggleFavorite}
+                />
               ))}
             </div>
           </section>
         )}
 
         {showDiscovery && (
-          <section className="space-y-2" aria-labelledby="all-elements">
+          <section className="space-y-2" aria-labelledby="tool-elements">
             <div className="flex items-end justify-between gap-3">
-              <h2 id="all-elements" className="text-xs font-semibold text-slate-100">Todos los recursos</h2>
-              <span className="text-[10px] text-slate-500">{visibleResources.length} recursos</span>
+              <div className="min-w-0">
+                <h2 id="tool-elements" className="truncate text-xs font-semibold text-slate-100">
+                  {activeTool === 'forma' ? 'Formas esenciales' : ELEMENT_PRIMARY_TOOLS.find((tool) => tool.id === activeTool)?.label ?? 'Decorativas'}
+                </h2>
+                <p className="mt-0.5 text-[10px] text-slate-400">
+                  {activeTool === 'forma' ? 'Seis formas para construir más rápido' : 'Elige un recurso para insertarlo en el lienzo'}
+                </p>
+              </div>
+              <span className="shrink-0 text-[10px] text-slate-500">{activeToolDisplayResources.length} recursos</span>
             </div>
-            {visibleResources.length > 0 ? (
+            {activeToolDisplayResources.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
-                {visibleResources.map((resource) => (
-                  <ResourceCard key={`all-${resource.id}`} resource={resource} onInsert={handleInsert} />
+                {activeToolDisplayResources.map((resource) => (
+                  <ResourceCard
+                    key={`tool-${resource.id}`}
+                    resource={resource}
+                    onInsert={handleInsert}
+                    isFavorite={favoriteIds.includes(resource.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 ))}
               </div>
             ) : (
@@ -478,7 +716,13 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
             {visibleResources.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
                 {visibleResources.map((resource) => (
-                  <ResourceCard key={resource.id} resource={resource} onInsert={handleInsert} />
+                  <ResourceCard
+                    key={resource.id}
+                    resource={resource}
+                    onInsert={handleInsert}
+                    isFavorite={favoriteIds.includes(resource.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 ))}
               </div>
             ) : (

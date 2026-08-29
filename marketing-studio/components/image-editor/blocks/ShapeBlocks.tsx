@@ -68,10 +68,16 @@ import {
 import type { EditableVectorGeometry } from '../../../types/vectorGeometry';
 import {
   getEditableVectorPath,
+  createEditableVectorPolylinePath,
   normalizeEditableVectorGeometry,
   isSafeEditableVectorPath,
   normalizeGeometricShapeProps,
 } from '../../../utils/vectorGeometry';
+import type {
+  EditableArrowheadStyle,
+  EditableLineCap,
+  EditableLineJoin,
+} from '../../../types/vectorGeometry';
 
 export type { TraditionalShapeType } from '../../../types/elementCatalog';
 
@@ -180,6 +186,13 @@ export interface GeometricShapeGraphicProps {
   wavePath?: string;
   /** Normalized reusable geometry. When present it supersedes the preset shape. */
   vectorGeometry?: EditableVectorGeometry;
+  headStyle?: EditableArrowheadStyle;
+  tailStyle?: EditableArrowheadStyle;
+  curvature?: number;
+  lineJoin?: EditableLineJoin;
+  lineCap?: EditableLineCap;
+  startAnchor?: { x: number; y: number };
+  endAnchor?: { x: number; y: number };
   className?: string;
 }
 
@@ -203,6 +216,13 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
   waveAnchor = 'bottom',
   wavePath,
   vectorGeometry,
+  headStyle = 'none',
+  tailStyle = 'none',
+  curvature = 0,
+  lineJoin = 'round',
+  lineCap = 'round',
+  startAnchor = { x: 0.06, y: 0.16 },
+  endAnchor = { x: 0.94, y: 0.84 },
   className = 'h-full w-full',
 }) => {
   const svgProps = {
@@ -227,6 +247,11 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     waveCycles,
     waveAnchor,
     wavePath,
+    headStyle,
+    tailStyle,
+    curvature,
+    lineJoin,
+    lineCap,
   });
   const safeSides = Number(normalizedShapeProps.sides ?? sides ?? 7);
   const safePoints = Number(normalizedShapeProps.points ?? points ?? 10);
@@ -247,19 +272,70 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
   const visibleStroke = safeStrokeWidth > 0 && stroke !== 'transparent' ? stroke : 'none';
   const lineColor = stroke !== 'transparent' ? stroke : fill;
   const lineWidth = Math.max(2, safeStrokeWidth || 4);
+  const effectiveHeadStyle = headStyle === 'none' && (shapeType.includes('arrow') || shapeType.startsWith('connector'))
+    ? 'triangle'
+    : headStyle;
+  const effectiveTailStyle = tailStyle === 'none' && shapeType === 'line-arrow-both' ? 'triangle' : tailStyle;
+  const markerId = `marker-${effectiveHeadStyle}-${effectiveTailStyle}-${lineColor.replace(/[^a-z0-9]/gi, '') || 'line'}`;
+  const renderMarker = (style: EditableArrowheadStyle, start: boolean) => {
+    if (style === 'none') return null;
+    const markerPath = style === 'open'
+      ? 'M 9 2 L 2 10 L 9 18'
+      : style === 'circle'
+        ? 'M 10 2 A 8 8 0 1 0 10 18 A 8 8 0 1 0 10 2'
+        : style === 'bar'
+          ? 'M 7 2 V 18'
+          : 'M 2 2 L 18 10 L 2 18 Z';
+    return (
+      <marker id={`${markerId}-${start ? 'start' : 'end'}`} viewBox="0 0 20 20" refX={start ? 2 : 18} refY="10" markerWidth="7" markerHeight="7" orient="auto">
+        <path d={markerPath} fill={style === 'triangle' ? lineColor : 'none'} stroke={lineColor} strokeWidth="2" strokeLinejoin={lineJoin} />
+      </marker>
+    );
+  };
+  const renderEditableStroke = (
+    path: string,
+    points?: readonly { x: number; y: number }[],
+    forcePolyline = false,
+  ) => (
+    <>
+      {(effectiveHeadStyle !== 'none' || effectiveTailStyle !== 'none') && (
+        <defs>
+          {renderMarker(effectiveTailStyle, true)}
+          {renderMarker(effectiveHeadStyle, false)}
+        </defs>
+      )}
+      <path
+        d={forcePolyline && points ? createEditableVectorPolylinePath(points) : path}
+        fill="none"
+        stroke={lineColor}
+        strokeWidth={lineWidth}
+        strokeLinejoin={lineJoin}
+        strokeLinecap={lineCap}
+        strokeDasharray={shapeType === 'line-dashed' ? '12 8' : shapeType === 'line-dotted' ? '1 8' : undefined}
+        markerStart={effectiveTailStyle !== 'none' ? `url(#${markerId}-start)` : undefined}
+        markerEnd={effectiveHeadStyle !== 'none' ? `url(#${markerId}-end)` : undefined}
+      />
+    </>
+  );
 
   if (normalizedVectorGeometry) {
+    const connectorStart = { x: startAnchor.x * 100, y: startAnchor.y * 100 };
+    const connectorEnd = { x: endAnchor.x * 100, y: endAnchor.y * 100 };
+    const connectorPath = shapeType === 'connector-elbow'
+      ? `M ${connectorStart.x} ${connectorStart.y} H ${(connectorStart.x + connectorEnd.x) / 2} V ${connectorEnd.y} H ${connectorEnd.x}`
+      : `M ${connectorStart.x} ${connectorStart.y} C ${(connectorStart.x + connectorEnd.x) / 2} ${connectorStart.y} ${(connectorStart.x + connectorEnd.x) / 2} ${connectorEnd.y} ${connectorEnd.x} ${connectorEnd.y}`;
+    const geometryPath = shapeType.startsWith('connector')
+      ? connectorPath
+      : getEditableVectorPath({
+      ...normalizedVectorGeometry,
+      curvature: normalizedVectorGeometry.curvature ?? curvature,
+      });
+    const isPolyline = shapeType === 'polyline' || shapeType === 'separator-zigzag';
     return (
       <svg {...svgProps}>
-        <path
-          d={getEditableVectorPath(normalizedVectorGeometry)}
-          fill={normalizedVectorGeometry.closed ? fill : 'none'}
-          fillRule={normalizedVectorGeometry.fillRule}
-          stroke={visibleStroke}
-          strokeWidth={safeStrokeWidth}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
+        {normalizedVectorGeometry.closed
+          ? <path d={geometryPath} fill={fill} fillRule={normalizedVectorGeometry.fillRule} stroke={visibleStroke} strokeWidth={safeStrokeWidth} strokeLinejoin={lineJoin} strokeLinecap={lineCap} />
+          : renderEditableStroke(geometryPath, normalizedVectorGeometry.points, isPolyline)}
       </svg>
     );
   }
@@ -286,20 +362,12 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     case 'line-dotted':
     case 'line-arrow-right':
     case 'line-arrow-both':
+    case 'polyline':
       return (
         <svg {...svgProps} viewBox="0 0 100 24">
-          <line
-            x1={shapeType === 'line-arrow-both' ? 12 : 2}
-            y1="12"
-            x2={shapeType.includes('arrow') ? 88 : 98}
-            y2="12"
-            stroke={lineColor}
-            strokeWidth={lineWidth}
-            strokeLinecap="round"
-            strokeDasharray={shapeType === 'line-dashed' ? '12 8' : shapeType === 'line-dotted' ? '1 8' : undefined}
-          />
-          {shapeType.includes('arrow') && <polygon points="80,3 100,12 80,21" fill={lineColor} />}
-          {shapeType === 'line-arrow-both' && <polygon points="20,3 0,12 20,21" fill={lineColor} />}
+          {renderEditableStroke(
+            `M ${shapeType === 'line-arrow-both' ? 12 : 2} 12 L ${shapeType.includes('arrow') ? 88 : 98} 12`,
+          )}
         </svg>
       );
     case 'curve':
@@ -309,9 +377,9 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     case 'ring':
       return <svg {...svgProps}><circle cx="50" cy="50" r={safeRingRadius} fill="none" stroke={lineColor} strokeWidth={safeRingThickness} /></svg>;
     case 'connector-elbow':
-      return <svg {...svgProps}><path d="M6 16 H52 V84 H94" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" strokeLinejoin="round" /><polygon points="84,76 98,84 84,92" fill={lineColor} /></svg>;
+      return <svg {...svgProps}>{renderEditableStroke('M 6 16 H 52 V 84 H 94')}</svg>;
     case 'connector-curved':
-      return <svg {...svgProps}><path d="M6 16 C62 16 38 84 94 84" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" /><polygon points="84,76 98,84 84,92" fill={lineColor} /></svg>;
+      return <svg {...svgProps}>{renderEditableStroke('M 6 16 C 62 16 38 84 94 84')}</svg>;
     case 'circle':
     case 'mask-circle':
       return <svg {...svgProps}><ellipse cx="50" cy="50" rx="46" ry="46" fill={fill} stroke={visibleStroke} strokeWidth={safeStrokeWidth} /></svg>;
@@ -412,7 +480,12 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     case 'bracket-square-pair':
       return <svg {...svgProps}><path d="M34 5 H12 V95 H34 M66 5 H88 V95 H66" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" strokeLinejoin="round" /></svg>;
     case 'bracket-curly-pair':
-      return <svg {...svgProps}><path d="M36 4 C18 4 26 35 10 38 C26 42 18 96 36 96 M64 4 C82 4 74 35 90 38 C74 42 82 96 64 96" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" /></svg>;
+    case 'brace-pair':
+      return <svg {...svgProps}><path d="M36 4 C20 4 24 24 24 34 C24 43 16 45 10 50 C16 55 24 57 24 66 C24 76 20 96 36 96 M64 4 C80 4 76 24 76 34 C76 43 84 45 90 50 C84 55 76 57 76 66 C76 76 80 96 64 96" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap={lineCap} strokeLinejoin={lineJoin} /></svg>;
+    case 'brace-left':
+      return <svg {...svgProps}><path d="M36 4 C20 4 24 24 24 34 C24 43 16 45 10 50 C16 55 24 57 24 66 C24 76 20 96 36 96" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap={lineCap} /></svg>;
+    case 'brace-right':
+      return <svg {...svgProps}><path d="M64 4 C80 4 76 24 76 34 C76 43 84 45 90 50 C84 55 76 57 76 66 C76 76 80 96 64 96" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap={lineCap} /></svg>;
     case 'separator-wave':
       return <svg {...svgProps}><path d="M2 50 C14 20 26 20 38 50 S62 80 74 50 S88 20 98 50" fill="none" stroke={lineColor} strokeWidth={lineWidth} strokeLinecap="round" /></svg>;
     case 'separator-curve':
@@ -481,6 +554,13 @@ export const GeometricShapeBlock: React.FC<GeometricShapeBlockProps> = ({ layer 
       waveCycles={(blockProps.waveCycles as number) ?? 2}
       waveAnchor={(blockProps.waveAnchor as 'top' | 'bottom') ?? 'bottom'}
       wavePath={blockProps.wavePath as string | undefined}
+      headStyle={blockProps.headStyle as EditableArrowheadStyle | undefined}
+      tailStyle={blockProps.tailStyle as EditableArrowheadStyle | undefined}
+      curvature={blockProps.curvature as number | undefined}
+      lineJoin={blockProps.lineJoin as EditableLineJoin | undefined}
+      lineCap={blockProps.lineCap as EditableLineCap | undefined}
+      startAnchor={blockProps.startAnchor as { x: number; y: number } | undefined}
+      endAnchor={blockProps.endAnchor as { x: number; y: number } | undefined}
       vectorGeometry={blockProps.vectorGeometry as EditableVectorGeometry | undefined ?? layer.vectorGeometry}
     />
   );
