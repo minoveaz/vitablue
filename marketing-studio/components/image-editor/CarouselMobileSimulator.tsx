@@ -17,6 +17,9 @@ import {
   MousePointerClick,
   Image as ImageIcon,
   Monitor,
+  PanelTop,
+  Scan,
+  ShieldCheck,
 } from 'lucide-react';
 import type {
   CarouselAspectRatio,
@@ -25,6 +28,7 @@ import type {
   ImageProject,
 } from '../../types/imageStudio';
 import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
+import { CarouselPreviewSurface, type CarouselPreviewSurfaceMode } from './CarouselPreviewSurface';
 import { getCarouselGeometry, isCarouselProject } from '../../utils/imageDesignSystem';
 import {
   CAROUSEL_ASPECT_RATIOS,
@@ -57,6 +61,9 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
   const [isDragging, setIsDragging] = useState(false);
   const [showComparison, setShowComparison] = useState(Boolean(comparisonBefore));
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
+  const [surfaceMode, setSurfaceMode] = useState<CarouselPreviewSurfaceMode>('swipe');
+  const [showSurfaceGuides, setShowSurfaceGuides] = useState(true);
+  const [showSurfaceSafeZones, setShowSurfaceSafeZones] = useState(true);
 
   const isPanoramicCarousel = isCarouselProject(project.preset, project.carouselConfig?.enabled);
   const carouselConfig = project.carouselConfig;
@@ -227,6 +234,7 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
     setActiveVariantId(variant.id);
     onApplyVariant?.(variant);
     setShowComparison(true);
+    setSurfaceMode('comparison');
   };
 
   const renderComparisonSlide = (snapshot: ImageProject, label: string) => {
@@ -283,7 +291,8 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
       {/* Container Modal */}
       <div className="relative flex w-full max-w-5xl flex-col items-center justify-center gap-5 md:flex-row md:items-start">
         
-        {/* SIMULADOR SMARTPHONE */}
+        {/* SIMULADOR SMARTPHONE / SUPERFICIE PROFESIONAL */}
+        {surfaceMode === 'swipe' ? (
         <div className="relative flex flex-col items-center">
           {/* Marco iPhone Mockup */}
           <div className="relative flex aspect-[9/19] w-full max-w-[22rem] flex-col overflow-hidden rounded-[2.5rem] border-8 border-slate-800 bg-black shadow-2xl">
@@ -593,6 +602,18 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
             </div>
           )}
         </div>
+        ) : (
+          <CarouselPreviewSurface
+            project={project}
+            mode={surfaceMode}
+            activeSlideIndex={currentSlide}
+            onSlideChange={setCurrentSlide}
+            comparisonBefore={comparisonBefore}
+            showGuides={showSurfaceGuides}
+            showSafeZones={showSurfaceSafeZones}
+            className="max-w-3xl"
+          />
+        )}
 
         {/* PANEL LATERAL DE CONFIGURACIÓN DEL SIMULADOR */}
         <div className="flex max-h-[78vh] w-full flex-col gap-4 overflow-y-auto rounded-3xl border border-slate-800 bg-primary-dark/95 p-4 text-white sm:p-5 md:max-w-sm">
@@ -612,6 +633,60 @@ export const CarouselMobileSimulator: React.FC<CarouselMobileSimulatorProps> = (
               <X className="size-4" />
             </button>
           </div>
+
+          <div>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <label className="text-[11px] font-bold text-slate-400">Superficie de preview</label>
+              <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500">Producción</span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-slate-800 bg-slate-950 p-1">
+              {([
+                ['slide', 'Slide', PanelTop],
+                ['panorama', 'Panorama', Scan],
+                ['comparison', 'Antes / después', Sparkles],
+                ['swipe', 'Swipe', Smartphone],
+              ] as const).map(([mode, label, Icon]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setSurfaceMode(mode)}
+                  disabled={mode === 'comparison' && !comparisonBefore}
+                  aria-pressed={surfaceMode === mode}
+                  className={`flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[10px] font-bold transition-colors ${
+                    surfaceMode === mode
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-slate-400 hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40'
+                  }`}
+                >
+                  <Icon className="size-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {surfaceMode !== 'swipe' && <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowSurfaceGuides((visible) => !visible)}
+              aria-pressed={showSurfaceGuides}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[10px] font-bold transition-colors ${
+                showSurfaceGuides ? 'border-amber-300/60 bg-amber-300/10 text-amber-200' : 'border-slate-700 text-amber-100/70 hover:text-white'
+              }`}
+            >
+              <Scan className="size-3.5" /> Cortes
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowSurfaceSafeZones((visible) => !visible)}
+              aria-pressed={showSurfaceSafeZones}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[10px] font-bold transition-colors ${
+                showSurfaceSafeZones ? 'border-brand-cyan/60 bg-brand-cyan/10 text-brand-cyan' : 'border-slate-700 text-brand-cyan/70 hover:text-white'
+              }`}
+            >
+              <ShieldCheck className="size-3.5" /> Safe zones
+            </button>
+          </div>}
 
           {/* SELECTOR DE PLATAFORMA */}
           <div>
