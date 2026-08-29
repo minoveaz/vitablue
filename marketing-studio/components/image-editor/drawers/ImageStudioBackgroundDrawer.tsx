@@ -168,6 +168,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
 }) => {
   const [showContent, setShowContent] = useState(true);
   const [draggedTrajectoryPoint, setDraggedTrajectoryPoint] = useState<number | null>(null);
+  const [activeTrajectoryPoint, setActiveTrajectoryPoint] = useState<number | null>(null);
   const composition = resolveCarouselBackgroundComposition(project.carouselBackground);
   const isCarousel = Boolean(project.carouselConfig?.enabled || project.preset.isCarousel);
 
@@ -389,22 +390,31 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
                     cx={point.x * 100}
                     cy={point.y * 100}
                     r="3"
-                    className="fill-brand-cyan stroke-slate-950"
+                    className={activeTrajectoryPoint === index ? 'fill-amber-400 stroke-white' : 'fill-brand-cyan stroke-slate-950'}
                     strokeWidth="1.5"
                     style={{ cursor: draggedTrajectoryPoint === index ? 'grabbing' : 'grab' }}
                     onPointerDown={(event) => {
                       event.preventDefault();
                       event.currentTarget.setPointerCapture(event.pointerId);
+                      setActiveTrajectoryPoint(index);
                       setDraggedTrajectoryPoint(index);
                     }}
+                    onFocus={() => setActiveTrajectoryPoint(index)}
                   />
                 ))}
               </svg>
             </div>
             <div className="mt-2 space-y-1.5">
               {trajectoryPoints.map((point, index) => (
-                <div key={`${index}-${point.x}`} className="flex flex-wrap items-center gap-1.5">
-                  <span className="w-5 text-[10px] font-bold text-slate-500">{index + 1}</span>
+                <div key={`${index}-${point.x}`} className={`flex flex-wrap items-center gap-1.5 rounded-md px-1 py-0.5 ${activeTrajectoryPoint === index ? 'bg-amber-400/10' : ''}`}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTrajectoryPoint(index)}
+                    className={`w-5 text-[10px] font-bold ${activeTrajectoryPoint === index ? 'text-amber-400' : 'text-slate-500'}`}
+                    aria-label={`Seleccionar punto ${index + 1}`}
+                  >
+                    {index + 1}
+                  </button>
                   <label className="flex min-w-[7rem] flex-1 items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1.5 text-[10px] text-slate-400">
                     <span>X</span>
                     <input

@@ -993,7 +993,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
         
         {/* A. FORMA GEOMÉTRICA TRADICIONAL */}
         {selectedLayer.blockType === 'GeometricShape' && (
-          <div className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs">
+          <fieldset
+            disabled={Boolean(selectedLayer.locked)}
+            className="space-y-3 rounded-2xl border border-brand-cyan/20 bg-slate-950 p-3 shadow-xs disabled:cursor-not-allowed disabled:opacity-60"
+          >
             <EditorPanelSection title={<><Shapes className="size-3.5" /> Propiedades de Forma Geométrica</>} tone="cyan" />
 
             {/* TIPO DE FORMA */}
@@ -1008,7 +1011,9 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
               >
                 <option value="rounded_rect">🔲 Rectángulo Redondeado</option>
                 <option value="rectangle">⬛ Rectángulo / Cuadrado</option>
+                <option value="full-rectangle">▰ Rectángulo a Sangre</option>
                 <option value="circle">⚪ Círculo / Elipse</option>
+                <option value="top-semicircle">◒ Semicírculo Superior</option>
                 <option value="star">⭐ Estrella (5 Puntas)</option>
                 <option value="triangle">🔺 Triángulo</option>
                 <option value="diamond">💎 Rombo / Diamante</option>
@@ -1074,7 +1079,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 />
               </div>
             )}
-          </div>
+          </fieldset>
         )}
 
         {/* B. ILUSTRACIÓN VECTORIAL WEB */}
