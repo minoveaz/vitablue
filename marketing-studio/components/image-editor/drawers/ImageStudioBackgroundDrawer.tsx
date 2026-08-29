@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Eye, Layers, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Sparkles, Trash2 } from 'lucide-react';
 import type { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import type {
@@ -21,6 +21,12 @@ import {
   isCarouselBackgroundLayer,
   resolveCarouselBackgroundComposition,
 } from '../../../utils/carouselBackgroundComposition';
+import {
+  generateCarouselCompositionProposals,
+  type CarouselCompositionAccent,
+  type CarouselCompositionDominantZone,
+  type CarouselCompositionVisualStyle,
+} from '../../../utils/carouselCompositionAssistant';
 import { getCarouselGeometry } from '../../../utils/imageDesignSystem';
 import { ImageLayerBlockRenderer } from '../blocks/BlockRenderer';
 
@@ -56,6 +62,30 @@ const CONTINUITY_OPTIONS: Array<{ id: CarouselBackgroundContinuity; label: strin
   { id: 'local', label: 'Local' },
   { id: 'flow', label: 'Fluida' },
   { id: 'seamless', label: 'Continua' },
+];
+
+const ASSISTANT_STYLE_OPTIONS: Array<{ id: CarouselCompositionVisualStyle; label: string }> = [
+  { id: 'editorial', label: 'Editorial' },
+  { id: 'educational', label: 'Educativo' },
+  { id: 'conversion', label: 'Conversión' },
+  { id: 'comparison', label: 'Comparativa' },
+  { id: 'testimonial', label: 'Testimonial' },
+  { id: 'bold', label: 'Atrevido' },
+];
+
+const ASSISTANT_ZONE_OPTIONS: Array<{ id: CarouselCompositionDominantZone; label: string }> = [
+  { id: 'top', label: 'Parte superior' },
+  { id: 'center', label: 'Centro' },
+  { id: 'bottom', label: 'Parte inferior' },
+  { id: 'balanced', label: 'Equilibrada' },
+];
+
+const ASSISTANT_ACCENT_OPTIONS: Array<{ id: CarouselCompositionAccent; label: string; description: string }> = [
+  { id: 'soft-shadow', label: 'Sombra suave', description: 'Profundidad discreta' },
+  { id: 'teal-glow', label: 'Brillo teal', description: 'Acento VitaBlue' },
+  { id: 'gold-glow', label: 'Brillo ámbar', description: 'Acento de conversión' },
+  { id: 'focal-point', label: 'Punto focal', description: 'Guía la mirada' },
+  { id: 'slide-bridge', label: 'Puente entre slides', description: 'Refuerza continuidad' },
 ];
 
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
@@ -185,6 +215,61 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
   const [activeTrajectoryPoint, setActiveTrajectoryPoint] = useState<number | null>(null);
   const composition = resolveCarouselBackgroundComposition(project.carouselBackground);
   const isCarousel = Boolean(project.carouselConfig?.enabled || project.preset.isCarousel);
+  const slideCount = project.carouselConfig?.slideCount ?? project.preset.defaultSlideCount ?? 1;
+  const [assistantVisualStyle, setAssistantVisualStyle] = useState<CarouselCompositionVisualStyle>('editorial');
+  const [assistantDominantZone, setAssistantDominantZone] = useState<CarouselCompositionDominantZone>('balanced');
+  const [assistantContinuity, setAssistantContinuity] = useState<CarouselBackgroundContinuity>(composition.continuity);
+  const [assistantColorPalette, setAssistantColorPalette] = useState<CarouselBackgroundColorVariant>(composition.colorVariant);
+  const [assistantIntensity, setAssistantIntensity] = useState(composition.intensity);
+  const [assistantScale, setAssistantScale] = useState(composition.scale);
+  const [assistantAccents, setAssistantAccents] = useState<CarouselCompositionAccent[]>([]);
+  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+  const [assistantStatus, setAssistantStatus] = useState<string | null>(null);
+
+  const assistantProposals = useMemo(
+    () =>
+      generateCarouselCompositionProposals({
+        slideCount,
+        visualStyle: assistantVisualStyle,
+        dominantZone: assistantDominantZone,
+        continuity: assistantContinuity,
+        colorPalette: assistantColorPalette,
+        intensity: assistantIntensity,
+        scale: assistantScale,
+        selectedAccents: assistantAccents,
+        currentComposition: composition,
+      }),
+    [
+      assistantAccents,
+      assistantColorPalette,
+      assistantContinuity,
+      assistantDominantZone,
+      assistantIntensity,
+      assistantScale,
+      assistantVisualStyle,
+      composition,
+      slideCount,
+    ],
+  );
+
+  useEffect(() => {
+    if (!assistantProposals.some((proposal) => proposal.id === selectedProposalId)) {
+      setSelectedProposalId(assistantProposals[0]?.id ?? null);
+    }
+  }, [assistantProposals, selectedProposalId]);
+
+  const toggleAssistantAccent = (accent: CarouselCompositionAccent) => {
+    setAssistantAccents((current) =>
+      current.includes(accent) ? current.filter((item) => item !== accent) : [...current, accent],
+    );
+  };
+
+  const applyAssistantProposal = () => {
+    const proposal = assistantProposals.find((item) => item.id === selectedProposalId) ?? assistantProposals[0];
+    if (!proposal) return;
+    onRegenerateBackground(proposal.composition);
+    setAssistantStatus(`Aplicada: ${proposal.label}. Tus capas editables se conservaron.`);
+  };
 
   const update = (patch: CarouselBackgroundCompositionInput) => {
     onRegenerateBackground(patch);
@@ -223,6 +308,152 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
 
   return (
     <div className="space-y-4">
+      <section className="rounded-2xl border border-brand-cyan/30 bg-gradient-to-br from-primary/30 via-slate-950 to-slate-950 p-3" aria-labelledby="composition-assistant-title">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
+              <Sparkles className="size-3.5 text-amber-300" />
+              <h2 id="composition-assistant-title">Asistente de composición</h2>
+            </div>
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+              Tres direcciones visuales para tus {slideCount} slides. Elige una para verla antes de aplicarla.
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full border border-brand-cyan/30 bg-brand-cyan/10 px-2 py-1 text-[9px] font-bold text-brand-cyan">
+            Automático
+          </span>
+        </div>
+
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">Estilo visual</span>
+            <select
+              value={assistantVisualStyle}
+              onChange={(event) => setAssistantVisualStyle(event.target.value as CarouselCompositionVisualStyle)}
+              className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-2 text-xs font-semibold text-white outline-none focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/30"
+            >
+              {ASSISTANT_STYLE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">Zona dominante</span>
+            <select
+              value={assistantDominantZone}
+              onChange={(event) => setAssistantDominantZone(event.target.value as CarouselCompositionDominantZone)}
+              className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-2 text-xs font-semibold text-white outline-none focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/30"
+            >
+              {ASSISTANT_ZONE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <fieldset className="mt-3">
+          <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Paleta</legend>
+          <div className="grid grid-cols-3 gap-1.5">
+            {CAROUSEL_BACKGROUND_COLOR_VARIANTS.map((variant) => (
+              <button
+                key={variant}
+                type="button"
+                aria-pressed={assistantColorPalette === variant}
+                onClick={() => setAssistantColorPalette(variant)}
+                className={`flex min-w-0 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-[10px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 ${
+                  assistantColorPalette === variant ? 'border-brand-cyan bg-primary/30 text-white' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-600 hover:text-white'
+                }`}
+              >
+                <span className={`size-2.5 rounded-full border border-white/30 ${VARIANT_SWATCHES[variant]}`} />
+                <span className="truncate">{VARIANT_LABELS[variant]}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="mt-3">
+          <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Continuidad</legend>
+          <div className="flex flex-wrap gap-1.5">
+            {CONTINUITY_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={assistantContinuity === option.id}
+                onClick={() => setAssistantContinuity(option.id)}
+                className={`rounded-lg border px-2 py-1.5 text-[10px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 ${
+                  assistantContinuity === option.id ? 'border-brand-cyan bg-primary/30 text-brand-cyan' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-600 hover:text-white'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Intensidad</span><output className="font-mono text-brand-cyan">{formatPercent(assistantIntensity)}</output>
+            </span>
+            <input type="range" min="0" max="1" step="0.01" value={assistantIntensity} onChange={(event) => setAssistantIntensity(Number(event.target.value))} className="w-full accent-brand-cyan" />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Escala</span><output className="font-mono text-brand-cyan">{assistantScale.toFixed(2)}×</output>
+            </span>
+            <input type="range" min="0.25" max="2" step="0.05" value={assistantScale} onChange={(event) => setAssistantScale(Number(event.target.value))} className="w-full accent-brand-cyan" />
+          </label>
+        </div>
+
+        <fieldset className="mt-3">
+          <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Acentos seleccionados</legend>
+          <div className="grid gap-1.5 sm:grid-cols-2">
+            {ASSISTANT_ACCENT_OPTIONS.map((accent) => {
+              const checked = assistantAccents.includes(accent.id);
+              return (
+                <label key={accent.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-2 py-2 transition-colors ${checked ? 'border-amber-300/60 bg-amber-300/10' : 'border-slate-800 bg-slate-900/70 hover:border-slate-600'}`}>
+                  <input type="checkbox" checked={checked} onChange={() => toggleAssistantAccent(accent.id)} className="size-3.5 accent-brand-cyan" />
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-bold text-slate-200">{accent.label}</span>
+                    <span className="block truncate text-[9px] text-slate-500">{accent.description}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <div className="mt-4 grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Propuestas de composición">
+          {assistantProposals.map((proposal, index) => {
+            const selected = proposal.id === selectedProposalId;
+            const previewProject = { ...project, carouselBackground: proposal.composition };
+            return (
+              <article key={proposal.id} className={`min-w-0 rounded-xl border p-2 transition-colors ${selected ? 'border-brand-cyan bg-primary/20' : 'border-slate-800 bg-slate-900/70'}`}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setSelectedProposalId(proposal.id)}
+                  className="block w-full text-left focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+                >
+                  <BackgroundPreview project={previewProject} composition={proposal.composition} showContent={showContent} />
+                  <span className="mt-2 flex items-center justify-between gap-1 text-[10px] font-bold text-white">
+                    <span className="truncate">{index + 1}. {proposal.label}</span>
+                    {selected && <Check className="size-3 shrink-0 text-brand-cyan" />}
+                  </span>
+                  <span className="mt-1 block text-[9px] leading-snug text-slate-400">{proposal.rationale}</span>
+                </button>
+                <button type="button" onClick={() => { setSelectedProposalId(proposal.id); onRegenerateBackground(proposal.composition); setAssistantStatus(`Aplicada: ${proposal.label}. Tus capas editables se conservaron.`); }} className="mt-2 w-full rounded-lg bg-amber-400 px-2 py-1.5 text-[10px] font-black text-primary-dark transition-colors hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/60">
+                  Usar esta propuesta
+                </button>
+              </article>
+            );
+          })}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[10px] text-slate-500" aria-live="polite">{assistantStatus ?? 'Las propuestas no modifican el lienzo hasta que las aplicas.'}</p>
+          <button type="button" onClick={applyAssistantProposal} className="inline-flex items-center gap-1 rounded-lg border border-brand-cyan/50 px-2.5 py-1.5 text-[10px] font-bold text-brand-cyan transition-colors hover:bg-brand-cyan/10 focus:outline-none focus:ring-2 focus:ring-brand-cyan/50">
+            Aplicar seleccionada
+          </button>
+        </div>
+      </section>
+
       <div className="rounded-2xl border border-slate-800 bg-slate-950 p-3">
         <div className="mb-3 flex items-center justify-between">
           <div>
