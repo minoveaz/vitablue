@@ -7,6 +7,18 @@ import type {
 export const CAROUSEL_BACKGROUND_COLOR_VARIANTS = ['white', 'midnight', 'ocean', 'amber-gold', 'white-editorial'] as const;
 export type CarouselBackgroundColorVariant = (typeof CAROUSEL_BACKGROUND_COLOR_VARIANTS)[number];
 
+/** Stable identifiers for the reusable art-directed carousel compositions. */
+export const CAROUSEL_BACKGROUND_PRESET_IDS = [
+  'caida-inicial',
+  'montana-central',
+  'onda-ascendente',
+  'semicirculo-entre-slides',
+  'diagonal-dinamica',
+  'composicion-editorial',
+  'cta-final',
+] as const;
+export type CarouselBackgroundPresetId = (typeof CAROUSEL_BACKGROUND_PRESET_IDS)[number];
+
 export type CarouselBackgroundShapeType = 'wave' | 'blob' | 'organic' | 'curve';
 export type CarouselBackgroundTrajectoryType = 'sine' | 'arc' | 'diagonal' | 'flat';
 export type CarouselBackgroundMask = 'none' | 'safe-zone' | 'rounded' | 'circle' | 'blob';
@@ -56,6 +68,8 @@ export interface CarouselBackgroundColorVariantDefinition {
 export interface CarouselBackgroundComposition {
   version: 1;
   id: string;
+  /** Optional stable preset reference; absent for legacy/custom compositions. */
+  presetId?: CarouselBackgroundPresetId;
   colorVariant: CarouselBackgroundColorVariant;
   shape: CarouselBackgroundShapeType;
   trajectory: CarouselBackgroundTrajectory;
@@ -87,6 +101,24 @@ export type CarouselBackgroundCompositionInput = Omit<
   safeZone?: Partial<CarouselBackgroundSafeZone>;
   vectorGeometry?: EditableVectorGeometryInput;
 };
+
+export interface CarouselBackgroundCompositionPreset {
+  id: CarouselBackgroundPresetId;
+  label: string;
+  description: string;
+  recommendedColorVariant: CarouselBackgroundColorVariant;
+  /** Preview anchors are normalized to the full panorama. */
+  previewPoints: readonly CarouselBackgroundTrajectoryPoint[];
+  composition: CarouselBackgroundCompositionInput;
+}
+
+export interface CarouselBackgroundPresetOptions {
+  colorVariant?: CarouselBackgroundColorVariant;
+  scale?: number;
+  intensity?: number;
+  /** Keep user-authored safe zones, focal points, and palette overrides. */
+  preserveCustomEdits?: boolean;
+}
 
 export interface CarouselBackgroundLayerMetadata {
   compositionId: string;

@@ -3,6 +3,7 @@ import { INITIAL_IMAGE_TEMPLATES } from './imageTemplates';
 import { createDefaultLayoutMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 import { normalizeTiptapHtml } from './tiptapHtml';
 import { normalizeEditableVectorGeometry } from './vectorGeometry';
+import { resolveCarouselBackgroundComposition } from './carouselBackgroundComposition';
 
 /**
  * The Image Studio used to have three independent storage implementations:
@@ -562,6 +563,9 @@ export const normalizeStoredProject = (project: ImageProject): ImageProject => (
     ...createDefaultLayoutMetadata(),
     ...(project.layout ?? {}),
   },
+  ...(project.carouselBackground
+    ? { carouselBackground: resolveCarouselBackgroundComposition(project.carouselBackground) }
+    : {}),
 });
 
 const hydrateProject = (
@@ -590,7 +594,7 @@ export const serializeStoredProject = (
   project: ImageProject,
   mediaByDataUrl?: Map<string, UploadedImageMedia>,
 ): ImageProject =>
-  mapDeep(clone(project), (value) =>
+  mapDeep(normalizeStoredProject(project), (value) =>
     replaceDataImagesInString(
       value,
       (candidate) =>

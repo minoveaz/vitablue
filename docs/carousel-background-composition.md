@@ -28,6 +28,30 @@ Components should consume semantic Tailwind tokens (`primary`, `primary-dark`,
 values. Palette values are intentionally confined to the composition engine and
 template data.
 
+## Reusable composition presets
+
+The background drawer exposes seven structural presets from
+`CAROUSEL_BACKGROUND_PRESETS`:
+
+- `caida-inicial` — caída inicial para el hook
+- `montana-central` — pico central para un beneficio o dato
+- `onda-ascendente` — progresión ascendente
+- `semicirculo-entre-slides` — puente visual en los cortes
+- `diagonal-dinamica` — diagonal de alto contraste
+- `composicion-editorial` — lectura clara y contenida
+- `cta-final` — acento de conversión en la última slide
+
+`applyCarouselBackgroundPresetToComposition` stamps the stable `presetId`,
+allows a colour variant plus `scale` and `intensity` overrides, and clears an
+old custom vector path so the selected preset is visible. Safe zones, focal
+points, and secondary colours are retained by default. Applying a preset
+through `applyCarouselBackgroundPreset` regenerates only structural layers;
+editable text, images, and other user layers remain untouched.
+
+`presetId` is optional for backwards compatibility. Project normalization
+removes unknown IDs before persistence, and serialization keeps valid IDs as
+plain JSON data.
+
 ## Export rules
 
 - PNG panorama, PNG slides in ZIP, and PDF pages are rendered from the same

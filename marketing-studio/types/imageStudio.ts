@@ -4,10 +4,12 @@ import type { CarouselBackgroundComposition } from './carouselBackgroundComposit
 import type { EditableVectorGeometry } from './vectorGeometry';
 export { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from './carouselBackgroundComposition';
 export type {
+  CarouselBackgroundPresetId,
   CarouselBackgroundColorVariant,
   CarouselBackgroundColorVariantDefinition,
   CarouselBackgroundComposition,
   CarouselBackgroundCompositionInput,
+  CarouselBackgroundCompositionPreset,
   CarouselBackgroundContinuity,
   CarouselBackgroundLayer,
   CarouselBackgroundLayerMetadata,
@@ -18,7 +20,9 @@ export type {
   CarouselBackgroundTrajectory,
   CarouselBackgroundTrajectoryPoint,
   CarouselBackgroundTrajectoryType,
+  CarouselBackgroundPresetOptions,
 } from './carouselBackgroundComposition';
+export { CAROUSEL_BACKGROUND_PRESET_IDS } from './carouselBackgroundComposition';
 
 export interface ImageFormatPreset {
   id: string;

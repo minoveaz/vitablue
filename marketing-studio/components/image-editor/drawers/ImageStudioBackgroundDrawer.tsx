@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Check, Eye, Layers, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { Check, Eye, Layers, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Sparkles, Trash2 } from 'lucide-react';
 import type { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import type {
   CarouselBackgroundColorVariant,
   CarouselBackgroundComposition,
   CarouselBackgroundCompositionInput,
+  CarouselBackgroundCompositionPreset,
   CarouselBackgroundContinuity,
   CarouselBackgroundShapeType,
   CarouselBackgroundTrajectoryPoint,
@@ -12,6 +13,8 @@ import type {
 import { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from '../../../types/carouselBackgroundComposition';
 import {
   CAROUSEL_BACKGROUND_PALETTES,
+  CAROUSEL_BACKGROUND_PRESETS,
+  applyCarouselBackgroundPresetToComposition,
   generateCarouselBackgroundLayers,
   createCarouselBackgroundBezierPath,
   getCarouselBackgroundTrajectoryPoints,
@@ -57,14 +60,6 @@ const CONTINUITY_OPTIONS: Array<{ id: CarouselBackgroundContinuity; label: strin
 
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
 const clampPointValue = (value: number) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
-const TRAJECTORY_PRESETS: Array<{ id: string; label: string; points: CarouselBackgroundTrajectoryPoint[] }> = [
-  { id: 'soft', label: 'Suave', points: [{ x: 0, y: 0.62 }, { x: 0.25, y: 0.68 }, { x: 0.5, y: 0.58 }, { x: 0.75, y: 0.7 }, { x: 1, y: 0.62 }] },
-  { id: 'drop', label: 'Caída inicial', points: [{ x: 0, y: 0.08 }, { x: 0.18, y: 0.4 }, { x: 0.4, y: 0.9 }, { x: 0.62, y: 0.5 }, { x: 1, y: 0.68 }] },
-  { id: 'peak', label: 'Montaña central', points: [{ x: 0, y: 0.78 }, { x: 0.25, y: 0.84 }, { x: 0.5, y: 0.28 }, { x: 0.75, y: 0.72 }, { x: 1, y: 0.64 }] },
-  { id: 'rise', label: 'Ascendente', points: [{ x: 0, y: 0.86 }, { x: 0.3, y: 0.76 }, { x: 0.6, y: 0.48 }, { x: 1, y: 0.25 }] },
-  { id: 'editorial', label: 'Editorial', points: [{ x: 0, y: 0.76 }, { x: 0.3, y: 0.84 }, { x: 0.56, y: 0.7 }, { x: 0.78, y: 0.4 }, { x: 1, y: 0.68 }] },
-];
-
 const PreviewLayer: React.FC<{
   layer: ImageLayer;
   geometry: ReturnType<typeof getCarouselGeometry>;
@@ -158,6 +153,25 @@ const BackgroundPreview: React.FC<{
           <PreviewLayer key={layer.id} layer={layer} geometry={geometry} slideIndex={slideIndex} />
         ))}
       </div>
+    </div>
+  );
+};
+
+const PresetPreview: React.FC<{ preset: CarouselBackgroundCompositionPreset }> = ({ preset }) => {
+  const path = createCarouselBackgroundBezierPath(preset.previewPoints);
+  const palette = CAROUSEL_BACKGROUND_PALETTES[preset.recommendedColorVariant];
+  return (
+    <div
+      className="overflow-hidden rounded-lg border border-slate-700/80 p-2"
+      style={{ background: palette.background }}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 100 100" className="h-14 w-full">
+        <path d={`${path} L 100 100 L 0 100 Z`} fill={palette.primary} opacity="0.9" />
+        <path d={path} fill="none" stroke={palette.muted} strokeWidth="2.5" strokeLinecap="round" />
+        {preset.id === 'semicirculo-entre-slides' && <circle cx="50" cy="72" r="12" fill={palette.muted} opacity="0.85" />}
+        {preset.id === 'cta-final' && <circle cx="82" cy="70" r="10" fill={palette.muted} opacity="0.95" />}
+      </svg>
     </div>
   );
 };
@@ -324,6 +338,45 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
 
           <fieldset className="border-t border-slate-800 pt-3">
             <legend className="mb-1.5 flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="inline-flex items-center gap-1.5"><Sparkles className="size-3 text-amber-300" /> Presets de composición</span>
+              <span className="font-normal normal-case tracking-normal text-slate-500">7 estilos</span>
+            </legend>
+            <p className="mb-2 text-[10px] leading-relaxed text-slate-500">
+              Aplica una dirección visual completa. Tus textos, imágenes y zonas seguras se conservan.
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {CAROUSEL_BACKGROUND_PRESETS.map((preset) => {
+                const isActive = composition.presetId === preset.id;
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => update(applyCarouselBackgroundPresetToComposition(composition, preset.id))}
+                    className={`group min-w-0 rounded-xl border p-2 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 ${
+                      isActive
+                        ? 'border-brand-cyan bg-primary/20'
+                        : 'border-slate-800 bg-slate-900/80 hover:border-slate-600'
+                    }`}
+                  >
+                    <PresetPreview preset={preset} />
+                    <span className="mt-2 flex items-center justify-between gap-1 text-[10px] font-bold text-white">
+                      <span className="truncate">{preset.label}</span>
+                      {isActive && <Check className="size-3 shrink-0 text-brand-cyan" />}
+                    </span>
+                    <span className="mt-1 block text-[10px] leading-snug text-slate-500">{preset.description}</span>
+                    <span className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-semibold text-slate-400">
+                      <span className={`size-2 rounded-full border border-white/30 ${VARIANT_SWATCHES[preset.recommendedColorVariant]}`} />
+                      {VARIANT_LABELS[preset.recommendedColorVariant]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset className="border-t border-slate-800 pt-3">
+            <legend className="mb-1.5 flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
               <span>Trayectoria Bézier</span>
               <button
                 type="button"
@@ -338,18 +391,6 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             <p className="mb-2 text-[10px] leading-relaxed text-slate-500">
               Ajusta la curva panorámica. X recorre todas las slides y Y controla su altura.
             </p>
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {TRAJECTORY_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => updateTrajectoryPoints(preset.points)}
-                  className="rounded-md border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:border-brand-cyan hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
             <div className="rounded-lg border border-slate-800 bg-slate-900/80 p-2">
               <svg
                 viewBox="0 0 100 100"

@@ -5,11 +5,15 @@ import {
   normalizeEditableVectorGeometry,
 } from './vectorGeometry';
 import {
+  CAROUSEL_BACKGROUND_PRESET_IDS,
   CAROUSEL_BACKGROUND_COLOR_VARIANTS,
   type CarouselBackgroundColorVariant,
   type CarouselBackgroundColorVariantDefinition,
   type CarouselBackgroundComposition,
   type CarouselBackgroundCompositionInput,
+  type CarouselBackgroundCompositionPreset,
+  type CarouselBackgroundPresetOptions,
+  type CarouselBackgroundPresetId,
   type CarouselBackgroundLayer,
   type CarouselBackgroundLayerMetadata,
   type CarouselBackgroundSafeZone,
@@ -17,6 +21,9 @@ import {
 } from '../types/carouselBackgroundComposition';
 
 export type {
+  CarouselBackgroundCompositionPreset,
+  CarouselBackgroundPresetOptions,
+  CarouselBackgroundPresetId,
   CarouselBackgroundColorVariant,
   CarouselBackgroundColorVariantDefinition,
   CarouselBackgroundComposition,
@@ -110,6 +117,162 @@ export const DEFAULT_CAROUSEL_TRAJECTORY_POINTS: readonly CarouselBackgroundTraj
   { x: 0.8, y: 0.7 },
   { x: 1, y: 0.64 },
 ];
+
+const compositionPoints = (points: readonly CarouselBackgroundTrajectoryPoint[]) =>
+  points.map((point) => ({ ...point }));
+
+/**
+ * Art-directed starting points for the carousel editor. Presets only describe
+ * structural layers; content layers are never part of a preset and therefore
+ * remain editable when one is applied.
+ */
+export const CAROUSEL_BACKGROUND_PRESETS: readonly CarouselBackgroundCompositionPreset[] = [
+  {
+    id: 'caida-inicial',
+    label: 'Caída inicial',
+    description: 'Un descenso con energía para abrir la historia y llevar la mirada al primer mensaje.',
+    recommendedColorVariant: 'ocean',
+    previewPoints: [{ x: 0, y: 0.1 }, { x: 0.2, y: 0.42 }, { x: 0.42, y: 0.88 }, { x: 0.7, y: 0.5 }, { x: 1, y: 0.68 }],
+    composition: {
+      colorVariant: 'ocean',
+      shape: 'organic',
+      trajectory: { type: 'sine', amplitude: 0.1, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.1 }, { x: 0.2, y: 0.42 }, { x: 0.42, y: 0.88 }, { x: 0.7, y: 0.5 }, { x: 1, y: 0.68 }]) },
+      continuity: 'seamless',
+      mask: 'safe-zone',
+      shadow: 'soft',
+      intensity: 0.9,
+      scale: 1,
+      height: 0.42,
+      verticalPosition: 0.7,
+    },
+  },
+  {
+    id: 'montana-central',
+    label: 'Montaña central',
+    description: 'Un pico limpio en el centro para destacar una idea, dato o beneficio clave.',
+    recommendedColorVariant: 'white',
+    previewPoints: [{ x: 0, y: 0.76 }, { x: 0.25, y: 0.84 }, { x: 0.5, y: 0.25 }, { x: 0.75, y: 0.72 }, { x: 1, y: 0.64 }],
+    composition: {
+      colorVariant: 'white',
+      shape: 'wave',
+      trajectory: { type: 'arc', amplitude: 0.08, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.76 }, { x: 0.25, y: 0.84 }, { x: 0.5, y: 0.25 }, { x: 0.75, y: 0.72 }, { x: 1, y: 0.64 }]) },
+      continuity: 'seamless',
+      mask: 'safe-zone',
+      shadow: 'none',
+      intensity: 0.86,
+      scale: 0.95,
+      height: 0.36,
+      verticalPosition: 0.72,
+    },
+  },
+  {
+    id: 'onda-ascendente',
+    label: 'Onda ascendente',
+    description: 'Una curva que sube de slide en slide para acompañar una progresión positiva.',
+    recommendedColorVariant: 'midnight',
+    previewPoints: [{ x: 0, y: 0.88 }, { x: 0.28, y: 0.78 }, { x: 0.58, y: 0.5 }, { x: 1, y: 0.2 }],
+    composition: {
+      colorVariant: 'midnight',
+      shape: 'wave',
+      trajectory: { type: 'diagonal', amplitude: 0.11, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.88 }, { x: 0.28, y: 0.78 }, { x: 0.58, y: 0.5 }, { x: 1, y: 0.2 }]) },
+      continuity: 'flow',
+      mask: 'safe-zone',
+      shadow: 'soft',
+      intensity: 0.88,
+      scale: 1,
+      height: 0.4,
+      verticalPosition: 0.68,
+    },
+  },
+  {
+    id: 'semicirculo-entre-slides',
+    label: 'Semicírculo entre slides',
+    description: 'Un puente semicircular que aparece en los cortes para unir cada capítulo.',
+    recommendedColorVariant: 'white-editorial',
+    previewPoints: [{ x: 0, y: 0.7 }, { x: 0.25, y: 0.66 }, { x: 0.5, y: 0.7 }, { x: 0.75, y: 0.66 }, { x: 1, y: 0.7 }],
+    composition: {
+      colorVariant: 'white-editorial',
+      shape: 'curve',
+      trajectory: { type: 'flat', amplitude: 0.04, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.7 }, { x: 0.25, y: 0.66 }, { x: 0.5, y: 0.7 }, { x: 0.75, y: 0.66 }, { x: 1, y: 0.7 }]) },
+      continuity: 'flow',
+      mask: 'rounded',
+      shadow: 'soft',
+      intensity: 0.78,
+      scale: 0.9,
+      height: 0.34,
+      verticalPosition: 0.7,
+    },
+  },
+  {
+    id: 'diagonal-dinamica',
+    label: 'Diagonal dinámica',
+    description: 'Una diagonal con tensión visual para anuncios, comparativas y mensajes directos.',
+    recommendedColorVariant: 'amber-gold',
+    previewPoints: [{ x: 0, y: 0.88 }, { x: 0.5, y: 0.5 }, { x: 1, y: 0.12 }],
+    composition: {
+      colorVariant: 'amber-gold',
+      shape: 'wave',
+      trajectory: { type: 'diagonal', amplitude: 0.16, frequency: 1, phase: 0 },
+      continuity: 'seamless',
+      mask: 'safe-zone',
+      shadow: 'glow-gold',
+      intensity: 0.9,
+      scale: 1.05,
+      height: 0.38,
+      verticalPosition: 0.68,
+    },
+  },
+  {
+    id: 'composicion-editorial',
+    label: 'Composición editorial',
+    description: 'Una base clara y contenida para titulares, cifras y lectura pausada.',
+    recommendedColorVariant: 'white-editorial',
+    previewPoints: [{ x: 0, y: 0.76 }, { x: 0.3, y: 0.84 }, { x: 0.56, y: 0.7 }, { x: 0.78, y: 0.4 }, { x: 1, y: 0.68 }],
+    composition: {
+      colorVariant: 'white-editorial',
+      shape: 'curve',
+      trajectory: { type: 'sine', amplitude: 0.06, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.76 }, { x: 0.3, y: 0.84 }, { x: 0.56, y: 0.7 }, { x: 0.78, y: 0.4 }, { x: 1, y: 0.68 }]) },
+      continuity: 'local',
+      mask: 'safe-zone',
+      shadow: 'none',
+      intensity: 0.74,
+      scale: 0.86,
+      height: 0.3,
+      verticalPosition: 0.74,
+    },
+  },
+  {
+    id: 'cta-final',
+    label: 'CTA final',
+    description: 'Un cierre con acento cálido para hacer que la última acción sea imposible de perder.',
+    recommendedColorVariant: 'amber-gold',
+    previewPoints: [{ x: 0, y: 0.7 }, { x: 0.3, y: 0.7 }, { x: 0.65, y: 0.62 }, { x: 1, y: 0.58 }],
+    composition: {
+      colorVariant: 'amber-gold',
+      shape: 'blob',
+      trajectory: { type: 'flat', amplitude: 0.04, frequency: 1, phase: 0, points: compositionPoints([{ x: 0, y: 0.7 }, { x: 0.3, y: 0.7 }, { x: 0.65, y: 0.62 }, { x: 1, y: 0.58 }]) },
+      continuity: 'local',
+      mask: 'safe-zone',
+      shadow: 'glow-gold',
+      intensity: 0.96,
+      scale: 1.08,
+      height: 0.42,
+      verticalPosition: 0.68,
+      focalPoint: { x: 0.72, y: 0.78 },
+    },
+  },
+] as const;
+
+/** Backwards-compatible alias for consumers that call these composition presets. */
+export const CAROUSEL_COMPOSITION_PRESETS = CAROUSEL_BACKGROUND_PRESETS;
+
+export const getCarouselBackgroundPreset = (
+  presetId: CarouselBackgroundPresetId | string | null | undefined,
+): CarouselBackgroundCompositionPreset | undefined =>
+  CAROUSEL_BACKGROUND_PRESETS.find((preset) => preset.id === presetId);
+
+export const isCarouselBackgroundPresetId = (value: unknown): value is CarouselBackgroundPresetId =>
+  typeof value === 'string' && (CAROUSEL_BACKGROUND_PRESET_IDS as readonly string[]).includes(value);
 
 const normalizeTrajectoryPoints = (
   points: unknown,
@@ -245,6 +408,7 @@ export const resolveCarouselBackgroundComposition = (
     ...source,
     version: 1,
     id: source.id || `carousel-background-${colorVariant}`,
+    presetId: isCarouselBackgroundPresetId(source.presetId) ? source.presetId : undefined,
     colorVariant,
     trajectory: {
       type: ['sine', 'arc', 'diagonal', 'flat'].includes(trajectory.type)
@@ -267,6 +431,56 @@ export const resolveCarouselBackgroundComposition = (
     ),
   };
 };
+
+export const applyCarouselBackgroundPresetToComposition = (
+  current: CarouselBackgroundCompositionInput | null | undefined,
+  presetId: CarouselBackgroundPresetId | string,
+  options: CarouselBackgroundPresetOptions = {},
+): CarouselBackgroundComposition => {
+  const preset = getCarouselBackgroundPreset(presetId);
+  const base = resolveCarouselBackgroundComposition(current);
+  if (!preset) return base;
+  const preserveCustomEdits = options.preserveCustomEdits ?? true;
+  const presetComposition = preset.composition;
+  const trajectory = presetComposition.trajectory
+    ? {
+        ...presetComposition.trajectory,
+        ...(presetComposition.trajectory.points
+          ? { points: presetComposition.trajectory.points.map((point) => ({ ...point })) }
+          : {}),
+      }
+    : base.trajectory;
+  return resolveCarouselBackgroundComposition({
+    ...base,
+    ...presetComposition,
+    id: `carousel-background-${preset.id}`,
+    presetId: preset.id,
+    colorVariant: options.colorVariant ?? presetComposition.colorVariant ?? preset.recommendedColorVariant,
+    scale: options.scale ?? presetComposition.scale,
+    intensity: options.intensity ?? presetComposition.intensity,
+    trajectory,
+    // A preset must render its own profile instead of an old custom path.
+    vectorGeometry: undefined,
+    safeZone: preserveCustomEdits ? base.safeZone : undefined,
+    secondaryColor: preserveCustomEdits ? base.secondaryColor : undefined,
+    focalPoint: preserveCustomEdits ? base.focalPoint : undefined,
+  });
+};
+
+/**
+ * Applies a structural preset while keeping all user-authored content layers.
+ * `regenerateCarouselBackground` removes only generated layers, so this is
+ * safe to use from the drawer and from non-UI integrations alike.
+ */
+export const applyCarouselBackgroundPreset = (
+  project: ImageProject,
+  presetId: CarouselBackgroundPresetId | string,
+  options: CarouselBackgroundPresetOptions = {},
+): ImageProject =>
+  regenerateCarouselBackground(
+    project,
+    applyCarouselBackgroundPresetToComposition(project.carouselBackground, presetId, options),
+  );
 
 const trajectoryOffset = (
   x: number,
@@ -490,6 +704,31 @@ export function generateCarouselBackgroundLayers(
     );
   }
 
+  if (composition.presetId === 'semicirculo-entre-slides') {
+    const semicircleWidth = Math.min(availableWidth * 0.78, geometry.slideWidth * 0.82 * composition.scale);
+    const semicircleHeight = Math.min(availableHeight * 0.28, semicircleWidth * 0.5);
+    for (let boundary = 1; boundary < geometry.slideCount; boundary += 1) {
+      layers.push(
+        generatedLayer(
+          projectId,
+          `between-slides-semicircle-${boundary}`,
+          boundary - 1,
+          geometry,
+          { x: geometry.slideWidth, y: safe.top + availableHeight * 0.22 },
+          { width: semicircleWidth, height: semicircleHeight },
+          {
+            shapeType: 'top-semicircle',
+            fill: palette.muted,
+            boundary,
+          },
+          composition,
+          'organic',
+          { opacity: clamp(opacity * 0.82, 0, 1), shadowPreset: shadowPreset(composition.shadow), zIndex: -1 },
+        ),
+      );
+    }
+  }
+
   for (let slideIndex = 0; slideIndex < geometry.slideCount; slideIndex += 1) {
     const start = trajectoryOffset(slideIndex / geometry.slideCount, composition.trajectory);
     const end = trajectoryOffset((slideIndex + 1) / geometry.slideCount, composition.trajectory);
@@ -606,6 +845,32 @@ export function generateCarouselBackgroundLayers(
             zIndex: -19,
             shadowPreset: shadowPreset(composition.shadow),
           },
+        ),
+      );
+    }
+
+    if (composition.presetId === 'cta-final' && slideIndex === geometry.slideCount - 1) {
+      const ctaWidth = Math.min(availableWidth * 0.72, width * 0.82);
+      const ctaHeight = Math.min(availableHeight * 0.34, ctaWidth * 0.5);
+      layers.push(
+        generatedLayer(
+          projectId,
+          'cta-final-accent',
+          slideIndex,
+          geometry,
+          {
+            x: safe.left + availableWidth * 0.72,
+            y: geometry.slideHeight - safe.bottom - ctaHeight / 2,
+          },
+          { width: ctaWidth, height: ctaHeight },
+          {
+            shapeType: 'top-semicircle',
+            fill: palette.secondary,
+            role: 'cta',
+          },
+          composition,
+          'organic',
+          { opacity: opacity, shadowPreset: shadowPreset(composition.shadow), zIndex: -1 },
         ),
       );
     }
