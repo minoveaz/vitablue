@@ -6,29 +6,27 @@ import type {
   CarouselBackgroundContinuity,
   CarouselBackgroundPresetId,
 } from '../types/carouselBackgroundComposition';
+import type {
+  BrandVisualCompositionConfig,
+  CarouselCompositionAccent,
+  CarouselCompositionVisualStyle,
+} from '../types/carouselCompositionIdentity';
 import {
   applyCarouselBackgroundPresetToComposition,
   CAROUSEL_BACKGROUND_PRESETS,
   regenerateCarouselBackground,
   resolveCarouselBackgroundComposition,
 } from './carouselBackgroundComposition';
+import {
+  filterCarouselCompositionAccents,
+  filterCarouselBackgroundPresets,
+  scoreBrandPresetPreference,
+  constrainCarouselCompositionToBrand,
+} from './carouselCompositionIdentity';
 
-export type CarouselCompositionVisualStyle =
-  | 'editorial'
-  | 'educational'
-  | 'conversion'
-  | 'comparison'
-  | 'testimonial'
-  | 'bold';
+export type { CarouselCompositionAccent, CarouselCompositionVisualStyle };
 
 export type CarouselCompositionDominantZone = 'top' | 'center' | 'bottom' | 'balanced';
-
-export type CarouselCompositionAccent =
-  | 'soft-shadow'
-  | 'teal-glow'
-  | 'gold-glow'
-  | 'focal-point'
-  | 'slide-bridge';
 
 export interface CarouselCompositionAssistantInput {
   slideCount: number;
@@ -40,6 +38,7 @@ export interface CarouselCompositionAssistantInput {
   scale: number;
   selectedAccents: readonly CarouselCompositionAccent[];
   currentComposition?: CarouselBackgroundCompositionInput | null;
+  brandCompositionConfig?: BrandVisualCompositionConfig | null;
 }
 
 export interface CarouselCompositionProposal {
@@ -128,12 +127,23 @@ const applyAssistantPreferences = (
   composition: CarouselBackgroundComposition,
   input: CarouselCompositionAssistantInput,
 ): CarouselBackgroundComposition => {
-  const accents = input.selectedAccents;
+  const accents = filterCarouselCompositionAccents(input.brandCompositionConfig)
+    .filter((accent) => input.selectedAccents.includes(accent));
   return resolveCarouselBackgroundComposition({
     ...composition,
     continuity: input.continuity,
-    intensity: clamp(input.intensity, 0, 1, composition.intensity),
-    scale: clamp(input.scale, 0.25, 3, composition.scale),
+    intensity: clamp(
+      input.intensity,
+      0,
+      input.brandCompositionConfig?.intensityCap ?? 1,
+      composition.intensity,
+    ),
+    scale: clamp(
+      input.scale,
+      0.25,
+      input.brandCompositionConfig?.scaleCap ?? 3,
+      composition.scale,
+    ),
     shadow: accentShadow(accents, composition.shadow),
     ...(accents.includes('focal-point') ? { focalPoint: focalPointFor(input.dominantZone) } : {}),
     ...(accents.includes('slide-bridge') && input.continuity === 'local'
@@ -152,18 +162,25 @@ export const generateCarouselCompositionProposals = (
   limit = 3,
 ): CarouselCompositionProposal[] => {
   const requestedLimit = Number.isFinite(limit) ? Math.floor(limit) : 3;
-  const safeLimit = Math.max(1, Math.min(CAROUSEL_BACKGROUND_PRESETS.length, requestedLimit));
+  const safeLimit = Math.max(1, Math.min(
+    filterCarouselBackgroundPresets(input.brandCompositionConfig).length,
+    requestedLimit,
+  ));
   const base = input.currentComposition ?? undefined;
-  return CAROUSEL_BACKGROUND_PRESETS
+  const presets = filterCarouselBackgroundPresets(input.brandCompositionConfig);
+  return presets
     .map((preset, index) => {
-      const score = scorePreset(preset.id, input);
+      const score = scorePreset(preset.id, input) + scoreBrandPresetPreference(preset.id, input.brandCompositionConfig);
       const presetComposition = applyCarouselBackgroundPresetToComposition(base, preset.id, {
         colorVariant: input.colorPalette,
         intensity: input.intensity,
         scale: input.scale,
         preserveCustomEdits: true,
       });
-      const composition = applyAssistantPreferences(presetComposition, input);
+      const composition = constrainCarouselCompositionToBrand(
+        applyAssistantPreferences(presetComposition, input),
+        input.brandCompositionConfig,
+      );
       return {
         id: `assistant-${preset.id}`,
         presetId: preset.id,
@@ -172,7 +189,8 @@ export const generateCarouselCompositionProposals = (
         rationale: RATIONALES[input.visualStyle],
         score,
         composition,
-        accents: [...input.selectedAccents],
+        accents: [...filterCarouselCompositionAccents(input.brandCompositionConfig)
+          .filter((accent) => input.selectedAccents.includes(accent))],
         index,
       };
     })

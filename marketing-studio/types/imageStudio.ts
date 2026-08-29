@@ -1,6 +1,7 @@
 import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 import type { CarouselBackgroundComposition } from './carouselBackgroundComposition';
+import type { BrandVisualCompositionConfig } from './carouselCompositionIdentity';
 import type { EditableVectorGeometry } from './vectorGeometry';
 export { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from './carouselBackgroundComposition';
 export type {
@@ -23,6 +24,19 @@ export type {
   CarouselBackgroundPresetOptions,
 } from './carouselBackgroundComposition';
 export { CAROUSEL_BACKGROUND_PRESET_IDS } from './carouselBackgroundComposition';
+export {
+  CAROUSEL_COMPOSITION_ACCENTS,
+  CAROUSEL_COMPOSITION_VISUAL_STYLES,
+} from './carouselCompositionIdentity';
+export type {
+  BrandCompositionCurveFamily,
+  BrandCompositionSavedInput,
+  BrandVisualCompositionConfig,
+  BrandVisualCompositionConfigInput,
+  CarouselCompositionAccent,
+  CarouselCompositionVisualStyle,
+  SavedCarouselComposition,
+} from './carouselCompositionIdentity';
 
 export interface ImageFormatPreset {
   id: string;
@@ -657,6 +671,8 @@ export interface CanvasBackground {
 export interface ImageProject {
   id: string;
   title: string;
+  /** Optional tenancy identity used to select a brand composition profile. */
+  brandId?: string;
   /** Remote Creative Project lifecycle state. */
   creativeStatus?: 'draft' | 'ready' | 'archived';
   preset: ImageFormatPreset;
@@ -671,6 +687,8 @@ export interface ImageProject {
   carouselConfig?: CarouselConfig;
   /** Optional generated lower-layer composition; absent on legacy projects. */
   carouselBackground?: CarouselBackgroundComposition;
+  /** Optional per-brand visual guardrails and reusable compositions. */
+  brandCompositionConfig?: BrandVisualCompositionConfig;
   /** Server concurrency metadata; omitted by legacy/local projects. */
   currentVersionNumber?: number;
   autosaveRevision?: number;

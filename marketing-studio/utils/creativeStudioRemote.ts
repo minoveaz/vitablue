@@ -232,6 +232,7 @@ const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
       ...clone(composition.imageStudio),
       id: project.id,
       title: project.name,
+      brandId: project.brandId,
       creativeStatus,
       currentVersionNumber: project.currentVersionNumber,
       autosaveRevision: project.autosaveRevision,
@@ -243,6 +244,7 @@ const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
   return {
     id: project.id,
     title: project.name,
+    brandId: project.brandId,
     creativeStatus,
     currentVersionNumber: project.currentVersionNumber,
     autosaveRevision: project.autosaveRevision,

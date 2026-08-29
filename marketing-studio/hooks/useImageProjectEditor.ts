@@ -70,6 +70,11 @@ import {
   CAROUSEL_BACKGROUND_PALETTES,
 } from '../utils/carouselBackgroundComposition';
 import type { CarouselBackgroundCompositionInput } from '../types/carouselBackgroundComposition';
+import type { BrandVisualCompositionConfigInput } from '../types/carouselCompositionIdentity';
+import {
+  constrainCarouselCompositionToBrand,
+  normalizeBrandVisualCompositionConfig,
+} from '../utils/carouselCompositionIdentity';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...normalizeStoredProject(project),
@@ -1641,7 +1646,10 @@ export function useImageProjectEditor(
   const regenerateCarouselBackground = useCallback((composition: CarouselBackgroundCompositionInput) => {
     setProject((prev) => {
       if (!prev.carouselConfig?.enabled && !prev.preset.isCarousel) return prev;
-      const next = regenerateCarouselBackgroundProject(prev, composition);
+      const next = regenerateCarouselBackgroundProject(
+        prev,
+        constrainCarouselCompositionToBrand(composition, prev.brandCompositionConfig),
+      );
       const nextProject = {
         ...next,
         background: {
@@ -1655,6 +1663,30 @@ export function useImageProjectEditor(
       };
       pushHistory(nextProject);
       return nextProject;
+    });
+  }, [pushHistory]);
+
+  const updateBrandCompositionConfig = useCallback((patch: BrandVisualCompositionConfigInput) => {
+    setProject((prev) => {
+      const brandCompositionConfig = normalizeBrandVisualCompositionConfig({
+        ...(prev.brandCompositionConfig ?? {}),
+        ...patch,
+      });
+      const next = {
+        ...prev,
+        brandCompositionConfig,
+        ...(prev.carouselBackground
+          ? {
+              carouselBackground: constrainCarouselCompositionToBrand(
+                prev.carouselBackground,
+                brandCompositionConfig,
+              ),
+            }
+          : {}),
+        updatedAt: new Date().toISOString(),
+      };
+      pushHistory(next);
+      return next;
     });
   }, [pushHistory]);
 
@@ -2312,6 +2344,7 @@ export function useImageProjectEditor(
     composeSmartCanvas,
     updateBackground,
     regenerateCarouselBackground,
+    updateBrandCompositionConfig,
     alignSelectedLayers,
     distributeSelectedLayers,
     updateLayerFilter,

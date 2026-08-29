@@ -4,6 +4,7 @@ import { createDefaultLayoutMetadata } from '../../packages/video-studio/src/dom
 import { normalizeTiptapHtml } from './tiptapHtml';
 import { normalizeEditableVectorGeometry } from './vectorGeometry';
 import { resolveCarouselBackgroundComposition } from './carouselBackgroundComposition';
+import { normalizeBrandVisualCompositionConfig } from './carouselCompositionIdentity';
 
 /**
  * The Image Studio used to have three independent storage implementations:
@@ -565,6 +566,16 @@ export const normalizeStoredProject = (project: ImageProject): ImageProject => (
   },
   ...(project.carouselBackground
     ? { carouselBackground: resolveCarouselBackgroundComposition(project.carouselBackground) }
+    : {}),
+  ...(project.brandCompositionConfig
+    ? {
+        brandCompositionConfig: normalizeBrandVisualCompositionConfig({
+          ...project.brandCompositionConfig,
+          ...(project.brandId && !project.brandCompositionConfig.brandId
+            ? { brandId: project.brandId }
+            : {}),
+        }),
+      }
     : {}),
 });
 

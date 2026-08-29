@@ -570,6 +570,7 @@ export const ImageStudio: React.FC = () => {
             window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
           }}
           onRegenerateBackground={editor.regenerateCarouselBackground}
+          onUpdateBrandCompositionConfig={editor.updateBrandCompositionConfig}
           onUploadImage={uploadImage}
           onListImages={listImages}
           onDeleteImage={deleteImage}

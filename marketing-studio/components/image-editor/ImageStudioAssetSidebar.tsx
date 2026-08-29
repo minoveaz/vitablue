@@ -20,6 +20,7 @@ import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
 import { ImageStudioBackgroundDrawer } from './drawers/ImageStudioBackgroundDrawer';
 import type { CarouselBackgroundCompositionInput } from '../../types/carouselBackgroundComposition';
+import type { BrandVisualCompositionConfigInput } from '../../types/carouselCompositionIdentity';
 import type { RuntimeCreativeAsset } from '../../utils/creativeStudioRemote';
 
 type RemoteImageMedia = RuntimeCreativeAsset;
@@ -74,6 +75,7 @@ export interface ImageStudioAssetDrawerContentProps {
   ) => void;
   onPrepareVideo?: (settings: VideoPreparationSettings) => void;
   onRegenerateBackground?: (composition: CarouselBackgroundCompositionInput) => void;
+  onUpdateBrandCompositionConfig?: (patch: BrandVisualCompositionConfigInput) => void;
   onUploadImage?: (file: File) => Promise<RemoteImageMedia>;
   onListImages?: () => Promise<RemoteImageMedia[]>;
   onDeleteImage?: (asset: RemoteImageMedia) => Promise<void>;
@@ -121,6 +123,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onUpdateLayerBorder,
   onPrepareVideo,
   onRegenerateBackground,
+  onUpdateBrandCompositionConfig,
   onUploadImage,
   onListImages,
   onDeleteImage,
@@ -190,6 +193,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           <ImageStudioBackgroundDrawer
             project={project}
             onRegenerateBackground={onRegenerateBackground}
+            onUpdateBrandCompositionConfig={onUpdateBrandCompositionConfig}
           />
         </div>
       )}
