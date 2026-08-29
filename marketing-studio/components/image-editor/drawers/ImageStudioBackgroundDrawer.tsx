@@ -57,6 +57,13 @@ const CONTINUITY_OPTIONS: Array<{ id: CarouselBackgroundContinuity; label: strin
 
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
 const clampPointValue = (value: number) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+const TRAJECTORY_PRESETS: Array<{ id: string; label: string; points: CarouselBackgroundTrajectoryPoint[] }> = [
+  { id: 'soft', label: 'Suave', points: [{ x: 0, y: 0.62 }, { x: 0.25, y: 0.68 }, { x: 0.5, y: 0.58 }, { x: 0.75, y: 0.7 }, { x: 1, y: 0.62 }] },
+  { id: 'drop', label: 'Caída inicial', points: [{ x: 0, y: 0.08 }, { x: 0.18, y: 0.4 }, { x: 0.4, y: 0.9 }, { x: 0.62, y: 0.5 }, { x: 1, y: 0.68 }] },
+  { id: 'peak', label: 'Montaña central', points: [{ x: 0, y: 0.78 }, { x: 0.25, y: 0.84 }, { x: 0.5, y: 0.28 }, { x: 0.75, y: 0.72 }, { x: 1, y: 0.64 }] },
+  { id: 'rise', label: 'Ascendente', points: [{ x: 0, y: 0.86 }, { x: 0.3, y: 0.76 }, { x: 0.6, y: 0.48 }, { x: 1, y: 0.25 }] },
+  { id: 'editorial', label: 'Editorial', points: [{ x: 0, y: 0.76 }, { x: 0.3, y: 0.84 }, { x: 0.56, y: 0.7 }, { x: 0.78, y: 0.4 }, { x: 1, y: 0.68 }] },
+];
 
 const PreviewLayer: React.FC<{
   layer: ImageLayer;
@@ -160,6 +167,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
   onRegenerateBackground,
 }) => {
   const [showContent, setShowContent] = useState(true);
+  const [draggedTrajectoryPoint, setDraggedTrajectoryPoint] = useState<number | null>(null);
   const composition = resolveCarouselBackgroundComposition(project.carouselBackground);
   const isCarousel = Boolean(project.carouselConfig?.enabled || project.preset.isCarousel);
 
@@ -329,14 +337,51 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             <p className="mb-2 text-[10px] leading-relaxed text-slate-500">
               Ajusta la curva panorámica. X recorre todas las slides y Y controla su altura.
             </p>
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {TRAJECTORY_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => updateTrajectoryPoints(preset.points)}
+                  className="rounded-md border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:border-brand-cyan hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
             <div className="rounded-lg border border-slate-800 bg-slate-900/80 p-2">
               <svg
                 viewBox="0 0 100 100"
-                className="h-20 w-full overflow-visible text-brand-cyan"
+                className="h-20 w-full touch-none overflow-visible text-brand-cyan"
                 role="img"
                 aria-label="Vista previa de la trayectoria Bézier"
+                onPointerMove={(event) => {
+                  if (draggedTrajectoryPoint === null) return;
+                  const bounds = event.currentTarget.getBoundingClientRect();
+                  const x = clampPointValue((event.clientX - bounds.left) / bounds.width);
+                  const y = clampPointValue((event.clientY - bounds.top) / bounds.height);
+                  updateTrajectoryPoints(
+                    trajectoryPoints.map((point, index) =>
+                      index === draggedTrajectoryPoint ? { x, y } : point,
+                    ),
+                  );
+                }}
+                onPointerUp={() => setDraggedTrajectoryPoint(null)}
+                onPointerLeave={() => setDraggedTrajectoryPoint(null)}
               >
                 <path d="M 0 50 H 100" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 3" fill="none" />
+                {Array.from({ length: 4 }, (_, index) => (
+                  <line
+                    key={`slide-cut-${index}`}
+                    x1={(index + 1) * 20}
+                    x2={(index + 1) * 20}
+                    y1="0"
+                    y2="100"
+                    className="stroke-slate-700/70"
+                    strokeWidth="0.6"
+                    strokeDasharray="1.5 2"
+                  />
+                ))}
                 <path d={createCarouselBackgroundBezierPath(trajectoryPoints)} className="stroke-current" strokeWidth="2.5" fill="none" />
                 {trajectoryPoints.map((point, index) => (
                   <circle
@@ -346,6 +391,12 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
                     r="3"
                     className="fill-brand-cyan stroke-slate-950"
                     strokeWidth="1.5"
+                    style={{ cursor: draggedTrajectoryPoint === index ? 'grabbing' : 'grab' }}
+                    onPointerDown={(event) => {
+                      event.preventDefault();
+                      event.currentTarget.setPointerCapture(event.pointerId);
+                      setDraggedTrajectoryPoint(index);
+                    }}
                   />
                 ))}
               </svg>
