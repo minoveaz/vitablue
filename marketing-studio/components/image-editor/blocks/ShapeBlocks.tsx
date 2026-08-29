@@ -151,6 +151,8 @@ export interface GeometricShapeGraphicProps {
   innerRadius?: number;
   waveStartY?: number;
   waveEndY?: number;
+  waveAnchor?: 'top' | 'bottom';
+  wavePath?: string;
   className?: string;
 }
 
@@ -165,6 +167,8 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
   innerRadius = 40,
   waveStartY = 48,
   waveEndY = 48,
+  waveAnchor = 'bottom',
+  wavePath,
   className = 'h-full w-full',
 }) => {
   const visibleStroke = strokeWidth > 0 && stroke !== 'transparent' ? stroke : 'none';
@@ -228,6 +232,10 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     case 'rounded_rect':
     case 'mask-rounded':
       return <svg {...svgProps}><rect x="3" y="3" width="94" height="94" rx={Math.max(2, Math.min(48, borderRadius / 2))} fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
+    case 'full-rectangle':
+      return <svg {...svgProps}><rect x="0" y="0" width="100" height="100" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
+    case 'top-semicircle':
+      return <svg {...svgProps}><path d="M0 0 H100 A50 50 0 0 1 0 0Z" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
     case 'square':
     case 'rectangle':
       return <svg {...svgProps}><rect x="3" y="3" width="94" height="94" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
@@ -286,17 +294,20 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     case 'blob-3':
       return <svg {...svgProps}><path d="M19 14 C35 2 51 10 62 9 C82 7 97 22 94 43 C91 62 100 74 82 88 C67 100 53 90 39 93 C17 98 3 82 7 61 C10 44 1 28 19 14Z" fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
     case 'carousel-wave': {
+      if (wavePath) {
+        return <svg {...svgProps}><path d={wavePath} fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} /></svg>;
+      }
       const start = Math.max(8, Math.min(92, waveStartY));
       const end = Math.max(8, Math.min(92, waveEndY));
-      const control = Math.max(8, Math.min(92, (start + end) / 2 - 18));
+      const middle = (start + end) / 2;
+      const control = Math.max(4, Math.min(96, middle - 24));
+      const reverseControl = Math.max(4, Math.min(96, middle + 24));
+      const path = waveAnchor === 'top'
+        ? `M0 0 L0 ${start} C25 ${control} 25 ${control} 50 ${middle} C75 ${reverseControl} 75 ${reverseControl} 100 ${end} L100 0Z`
+        : `M0 ${start} C25 ${control} 25 ${control} 50 ${middle} C75 ${reverseControl} 75 ${reverseControl} 100 ${end} L100 100 L0 100Z`;
       return (
         <svg {...svgProps}>
-          <path
-            d={`M0 ${start} C25 ${control} 25 ${control} 50 ${(start + end) / 2} C75 ${end + 18} 75 ${end + 18} 100 ${end} L100 100 L0 100Z`}
-            fill={fill}
-            stroke={visibleStroke}
-            strokeWidth={strokeWidth}
-          />
+          <path d={path} fill={fill} stroke={visibleStroke} strokeWidth={strokeWidth} />
         </svg>
       );
     }
@@ -363,6 +374,8 @@ export const GeometricShapeBlock: React.FC<GeometricShapeBlockProps> = ({ layer 
       innerRadius={(blockProps.innerRadius as number) ?? 40}
       waveStartY={(blockProps.waveStartY as number) ?? 48}
       waveEndY={(blockProps.waveEndY as number) ?? 48}
+      waveAnchor={(blockProps.waveAnchor as 'top' | 'bottom') ?? 'bottom'}
+      wavePath={blockProps.wavePath as string | undefined}
     />
   );
 };

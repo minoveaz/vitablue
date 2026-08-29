@@ -15,6 +15,12 @@ interface CarouselSlideStripProps {
 
 const getSlideLayers = (layers: ImageLayer[], slideIndex: number): ImageLayer[] =>
   layers.filter((layer) => {
+    if (
+      layer.id.includes('-panorama-wave') ||
+      layer.id.includes('-top-semicircle-large')
+    ) {
+      return true;
+    }
     const owner = layer.props?.slideIndex;
     if (typeof owner === 'number') return owner === slideIndex;
     return slideIndex === 0;
@@ -117,9 +123,14 @@ export const CarouselSlideStrip: React.FC<CarouselSlideStripProps> = ({
                   {slideLayers.map((layer) => {
                     const width = layer.width ? `${Math.max(8, (layer.width / slideWidth) * 100)}%` : '22%';
                     const height = layer.height ? `${Math.max(5, (layer.height / slideHeight) * 100)}%` : '12%';
-                    const left = typeof layer.props?.slideIndex === 'number'
-                      ? `${(layer.position.x - (index * 100) / slideCount) * slideCount}%`
-                      : `${layer.position.x}%`;
+                    const isPanoramic =
+                      layer.id.includes('-panorama-wave') ||
+                      layer.id.includes('-top-semicircle-large');
+                    const left = isPanoramic
+                      ? `${(((layer.position.x / 100) * slideWidth * slideCount - index * slideWidth) / slideWidth) * 100}%`
+                      : typeof layer.props?.slideIndex === 'number'
+                        ? `${(layer.position.x - (index * 100) / slideCount) * slideCount}%`
+                        : `${layer.position.x}%`;
                     return (
                       <div
                         key={layer.id}

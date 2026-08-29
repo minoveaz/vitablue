@@ -88,6 +88,8 @@ export type TraditionalShapeType =
   | 'connector-elbow'
   | 'connector-curved'
   | 'rectangle'
+  | 'full-rectangle'
+  | 'top-semicircle'
   | 'square'
   | 'rounded_rect'
   | 'circle'

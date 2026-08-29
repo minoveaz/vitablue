@@ -55,9 +55,8 @@ const PreviewLayer: React.FC<{
   geometry: ReturnType<typeof getCarouselGeometry>;
   slideIndex: number;
 }> = ({ layer, geometry, slideIndex }) => {
-  const layerSlideIndex = typeof layer.props?.slideIndex === 'number' ? layer.props.slideIndex : slideIndex;
   const globalX = (layer.position.x / 100) * geometry.panoramaWidth;
-  const localX = globalX - layerSlideIndex * geometry.slideWidth;
+  const localX = globalX - slideIndex * geometry.slideWidth;
   const width = ((layer.width ?? geometry.slideWidth * 0.4) / geometry.slideWidth) * 100;
   const height = ((layer.height ?? geometry.slideHeight * 0.2) / geometry.slideHeight) * 100;
 
@@ -100,7 +99,10 @@ const BackgroundPreview: React.FC<{
   const backgroundLayers = useMemo(
     () => generateCarouselBackgroundLayers({ projectId: `${project.id}-preview`, geometry, composition }),
     [composition, geometry, project.id],
-  ).filter((layer) => layer.props.slideIndex === slideIndex);
+  ).filter((layer) => {
+    const isPanoramic = layer.id.includes('-panorama-wave') || layer.id.includes('-top-semicircle-large');
+    return isPanoramic || layer.props.slideIndex === slideIndex;
+  });
   const contentLayers = showContent
     ? project.layers.filter(
         (layer) =>

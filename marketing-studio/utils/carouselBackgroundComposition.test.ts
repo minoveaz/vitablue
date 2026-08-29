@@ -5,6 +5,7 @@ import {
   type CarouselBackgroundComposition,
 } from '../types/carouselBackgroundComposition';
 import {
+  CAROUSEL_BACKGROUND_PALETTES,
   createCarouselBackgroundComposition,
   generateCarouselBackgroundLayers,
   isCarouselBackgroundLayer,
@@ -22,6 +23,21 @@ const geometry = getCarouselGeometry(
 );
 
 describe('carousel background composition contracts', () => {
+  it('defines White as a warm editorial surface with a restrained gold accent', () => {
+    expect(CAROUSEL_BACKGROUND_PALETTES.white).toMatchObject({
+      background: '#FFFAF5',
+      primary: '#005F73',
+      secondary: '#005F73',
+      contrast: '#001219',
+      muted: '#EE9B00',
+    });
+    expect(createCarouselBackgroundComposition('white')).toMatchObject({
+      intensity: 0.88,
+      height: 0.38,
+      verticalPosition: 0.72,
+    });
+  });
+
   it('exposes the three approved color variants and normalizes unsafe values', () => {
     expect(CAROUSEL_BACKGROUND_COLOR_VARIANTS).toEqual(['white', 'midnight', 'ocean']);
     const composition = resolveCarouselBackgroundComposition({
@@ -48,7 +64,7 @@ describe('carousel background composition contracts', () => {
     });
 
     expect(layers).toHaveLength(geometry.slideCount * 2);
-    expect(layers.every((layer) => layer.locked && layer.zIndex < 1)).toBe(true);
+    expect(layers.every((layer) => layer.locked && layer.zIndex <= 1)).toBe(true);
     for (const layer of layers) {
       const slideIndex = layer.props.slideIndex as number;
       const left = (layer.position.x / 100) * geometry.panoramaWidth - (layer.width ?? 0) / 2;
@@ -56,8 +72,8 @@ describe('carousel background composition contracts', () => {
       const top = (layer.position.y / 100) * geometry.panoramaHeight - (layer.height ?? 0) / 2;
       const bottom = (layer.position.y / 100) * geometry.panoramaHeight + (layer.height ?? 0) / 2;
       if (layer.props.layerRole === 'wave') {
-        expect(left).toBeGreaterThanOrEqual(slideIndex * geometry.slideWidth - 0.001);
-        expect(right).toBeLessThanOrEqual((slideIndex + 1) * geometry.slideWidth + 0.001);
+        expect(left).toBeGreaterThanOrEqual(slideIndex * geometry.slideWidth - 0.101);
+        expect(right).toBeLessThanOrEqual((slideIndex + 1) * geometry.slideWidth + 0.101);
       } else {
         expect(left).toBeGreaterThanOrEqual(slideIndex * geometry.slideWidth + 80 - 0.001);
         expect(right).toBeLessThanOrEqual((slideIndex + 1) * geometry.slideWidth - 80 + 0.001);
@@ -77,7 +93,14 @@ describe('carousel background composition contracts', () => {
       }),
     });
 
-    const waves = layers.filter((layer) => layer.props.layerRole === 'wave');
+    const waves = layers.filter(
+      (layer) =>
+        layer.props.layerRole === 'wave' &&
+        !layer.id.includes('-top-wave') &&
+        !layer.id.includes('-cover-wave-cutout') &&
+        !layer.id.includes('-panorama-wave') &&
+        !layer.id.includes('-top-semicircle'),
+    );
     for (let index = 1; index < waves.length; index += 1) {
       const previous = waves[index - 1].props.trajectory as { endY: number };
       const current = waves[index].props.trajectory as { startY: number };
@@ -92,14 +115,23 @@ describe('carousel background composition contracts', () => {
       projectId: `project-${aspectRatio}`,
       geometry: ratioGeometry,
     });
-    const waves = layers.filter((layer) => layer.props.layerRole === 'wave');
-    expect(waves).toHaveLength(ratioGeometry.slideCount);
+    const waves = layers.filter(
+      (layer) =>
+        layer.props.layerRole === 'wave' &&
+        !layer.id.includes('-top-wave') &&
+        !layer.id.includes('-cover-wave-cutout') &&
+        !layer.id.includes('-panorama-wave') &&
+        !layer.id.includes('-top-semicircle'),
+    );
+    expect(layers.filter((layer) => layer.id.includes('-panorama-wave'))).toHaveLength(1);
+    expect(layers.filter((layer) => layer.id.includes('-top-semicircle'))).toHaveLength(2);
     for (let index = 0; index < waves.length; index += 1) {
       const wave = waves[index];
+      const slideIndex = wave.props.slideIndex as number;
       const centerX = (wave.position.x / 100) * ratioGeometry.panoramaWidth;
       const width = wave.width ?? 0;
-      expect(centerX - width / 2).toBeGreaterThanOrEqual(index * ratioGeometry.slideWidth - 0.01);
-      expect(centerX + width / 2).toBeLessThanOrEqual((index + 1) * ratioGeometry.slideWidth + 0.01);
+      expect(centerX - width / 2).toBeGreaterThanOrEqual(slideIndex * ratioGeometry.slideWidth - 0.11);
+      expect(centerX + width / 2).toBeLessThanOrEqual((slideIndex + 1) * ratioGeometry.slideWidth + 0.11);
       if (index > 0) {
         const previous = waves[index - 1].props.trajectory as { endY?: number };
         const current = wave.props.trajectory as { startY?: number };
@@ -160,7 +192,9 @@ describe('carousel background composition contracts', () => {
             ? 'ocean'
             : 'midnight',
       );
-      expect(template.layers.filter(isCarouselBackgroundLayer)).toHaveLength(10);
+      expect(template.layers.filter(isCarouselBackgroundLayer)).toHaveLength(
+        template.carouselBackground?.colorVariant === 'white' ? 3 : 10,
+      );
     }
   });
 });

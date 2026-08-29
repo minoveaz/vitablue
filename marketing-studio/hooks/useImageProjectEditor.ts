@@ -66,6 +66,7 @@ import {
 import {
   regenerateCarouselBackground as regenerateCarouselBackgroundProject,
   isCarouselBackgroundLayer,
+  CAROUSEL_BACKGROUND_PALETTES,
 } from '../utils/carouselBackgroundComposition';
 import type { CarouselBackgroundCompositionInput } from '../types/carouselBackgroundComposition';
 
@@ -1622,12 +1623,9 @@ export function useImageProjectEditor(
         background: {
           ...next.background,
           gradient: undefined,
-          color:
-            next.carouselBackground?.colorVariant === 'white'
-              ? '#FFFFFF'
-              : next.carouselBackground?.colorVariant === 'ocean'
-                ? '#005F73'
-                : '#001219',
+          color: CAROUSEL_BACKGROUND_PALETTES[
+            next.carouselBackground?.colorVariant ?? 'white'
+          ].background,
         },
         updatedAt: new Date().toISOString(),
       };

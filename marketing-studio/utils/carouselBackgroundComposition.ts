@@ -34,11 +34,11 @@ export const CAROUSEL_BACKGROUND_PALETTES: Record<
 > = {
   white: {
     id: 'white',
-    background: '#FFFFFF',
+    background: '#FFFAF5',
     primary: '#005F73',
-    secondary: '#E7F8F2',
+    secondary: '#005F73',
     contrast: '#001219',
-    muted: '#94D2BD',
+    muted: '#EE9B00',
   },
   midnight: {
     id: 'midnight',
@@ -72,10 +72,10 @@ export const DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION: CarouselBackgroundComposit
   mask: 'safe-zone',
   shadow: 'soft',
   continuity: 'seamless',
-  intensity: 0.82,
-  height: 0.26,
+  intensity: 0.88,
+  height: 0.38,
   scale: 1,
-  verticalPosition: 0.78,
+  verticalPosition: 0.72,
 };
 
 export interface CarouselBackgroundGenerationOptions {
@@ -242,7 +242,8 @@ const generatedLayer = (
   blockType: 'GeometricShape',
   title: `Fondo · ${key} · slide ${slideIndex + 1}`,
   position: toLayerPosition(slideIndex, position.x, position.y, geometry),
-  zIndex: style.zIndex ?? -20,
+  // Keep structural layers above the artboard background and below content.
+  zIndex: style.zIndex ?? 0,
   scale: 1,
   width: Math.max(1, size.width),
   height: Math.max(1, size.height),
@@ -285,14 +286,53 @@ export function generateCarouselBackgroundLayers(
   const height = Math.max(1, Math.min(availableHeight, desiredHeight));
   // Leave a sub-pixel guard at each edge to avoid browser floating-point
   // rounding turning an exactly touching layer into an overflow.
-  const width = Math.max(1, Math.min(geometry.slideWidth - 0.01, geometry.slideWidth * composition.scale));
+  // A slight overlap prevents antialiasing seams where adjacent slide waves meet.
+  const width = Math.max(1, Math.min(geometry.slideWidth + 0.2, geometry.slideWidth * composition.scale));
   const lowerBandCenter = safe.top + availableHeight * composition.verticalPosition;
-  const centerY = clamp(lowerBandCenter, safe.top + height / 2, geometry.slideHeight - safe.bottom - height / 2);
+  const centerY =
+    composition.colorVariant === 'white'
+      ? geometry.slideHeight - height / 2
+      : clamp(lowerBandCenter, safe.top + height / 2, geometry.slideHeight - safe.bottom - height / 2);
   const palette = CAROUSEL_BACKGROUND_PALETTES[composition.colorVariant];
   const fill = composition.secondaryColor ?? palette.secondary;
   const opacity = clamp(composition.intensity, 0, 1);
   const projectId = options.projectId ?? 'carousel';
   const layers: CarouselBackgroundLayer[] = [];
+  const whiteWaveProfile = [0.28, 0.78, 0.9, 0.48, 0.7, 0.64];
+  const whiteWavePath = `M0 0 L10 0 C10 18 12 36 18 54 C24 72 32 86 40 88 C48 88 52 28 60 26 C68 24 74 72 80 64 C88 54 94 76 100 ${whiteWaveProfile[5] * 100} L100 100 L0 100Z`;
+
+  if (composition.colorVariant === 'white') {
+    layers.push(
+      generatedLayer(
+        projectId,
+        'panorama-wave',
+        0,
+        geometry,
+        { x: geometry.panoramaWidth / 2, y: geometry.slideHeight / 2 },
+        { width: geometry.panoramaWidth, height: geometry.slideHeight },
+        { shapeType: 'carousel-wave', fill, wavePath: whiteWavePath },
+        composition,
+        'wave',
+        { opacity: 1, shadowPreset: 'none', zIndex: 0 },
+      ),
+    );
+    const largeAccentWidth = geometry.slideWidth * 0.8;
+    const largeAccentHeight = largeAccentWidth / 2;
+    layers.push(
+      generatedLayer(
+        projectId,
+        'top-semicircle-large',
+        0,
+        geometry,
+        { x: geometry.slideWidth * 2, y: largeAccentHeight / 2 },
+        { width: largeAccentWidth, height: largeAccentHeight },
+        { shapeType: 'top-semicircle', fill: palette.muted },
+        composition,
+        'wave',
+        { opacity: clamp(opacity * 0.9, 0, 1), shadowPreset: 'none', zIndex: 0 },
+      ),
+    );
+  }
 
   for (let slideIndex = 0; slideIndex < geometry.slideCount; slideIndex += 1) {
     const start = trajectoryOffset(slideIndex / geometry.slideCount, composition.trajectory);
@@ -303,8 +343,14 @@ export function generateCarouselBackgroundLayers(
       startY: clamp(baseY + start, 0, 1),
       endY: clamp(baseY + end, 0, 1),
     };
-    const waveStartY = clamp(50 + (start * geometry.slideHeight * 100) / height, 8, 92);
-    const waveEndY = clamp(50 + (end * geometry.slideHeight * 100) / height, 8, 92);
+    const waveStartY = composition.colorVariant === 'white'
+      ? whiteWaveProfile[slideIndex]
+        ? whiteWaveProfile[slideIndex] * 100
+        : 64
+      : clamp(50 + (start * geometry.slideHeight * 100) / height, 8, 92);
+    const waveEndY = composition.colorVariant === 'white'
+      ? (whiteWaveProfile[slideIndex + 1] ?? 0.64) * 100
+      : clamp(50 + (end * geometry.slideHeight * 100) / height, 8, 92);
     // The wave reaches both slide edges so adjacent generated layers form a
     // continuous panorama. Its vertical band remains bounded by the safe zone.
     const x = (geometry.slideWidth - width) / 2;
@@ -313,14 +359,22 @@ export function generateCarouselBackgroundLayers(
       continuityStart: slideIndex === 0 ? trajectory.startY : undefined,
       continuityEnd: slideIndex === geometry.slideCount - 1 ? trajectory.endY : undefined,
     };
-    layers.push(
+
+    if (composition.colorVariant !== 'white') {
+      layers.push(
       generatedLayer(
         projectId,
         'wave',
         slideIndex,
         geometry,
-        { x: x + width / 2, y: centerY },
-        { width, height },
+        {
+          x: x + width / 2,
+          y: centerY,
+        },
+        {
+          width,
+          height,
+        },
         {
           shapeType: shapeTypeFor(composition.shape),
           fill,
@@ -331,11 +385,38 @@ export function generateCarouselBackgroundLayers(
         },
         composition,
         'wave',
-        { opacity, shadowPreset: shadowPreset(composition.shadow) },
+        {
+          opacity,
+          shadowPreset: shadowPreset(composition.shadow),
+        },
       ),
-    );
+      );
+    }
 
-    if (composition.shape !== 'curve') {
+    if (composition.colorVariant === 'white' && [4].includes(slideIndex)) {
+      const accentWidth = width * 0.56;
+      const accentX = x + (width - accentWidth) * (slideIndex === 2 ? 0.25 : 0.5);
+      const accentHeight = Math.min(availableHeight * 0.18, height * 0.5);
+      layers.push(
+        generatedLayer(
+          projectId,
+          'top-semicircle',
+          slideIndex,
+          geometry,
+          { x: accentX + accentWidth / 2, y: accentHeight / 2 },
+          { width: accentWidth, height: accentHeight },
+          {
+            shapeType: 'top-semicircle',
+            fill: palette.muted,
+          },
+          composition,
+          'wave',
+          { opacity: clamp(opacity * 0.9, 0, 1), shadowPreset: 'none', zIndex: 0 },
+        ),
+      );
+    }
+
+    if (composition.shape !== 'curve' && composition.colorVariant !== 'white') {
       const organicWidth = Math.min(width * 0.28, availableWidth * 0.34);
       const organicHeight = Math.min(height * 0.8, availableHeight * 0.22);
       const focalX = clamp(composition.focalPoint?.x ?? (slideIndex % 2 ? 0.78 : 0.22), 0.12, 0.88);
@@ -358,7 +439,11 @@ export function generateCarouselBackgroundLayers(
           },
           composition,
           'organic',
-          { opacity: clamp(opacity * 0.5, 0, 1), zIndex: -19, shadowPreset: shadowPreset(composition.shadow) },
+          {
+            opacity: clamp(opacity * 0.5, 0, 1),
+            zIndex: -19,
+            shadowPreset: shadowPreset(composition.shadow),
+          },
         ),
       );
     }
