@@ -6,6 +6,7 @@ import {
 } from '../types/carouselBackgroundComposition';
 import {
   CAROUSEL_BACKGROUND_PALETTES,
+  createCarouselBackgroundBezierPath,
   createCarouselBackgroundComposition,
   generateCarouselBackgroundLayers,
   isCarouselBackgroundLayer,
@@ -56,6 +57,50 @@ describe('carousel background composition contracts', () => {
     expect(composition.intensity).toBe(1);
     expect(composition.height).toBeGreaterThan(0);
     expect(composition.scale).toBe(3);
+  });
+
+  it('persists and clamps custom trajectory points while keeping legacy trajectories unchanged', () => {
+    const legacy = resolveCarouselBackgroundComposition({ trajectory: { type: 'sine' } });
+    expect(legacy.trajectory.points).toBeUndefined();
+
+    const composition = resolveCarouselBackgroundComposition({
+      trajectory: {
+        points: [
+          { x: 1.4, y: -1 },
+          { x: 0.5, y: 0.42 },
+          { x: 0.5, y: 0.9 },
+          { x: 0, y: 1.2 },
+        ],
+      },
+    });
+    expect(composition.trajectory.points).toEqual([
+      { x: 0, y: 1 },
+      { x: 0.5, y: 0.42 },
+      { x: 1, y: 0 },
+    ]);
+    expect(createCarouselBackgroundBezierPath(composition.trajectory.points!)).toContain('C');
+  });
+
+  it('uses the edited Bézier profile for White without changing other palette defaults', () => {
+    const points = [
+      { x: 0, y: 0.15 },
+      { x: 0.5, y: 0.85 },
+      { x: 1, y: 0.25 },
+    ];
+    const edited = generateCarouselBackgroundLayers({
+      projectId: 'edited',
+      geometry,
+      composition: createCarouselBackgroundComposition('white', { trajectory: { points } }),
+    });
+    const legacyMidnight = generateCarouselBackgroundLayers({
+      projectId: 'legacy',
+      geometry,
+      composition: createCarouselBackgroundComposition('midnight'),
+    });
+    expect(edited.find((layer) => layer.id.includes('panorama-wave'))?.props.wavePath).toContain('15');
+    expect(legacyMidnight.find((layer) => layer.id.includes('panorama-wave'))?.props.wavePath).toBe(
+      'M0 72 C10 68 16 78 24 78 C34 78 38 62 46 54 C54 46 60 48 68 58 C76 68 82 74 90 70 C95 68 98 64 100 62 L100 100 L0 100Z',
+    );
   });
 
   it('creates bounded lower layers for every slide without crossing safe insets', () => {

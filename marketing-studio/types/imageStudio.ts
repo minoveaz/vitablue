@@ -15,6 +15,7 @@ export type {
   CarouselBackgroundShadow,
   CarouselBackgroundShapeType,
   CarouselBackgroundTrajectory,
+  CarouselBackgroundTrajectoryPoint,
   CarouselBackgroundTrajectoryType,
 } from './carouselBackgroundComposition';
 

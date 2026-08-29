@@ -8,6 +8,7 @@ import {
   type CarouselBackgroundLayer,
   type CarouselBackgroundLayerMetadata,
   type CarouselBackgroundSafeZone,
+  type CarouselBackgroundTrajectoryPoint,
 } from '../types/carouselBackgroundComposition';
 
 export type {
@@ -17,6 +18,7 @@ export type {
   CarouselBackgroundCompositionInput,
   CarouselBackgroundLayer,
   CarouselBackgroundSafeZone,
+  CarouselBackgroundTrajectoryPoint,
 } from '../types/carouselBackgroundComposition';
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -94,6 +96,74 @@ export const DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION: CarouselBackgroundComposit
   verticalPosition: 0.72,
 };
 
+/** Starter points shown by the trajectory editor when a composition has no custom profile. */
+export const DEFAULT_CAROUSEL_TRAJECTORY_POINTS: readonly CarouselBackgroundTrajectoryPoint[] = [
+  { x: 0, y: 0.28 },
+  { x: 0.2, y: 0.78 },
+  { x: 0.4, y: 0.9 },
+  { x: 0.6, y: 0.48 },
+  { x: 0.8, y: 0.7 },
+  { x: 1, y: 0.64 },
+];
+
+const normalizeTrajectoryPoints = (
+  points: unknown,
+): CarouselBackgroundTrajectoryPoint[] | undefined => {
+  if (!Array.isArray(points)) return undefined;
+  const normalized = points
+    .filter(
+      (point): point is CarouselBackgroundTrajectoryPoint =>
+        Boolean(point) &&
+        typeof point === 'object' &&
+        Number.isFinite(Number((point as CarouselBackgroundTrajectoryPoint).x)) &&
+        Number.isFinite(Number((point as CarouselBackgroundTrajectoryPoint).y)),
+    )
+    .map((point) => ({
+      x: clamp(Number(point.x), 0, 1),
+      y: clamp(Number(point.y), 0, 1),
+    }))
+    .sort((left, right) => left.x - right.x)
+    .filter((point, index, sorted) => index === 0 || point.x !== sorted[index - 1].x);
+  return normalized.length >= 2 ? normalized : undefined;
+};
+
+/** Returns editable points without making legacy compositions opt into a custom path. */
+export const getCarouselBackgroundTrajectoryPoints = (
+  trajectory?: CarouselBackgroundComposition['trajectory'] | null,
+): CarouselBackgroundTrajectoryPoint[] =>
+  trajectory?.points?.length
+    ? trajectory.points.map((point) => ({ ...point }))
+    : DEFAULT_CAROUSEL_TRAJECTORY_POINTS.map((point) => ({ ...point }));
+
+/** Builds a smooth cubic Bézier line from normalized trajectory points. */
+export const createCarouselBackgroundBezierPath = (
+  points: readonly CarouselBackgroundTrajectoryPoint[],
+): string => {
+  const normalized = normalizeTrajectoryPoints(points) ?? DEFAULT_CAROUSEL_TRAJECTORY_POINTS;
+  const first = normalized[0];
+  let path = `M ${first.x * 100} ${first.y * 100}`;
+  for (let index = 1; index < normalized.length; index += 1) {
+    const previous = normalized[index - 1];
+    const current = normalized[index];
+    const distance = (current.x - previous.x) / 2;
+    path += ` C ${(previous.x + distance) * 100} ${previous.y * 100}, ${(current.x - distance) * 100} ${
+      current.y * 100
+    }, ${current.x * 100} ${current.y * 100}`;
+  }
+  return path;
+};
+
+const createCarouselBackgroundFillPath = (
+  points: readonly CarouselBackgroundTrajectoryPoint[],
+): string => {
+  const normalized = normalizeTrajectoryPoints(points) ?? DEFAULT_CAROUSEL_TRAJECTORY_POINTS;
+  const first = normalized[0];
+  const last = normalized[normalized.length - 1];
+  return `${createCarouselBackgroundBezierPath(normalized)} L 100 ${last.y * 100} L 100 100 L 0 100 L 0 ${
+    first.y * 100
+  } Z`;
+};
+
 export interface CarouselBackgroundGenerationOptions {
   geometry: CarouselGeometry;
   composition?: CarouselBackgroundCompositionInput | null;
@@ -155,6 +225,7 @@ export const resolveCarouselBackgroundComposition = (
     ...DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION.trajectory,
     ...(source.trajectory ?? {}),
   };
+  const trajectoryPoints = normalizeTrajectoryPoints(trajectory.points);
   const safeZone = source.safeZone
     ? {
         top: clamp(Number(source.safeZone.top ?? 108), 0, 10000),
@@ -176,6 +247,7 @@ export const resolveCarouselBackgroundComposition = (
       amplitude: clamp(trajectory.amplitude, 0, 0.25),
       frequency: clamp(trajectory.frequency, 0.25, 4),
       phase: Number.isFinite(trajectory.phase) ? trajectory.phase : 0,
+      ...(trajectoryPoints ? { points: trajectoryPoints } : {}),
     },
     safeZone,
     intensity: clamp(Number(source.intensity ?? DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION.intensity), 0, 1),
@@ -193,6 +265,18 @@ const trajectoryOffset = (
   x: number,
   trajectory: CarouselBackgroundComposition['trajectory'],
 ): number => {
+  if (trajectory.points?.length) {
+    const points = trajectory.points;
+    if (x <= points[0].x) return (points[0].y - 0.5) * trajectory.amplitude * 2;
+    const last = points[points.length - 1];
+    if (x >= last.x) return (last.y - 0.5) * trajectory.amplitude * 2;
+    const index = points.findIndex((point) => point.x >= x);
+    const next = points[index];
+    const previous = points[index - 1];
+    const progress = (x - previous.x) / Math.max(0.0001, next.x - previous.x);
+    const y = previous.y + (next.y - previous.y) * progress;
+    return (y - 0.5) * trajectory.amplitude * 2;
+  }
   const angle = x * trajectory.frequency * Math.PI * 2 + trajectory.phase;
   if (trajectory.type === 'flat') return 0;
   if (trajectory.type === 'diagonal') return (x - 0.5) * 2 * trajectory.amplitude;
@@ -320,6 +404,9 @@ export function generateCarouselBackgroundLayers(
   const oceanWavePath = 'M0 82 C12 72 20 76 30 78 C40 80 44 68 52 54 C60 40 68 38 76 52 C84 66 88 72 100 68 L100 100 L0 100Z';
   const amberWavePath = 'M0 62 C10 62 16 70 24 82 C32 94 38 92 44 78 C50 64 54 36 64 28 C74 20 82 42 88 58 C94 74 98 78 100 78 L100 100 L0 100Z';
   const editorialWavePath = 'M0 76 C12 70 22 74 32 84 C42 94 48 92 56 78 C64 64 70 42 78 40 C86 38 92 58 100 68 L100 100 L0 100Z';
+  const customWavePath = composition.trajectory.points?.length
+    ? createCarouselBackgroundFillPath(composition.trajectory.points)
+    : undefined;
 
   if (
     composition.colorVariant === 'white' ||
@@ -349,7 +436,7 @@ export function generateCarouselBackgroundLayers(
           fill: composition.colorVariant === 'white'
             ? fill
             : palette.primary,
-          wavePath: composition.colorVariant === 'white'
+          wavePath: customWavePath ?? (composition.colorVariant === 'white'
             ? whiteWavePath
             : composition.colorVariant === 'midnight'
               ? midnightWavePath
@@ -357,7 +444,7 @@ export function generateCarouselBackgroundLayers(
                 ? oceanWavePath
                 : composition.colorVariant === 'amber-gold'
                   ? amberWavePath
-                  : editorialWavePath,
+                  : editorialWavePath),
         },
         composition,
         'wave',

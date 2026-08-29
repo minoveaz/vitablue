@@ -9,6 +9,14 @@ export type CarouselBackgroundMask = 'none' | 'safe-zone' | 'rounded' | 'circle'
 export type CarouselBackgroundShadow = 'none' | 'soft' | 'deep' | 'glow-teal' | 'glow-gold';
 export type CarouselBackgroundContinuity = 'local' | 'flow' | 'seamless';
 
+/** A normalized point in the panoramic trajectory editor (0..1 on both axes). */
+export interface CarouselBackgroundTrajectoryPoint {
+  /** Horizontal position across the full panorama. */
+  x: number;
+  /** Vertical position within the generated lower-band profile. */
+  y: number;
+}
+
 /** Safe insets are expressed in pixels in the coordinate space of one slide. */
 export interface CarouselBackgroundSafeZone {
   top: number;
@@ -25,6 +33,8 @@ export interface CarouselBackgroundTrajectory {
   frequency: number;
   /** Phase in radians. */
   phase: number;
+  /** Optional persisted control points for a custom cubic Bézier profile. */
+  points?: CarouselBackgroundTrajectoryPoint[];
   /** Resolved endpoints, present on generated per-slide metadata. */
   startY?: number;
   endY?: number;

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Check, Eye, Layers, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { Check, Eye, Layers, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Trash2 } from 'lucide-react';
 import type { ImageLayer, ImageProject } from '../../../types/imageStudio';
 import type {
   CarouselBackgroundColorVariant,
@@ -7,11 +7,14 @@ import type {
   CarouselBackgroundCompositionInput,
   CarouselBackgroundContinuity,
   CarouselBackgroundShapeType,
+  CarouselBackgroundTrajectoryPoint,
 } from '../../../types/carouselBackgroundComposition';
 import { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from '../../../types/carouselBackgroundComposition';
 import {
   CAROUSEL_BACKGROUND_PALETTES,
   generateCarouselBackgroundLayers,
+  createCarouselBackgroundBezierPath,
+  getCarouselBackgroundTrajectoryPoints,
   isCarouselBackgroundLayer,
   resolveCarouselBackgroundComposition,
 } from '../../../utils/carouselBackgroundComposition';
@@ -53,6 +56,7 @@ const CONTINUITY_OPTIONS: Array<{ id: CarouselBackgroundContinuity; label: strin
 ];
 
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
+const clampPointValue = (value: number) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
 
 const PreviewLayer: React.FC<{
   layer: ImageLayer;
@@ -162,6 +166,23 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
   const update = (patch: CarouselBackgroundCompositionInput) => {
     onRegenerateBackground(patch);
   };
+  const trajectoryPoints = getCarouselBackgroundTrajectoryPoints(composition.trajectory);
+  const updateTrajectoryPoints = (points: CarouselBackgroundTrajectoryPoint[]) =>
+    update({ trajectory: { points } });
+  const updateTrajectoryPoint = (index: number, key: keyof CarouselBackgroundTrajectoryPoint, value: number) => {
+    const nextPoints = trajectoryPoints.map((point, pointIndex) =>
+      pointIndex === index ? { ...point, [key]: clampPointValue(value) } : point,
+    );
+    updateTrajectoryPoints(nextPoints);
+  };
+  const addTrajectoryPoint = () => {
+    const last = trajectoryPoints[trajectoryPoints.length - 1];
+    const previous = trajectoryPoints[trajectoryPoints.length - 2] ?? { x: 0.5, y: 0.5 };
+    const x = Math.min(0.98, Math.max(previous.x + 0.01, (previous.x + last.x) / 2));
+    const y = previous.y + (last.y - previous.y) * 0.5;
+    updateTrajectoryPoints([...trajectoryPoints.slice(0, -1), { x, y }, last]);
+  };
+  const resetTrajectory = () => update({ trajectory: { points: undefined } });
 
   if (!isCarousel) {
     return (
@@ -290,6 +311,98 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
                 </button>
               ))}
             </div>
+          </fieldset>
+
+          <fieldset className="border-t border-slate-800 pt-3">
+            <legend className="mb-1.5 flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span>Trayectoria Bézier</span>
+              <button
+                type="button"
+                onClick={resetTrajectory}
+                className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[10px] font-semibold normal-case tracking-normal text-slate-500 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+                title="Restaurar trayectoria predeterminada"
+              >
+                <RotateCcw className="size-3" />
+                Restaurar
+              </button>
+            </legend>
+            <p className="mb-2 text-[10px] leading-relaxed text-slate-500">
+              Ajusta la curva panorámica. X recorre todas las slides y Y controla su altura.
+            </p>
+            <div className="rounded-lg border border-slate-800 bg-slate-900/80 p-2">
+              <svg
+                viewBox="0 0 100 100"
+                className="h-20 w-full overflow-visible text-brand-cyan"
+                role="img"
+                aria-label="Vista previa de la trayectoria Bézier"
+              >
+                <path d="M 0 50 H 100" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 3" fill="none" />
+                <path d={createCarouselBackgroundBezierPath(trajectoryPoints)} className="stroke-current" strokeWidth="2.5" fill="none" />
+                {trajectoryPoints.map((point, index) => (
+                  <circle
+                    key={`${point.x}-${index}`}
+                    cx={point.x * 100}
+                    cy={point.y * 100}
+                    r="3"
+                    className="fill-brand-cyan stroke-slate-950"
+                    strokeWidth="1.5"
+                  />
+                ))}
+              </svg>
+            </div>
+            <div className="mt-2 space-y-1.5">
+              {trajectoryPoints.map((point, index) => (
+                <div key={`${index}-${point.x}`} className="flex flex-wrap items-center gap-1.5">
+                  <span className="w-5 text-[10px] font-bold text-slate-500">{index + 1}</span>
+                  <label className="flex min-w-[7rem] flex-1 items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1.5 text-[10px] text-slate-400">
+                    <span>X</span>
+                    <input
+                      aria-label={`Punto ${index + 1}, posición X`}
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={Math.round(point.x * 100)}
+                      onChange={(event) => updateTrajectoryPoint(index, 'x', Number(event.target.value) / 100)}
+                      className="min-w-0 w-full bg-transparent text-right font-mono text-xs text-white outline-none"
+                    />
+                    <span>%</span>
+                  </label>
+                  <label className="flex min-w-[7rem] flex-1 items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1.5 text-[10px] text-slate-400">
+                    <span>Y</span>
+                    <input
+                      aria-label={`Punto ${index + 1}, posición Y`}
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={Math.round(point.y * 100)}
+                      onChange={(event) => updateTrajectoryPoint(index, 'y', Number(event.target.value) / 100)}
+                      className="min-w-0 w-full bg-transparent text-right font-mono text-xs text-white outline-none"
+                    />
+                    <span>%</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => updateTrajectoryPoints(trajectoryPoints.filter((_, pointIndex) => pointIndex !== index))}
+                    disabled={trajectoryPoints.length <= 2}
+                    className="rounded-md p-1.5 text-slate-500 transition-colors hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+                    aria-label={`Eliminar punto ${index + 1}`}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addTrajectoryPoint}
+              disabled={trajectoryPoints.length >= 12}
+              className="mt-2 inline-flex items-center gap-1 rounded-lg border border-dashed border-slate-700 px-2 py-1.5 text-[10px] font-bold text-slate-400 transition-colors hover:border-brand-cyan hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+            >
+              <Plus className="size-3" />
+              Añadir punto
+            </button>
           </fieldset>
         </div>
       </div>
