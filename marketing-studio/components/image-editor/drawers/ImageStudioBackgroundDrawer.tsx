@@ -27,12 +27,16 @@ const VARIANT_LABELS: Record<CarouselBackgroundColorVariant, string> = {
   white: 'Blanco',
   midnight: 'Midnight',
   ocean: 'Ocean',
+  'amber-gold': 'Amber Gold',
+  'white-editorial': 'White Editorial',
 };
 
 const VARIANT_SWATCHES: Record<CarouselBackgroundColorVariant, string> = {
   white: 'bg-white',
   midnight: 'bg-vb-midnight',
   ocean: 'bg-vb-ocean',
+  'amber-gold': 'bg-vb-gold',
+  'white-editorial': 'bg-white',
 };
 
 const SHAPE_OPTIONS: Array<{ id: CarouselBackgroundShapeType; label: string }> = [
@@ -100,7 +104,9 @@ const BackgroundPreview: React.FC<{
     () => generateCarouselBackgroundLayers({ projectId: `${project.id}-preview`, geometry, composition }),
     [composition, geometry, project.id],
   ).filter((layer) => {
-    const isPanoramic = layer.id.includes('-panorama-wave') || layer.id.includes('-top-semicircle-large');
+    const isPanoramic =
+      layer.id.includes('-panorama-wave') ||
+      layer.id.includes('-top-semicircle-large');
     return isPanoramic || layer.props.slideIndex === slideIndex;
   });
   const contentLayers = showContent

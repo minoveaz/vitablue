@@ -39,7 +39,13 @@ describe('carousel background composition contracts', () => {
   });
 
   it('exposes the three approved color variants and normalizes unsafe values', () => {
-    expect(CAROUSEL_BACKGROUND_COLOR_VARIANTS).toEqual(['white', 'midnight', 'ocean']);
+    expect(CAROUSEL_BACKGROUND_COLOR_VARIANTS).toEqual([
+      'white',
+      'midnight',
+      'ocean',
+      'amber-gold',
+      'white-editorial',
+    ]);
     const composition = resolveCarouselBackgroundComposition({
       colorVariant: 'invalid' as CarouselBackgroundComposition['colorVariant'],
       intensity: 8,
@@ -63,9 +69,14 @@ describe('carousel background composition contracts', () => {
       composition,
     });
 
-    expect(layers).toHaveLength(geometry.slideCount * 2);
+    expect(layers).toHaveLength(geometry.slideCount + 2);
     expect(layers.every((layer) => layer.locked && layer.zIndex <= 1)).toBe(true);
     for (const layer of layers) {
+      if (composition.colorVariant === 'ocean' && layer.props.layerRole === 'wave') continue;
+      if (typeof layer.props.slideIndex !== 'number' || layer.props.wavePath || (layer.width ?? 0) > geometry.slideWidth) {
+        expect(layer.props.wavePath).toBeTruthy();
+        continue;
+      }
       const slideIndex = layer.props.slideIndex as number;
       const left = (layer.position.x / 100) * geometry.panoramaWidth - (layer.width ?? 0) / 2;
       const right = (layer.position.x / 100) * geometry.panoramaWidth + (layer.width ?? 0) / 2;
@@ -176,7 +187,7 @@ describe('carousel background composition contracts', () => {
     const composed = regenerateCarouselBackground(first, { colorVariant: 'midnight', shape: 'blob' });
     const second = regenerateCarouselBackground(composed, { intensity: 0.4 });
     expect(second.layers.find((layer) => layer.id === content.id)).toEqual(content);
-    expect(second.layers.filter(isCarouselBackgroundLayer)).toHaveLength(10);
+    expect(second.layers.filter(isCarouselBackgroundLayer)).toHaveLength(7);
     expect(second.carouselBackground?.colorVariant).toBe('midnight');
     expect(second.carouselBackground?.shape).toBe('blob');
     expect(second.carouselBackground?.intensity).toBe(0.4);
@@ -193,7 +204,13 @@ describe('carousel background composition contracts', () => {
             : 'midnight',
       );
       expect(template.layers.filter(isCarouselBackgroundLayer)).toHaveLength(
-        template.carouselBackground?.colorVariant === 'white' ? 3 : 10,
+        template.carouselBackground?.colorVariant === 'white'
+          ? 3
+          : template.carouselBackground?.colorVariant === 'midnight'
+            ? 7
+            : template.carouselBackground?.colorVariant === 'ocean'
+              ? 7
+              : 10,
       );
     }
   });

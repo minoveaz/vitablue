@@ -17,6 +17,7 @@ const getSlideLayers = (layers: ImageLayer[], slideIndex: number): ImageLayer[] 
   layers.filter((layer) => {
     if (
       layer.id.includes('-panorama-wave') ||
+      layer.id.includes('-panorama-wave-midnight') ||
       layer.id.includes('-top-semicircle-large')
     ) {
       return true;
@@ -125,6 +126,7 @@ export const CarouselSlideStrip: React.FC<CarouselSlideStripProps> = ({
                     const height = layer.height ? `${Math.max(5, (layer.height / slideHeight) * 100)}%` : '12%';
                     const isPanoramic =
                       layer.id.includes('-panorama-wave') ||
+                      layer.id.includes('-panorama-wave-midnight') ||
                       layer.id.includes('-top-semicircle-large');
                     const left = isPanoramic
                       ? `${(((layer.position.x / 100) * slideWidth * slideCount - index * slideWidth) / slideWidth) * 100}%`

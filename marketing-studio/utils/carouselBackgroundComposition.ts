@@ -56,6 +56,22 @@ export const CAROUSEL_BACKGROUND_PALETTES: Record<
     contrast: '#FFFFFF',
     muted: '#94D2BD',
   },
+  'amber-gold': {
+    id: 'amber-gold',
+    background: '#EE9B00',
+    primary: '#001219',
+    secondary: '#B86F00',
+    contrast: '#FFFFFF',
+    muted: '#94D2BD',
+  },
+  'white-editorial': {
+    id: 'white-editorial',
+    background: '#FFFFFF',
+    primary: '#005F73',
+    secondary: '#E7F8F2',
+    contrast: '#001219',
+    muted: '#94D2BD',
+  },
 };
 
 export const DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION: CarouselBackgroundComposition = {
@@ -299,18 +315,50 @@ export function generateCarouselBackgroundLayers(
   const projectId = options.projectId ?? 'carousel';
   const layers: CarouselBackgroundLayer[] = [];
   const whiteWaveProfile = [0.28, 0.78, 0.9, 0.48, 0.7, 0.64];
-  const whiteWavePath = `M0 0 L10 0 C10 18 12 36 18 54 C24 72 32 86 40 88 C48 88 52 28 60 26 C68 24 74 72 80 64 C88 54 94 76 100 ${whiteWaveProfile[5] * 100} L100 100 L0 100Z`;
+  const whiteWavePath = `M0 0 L10 0 C10 18 12 38 18 58 C24 78 32 92 40 94 C48 94 52 22 60 18 C68 14 74 70 80 62 C88 50 94 78 100 ${whiteWaveProfile[5] * 100} L100 100 L0 100Z`;
+  const midnightWavePath = 'M0 72 C10 68 16 78 24 78 C34 78 38 62 46 54 C54 46 60 48 68 58 C76 68 82 74 90 70 C95 68 98 64 100 62 L100 100 L0 100Z';
+  const oceanWavePath = 'M0 82 C12 72 20 76 30 78 C40 80 44 68 52 54 C60 40 68 38 76 52 C84 66 88 72 100 68 L100 100 L0 100Z';
+  const amberWavePath = 'M0 62 C10 62 16 70 24 82 C32 94 38 92 44 78 C50 64 54 36 64 28 C74 20 82 42 88 58 C94 74 98 78 100 78 L100 100 L0 100Z';
+  const editorialWavePath = 'M0 76 C12 70 22 74 32 84 C42 94 48 92 56 78 C64 64 70 42 78 40 C86 38 92 58 100 68 L100 100 L0 100Z';
 
-  if (composition.colorVariant === 'white') {
+  if (
+    composition.colorVariant === 'white' ||
+    composition.colorVariant === 'midnight' ||
+    composition.colorVariant === 'ocean' ||
+    composition.colorVariant === 'amber-gold' ||
+    composition.colorVariant === 'white-editorial'
+  ) {
     layers.push(
       generatedLayer(
         projectId,
-        'panorama-wave',
+        composition.colorVariant === 'white'
+          ? 'panorama-wave'
+          : composition.colorVariant === 'midnight'
+            ? 'panorama-wave-midnight'
+            : composition.colorVariant === 'ocean'
+              ? 'panorama-wave-ocean'
+              : composition.colorVariant === 'amber-gold'
+                ? 'panorama-wave-amber'
+                : 'panorama-wave-editorial',
         0,
         geometry,
         { x: geometry.panoramaWidth / 2, y: geometry.slideHeight / 2 },
         { width: geometry.panoramaWidth, height: geometry.slideHeight },
-        { shapeType: 'carousel-wave', fill, wavePath: whiteWavePath },
+        {
+          shapeType: 'carousel-wave',
+          fill: composition.colorVariant === 'white'
+            ? fill
+            : palette.primary,
+          wavePath: composition.colorVariant === 'white'
+            ? whiteWavePath
+            : composition.colorVariant === 'midnight'
+              ? midnightWavePath
+              : composition.colorVariant === 'ocean'
+                ? oceanWavePath
+                : composition.colorVariant === 'amber-gold'
+                  ? amberWavePath
+                  : editorialWavePath,
+        },
         composition,
         'wave',
         { opacity: 1, shadowPreset: 'none', zIndex: 0 },
@@ -360,7 +408,13 @@ export function generateCarouselBackgroundLayers(
       continuityEnd: slideIndex === geometry.slideCount - 1 ? trajectory.endY : undefined,
     };
 
-    if (composition.colorVariant !== 'white') {
+    if (
+      composition.colorVariant !== 'white' &&
+      composition.colorVariant !== 'midnight' &&
+      composition.colorVariant !== 'ocean' &&
+      composition.colorVariant !== 'amber-gold' &&
+      composition.colorVariant !== 'white-editorial'
+    ) {
       layers.push(
       generatedLayer(
         projectId,

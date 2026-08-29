@@ -1,6 +1,6 @@
 import type { ImageLayer } from './imageStudio';
 
-export const CAROUSEL_BACKGROUND_COLOR_VARIANTS = ['white', 'midnight', 'ocean'] as const;
+export const CAROUSEL_BACKGROUND_COLOR_VARIANTS = ['white', 'midnight', 'ocean', 'amber-gold', 'white-editorial'] as const;
 export type CarouselBackgroundColorVariant = (typeof CAROUSEL_BACKGROUND_COLOR_VARIANTS)[number];
 
 export type CarouselBackgroundShapeType = 'wave' | 'blob' | 'organic' | 'curve';
