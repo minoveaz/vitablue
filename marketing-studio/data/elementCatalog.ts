@@ -13,6 +13,7 @@ import {
 import { UNIVERSAL_ICON_CATALOG, UniversalIconCatalogItem } from './elementIcons';
 import { ELEMENT_SHAPE_SECTIONS, ShapeCatalogItem } from './elementShapes';
 import { ELEMENT_PRESETS, ElementPresetItem } from './elementsPresets';
+import { normalizeEditableVectorGeometry } from '../utils/vectorGeometry';
 
 const UNDRAW_DAY_DREAMING_URL = '/universal-assets/day-dreaming.svg';
 
@@ -74,6 +75,7 @@ export type StaticElementCatalogPayload =
 
 const getPresetPreview = (preset: ElementPresetItem): ElementPreviewMetadata => {
   if (preset.blockType === 'GeometricShape') {
+    const vectorGeometry = normalizeEditableVectorGeometry(preset.defaultProps.vectorGeometry);
     return {
       renderer: 'graphic',
       shapeType: String(preset.defaultProps.shapeType ?? 'rectangle') as TraditionalShapeType,
@@ -81,6 +83,7 @@ const getPresetPreview = (preset: ElementPresetItem): ElementPreviewMetadata => 
       stroke: String(preset.defaultProps.stroke ?? 'transparent'),
       strokeWidth: Number(preset.defaultProps.strokeWidth ?? 0),
       borderRadius: Number(preset.defaultProps.borderRadius ?? 0),
+      ...(vectorGeometry ? { vectorGeometry } : {}),
     };
   }
   if (preset.category === 'illustrations') {
@@ -192,6 +195,7 @@ const createUniversalShapeResource = (
     'width',
     'height',
     'borderRadius',
+    'vectorGeometry',
     ...(item.shapeType === 'polygon-parametric' ? ['sides'] : []),
     ...(item.shapeType === 'star-parametric' ? ['points', 'innerRadius'] : []),
   ],
@@ -219,6 +223,7 @@ const createUniversalShapeResource = (
     sides: item.defaultSides,
     points: item.defaultPoints,
     innerRadius: item.defaultInnerRadius,
+    vectorGeometry: item.defaultVectorGeometry,
   },
   payload: { source: 'shape', item },
 });
@@ -235,7 +240,7 @@ const createUniversalIconResource = (
   scope: 'system',
   tags: ['icono', item.section, item.name, ...item.tags],
   license: BUILT_IN_LICENSE,
-  editableFields: ['stroke', 'strokeWidth', 'width', 'height'],
+  editableFields: ['stroke', 'strokeWidth', 'width', 'height', 'vectorGeometry'],
   lockedFields: [],
   supportedFormats: ['image', 'video'],
   version: 1,

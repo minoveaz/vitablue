@@ -2,6 +2,7 @@ import type { ImageLayer, ImageProject } from '../types/imageStudio';
 import { INITIAL_IMAGE_TEMPLATES } from './imageTemplates';
 import { createDefaultLayoutMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 import { normalizeTiptapHtml } from './tiptapHtml';
+import { normalizeEditableVectorGeometry } from './vectorGeometry';
 
 /**
  * The Image Studio used to have three independent storage implementations:
@@ -534,7 +535,17 @@ const migrateLayerText = (layer: ImageLayer): ImageLayer => {
       migrateLayerText(child as ImageLayer),
     );
   }
-  return { ...layer, props };
+  const vectorGeometry = normalizeEditableVectorGeometry(
+    layer.vectorGeometry ?? props.vectorGeometry,
+  );
+  if (vectorGeometry) props.vectorGeometry = vectorGeometry;
+  else delete props.vectorGeometry;
+  const { vectorGeometry: _storedVectorGeometry, ...layerWithoutVectorGeometry } = layer;
+  return {
+    ...layerWithoutVectorGeometry,
+    props,
+    ...(vectorGeometry ? { vectorGeometry } : {}),
+  };
 };
 
 /**

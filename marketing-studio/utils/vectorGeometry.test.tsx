@@ -1,0 +1,128 @@
+import { renderToStaticMarkup } from 'react-dom/server';
+import { describe, expect, it } from 'vitest';
+import { GeometricShapeGraphic } from '../components/image-editor/blocks/ShapeBlocks';
+import {
+  createEditableVectorBezierPath,
+  createEditableVectorPathGeometry,
+  getEditableVectorPath,
+  normalizeEditableVectorGeometry,
+} from './vectorGeometry';
+import { normalizeStoredProject } from './imagePersistence';
+
+describe('reusable vector geometry', () => {
+  it('normalizes persisted Bézier anchors into bounded unit coordinates', () => {
+    expect(normalizeEditableVectorGeometry({
+      kind: 'bezier',
+      points: [
+        { x: 1.4, y: -1 },
+        { x: 0.5, y: 0.4 },
+        { x: 0.5, y: 0.9 },
+        { x: 'invalid', y: 0.2 },
+      ],
+      closed: true,
+    })).toEqual({
+      version: 1,
+      kind: 'bezier',
+      points: [
+        { x: 1, y: 0 },
+        { x: 0.5, y: 0.4 },
+        { x: 0.5, y: 0.9 },
+      ],
+      closed: true,
+    });
+  });
+
+  it('rejects unsafe path payloads while retaining exact safe SVG paths', () => {
+    expect(normalizeEditableVectorGeometry({
+      kind: 'path',
+      path: '<script>alert(1)</script>',
+    })).toBeUndefined();
+    const geometry = createEditableVectorPathGeometry('M0 0 C25 10 75 10 100 0 Z', {
+      closed: true,
+      fillRule: 'evenodd',
+    });
+    expect(geometry).toMatchObject({
+      version: 1,
+      kind: 'path',
+      path: 'M0 0 C25 10 75 10 100 0 Z',
+      closed: true,
+      fillRule: 'evenodd',
+    });
+    expect(getEditableVectorPath(geometry!)).toContain('C25');
+  });
+
+  it('builds reusable cubic paths and renders them for any vector shape role', () => {
+    const points = [{ x: 0, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 1, y: 0.3 }];
+    expect(createEditableVectorBezierPath(points)).toContain('C');
+    const markup = renderToStaticMarkup(
+      <GeometricShapeGraphic
+        shapeType="mask-blob"
+        fill="#005F73"
+        stroke="#94D2BD"
+        strokeWidth={2}
+        vectorGeometry={{ version: 1, kind: 'bezier', points, closed: true }}
+      />,
+    );
+    expect(markup).toContain('<path');
+    expect(markup).toContain('C');
+    expect(markup).not.toContain('data-preview-fallback');
+  });
+
+  it('normalizes vector geometry when a project is loaded from persistence', () => {
+    const project = normalizeStoredProject({
+      id: 'persisted',
+      title: 'Persisted',
+      preset: { width: 1080, height: 1080 } as never,
+      background: { type: 'solid', color: '#fff' },
+      brandTokens: {} as never,
+      layers: [{
+        id: 'frame',
+        type: 'block',
+        blockType: 'GeometricShape',
+        title: 'Frame',
+        props: {
+          shapeType: 'frame-rounded',
+          vectorGeometry: {
+            kind: 'bezier',
+            points: [{ x: 2, y: 0.1 }, { x: 0.8, y: 1.2 }],
+          },
+        },
+        position: { x: 50, y: 50 },
+        zIndex: 1,
+        scale: 1,
+      }],
+      createdAt: '',
+      updatedAt: '',
+    } as never);
+    expect(project.layers[0].props.vectorGeometry).toEqual({
+      version: 1,
+      kind: 'bezier',
+      points: [{ x: 1, y: 0.1 }, { x: 0.8, y: 1 }],
+    });
+    expect(project.layers[0].vectorGeometry).toEqual(project.layers[0].props.vectorGeometry);
+  });
+
+  it('drops malformed geometry rather than persisting an unusable layer override', () => {
+    const project = normalizeStoredProject({
+      id: 'invalid-geometry',
+      title: 'Invalid',
+      preset: { width: 1080, height: 1080 } as never,
+      background: { type: 'solid', color: '#fff' },
+      brandTokens: {} as never,
+      layers: [{
+        id: 'shape',
+        type: 'shape',
+        title: 'Shape',
+        props: { vectorGeometry: { kind: 'path', path: '<bad>' } },
+        vectorGeometry: { kind: 'path', path: '<bad>' } as never,
+        position: { x: 50, y: 50 },
+        zIndex: 1,
+        scale: 1,
+      }],
+      createdAt: '',
+      updatedAt: '',
+    } as never);
+    expect(project.layers[0]).not.toHaveProperty('vectorGeometry');
+    expect(project.layers[0].props).not.toHaveProperty('vectorGeometry');
+  });
+});

@@ -3,6 +3,7 @@ import {
   ElementResourceKind,
   TraditionalShapeType,
 } from '../types/elementCatalog';
+import type { EditableVectorGeometry } from '../types/vectorGeometry';
 
 const UNIVERSAL_FILL = '#475569';
 const UNIVERSAL_ACCENT = '#F59E0B';
@@ -24,6 +25,8 @@ export interface ShapeCatalogItem {
   defaultSides?: number;
   defaultPoints?: number;
   defaultInnerRadius?: number;
+  /** Optional reusable geometry override for this catalog resource. */
+  defaultVectorGeometry?: EditableVectorGeometry;
 }
 
 export interface ShapeCatalogSection {

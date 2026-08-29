@@ -65,6 +65,8 @@ import {
   TraditionalShapeType,
   UniversalIconId,
 } from '../../../types/elementCatalog';
+import type { EditableVectorGeometry } from '../../../types/vectorGeometry';
+import { normalizeEditableVectorGeometry, getEditableVectorPath } from '../../../utils/vectorGeometry';
 
 export type { TraditionalShapeType } from '../../../types/elementCatalog';
 
@@ -153,6 +155,8 @@ export interface GeometricShapeGraphicProps {
   waveEndY?: number;
   waveAnchor?: 'top' | 'bottom';
   wavePath?: string;
+  /** Normalized reusable geometry. When present it supersedes the preset shape. */
+  vectorGeometry?: EditableVectorGeometry;
   className?: string;
 }
 
@@ -169,6 +173,7 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
   waveEndY = 48,
   waveAnchor = 'bottom',
   wavePath,
+  vectorGeometry,
   className = 'h-full w-full',
 }) => {
   const visibleStroke = strokeWidth > 0 && stroke !== 'transparent' ? stroke : 'none';
@@ -179,6 +184,23 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
     className: `${className} block select-none`,
     preserveAspectRatio: 'none' as const,
   };
+  const normalizedVectorGeometry = normalizeEditableVectorGeometry(vectorGeometry);
+
+  if (normalizedVectorGeometry) {
+    return (
+      <svg {...svgProps}>
+        <path
+          d={getEditableVectorPath(normalizedVectorGeometry)}
+          fill={normalizedVectorGeometry.closed ? fill : 'none'}
+          fillRule={normalizedVectorGeometry.fillRule}
+          stroke={visibleStroke}
+          strokeWidth={strokeWidth}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
 
   if (shapeType.startsWith('icon-')) {
     const iconId = shapeType.slice(5) as UniversalIconId;
@@ -376,6 +398,7 @@ export const GeometricShapeBlock: React.FC<GeometricShapeBlockProps> = ({ layer 
       waveEndY={(blockProps.waveEndY as number) ?? 48}
       waveAnchor={(blockProps.waveAnchor as 'top' | 'bottom') ?? 'bottom'}
       wavePath={blockProps.wavePath as string | undefined}
+      vectorGeometry={blockProps.vectorGeometry as EditableVectorGeometry | undefined ?? layer.vectorGeometry}
     />
   );
 };

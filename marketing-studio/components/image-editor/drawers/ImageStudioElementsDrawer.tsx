@@ -234,6 +234,7 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
         sides: item.defaultSides,
         points: item.defaultPoints,
         innerRadius: item.defaultInnerRadius,
+        vectorGeometry: item.defaultVectorGeometry,
         width: item.defaultWidth,
         height: item.defaultHeight,
       });

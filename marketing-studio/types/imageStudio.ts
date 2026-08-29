@@ -1,6 +1,7 @@
 import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
 import type { CarouselBackgroundComposition } from './carouselBackgroundComposition';
+import type { EditableVectorGeometry } from './vectorGeometry';
 export { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from './carouselBackgroundComposition';
 export type {
   CarouselBackgroundColorVariant,
@@ -610,6 +611,8 @@ export interface ImageLayer {
   constraints?: LayerLayoutConstraints;
   /** Persistent, non-destructive image crop framing. */
   crop?: ImageCrop;
+  /** Optional reusable normalized SVG/Bézier geometry for vector layers. */
+  vectorGeometry?: EditableVectorGeometry;
 }
 
 /** Stable contracts used by the editor engine and persistence adapters. */

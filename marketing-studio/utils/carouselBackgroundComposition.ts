@@ -1,5 +1,10 @@
 import type { CarouselGeometry, ImageLayer, ImageProject } from '../types/imageStudio';
 import {
+  createEditableVectorPathGeometry,
+  getEditableVectorPath,
+  normalizeEditableVectorGeometry,
+} from './vectorGeometry';
+import {
   CAROUSEL_BACKGROUND_COLOR_VARIANTS,
   type CarouselBackgroundColorVariant,
   type CarouselBackgroundColorVariantDefinition,
@@ -226,6 +231,7 @@ export const resolveCarouselBackgroundComposition = (
     ...(source.trajectory ?? {}),
   };
   const trajectoryPoints = normalizeTrajectoryPoints(trajectory.points);
+  const vectorGeometry = normalizeEditableVectorGeometry(source.vectorGeometry);
   const safeZone = source.safeZone
     ? {
         top: clamp(Number(source.safeZone.top ?? 108), 0, 10000),
@@ -250,6 +256,7 @@ export const resolveCarouselBackgroundComposition = (
       ...(trajectoryPoints ? { points: trajectoryPoints } : {}),
     },
     safeZone,
+    vectorGeometry,
     intensity: clamp(Number(source.intensity ?? DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION.intensity), 0, 1),
     height: clamp(Number(source.height ?? DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION.height), 0.08, 0.7),
     scale: clamp(Number(source.scale ?? DEFAULT_CAROUSEL_BACKGROUND_COMPOSITION.scale), 0.25, 3),
@@ -404,9 +411,11 @@ export function generateCarouselBackgroundLayers(
   const oceanWavePath = 'M0 82 C12 72 20 76 30 78 C40 80 44 68 52 54 C60 40 68 38 76 52 C84 66 88 72 100 68 L100 100 L0 100Z';
   const amberWavePath = 'M0 62 C10 62 16 70 24 82 C32 94 38 92 44 78 C50 64 54 36 64 28 C74 20 82 42 88 58 C94 74 98 78 100 78 L100 100 L0 100Z';
   const editorialWavePath = 'M0 76 C12 70 22 74 32 84 C42 94 48 92 56 78 C64 64 70 42 78 40 C86 38 92 58 100 68 L100 100 L0 100Z';
-  const customWavePath = composition.trajectory.points?.length
-    ? createCarouselBackgroundFillPath(composition.trajectory.points)
-    : undefined;
+  const customWavePath = composition.vectorGeometry
+    ? getEditableVectorPath(composition.vectorGeometry)
+    : composition.trajectory.points?.length
+      ? createCarouselBackgroundFillPath(composition.trajectory.points)
+      : undefined;
 
   if (
     composition.colorVariant === 'white' ||
@@ -445,6 +454,18 @@ export function generateCarouselBackgroundLayers(
                 : composition.colorVariant === 'amber-gold'
                   ? amberWavePath
                   : editorialWavePath),
+          vectorGeometry: composition.vectorGeometry ?? createEditableVectorPathGeometry(
+            customWavePath ?? (composition.colorVariant === 'white'
+              ? whiteWavePath
+              : composition.colorVariant === 'midnight'
+                ? midnightWavePath
+                : composition.colorVariant === 'ocean'
+                  ? oceanWavePath
+                  : composition.colorVariant === 'amber-gold'
+                    ? amberWavePath
+                    : editorialWavePath),
+            { closed: true },
+          ),
         },
         composition,
         'wave',

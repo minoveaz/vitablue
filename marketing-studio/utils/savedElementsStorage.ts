@@ -1,5 +1,6 @@
 import { ImageLayer } from '../types/imageStudio';
 import { ElementCatalogMetadata } from '../types/elementCatalog';
+import { normalizeEditableVectorGeometry } from './vectorGeometry';
 
 export interface SavedCustomElement {
   id: string;
@@ -15,6 +16,26 @@ export const SAVED_ELEMENTS_STORAGE_KEY = 'vitablue_saved_custom_elements';
 
 let inMemoryCustomElements: SavedCustomElement[] = [];
 
+const normalizeSavedLayer = (layer: ImageLayer): ImageLayer => {
+  const props = { ...(layer.props ?? {}) };
+  if (Array.isArray(props.childrenLayers)) {
+    props.childrenLayers = props.childrenLayers.map((child) =>
+      normalizeSavedLayer(child as ImageLayer),
+    );
+  }
+  const vectorGeometry = normalizeEditableVectorGeometry(
+    layer.vectorGeometry ?? props.vectorGeometry,
+  );
+  if (vectorGeometry) props.vectorGeometry = vectorGeometry;
+  else delete props.vectorGeometry;
+  const { vectorGeometry: _storedVectorGeometry, ...layerWithoutVectorGeometry } = layer;
+  return {
+    ...layerWithoutVectorGeometry,
+    props,
+    ...(vectorGeometry ? { vectorGeometry } : {}),
+  };
+};
+
 export function getSavedCustomElements(): SavedCustomElement[] {
   if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
     return inMemoryCustomElements;
@@ -27,7 +48,12 @@ export function getSavedCustomElements(): SavedCustomElement[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      const userOnly = parsed.filter((e) => !e.id?.startsWith('default-'));
+      const userOnly = parsed
+        .filter((e): e is SavedCustomElement => Boolean(e) && !e.id?.startsWith('default-') && e.layer)
+        .map((element) => ({
+          ...element,
+          layer: normalizeSavedLayer(element.layer),
+        }));
       inMemoryCustomElements = userOnly;
       return userOnly;
     }
@@ -40,6 +66,17 @@ export function getSavedCustomElements(): SavedCustomElement[] {
 
 export function saveCustomElement(layer: ImageLayer, customTitle?: string): SavedCustomElement {
   const elements = getSavedCustomElements();
+  const snapshot = JSON.parse(JSON.stringify(layer)) as ImageLayer;
+  const vectorGeometry = normalizeEditableVectorGeometry(
+    snapshot.vectorGeometry ?? snapshot.props?.vectorGeometry,
+  );
+  if (vectorGeometry) {
+    snapshot.vectorGeometry = vectorGeometry;
+    snapshot.props.vectorGeometry = vectorGeometry;
+  } else {
+    delete snapshot.vectorGeometry;
+    delete snapshot.props.vectorGeometry;
+  }
   
   let category: SavedCustomElement['category'] = 'card';
   if (layer.type === 'text' || layer.blockType === 'CustomText') {
@@ -54,7 +91,7 @@ export function saveCustomElement(layer: ImageLayer, customTitle?: string): Save
     id: `saved-elem-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     title: customTitle?.trim() || layer.title || 'Elemento Personalizado',
     category,
-    layer: JSON.parse(JSON.stringify(layer)),
+    layer: snapshot,
     createdAt: new Date().toISOString(),
     catalogMetadata: {
       kind: 'saved_element',

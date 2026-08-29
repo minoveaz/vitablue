@@ -19,6 +19,7 @@ import {
 } from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
+import { normalizeEditableVectorGeometry } from '../utils/vectorGeometry';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
 import {
@@ -726,6 +727,17 @@ export function useImageProjectEditor(
       });
       const updated: ImageLayer = { ...layer, props: { ...layer.props, ...normalizedPatch } };
 
+      if ('vectorGeometry' in patch) {
+        const vectorGeometry = normalizeEditableVectorGeometry(patch.vectorGeometry);
+        if (vectorGeometry) {
+          updated.vectorGeometry = vectorGeometry;
+          updated.props.vectorGeometry = vectorGeometry;
+        } else {
+          delete updated.vectorGeometry;
+          delete updated.props.vectorGeometry;
+        }
+      }
+
       if ('fill' in patch) updated.fill = patch.fill as string;
       if ('color' in patch) updated.fill = patch.color as string;
       if ('borderColor' in patch) updated.borderColor = patch.borderColor as string;
@@ -1369,6 +1381,9 @@ export function useImageProjectEditor(
     ['text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText', 'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message', 'wrongOptionTitle', 'wrongOptionDesc', 'correctOptionTitle', 'correctOptionDesc'].forEach((key) => {
       if (typeof initialProps[key] === 'string') initialProps[key] = normalizeTiptapHtml(initialProps[key] as string);
     });
+    const vectorGeometry = normalizeEditableVectorGeometry(initialProps.vectorGeometry);
+    if (vectorGeometry) initialProps.vectorGeometry = vectorGeometry;
+    else delete initialProps.vectorGeometry;
 
     let width = typeof defaultProps?.width === 'number'
       ? defaultProps.width
@@ -1573,11 +1588,20 @@ export function useImageProjectEditor(
   }, [project.layers]);
 
   const insertSavedLayer = useCallback((savedLayer: ImageLayer) => {
+    const savedVectorGeometry = normalizeEditableVectorGeometry(
+      savedLayer.vectorGeometry ?? savedLayer.props?.vectorGeometry,
+    );
+    const clonedLayer = JSON.parse(JSON.stringify(savedLayer)) as ImageLayer;
     const newLayer: ImageLayer = {
-      ...JSON.parse(JSON.stringify(savedLayer)),
+      ...clonedLayer,
       id: `layer-${Date.now()}`,
       position: { x: 50, y: 50 },
       zIndex: 999,
+      ...(savedVectorGeometry ? { vectorGeometry: savedVectorGeometry } : {}),
+      props: {
+        ...clonedLayer.props,
+        ...(savedVectorGeometry ? { vectorGeometry: savedVectorGeometry } : {}),
+      },
     };
 
     setProject((prev) => {

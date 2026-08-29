@@ -76,6 +76,12 @@ export const UNIVERSAL_ICON_IDS = [
 ] as const;
 
 export type UniversalIconId = (typeof UNIVERSAL_ICON_IDS)[number];
+export type {
+  EditableVectorGeometry,
+  EditableVectorGeometryInput,
+  EditableVectorPoint,
+} from './vectorGeometry';
+import type { EditableVectorGeometry } from './vectorGeometry';
 
 export type TraditionalShapeType =
   | 'line'
@@ -170,6 +176,8 @@ export type ElementPreviewMetadata =
       sides?: number;
       points?: number;
       innerRadius?: number;
+      /** Optional persisted geometry override shared by all vector resources. */
+      vectorGeometry?: EditableVectorGeometry;
     }
   | { renderer: 'illustration'; illustrationId: string }
   | { renderer: 'label'; variant: 'badge' | 'button'; text: string }

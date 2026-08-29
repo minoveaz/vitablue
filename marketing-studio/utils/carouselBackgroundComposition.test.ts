@@ -81,6 +81,29 @@ describe('carousel background composition contracts', () => {
     expect(createCarouselBackgroundBezierPath(composition.trajectory.points!)).toContain('C');
   });
 
+  it('normalizes a reusable composition geometry and carries it into generated layers', () => {
+    const geometryOverride = {
+      kind: 'bezier' as const,
+      points: [{ x: -1, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 2, y: 0.4 }],
+      closed: true,
+    };
+    const composition = resolveCarouselBackgroundComposition({
+      vectorGeometry: geometryOverride,
+    });
+    expect(composition.vectorGeometry).toEqual({
+      version: 1,
+      kind: 'bezier',
+      points: [{ x: 0, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 1, y: 0.4 }],
+      closed: true,
+    });
+    const panorama = generateCarouselBackgroundLayers({
+      projectId: 'reusable',
+      geometry,
+      composition,
+    }).find((layer) => layer.id.includes('panorama-wave'));
+    expect(panorama?.props.vectorGeometry).toEqual(composition.vectorGeometry);
+  });
+
   it('uses the edited Bézier profile for White without changing other palette defaults', () => {
     const points = [
       { x: 0, y: 0.15 },
@@ -101,6 +124,11 @@ describe('carousel background composition contracts', () => {
     expect(legacyMidnight.find((layer) => layer.id.includes('panorama-wave'))?.props.wavePath).toBe(
       'M0 72 C10 68 16 78 24 78 C34 78 38 62 46 54 C54 46 60 48 68 58 C76 68 82 74 90 70 C95 68 98 64 100 62 L100 100 L0 100Z',
     );
+    expect(edited.find((layer) => layer.id.includes('panorama-wave'))?.props.vectorGeometry).toMatchObject({
+      version: 1,
+      kind: 'path',
+      closed: true,
+    });
   });
 
   it('creates bounded lower layers for every slide without crossing safe insets', () => {

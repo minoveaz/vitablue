@@ -43,6 +43,7 @@ export const ElementResourcePreview: React.FC<{
           sides={preview.sides}
           points={preview.points}
           innerRadius={preview.innerRadius}
+          vectorGeometry={preview.vectorGeometry}
         />
       </div>
     );

@@ -1,4 +1,8 @@
 import type { ImageLayer } from './imageStudio';
+import type {
+  EditableVectorGeometry,
+  EditableVectorGeometryInput,
+} from './vectorGeometry';
 
 export const CAROUSEL_BACKGROUND_COLOR_VARIANTS = ['white', 'midnight', 'ocean', 'amber-gold', 'white-editorial'] as const;
 export type CarouselBackgroundColorVariant = (typeof CAROUSEL_BACKGROUND_COLOR_VARIANTS)[number];
@@ -70,15 +74,18 @@ export interface CarouselBackgroundComposition {
   safeZone?: CarouselBackgroundSafeZone;
   /** Optional focal point for secondary organic forms. */
   focalPoint?: { x: number; y: number };
+  /** Optional reusable geometry override for the generated panorama surface. */
+  vectorGeometry?: EditableVectorGeometry;
   secondaryColor?: string;
 }
 
 export type CarouselBackgroundCompositionInput = Omit<
   Partial<CarouselBackgroundComposition>,
-  'trajectory' | 'safeZone'
+  'trajectory' | 'safeZone' | 'vectorGeometry'
 > & {
   trajectory?: Partial<CarouselBackgroundTrajectory>;
   safeZone?: Partial<CarouselBackgroundSafeZone>;
+  vectorGeometry?: EditableVectorGeometryInput;
 };
 
 export interface CarouselBackgroundLayerMetadata {
