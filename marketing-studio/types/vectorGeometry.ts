@@ -20,6 +20,28 @@ export interface EditableVectorGeometry {
   fillRule?: 'nonzero' | 'evenodd';
 }
 
+/**
+ * Optional parameters used by the built-in reusable SVG shape library.
+ * Values are persisted alongside the geometry and normalized before render.
+ */
+export interface EditableVectorShapeOptions {
+  sides?: number;
+  points?: number;
+  innerRadius?: number;
+  borderRadius?: number;
+  strokeWidth?: number;
+  ringRadius?: number;
+  ringThickness?: number;
+  arcStartAngle?: number;
+  arcEndAngle?: number;
+  waveStartY?: number;
+  waveEndY?: number;
+  waveAmplitude?: number;
+  waveCycles?: number;
+  waveAnchor?: 'top' | 'bottom';
+  wavePath?: string;
+}
+
 /** Input accepted by editors before the persistence version is stamped. */
 export type EditableVectorGeometryInput = Partial<EditableVectorGeometry> & {
   points?: EditableVectorPoint[];

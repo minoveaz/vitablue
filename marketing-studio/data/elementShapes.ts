@@ -25,6 +25,16 @@ export interface ShapeCatalogItem {
   defaultSides?: number;
   defaultPoints?: number;
   defaultInnerRadius?: number;
+  defaultRingRadius?: number;
+  defaultRingThickness?: number;
+  defaultArcStartAngle?: number;
+  defaultArcEndAngle?: number;
+  defaultWaveStartY?: number;
+  defaultWaveEndY?: number;
+  defaultWaveAmplitude?: number;
+  defaultWaveCycles?: number;
+  defaultWaveAnchor?: 'top' | 'bottom';
+  defaultWavePath?: string;
   /** Optional reusable geometry override for this catalog resource. */
   defaultVectorGeometry?: EditableVectorGeometry;
 }
@@ -92,7 +102,21 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
       line('line-arrow-right', 'Línea con flecha', 'line-arrow-right', { defaultHeight: 28 }),
       line('line-arrow-both', 'Línea con flecha doble', 'line-arrow-both', { defaultHeight: 28 }),
       line('line-curve', 'Curva Bézier', 'curve', { defaultHeight: 140 }),
-      line('line-arc', 'Arco', 'arc', { defaultHeight: 160 }),
+      line('line-arc', 'Arco configurable', 'arc', {
+        defaultHeight: 160,
+        defaultRingRadius: 42,
+        defaultArcStartAngle: 180,
+        defaultArcEndAngle: 360,
+      }),
+      line('line-ring', 'Anillo vectorial', 'ring', {
+        defaultWidth: 180,
+        defaultHeight: 180,
+        defaultStroke: UNIVERSAL_ACCENT,
+        defaultStrokeWidth: 10,
+        defaultRingRadius: 42,
+        defaultRingThickness: 10,
+        tags: ['anillo', 'círculo', 'decorativo'],
+      }),
     ],
   },
   {
@@ -162,6 +186,17 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
       shape('shape-blob-soft', 'Blob suave', 'blob-1', 240, 210, UNIVERSAL_SOFT),
       shape('shape-blob-fluid', 'Blob fluido', 'blob-2', 240, 210, UNIVERSAL_FILL),
       shape('shape-blob-cloud', 'Blob nube', 'blob-3', 240, 210, UNIVERSAL_ACCENT),
+      shape('shape-blob-editorial', 'Blob editorial', 'blob-4', 240, 210, UNIVERSAL_FILL),
+      shape('shape-blob-orbit', 'Blob orbital', 'blob-5', 240, 210, UNIVERSAL_SOFT),
+      shape('shape-blob-organic', 'Blob orgánico', 'blob-6', 240, 210, UNIVERSAL_ACCENT),
+      shape('shape-carousel-wave', 'Onda de carrusel', 'carousel-wave', 540, 180, UNIVERSAL_FILL, {
+        defaultWaveStartY: 52,
+        defaultWaveEndY: 42,
+        defaultWaveAmplitude: 22,
+        defaultWaveCycles: 2,
+        defaultWaveAnchor: 'bottom',
+        tags: ['carrusel', 'fondo', 'onda'],
+      }),
     ],
   },
   {
@@ -197,6 +232,7 @@ export const ELEMENT_SHAPE_SECTIONS: ShapeCatalogSection[] = [
     title: 'Separadores decorativos',
     items: [
       line('separator-wave', 'Separador ondulado', 'separator-wave', { defaultHeight: 50 }),
+      line('separator-curve', 'Separador curvo', 'separator-curve', { defaultHeight: 50 }),
       line('separator-zigzag', 'Separador zigzag', 'separator-zigzag', { defaultHeight: 50 }),
       line('separator-dots', 'Separador de puntos', 'separator-dots', { defaultHeight: 50 }),
       line('separator-diamond', 'Separador con diamante', 'separator-diamond', { defaultHeight: 50 }),

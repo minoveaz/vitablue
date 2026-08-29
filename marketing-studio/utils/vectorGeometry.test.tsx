@@ -5,6 +5,7 @@ import {
   createEditableVectorBezierPath,
   createEditableVectorPathGeometry,
   getEditableVectorPath,
+  normalizeGeometricShapeProps,
   normalizeEditableVectorGeometry,
 } from './vectorGeometry';
 import { normalizeStoredProject } from './imagePersistence';
@@ -102,6 +103,34 @@ describe('reusable vector geometry', () => {
     expect(project.layers[0].vectorGeometry).toEqual(project.layers[0].props.vectorGeometry);
   });
 
+  it('normalizes advanced shape parameters when a project is loaded', () => {
+    const project = normalizeStoredProject({
+      id: 'advanced-shape',
+      title: 'Advanced',
+      preset: { width: 1080, height: 1080 } as never,
+      background: { type: 'solid', color: '#fff' },
+      brandTokens: {} as never,
+      layers: [{
+        id: 'ring',
+        type: 'block',
+        blockType: 'GeometricShape',
+        title: 'Ring',
+        props: { shapeType: 'ring', ringThickness: 999, ringRadius: -2, wavePath: '<svg>' },
+        position: { x: 50, y: 50 },
+        zIndex: 1,
+        scale: 1,
+      }],
+      createdAt: '',
+      updatedAt: '',
+    } as never);
+    expect(project.layers[0].props).toMatchObject({
+      shapeType: 'ring',
+      ringThickness: 50,
+      ringRadius: 5,
+    });
+    expect(project.layers[0].props).not.toHaveProperty('wavePath');
+  });
+
   it('drops malformed geometry rather than persisting an unusable layer override', () => {
     const project = normalizeStoredProject({
       id: 'invalid-geometry',
@@ -124,5 +153,34 @@ describe('reusable vector geometry', () => {
     } as never);
     expect(project.layers[0]).not.toHaveProperty('vectorGeometry');
     expect(project.layers[0].props).not.toHaveProperty('vectorGeometry');
+  });
+
+  it('bounds reusable shape parameters and removes unsafe wave paths', () => {
+    expect(normalizeGeometricShapeProps({
+      sides: 999,
+      ringThickness: -4,
+      arcStartAngle: 'not-a-number',
+      waveCycles: 99,
+      waveAnchor: 'diagonal',
+      wavePath: '<svg>',
+    })).toEqual({
+      sides: 24,
+      ringThickness: 1,
+      waveCycles: 8,
+    });
+  });
+
+  it('renders configurable rings, arcs, and carousel waves without fallback output', () => {
+    const markup = renderToStaticMarkup(
+      <>
+        <GeometricShapeGraphic shapeType="ring" stroke="#EE9B00" ringRadius={40} ringThickness={12} />
+        <GeometricShapeGraphic shapeType="arc" stroke="#94D2BD" arcStartAngle={210} arcEndAngle={330} />
+        <GeometricShapeGraphic shapeType="carousel-wave" fill="#005F73" waveCycles={3} waveAmplitude={30} />
+      </>,
+    );
+    expect(markup).toContain('<circle');
+    expect(markup).toContain('A 42 42');
+    expect(markup).toContain('C');
+    expect(markup).not.toContain('data-preview-fallback');
   });
 });

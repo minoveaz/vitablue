@@ -1,6 +1,7 @@
 import type {
   EditableVectorGeometry,
   EditableVectorPoint,
+  EditableVectorShapeOptions,
 } from '../types/vectorGeometry';
 
 const MAX_POINTS = 64;
@@ -37,6 +38,69 @@ const isSafePathData = (value: unknown): value is string =>
   value.trim().length <= MAX_PATH_LENGTH &&
   /^[Mm]/.test(value.trim()) &&
   /^[MmZzLlHhVvCcSsQqTtAa0-9.,+\-\s]+$/.test(value);
+
+export const isSafeEditableVectorPath = (value: unknown): value is string =>
+  isSafePathData(value);
+
+const normalizeOptionalNumber = (
+  value: unknown,
+  min: number,
+  max: number,
+  integer = false,
+): number | undefined => {
+  if (value === undefined || value === null || value === '') return undefined;
+  const number = Number(value);
+  if (!Number.isFinite(number)) return undefined;
+  const bounded = clamp(number, min, max);
+  return integer ? Math.round(bounded) : bounded;
+};
+
+/**
+ * Normalizes configurable built-in shape props without dropping unrelated
+ * block props. This is used at insert, edit, load, and render boundaries.
+ */
+export const normalizeGeometricShapeProps = (
+  value: Record<string, unknown> | undefined,
+): Record<string, unknown> => {
+  if (!value) return {};
+  const normalized = { ...value };
+  const numericFields: Array<[keyof EditableVectorShapeOptions, number, number, boolean?]> = [
+    ['sides', 3, 24, true],
+    ['points', 3, 24, true],
+    ['innerRadius', 10, 48],
+    ['borderRadius', 0, 200],
+    ['strokeWidth', 0, 64],
+    ['ringRadius', 5, 48],
+    ['ringThickness', 1, 50],
+    ['arcStartAngle', -360, 360],
+    ['arcEndAngle', -360, 360],
+    ['waveStartY', 0, 100],
+    ['waveEndY', 0, 100],
+    ['waveAmplitude', 0, 48],
+    ['waveCycles', 1, 8, true],
+  ];
+  numericFields.forEach(([key, min, max, integer]) => {
+    if (!(key in normalized)) return;
+    const number = normalizeOptionalNumber(normalized[key], min, max, integer);
+    if (number === undefined) delete normalized[key];
+    else normalized[key] = number;
+  });
+
+  if ('waveAnchor' in normalized && normalized.waveAnchor !== 'top' && normalized.waveAnchor !== 'bottom') {
+    delete normalized.waveAnchor;
+  }
+  if ('wavePath' in normalized) {
+    const path = isSafePathData(normalized.wavePath) ? normalized.wavePath.trim() : undefined;
+    if (path) normalized.wavePath = path;
+    else delete normalized.wavePath;
+  }
+  if ('vectorGeometry' in normalized) {
+    const geometry = normalizeEditableVectorGeometry(normalized.vectorGeometry);
+    if (geometry) normalized.vectorGeometry = geometry;
+    else delete normalized.vectorGeometry;
+  }
+  return normalized;
+};
 
 export const normalizeEditableVectorGeometry = (
   value: unknown,

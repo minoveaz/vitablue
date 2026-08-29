@@ -13,7 +13,7 @@ import {
 import { UNIVERSAL_ICON_CATALOG, UniversalIconCatalogItem } from './elementIcons';
 import { ELEMENT_SHAPE_SECTIONS, ShapeCatalogItem } from './elementShapes';
 import { ELEMENT_PRESETS, ElementPresetItem } from './elementsPresets';
-import { normalizeEditableVectorGeometry } from '../utils/vectorGeometry';
+import { normalizeEditableVectorGeometry, normalizeGeometricShapeProps } from '../utils/vectorGeometry';
 
 const UNDRAW_DAY_DREAMING_URL = '/universal-assets/day-dreaming.svg';
 
@@ -75,14 +75,27 @@ export type StaticElementCatalogPayload =
 
 const getPresetPreview = (preset: ElementPresetItem): ElementPreviewMetadata => {
   if (preset.blockType === 'GeometricShape') {
-    const vectorGeometry = normalizeEditableVectorGeometry(preset.defaultProps.vectorGeometry);
+    const geometricProps = normalizeGeometricShapeProps(preset.defaultProps);
+    const vectorGeometry = normalizeEditableVectorGeometry(geometricProps.vectorGeometry);
     return {
       renderer: 'graphic',
-      shapeType: String(preset.defaultProps.shapeType ?? 'rectangle') as TraditionalShapeType,
-      fill: String(preset.defaultProps.fill ?? '#005F73'),
-      stroke: String(preset.defaultProps.stroke ?? 'transparent'),
-      strokeWidth: Number(preset.defaultProps.strokeWidth ?? 0),
-      borderRadius: Number(preset.defaultProps.borderRadius ?? 0),
+      shapeType: String(geometricProps.shapeType ?? 'rectangle') as TraditionalShapeType,
+      fill: String(geometricProps.fill ?? '#005F73'),
+      stroke: String(geometricProps.stroke ?? 'transparent'),
+      strokeWidth: Number(geometricProps.strokeWidth ?? 0),
+      borderRadius: Number(geometricProps.borderRadius ?? 0),
+      ...(geometricProps.ringRadius !== undefined ? { ringRadius: Number(geometricProps.ringRadius) } : {}),
+      ...(geometricProps.ringThickness !== undefined ? { ringThickness: Number(geometricProps.ringThickness) } : {}),
+      ...(geometricProps.arcStartAngle !== undefined ? { arcStartAngle: Number(geometricProps.arcStartAngle) } : {}),
+      ...(geometricProps.arcEndAngle !== undefined ? { arcEndAngle: Number(geometricProps.arcEndAngle) } : {}),
+      ...(geometricProps.waveStartY !== undefined ? { waveStartY: Number(geometricProps.waveStartY) } : {}),
+      ...(geometricProps.waveEndY !== undefined ? { waveEndY: Number(geometricProps.waveEndY) } : {}),
+      ...(geometricProps.waveAmplitude !== undefined ? { waveAmplitude: Number(geometricProps.waveAmplitude) } : {}),
+      ...(geometricProps.waveCycles !== undefined ? { waveCycles: Number(geometricProps.waveCycles) } : {}),
+      ...(geometricProps.waveAnchor === 'top' || geometricProps.waveAnchor === 'bottom'
+        ? { waveAnchor: geometricProps.waveAnchor }
+        : {}),
+      ...(typeof geometricProps.wavePath === 'string' ? { wavePath: geometricProps.wavePath } : {}),
       ...(vectorGeometry ? { vectorGeometry } : {}),
     };
   }
@@ -198,6 +211,9 @@ const createUniversalShapeResource = (
     'vectorGeometry',
     ...(item.shapeType === 'polygon-parametric' ? ['sides'] : []),
     ...(item.shapeType === 'star-parametric' ? ['points', 'innerRadius'] : []),
+    ...(item.shapeType === 'ring' ? ['ringRadius', 'ringThickness'] : []),
+    ...(item.shapeType === 'arc' ? ['ringRadius', 'arcStartAngle', 'arcEndAngle'] : []),
+    ...(item.shapeType === 'carousel-wave' ? ['waveStartY', 'waveEndY', 'waveAmplitude', 'waveCycles', 'waveAnchor', 'wavePath'] : []),
   ],
   lockedFields: [],
   supportedFormats: ['image', 'video'],
@@ -223,6 +239,16 @@ const createUniversalShapeResource = (
     sides: item.defaultSides,
     points: item.defaultPoints,
     innerRadius: item.defaultInnerRadius,
+    ringRadius: item.defaultRingRadius,
+    ringThickness: item.defaultRingThickness,
+    arcStartAngle: item.defaultArcStartAngle,
+    arcEndAngle: item.defaultArcEndAngle,
+    waveStartY: item.defaultWaveStartY,
+    waveEndY: item.defaultWaveEndY,
+    waveAmplitude: item.defaultWaveAmplitude,
+    waveCycles: item.defaultWaveCycles,
+    waveAnchor: item.defaultWaveAnchor,
+    wavePath: item.defaultWavePath,
     vectorGeometry: item.defaultVectorGeometry,
   },
   payload: { source: 'shape', item },

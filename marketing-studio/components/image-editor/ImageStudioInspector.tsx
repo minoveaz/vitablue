@@ -53,6 +53,7 @@ import { getBlockCatalogItem, BlockEditableProp } from '../../data/blockCatalog'
 import { InlineTextControls } from './InlineEditableText';
 import { useActiveInlineEditor, useInlineTextFormatting } from './InlineEditorContext';
 import { htmlToPlainText, isTiptapHtml, normalizeTiptapHtml } from '../../utils/tiptapHtml';
+import { getEditableVectorPath, normalizeEditableVectorGeometry } from '../../utils/vectorGeometry';
 
 interface NumberInputProps {
   value?: number;
@@ -60,6 +61,7 @@ interface NumberInputProps {
   max?: number;
   placeholder?: string;
   className?: string;
+  'aria-label'?: string;
   onChange: (val: number | undefined) => void;
 }
 
@@ -69,6 +71,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
   max = 9999,
   placeholder = 'Auto',
   className = '',
+  'aria-label': ariaLabel,
   onChange,
 }) => {
   const [textVal, setTextVal] = useState<string>(value !== undefined ? String(value) : '');
@@ -106,6 +109,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
       pattern="[0-9]*"
       value={textVal}
       placeholder={placeholder}
+      aria-label={ariaLabel}
       onChange={(e) => {
         const raw = e.target.value;
         setTextVal(raw);
@@ -710,6 +714,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 }
 
   const props = selectedLayer.props as Record<string, unknown>;
+  const geometricShapeType = String(props.shapeType ?? 'rectangle');
   const activeEditor = activeInlineEditor?.editor;
   const activeTextStyle = activeEditor?.getAttributes('textStyle') as {
     color?: string;
@@ -1009,19 +1014,61 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 onChange={(e) => onUpdateLayerProps(selectedLayer.id, { shapeType: e.target.value })}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900 px-2 py-1.5 text-xs text-white focus:border-brand-cyan focus:outline-none"
               >
-                <option value="rounded_rect">🔲 Rectángulo Redondeado</option>
-                <option value="rectangle">⬛ Rectángulo / Cuadrado</option>
-                <option value="full-rectangle">▰ Rectángulo a Sangre</option>
-                <option value="circle">⚪ Círculo / Elipse</option>
-                <option value="top-semicircle">◒ Semicírculo Superior</option>
-                <option value="star">⭐ Estrella (5 Puntas)</option>
-                <option value="triangle">🔺 Triángulo</option>
-                <option value="diamond">💎 Rombo / Diamante</option>
-                <option value="hexagon">⬡ Hexágono</option>
-                <option value="line">➖ Línea Divisoria</option>
-                <option value="arrow">➡️ Flecha Indicadora</option>
-                <option value="speech_bubble">💬 Bocadillo de Diálogo</option>
-                <option value="heart">❤️ Corazón</option>
+                <optgroup label="Básicas">
+                  <option value="rounded_rect">🔲 Rectángulo Redondeado</option>
+                  <option value="rectangle">⬛ Rectángulo / Cuadrado</option>
+                  <option value="full-rectangle">▰ Rectángulo a Sangre</option>
+                  <option value="circle">⚪ Círculo / Elipse</option>
+                  <option value="top-semicircle">◒ Semicírculo Superior</option>
+                  <option value="triangle">🔺 Triángulo</option>
+                  <option value="triangle-down">🔻 Triángulo abajo</option>
+                  <option value="diamond">💎 Rombo / Diamante</option>
+                  <option value="hexagon">⬡ Hexágono</option>
+                </optgroup>
+                <optgroup label="Vectores decorativos">
+                  <option value="ring">⭕ Anillo</option>
+                  <option value="arc">◠ Arco configurable</option>
+                  <option value="curve">〰 Curva Bézier</option>
+                  <option value="carousel-wave">🌊 Onda de carrusel</option>
+                  <option value="blob-1">Blob suave</option>
+                  <option value="blob-2">Blob fluido</option>
+                  <option value="blob-3">Blob nube</option>
+                  <option value="blob-4">Blob editorial</option>
+                  <option value="blob-5">Blob orbital</option>
+                  <option value="blob-6">Blob orgánico</option>
+                </optgroup>
+                <optgroup label="Marcos y máscaras">
+                  <option value="frame-simple">Marco clásico</option>
+                  <option value="frame-rounded">Marco redondeado</option>
+                  <option value="frame-circle">Marco ovalado</option>
+                  <option value="frame-corners">Esquinas editoriales</option>
+                  <option value="frame-polaroid">Marco instantáneo</option>
+                  <option value="frame-film">Tira de película</option>
+                  <option value="mask-circle">Máscara circular</option>
+                  <option value="mask-rounded">Máscara redondeada</option>
+                  <option value="mask-hexagon">Máscara hexagonal</option>
+                  <option value="mask-arch">Máscara de arco</option>
+                  <option value="mask-blob">Máscara orgánica</option>
+                  <option value="mask-heart">Máscara corazón</option>
+                </optgroup>
+                <optgroup label="Líneas y separadores">
+                  <option value="line">➖ Línea divisoria</option>
+                  <option value="line-dashed">Línea discontinua</option>
+                  <option value="line-dotted">Línea punteada</option>
+                  <option value="separator-wave">Separador ondulado</option>
+                  <option value="separator-curve">Separador curvo</option>
+                  <option value="separator-zigzag">Separador zigzag</option>
+                  <option value="separator-dots">Separador de puntos</option>
+                  <option value="separator-diamond">Separador con diamante</option>
+                </optgroup>
+                <optgroup label="Símbolos">
+                  <option value="star">⭐ Estrella (5 puntas)</option>
+                  <option value="star-parametric">Estrella paramétrica</option>
+                  <option value="speech_bubble">💬 Bocadillo de diálogo</option>
+                  <option value="heart">❤️ Corazón</option>
+                  <option value="shield">Escudo protector</option>
+                  <option value="arrow">➡️ Flecha indicadora</option>
+                </optgroup>
               </select>
             </div>
 
@@ -1078,6 +1125,111 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   className="w-full accent-brand-cyan"
                 />
               </div>
+            )}
+
+            {(geometricShapeType === 'ring' || geometricShapeType === 'arc') && (
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Radio ({String(props.ringRadius ?? 42)})
+                  </label>
+                  <input
+                    type="range"
+                    min={5}
+                    max={48}
+                    value={Number(props.ringRadius ?? 42)}
+                    onChange={(event) => onUpdateLayerProps(selectedLayer.id, { ringRadius: Number(event.target.value) })}
+                    className="w-full accent-brand-cyan"
+                  />
+                </div>
+                {geometricShapeType === 'ring' ? (
+                  <div>
+                    <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Grosor ({String(props.ringThickness ?? props.strokeWidth ?? 10)})
+                    </label>
+                    <input
+                      type="range"
+                      min={1}
+                      max={50}
+                      value={Number(props.ringThickness ?? props.strokeWidth ?? 10)}
+                      onChange={(event) => onUpdateLayerProps(selectedLayer.id, { ringThickness: Number(event.target.value) })}
+                      className="w-full accent-brand-cyan"
+                    />
+                  </div>
+                ) : (
+                  <div className="col-span-1 grid grid-cols-2 gap-1">
+                    <NumberInput
+                      aria-label="Ángulo inicial"
+                      value={Number(props.arcStartAngle ?? 180)}
+                      min={-360}
+                      max={360}
+                      onChange={(value) => onUpdateLayerProps(selectedLayer.id, { arcStartAngle: value })}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] text-white"
+                    />
+                    <NumberInput
+                      aria-label="Ángulo final"
+                      value={Number(props.arcEndAngle ?? 360)}
+                      min={-360}
+                      max={360}
+                      onChange={(value) => onUpdateLayerProps(selectedLayer.id, { arcEndAngle: value })}
+                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] text-white"
+                    />
+                    <span className="col-span-2 text-[9px] text-slate-500">Ángulo inicial / final</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {geometricShapeType === 'carousel-wave' && (
+              <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-900/60 p-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {(['waveStartY', 'waveEndY'] as const).map((key) => (
+                    <label key={key} className="text-[10px] text-slate-400">
+                      {key === 'waveStartY' ? 'Inicio (%)' : 'Final (%)'}
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={Number(props[key] ?? 48)}
+                        onChange={(event) => onUpdateLayerProps(selectedLayer.id, { [key]: Number(event.target.value) })}
+                        className="mt-1 w-full accent-brand-cyan"
+                      />
+                    </label>
+                  ))}
+                </div>
+                <label className="block text-[10px] text-slate-400">
+                  Anclaje de la onda
+                  <select
+                    value={String(props.waveAnchor ?? 'bottom')}
+                    onChange={(event) => onUpdateLayerProps(selectedLayer.id, { waveAnchor: event.target.value })}
+                    className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] text-white"
+                  >
+                    <option value="bottom">Abajo (sección)</option>
+                    <option value="top">Arriba (sección)</option>
+                  </select>
+                </label>
+              </div>
+            )}
+
+            {normalizeEditableVectorGeometry(props.vectorGeometry) && (
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Ruta SVG reutilizable
+                <textarea
+                  aria-label="Ruta SVG reutilizable"
+                  rows={3}
+                  value={getEditableVectorPath(normalizeEditableVectorGeometry(props.vectorGeometry)!)}
+                  onChange={(event) => {
+                    const path = event.target.value;
+                    const geometry = normalizeEditableVectorGeometry({
+                      kind: 'path',
+                      path,
+                      closed: /[Zz]\s*$/.test(path.trim()),
+                    });
+                    onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry });
+                  }}
+                  className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 font-mono text-[10px] text-white"
+                />
+              </label>
             )}
           </fieldset>
         )}

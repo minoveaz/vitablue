@@ -140,10 +140,28 @@ describe('Image Studio element catalog', () => {
       'bracket-square-pair',
       'bracket-curly-pair',
       'separator-wave',
+      'separator-curve',
       'separator-zigzag',
       'separator-dots',
       'separator-diamond',
     ].forEach((shapeType) => expect(shapeTypes).toContain(shapeType));
+    expect(shapeTypes).toContain('ring');
+    ['blob-4', 'blob-5', 'blob-6', 'carousel-wave']
+      .forEach((shapeType) => expect(shapeTypes).toContain(shapeType));
+  });
+
+  it('registers advanced reusable shape resources with editable geometry metadata', () => {
+    const advanced = ELEMENT_CATALOG_RESOURCES.filter((resource) => (
+      resource.id.includes('line-ring')
+      || resource.id.includes('carousel-wave')
+      || resource.id.includes('separator-curve')
+    ));
+    expect(advanced.length).toBe(3);
+    advanced.forEach((resource) => {
+      expect(resource.kind).toMatch(/shape|line/);
+      expect(resource.preview.renderer).toBe('graphic');
+      expect(resource.editableFields).toContain('vectorGeometry');
+    });
   });
 
   it('gives every static catalog resource valid preview metadata and a renderable shared preview', () => {

@@ -80,6 +80,7 @@ export type {
   EditableVectorGeometry,
   EditableVectorGeometryInput,
   EditableVectorPoint,
+  EditableVectorShapeOptions,
 } from './vectorGeometry';
 import type { EditableVectorGeometry } from './vectorGeometry';
 
@@ -126,12 +127,17 @@ export type TraditionalShapeType =
   | 'blob-1'
   | 'blob-2'
   | 'blob-3'
+  | 'blob-4'
+  | 'blob-5'
+  | 'blob-6'
   | 'carousel-wave'
+  | 'ring'
   | 'bracket-square-left'
   | 'bracket-square-right'
   | 'bracket-square-pair'
   | 'bracket-curly-pair'
   | 'separator-wave'
+  | 'separator-curve'
   | 'separator-zigzag'
   | 'separator-dots'
   | 'separator-diamond'
@@ -176,6 +182,16 @@ export type ElementPreviewMetadata =
       sides?: number;
       points?: number;
       innerRadius?: number;
+      ringRadius?: number;
+      ringThickness?: number;
+      arcStartAngle?: number;
+      arcEndAngle?: number;
+      waveStartY?: number;
+      waveEndY?: number;
+      waveAmplitude?: number;
+      waveCycles?: number;
+      waveAnchor?: 'top' | 'bottom';
+      wavePath?: string;
       /** Optional persisted geometry override shared by all vector resources. */
       vectorGeometry?: EditableVectorGeometry;
     }

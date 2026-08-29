@@ -43,6 +43,16 @@ export const ElementResourcePreview: React.FC<{
           sides={preview.sides}
           points={preview.points}
           innerRadius={preview.innerRadius}
+          ringRadius={preview.ringRadius}
+          ringThickness={preview.ringThickness}
+          arcStartAngle={preview.arcStartAngle}
+          arcEndAngle={preview.arcEndAngle}
+          waveStartY={preview.waveStartY}
+          waveEndY={preview.waveEndY}
+          waveAmplitude={preview.waveAmplitude}
+          waveCycles={preview.waveCycles}
+          waveAnchor={preview.waveAnchor}
+          wavePath={preview.wavePath}
           vectorGeometry={preview.vectorGeometry}
         />
       </div>

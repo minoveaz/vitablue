@@ -1,6 +1,6 @@
 import { ImageLayer } from '../types/imageStudio';
 import { ElementCatalogMetadata } from '../types/elementCatalog';
-import { normalizeEditableVectorGeometry } from './vectorGeometry';
+import { normalizeEditableVectorGeometry, normalizeGeometricShapeProps } from './vectorGeometry';
 
 export interface SavedCustomElement {
   id: string;
@@ -23,15 +23,18 @@ const normalizeSavedLayer = (layer: ImageLayer): ImageLayer => {
       normalizeSavedLayer(child as ImageLayer),
     );
   }
+  const normalizedProps = layer.blockType === 'GeometricShape'
+    ? normalizeGeometricShapeProps(props)
+    : props;
   const vectorGeometry = normalizeEditableVectorGeometry(
     layer.vectorGeometry ?? props.vectorGeometry,
   );
-  if (vectorGeometry) props.vectorGeometry = vectorGeometry;
-  else delete props.vectorGeometry;
+  if (vectorGeometry) normalizedProps.vectorGeometry = vectorGeometry;
+  else delete normalizedProps.vectorGeometry;
   const { vectorGeometry: _storedVectorGeometry, ...layerWithoutVectorGeometry } = layer;
   return {
     ...layerWithoutVectorGeometry,
-    props,
+    props: normalizedProps,
     ...(vectorGeometry ? { vectorGeometry } : {}),
   };
 };
@@ -76,6 +79,9 @@ export function saveCustomElement(layer: ImageLayer, customTitle?: string): Save
   } else {
     delete snapshot.vectorGeometry;
     delete snapshot.props.vectorGeometry;
+  }
+  if (snapshot.blockType === 'GeometricShape') {
+    snapshot.props = normalizeGeometricShapeProps(snapshot.props);
   }
   
   let category: SavedCustomElement['category'] = 'card';

@@ -19,7 +19,7 @@ import {
 } from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
-import { normalizeEditableVectorGeometry } from '../utils/vectorGeometry';
+import { normalizeEditableVectorGeometry, normalizeGeometricShapeProps } from '../utils/vectorGeometry';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
 import {
@@ -730,7 +730,12 @@ export function useImageProjectEditor(
       ['text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText', 'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message'].forEach((key) => {
         if (typeof normalizedPatch[key] === 'string') normalizedPatch[key] = normalizeTiptapHtml(normalizedPatch[key] as string);
       });
-      const updated: ImageLayer = { ...layer, props: { ...layer.props, ...normalizedPatch } };
+      const updated: ImageLayer = {
+        ...layer,
+        props: layer.blockType === 'GeometricShape'
+          ? normalizeGeometricShapeProps({ ...layer.props, ...normalizedPatch })
+          : { ...layer.props, ...normalizedPatch },
+      };
 
       if ('vectorGeometry' in patch) {
         const vectorGeometry = normalizeEditableVectorGeometry(patch.vectorGeometry);
@@ -1375,6 +1380,32 @@ export function useImageProjectEditor(
         'arrow-both': 'Flecha Bidireccional',
         speech_bubble: 'Bocadillo de Diálogo',
         shield: 'Escudo Protector',
+        'blob-1': 'Blob suave',
+        'blob-2': 'Blob fluido',
+        'blob-3': 'Blob nube',
+        'blob-4': 'Blob editorial',
+        'blob-5': 'Blob orbital',
+        'blob-6': 'Blob orgánico',
+        'carousel-wave': 'Onda de carrusel',
+        ring: 'Anillo vectorial',
+        arc: 'Arco configurable',
+        'separator-wave': 'Separador ondulado',
+        'separator-curve': 'Separador curvo',
+        'separator-zigzag': 'Separador zigzag',
+        'separator-dots': 'Separador de puntos',
+        'separator-diamond': 'Separador con diamante',
+        'frame-simple': 'Marco clásico',
+        'frame-rounded': 'Marco redondeado',
+        'frame-circle': 'Marco ovalado',
+        'frame-corners': 'Esquinas editoriales',
+        'frame-polaroid': 'Marco instantáneo',
+        'frame-film': 'Tira de película',
+        'mask-circle': 'Máscara circular',
+        'mask-rounded': 'Máscara redondeada',
+        'mask-hexagon': 'Máscara hexagonal',
+        'mask-arch': 'Máscara de arco',
+        'mask-blob': 'Máscara orgánica',
+        'mask-heart': 'Máscara corazón',
       };
       initialTitle = shapeNames[type] ? `Forma: ${shapeNames[type]}` : `Forma: ${type}`;
     }
@@ -1389,6 +1420,9 @@ export function useImageProjectEditor(
     const vectorGeometry = normalizeEditableVectorGeometry(initialProps.vectorGeometry);
     if (vectorGeometry) initialProps.vectorGeometry = vectorGeometry;
     else delete initialProps.vectorGeometry;
+    if (blockType === 'GeometricShape') {
+      initialProps = normalizeGeometricShapeProps(initialProps);
+    }
 
     let width = typeof defaultProps?.width === 'number'
       ? defaultProps.width
