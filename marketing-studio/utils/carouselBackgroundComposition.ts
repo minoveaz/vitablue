@@ -290,8 +290,7 @@ const normalizeTrajectoryPoints = (
       x: clamp(Number(point.x), 0, 1),
       y: clamp(Number(point.y), 0, 1),
     }))
-    .sort((left, right) => left.x - right.x)
-    .filter((point, index, sorted) => index === 0 || point.x !== sorted[index - 1].x);
+    .sort((left, right) => left.x - right.x);
   return normalized.length >= 2 ? normalized : undefined;
 };
 
@@ -625,6 +624,7 @@ export function generateCarouselBackgroundLayers(
   const oceanWavePath = 'M0 82 C12 72 20 76 30 78 C40 80 44 68 52 54 C60 40 68 38 76 52 C84 66 88 72 100 68 L100 100 L0 100Z';
   const amberWavePath = 'M0 62 C10 62 16 70 24 82 C32 94 38 92 44 78 C50 64 54 36 64 28 C74 20 82 42 88 58 C94 74 98 78 100 78 L100 100 L0 100Z';
   const editorialWavePath = 'M0 76 C12 70 22 74 32 84 C42 94 48 92 56 78 C64 64 70 42 78 40 C86 38 92 58 100 68 L100 100 L0 100Z';
+  const blobPath = 'M0 72 C12 58 22 62 30 72 C38 82 42 92 52 86 C62 80 64 58 74 52 C84 46 92 58 100 68 L100 100 L0 100Z';
   const customWavePath = composition.vectorGeometry
     ? getEditableVectorPath(composition.vectorGeometry)
     : composition.trajectory.points?.length
@@ -659,7 +659,9 @@ export function generateCarouselBackgroundLayers(
           fill: composition.colorVariant === 'white'
             ? fill
             : palette.primary,
-          wavePath: customWavePath ?? (composition.colorVariant === 'white'
+          wavePath: customWavePath ?? (composition.shape === 'blob'
+            ? blobPath
+            : composition.colorVariant === 'white'
             ? whiteWavePath
             : composition.colorVariant === 'midnight'
               ? midnightWavePath
@@ -669,7 +671,9 @@ export function generateCarouselBackgroundLayers(
                   ? amberWavePath
                   : editorialWavePath),
           vectorGeometry: composition.vectorGeometry ?? createEditableVectorPathGeometry(
-            customWavePath ?? (composition.colorVariant === 'white'
+            customWavePath ?? (composition.shape === 'blob'
+              ? blobPath
+              : composition.colorVariant === 'white'
               ? whiteWavePath
               : composition.colorVariant === 'midnight'
                 ? midnightWavePath
@@ -916,14 +920,44 @@ export const regenerateCarouselBackground = (
     },
     ...(mergedSafeZone ? { safeZone: mergedSafeZone } : {}),
   });
+  // Projects can be opened by integrations that bypass the React editor. Keep
+  // the same brand guardrails at this boundary as the interactive path.
+  const brandConfig = project.brandCompositionConfig;
+  const allowedPalettes = Array.isArray(brandConfig?.allowedPalettes)
+    ? brandConfig.allowedPalettes
+    : undefined;
+  const allowedPresets = Array.isArray(brandConfig?.allowedPresets)
+    ? brandConfig.allowedPresets
+    : undefined;
+  const brandSafeComposition = resolveCarouselBackgroundComposition({
+    ...resolved,
+    colorVariant: !brandConfig || !allowedPalettes
+      ? resolved.colorVariant
+      : allowedPalettes.includes(resolved.colorVariant)
+      ? resolved.colorVariant
+      : allowedPalettes[0] ?? resolved.colorVariant,
+    presetId: !brandConfig || !allowedPresets
+      ? resolved.presetId
+      : allowedPresets.includes(resolved.presetId as CarouselBackgroundPresetId)
+      ? resolved.presetId
+      : undefined,
+    intensity: Math.min(
+      resolved.intensity,
+      brandConfig && Number.isFinite(brandConfig.intensityCap) ? brandConfig.intensityCap : resolved.intensity,
+    ),
+    scale: Math.min(
+      resolved.scale,
+      brandConfig && Number.isFinite(brandConfig.scaleCap) ? brandConfig.scaleCap : resolved.scale,
+    ),
+  });
   const generated = generateCarouselBackgroundLayers({
     projectId: project.id,
     geometry,
-    composition: resolved,
+    composition: brandSafeComposition,
   });
   return {
     ...project,
-    carouselBackground: resolved,
+    carouselBackground: brandSafeComposition,
     layers: [...project.layers.filter((layer) => !isCarouselBackgroundLayer(layer)), ...generated],
   };
 };

@@ -10,10 +10,9 @@ import type {
   CarouselBackgroundShapeType,
   CarouselBackgroundTrajectoryPoint,
 } from '../../../types/carouselBackgroundComposition';
-import { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from '../../../types/carouselBackgroundComposition';
+import type { BrandVisualCompositionConfigInput } from '../../../types/carouselCompositionIdentity';
 import {
   CAROUSEL_BACKGROUND_PALETTES,
-  CAROUSEL_BACKGROUND_PRESETS,
   applyCarouselBackgroundPresetToComposition,
   generateCarouselBackgroundLayers,
   createCarouselBackgroundBezierPath,
@@ -21,6 +20,13 @@ import {
   isCarouselBackgroundLayer,
   resolveCarouselBackgroundComposition,
 } from '../../../utils/carouselBackgroundComposition';
+import {
+  constrainCarouselCompositionToBrand,
+  filterCarouselBackgroundPalettes,
+  filterCarouselBackgroundPresets,
+  filterCarouselCompositionAccents,
+  normalizeBrandVisualCompositionConfig,
+} from '../../../utils/carouselCompositionIdentity';
 import {
   generateCarouselCompositionProposals,
   type CarouselCompositionAccent,
@@ -33,6 +39,7 @@ import { ImageLayerBlockRenderer } from '../blocks/BlockRenderer';
 export interface ImageStudioBackgroundDrawerProps {
   project: ImageProject;
   onRegenerateBackground: (composition: CarouselBackgroundCompositionInput) => void;
+  onUpdateBrandCompositionConfig?: (patch: BrandVisualCompositionConfigInput) => void;
 }
 
 const VARIANT_LABELS: Record<CarouselBackgroundColorVariant, string> = {
@@ -206,25 +213,63 @@ const PresetPreview: React.FC<{ preset: CarouselBackgroundCompositionPreset }> =
   );
 };
 
+const AssistantProposalPreview: React.FC<{ proposal: { composition: CarouselBackgroundCompositionInput } }> = ({ proposal }) => {
+  const composition = resolveCarouselBackgroundComposition(proposal.composition);
+  const points = getCarouselBackgroundTrajectoryPoints(composition.trajectory);
+  const path = createCarouselBackgroundBezierPath(points);
+  const palette = CAROUSEL_BACKGROUND_PALETTES[composition.colorVariant];
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-700/80" style={{ background: palette.background }} aria-hidden="true">
+      <svg viewBox="0 0 100 100" className="h-24 w-full">
+        <path d={`${path} L 100 100 L 0 100 Z`} fill={palette.primary} opacity="0.92" />
+        <path d={path} fill="none" stroke={palette.muted} strokeWidth="3" strokeLinecap="round" />
+        <line x1="40" y1="0" x2="40" y2="100" stroke={palette.muted} strokeDasharray="2 3" opacity="0.7" />
+        <circle cx="50" cy="68" r="10" fill={palette.muted} opacity="0.9" />
+        <circle cx="78" cy="68" r="8" fill={palette.muted} opacity="0.85" />
+      </svg>
+    </div>
+  );
+};
+
 export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerProps> = ({
   project,
   onRegenerateBackground,
+  onUpdateBrandCompositionConfig,
 }) => {
   const [showContent, setShowContent] = useState(true);
   const [draggedTrajectoryPoint, setDraggedTrajectoryPoint] = useState<number | null>(null);
   const [activeTrajectoryPoint, setActiveTrajectoryPoint] = useState<number | null>(null);
-  const composition = resolveCarouselBackgroundComposition(project.carouselBackground);
+  const brandConfig = useMemo(
+    () => normalizeBrandVisualCompositionConfig(project.brandCompositionConfig),
+    [project.brandCompositionConfig],
+  );
+  const allowedPalettes = useMemo(() => filterCarouselBackgroundPalettes(brandConfig), [brandConfig]);
+  const allowedPresets = useMemo(() => filterCarouselBackgroundPresets(brandConfig), [brandConfig]);
+  const enabledAccents = useMemo(() => filterCarouselCompositionAccents(brandConfig), [brandConfig]);
+  const composition = useMemo(
+    () => constrainCarouselCompositionToBrand(project.carouselBackground, brandConfig),
+    [brandConfig, project.carouselBackground],
+  );
+  const availableStyles = useMemo(
+    () => ASSISTANT_STYLE_OPTIONS.filter((option) => brandConfig.preferredStyleFamilies.includes(option.id)),
+    [brandConfig],
+  );
   const isCarousel = Boolean(project.carouselConfig?.enabled || project.preset.isCarousel);
   const slideCount = project.carouselConfig?.slideCount ?? project.preset.defaultSlideCount ?? 1;
-  const [assistantVisualStyle, setAssistantVisualStyle] = useState<CarouselCompositionVisualStyle>('editorial');
+  const [assistantVisualStyle, setAssistantVisualStyle] = useState<CarouselCompositionVisualStyle>(
+    availableStyles[0]?.id ?? 'editorial',
+  );
   const [assistantDominantZone, setAssistantDominantZone] = useState<CarouselCompositionDominantZone>('balanced');
   const [assistantContinuity, setAssistantContinuity] = useState<CarouselBackgroundContinuity>(composition.continuity);
-  const [assistantColorPalette, setAssistantColorPalette] = useState<CarouselBackgroundColorVariant>(composition.colorVariant);
-  const [assistantIntensity, setAssistantIntensity] = useState(composition.intensity);
-  const [assistantScale, setAssistantScale] = useState(composition.scale);
+  const [assistantColorPalette, setAssistantColorPalette] = useState<CarouselBackgroundColorVariant>(
+    allowedPalettes.includes(composition.colorVariant) ? composition.colorVariant : allowedPalettes[0],
+  );
+  const [assistantIntensity, setAssistantIntensity] = useState(Math.min(composition.intensity, brandConfig.intensityCap));
+  const [assistantScale, setAssistantScale] = useState(Math.min(composition.scale, brandConfig.scaleCap));
   const [assistantAccents, setAssistantAccents] = useState<CarouselCompositionAccent[]>([]);
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [assistantStatus, setAssistantStatus] = useState<string | null>(null);
+  const [savedCompositionName, setSavedCompositionName] = useState('');
 
   const assistantProposals = useMemo(
     () =>
@@ -238,6 +283,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
         scale: assistantScale,
         selectedAccents: assistantAccents,
         currentComposition: composition,
+        brandCompositionConfig: brandConfig,
       }),
     [
       assistantAccents,
@@ -247,10 +293,31 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
       assistantIntensity,
       assistantScale,
       assistantVisualStyle,
+      brandConfig,
       composition,
       slideCount,
     ],
   );
+
+  useEffect(() => {
+    if (!availableStyles.some((option) => option.id === assistantVisualStyle)) {
+      setAssistantVisualStyle(availableStyles[0]?.id ?? 'editorial');
+    }
+    if (!allowedPalettes.includes(assistantColorPalette)) {
+      setAssistantColorPalette(allowedPalettes[0]);
+    }
+    setAssistantAccents((current) => current.filter((accent) => enabledAccents.includes(accent)));
+    setAssistantIntensity((current) => Math.min(current, brandConfig.intensityCap));
+    setAssistantScale((current) => Math.min(current, brandConfig.scaleCap));
+  }, [
+    allowedPalettes,
+    assistantColorPalette,
+    assistantVisualStyle,
+    availableStyles,
+    brandConfig.intensityCap,
+    brandConfig.scaleCap,
+    enabledAccents,
+  ]);
 
   useEffect(() => {
     if (!assistantProposals.some((proposal) => proposal.id === selectedProposalId)) {
@@ -259,9 +326,28 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
   }, [assistantProposals, selectedProposalId]);
 
   const toggleAssistantAccent = (accent: CarouselCompositionAccent) => {
-    setAssistantAccents((current) =>
-      current.includes(accent) ? current.filter((item) => item !== accent) : [...current, accent],
-    );
+    setAssistantAccents((current) => {
+      const nextAccents = current.includes(accent) ? current.filter((item) => item !== accent) : [...current, accent];
+      const proposals = generateCarouselCompositionProposals({
+        slideCount,
+        visualStyle: assistantVisualStyle,
+        dominantZone: assistantDominantZone,
+        continuity: assistantContinuity,
+        colorPalette: assistantColorPalette,
+        intensity: assistantIntensity,
+        scale: assistantScale,
+        selectedAccents: nextAccents,
+        currentComposition: composition,
+        brandCompositionConfig: brandConfig,
+      });
+      const selected = proposals.find((proposal) => proposal.id === selectedProposalId) ?? proposals[0];
+      if (selected) {
+        setSelectedProposalId(selected.id);
+        onRegenerateBackground(selected.composition);
+        setAssistantStatus(`Aplicada: ${selected.label}. Tus capas editables se conservaron.`);
+      }
+      return nextAccents;
+    });
   };
 
   const applyAssistantProposal = () => {
@@ -291,6 +377,22 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
     updateTrajectoryPoints([...trajectoryPoints.slice(0, -1), { x, y }, last]);
   };
   const resetTrajectory = () => update({ trajectory: { points: undefined } });
+  const saveCurrentComposition = () => {
+    if (!onUpdateBrandCompositionConfig) return;
+    const name = savedCompositionName.trim() || `Composición ${brandConfig.savedCompositions.length + 1}`;
+    const saved = {
+      id: `brand-composition-${Date.now().toString(36)}`,
+      name,
+      composition,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    onUpdateBrandCompositionConfig({
+      savedCompositions: [...brandConfig.savedCompositions, saved],
+    });
+    setSavedCompositionName('');
+    setAssistantStatus(`Guardada: ${name}.`);
+  };
 
   if (!isCarousel) {
     return (
@@ -332,7 +434,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
               onChange={(event) => setAssistantVisualStyle(event.target.value as CarouselCompositionVisualStyle)}
               className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-2 text-xs font-semibold text-white outline-none focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/30"
             >
-              {ASSISTANT_STYLE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+              {availableStyles.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
             </select>
           </label>
           <label className="block">
@@ -348,14 +450,17 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
         </div>
 
         <fieldset className="mt-3">
-          <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Paleta</legend>
+          <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Color de composición</legend>
           <div className="grid grid-cols-3 gap-1.5">
-            {CAROUSEL_BACKGROUND_COLOR_VARIANTS.map((variant) => (
+            {allowedPalettes.map((variant) => (
               <button
                 key={variant}
                 type="button"
                 aria-pressed={assistantColorPalette === variant}
-                onClick={() => setAssistantColorPalette(variant)}
+                onClick={() => {
+                  setAssistantColorPalette(variant);
+                  update({ colorVariant: variant });
+                }}
                 className={`flex min-w-0 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-[10px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 ${
                   assistantColorPalette === variant ? 'border-brand-cyan bg-primary/30 text-white' : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-600 hover:text-white'
                 }`}
@@ -391,20 +496,20 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             <span className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
               <span>Intensidad</span><output className="font-mono text-brand-cyan">{formatPercent(assistantIntensity)}</output>
             </span>
-            <input type="range" min="0" max="1" step="0.01" value={assistantIntensity} onChange={(event) => setAssistantIntensity(Number(event.target.value))} className="w-full accent-brand-cyan" />
+            <input type="range" min="0" max={brandConfig.intensityCap} step="0.01" value={Math.min(assistantIntensity, brandConfig.intensityCap)} onChange={(event) => setAssistantIntensity(Number(event.target.value))} className="w-full accent-brand-cyan" />
           </label>
           <label className="block">
             <span className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
               <span>Escala</span><output className="font-mono text-brand-cyan">{assistantScale.toFixed(2)}×</output>
             </span>
-            <input type="range" min="0.25" max="2" step="0.05" value={assistantScale} onChange={(event) => setAssistantScale(Number(event.target.value))} className="w-full accent-brand-cyan" />
+            <input type="range" min="0.25" max={brandConfig.scaleCap} step="0.05" value={Math.min(assistantScale, brandConfig.scaleCap)} onChange={(event) => setAssistantScale(Number(event.target.value))} className="w-full accent-brand-cyan" />
           </label>
         </div>
 
         <fieldset className="mt-3">
           <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Acentos seleccionados</legend>
           <div className="grid gap-1.5 sm:grid-cols-2">
-            {ASSISTANT_ACCENT_OPTIONS.map((accent) => {
+            {ASSISTANT_ACCENT_OPTIONS.filter((accent) => enabledAccents.includes(accent.id)).map((accent) => {
               const checked = assistantAccents.includes(accent.id);
               return (
                 <label key={accent.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-2 py-2 transition-colors ${checked ? 'border-amber-300/60 bg-amber-300/10' : 'border-slate-800 bg-slate-900/70 hover:border-slate-600'}`}>
@@ -422,17 +527,20 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
         <div className="mt-4 grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Propuestas de composición">
           {assistantProposals.map((proposal, index) => {
             const selected = proposal.id === selectedProposalId;
-            const previewProject = { ...project, carouselBackground: proposal.composition };
             return (
               <article key={proposal.id} className={`min-w-0 rounded-xl border p-2 transition-colors ${selected ? 'border-brand-cyan bg-primary/20' : 'border-slate-800 bg-slate-900/70'}`}>
                 <button
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  onClick={() => setSelectedProposalId(proposal.id)}
+                  onClick={() => {
+                    setSelectedProposalId(proposal.id);
+                    onRegenerateBackground(proposal.composition);
+                    setAssistantStatus(`Aplicada: ${proposal.label}. Tus capas editables se conservaron.`);
+                  }}
                   className="block w-full text-left focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
                 >
-                  <BackgroundPreview project={previewProject} composition={proposal.composition} showContent={showContent} />
+                  <AssistantProposalPreview proposal={proposal} />
                   <span className="mt-2 flex items-center justify-between gap-1 text-[10px] font-bold text-white">
                     <span className="truncate">{index + 1}. {proposal.label}</span>
                     {selected && <Check className="size-3 shrink-0 text-brand-cyan" />}
@@ -474,29 +582,6 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
         </div>
 
         <div className="space-y-3">
-          <fieldset>
-            <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">Variante</legend>
-            <div className="grid grid-cols-3 gap-1.5">
-              {CAROUSEL_BACKGROUND_COLOR_VARIANTS.map((variant) => (
-                <button
-                  key={variant}
-                  type="button"
-                  aria-pressed={composition.colorVariant === variant}
-                  onClick={() => update({ colorVariant: variant })}
-                  className={`flex min-w-0 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-[10px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 ${
-                    composition.colorVariant === variant
-                      ? 'border-brand-cyan bg-primary/30 text-white'
-                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-600 hover:text-white'
-                  }`}
-                >
-                  <span className={`size-2.5 rounded-full border border-white/30 ${VARIANT_SWATCHES[variant]}`} />
-                  <span className="truncate">{VARIANT_LABELS[variant]}</span>
-                  {composition.colorVariant === variant && <Check className="size-3 shrink-0 text-brand-cyan" />}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
           <label className="block">
             <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Forma
@@ -522,7 +607,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             <input
               type="range"
               min="0"
-              max="1"
+              max={brandConfig.intensityCap}
               step="0.01"
               value={composition.intensity}
               onChange={(event) => update({ intensity: Number(event.target.value) })}
@@ -538,7 +623,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             <input
               type="range"
               min="0.25"
-              max="2"
+              max={brandConfig.scaleCap}
               step="0.05"
               value={composition.scale}
               onChange={(event) => update({ scale: Number(event.target.value) })}
@@ -570,13 +655,13 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
           <fieldset className="border-t border-slate-800 pt-3">
             <legend className="mb-1.5 flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
               <span className="inline-flex items-center gap-1.5"><Sparkles className="size-3 text-amber-300" /> Presets de composición</span>
-              <span className="font-normal normal-case tracking-normal text-slate-500">7 estilos</span>
+              <span className="font-normal normal-case tracking-normal text-slate-500">{allowedPresets.length} estilos</span>
             </legend>
             <p className="mb-2 text-[10px] leading-relaxed text-slate-500">
               Aplica una dirección visual completa. Tus textos, imágenes y zonas seguras se conservan.
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {CAROUSEL_BACKGROUND_PRESETS.map((preset) => {
+              {allowedPresets.map((preset) => {
                 const isActive = composition.presetId === preset.id;
                 return (
                   <button
@@ -605,6 +690,58 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
               })}
             </div>
           </fieldset>
+
+          {onUpdateBrandCompositionConfig && (
+            <section className="border-t border-slate-800 pt-3" aria-labelledby="saved-compositions-title">
+              <div className="flex items-center justify-between gap-2">
+                <h3 id="saved-compositions-title" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Composiciones guardadas
+                </h3>
+                <span className="text-[9px] text-slate-500">{brandConfig.savedCompositions.length}/50</span>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <input
+                  value={savedCompositionName}
+                  onChange={(event) => setSavedCompositionName(event.target.value)}
+                  placeholder="Nombre (opcional)"
+                  aria-label="Nombre de la composición guardada"
+                  className="min-w-0 flex-1 rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-2 text-xs text-white outline-none focus:border-brand-cyan focus:ring-2 focus:ring-brand-cyan/30"
+                />
+                <button
+                  type="button"
+                  onClick={saveCurrentComposition}
+                  className="rounded-lg bg-amber-400 px-2.5 py-2 text-[10px] font-black text-primary-dark hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/60"
+                >
+                  Guardar actual
+                </button>
+              </div>
+              {brandConfig.savedCompositions.length > 0 && (
+                <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                  {brandConfig.savedCompositions.map((saved) => (
+                    <div key={saved.id} className="flex min-w-0 items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/70 p-1.5">
+                      <button
+                        type="button"
+                        onClick={() => update(saved.composition)}
+                        className="min-w-0 flex-1 truncate rounded px-1 text-left text-[10px] font-semibold text-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-cyan/50"
+                      >
+                        {saved.name}
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Eliminar ${saved.name}`}
+                        onClick={() => onUpdateBrandCompositionConfig({
+                          savedCompositions: brandConfig.savedCompositions.filter((item) => item.id !== saved.id),
+                        })}
+                        className="rounded p-1 text-slate-500 hover:text-red-300 focus:outline-none focus:ring-2 focus:ring-red-300/50"
+                      >
+                        <Trash2 className="size-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
 
           <fieldset className="border-t border-slate-800 pt-3">
             <legend className="mb-1.5 flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">

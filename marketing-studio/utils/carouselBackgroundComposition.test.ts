@@ -76,6 +76,7 @@ describe('carousel background composition contracts', () => {
     expect(composition.trajectory.points).toEqual([
       { x: 0, y: 1 },
       { x: 0.5, y: 0.42 },
+      { x: 0.5, y: 0.9 },
       { x: 1, y: 0 },
     ]);
     expect(createCarouselBackgroundBezierPath(composition.trajectory.points!)).toContain('C');
