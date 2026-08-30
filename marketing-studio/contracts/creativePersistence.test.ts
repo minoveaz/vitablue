@@ -121,6 +121,19 @@ describe('Creative Studio persistence contracts', () => {
       createdAt: now,
       updatedAt: now,
     }).success).toBe(true);
+    expect(CreativeAssetSchema.safeParse({
+      id: assetId,
+      organizationId,
+      name: 'URL firmada',
+      type: 'image',
+      storageClass: 'source',
+      origin: 'import',
+      storagePath: 'https://cdn.example.test/image.png?signature=secret',
+      mimeType: 'image/png',
+      sizeBytes: 1,
+      createdAt: now,
+      updatedAt: now,
+    }).success).toBe(false);
 
     expect(CreativeAssetReferenceSchema.safeParse({
       id: versionId,

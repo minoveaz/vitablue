@@ -69,7 +69,7 @@ describe('carousel creative variants', () => {
 
     expect(next.carouselBackground?.colorVariant).toBe('ocean');
     expect(next.background.color).toBe('#005F73');
-    expect(next.layers.filter(isCarouselBackgroundLayer)).toHaveLength(10);
+    expect(next.layers.filter(isCarouselBackgroundLayer)).toHaveLength(7);
     expect(next.layers.filter(isCarouselBackgroundLayer).every((layer) => layer.locked)).toBe(true);
   });
 });

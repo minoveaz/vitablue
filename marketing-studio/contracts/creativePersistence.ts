@@ -9,7 +9,12 @@ const containsInlinePayload = (
   path: (string | number)[] = [],
 ): (string | number)[] | null => {
   if (typeof value === 'string') {
-    return /^(?:data:|blob:)/i.test(value) ? path : null;
+    const normalized = value.trim();
+    return /^(?:data:|blob:)/i.test(normalized)
+      || /(?:^|[/?&])(?:signed|sign)(?:ed)?(?:[/=?&]|$)/i.test(normalized)
+      || /[?&](?:token|signature|expires|x-amz-[^=]+)=/i.test(normalized)
+      ? path
+      : null;
   }
   if (Array.isArray(value)) {
     for (const [index, item] of value.entries()) {
@@ -37,7 +42,7 @@ const BinaryFreeJsonObjectSchema = JsonObjectSchema.superRefine((value, context)
     context.addIssue({
       code: 'custom',
       path,
-      message: 'Inline data/blob URLs are not allowed in creative JSON.',
+      message: 'Inline data/blob and signed URLs are not allowed in creative JSON.',
     });
   }
 });
@@ -218,8 +223,13 @@ export const CreativeAssetSchema = z.object({
   origin: CreativeAssetOriginSchema,
   status: CreativeAssetStatusSchema.default('draft'),
   storagePath: z.string().trim().min(1).max(1024).refine(
-    (path) => !/^(?:data:|blob:)/i.test(path),
-    'Assets must be addressed by a Storage path, not an inline payload.',
+    (path) =>
+      !/^(?:data|blob|https?|file|javascript):/i.test(path) &&
+      !path.startsWith('//') &&
+      !/[?#]/.test(path) &&
+      !/(?:^|[/?&])(?:signed|sign)(?:ed)?(?:[/=?&]|$)/i.test(path) &&
+      !/[?&](?:token|signature|expires|x-amz-[^=]+)=/i.test(path),
+    'Assets must be addressed by a logical Storage path, not an inline or signed URL.',
   ),
   mimeType: z.string().trim().min(3).max(120),
   sizeBytes: z.number().int().nonnegative(),

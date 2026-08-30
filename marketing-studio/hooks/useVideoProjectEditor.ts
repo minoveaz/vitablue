@@ -12,15 +12,40 @@ const createSceneId = (scenes: Scene[]): string => {
   return `slide_${index}`;
 };
 
+const cloneVideoValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(cloneVideoValue);
+  if (typeof value === 'object' && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, cloneVideoValue(item)]),
+    );
+  }
+  return value;
+};
+
+const cloneVideoRecord = <T extends object>(value: T): T =>
+  cloneVideoValue(value) as T;
+
+const cloneVideoLayer = (layer: Layer): Layer => ({
+  ...layer,
+  ...(layer.timing ? { timing: { ...layer.timing } } : {}),
+  ...('asset' in layer ? { asset: cloneVideoRecord(layer.asset) } : {}),
+  ...('props' in layer ? { props: cloneVideoRecord(layer.props) } : {}),
+  ...('constraints' in layer && layer.constraints ? { constraints: cloneVideoRecord(layer.constraints) } : {}),
+  ...('highlightWords' in layer && layer.highlightWords ? { highlightWords: [...layer.highlightWords] } : {}),
+});
+
+const cloneVideoScene = (scene: Scene): Scene => ({
+  ...scene,
+  content: cloneVideoRecord(scene.content),
+  ...(scene.transition ? { transition: { ...scene.transition } } : {}),
+  layers: scene.layers.map(cloneVideoLayer),
+});
+
 export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaRejectionProject.scenes) => {
-  const [scenes, setScenes] = useState<Scene[]>(initialScenes);
+  const [scenes, setScenes] = useState<Scene[]>(() => initialScenes.map(cloneVideoScene));
 
   const loadPreset = (presetScenes: Scene[]) => {
-    setScenes(presetScenes.map((scene) => ({
-      ...scene,
-      content: { ...scene.content },
-      layers: [...scene.layers],
-    })));
+    setScenes(presetScenes.map(cloneVideoScene));
   };
 
   const updateScene = (sceneId: string, changes: Partial<Scene>) => {
@@ -132,7 +157,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       const layer = scene.layers.find((l) => l.id === layerId);
       if (!layer) return scene;
       const duplicate: Layer = {
-        ...layer,
+        ...cloneVideoLayer(layer),
         id: `${scene.id}-${layer.type}-${Date.now()}`,
       };
       return { ...scene, layers: [...scene.layers, duplicate] };
@@ -169,10 +194,8 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
 
       const source = current[index];
       const duplicate: Scene = {
-        ...source,
+        ...cloneVideoScene(source),
         id: createSceneId(current),
-        content: { ...source.content },
-        layers: [...source.layers],
       };
 
       return [...current.slice(0, index + 1), duplicate, ...current.slice(index + 1)];
@@ -196,6 +219,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
       const firstPart: Scene = {
         ...source,
         durationInFrames: splitLocalFrame,
+        layers: source.layers.map(cloneVideoLayer),
       };
 
       const secondPart: Scene = {
@@ -203,7 +227,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
         id: createSceneId(current),
         durationInFrames: source.durationInFrames - splitLocalFrame,
         content: { ...source.content },
-        layers: source.layers.map((l) => ({ ...l, id: `${l.id}-split` })),
+        layers: source.layers.map((l) => ({ ...cloneVideoLayer(l), id: `${l.id}-split` })),
       };
 
       return [...current.slice(0, index), firstPart, secondPart, ...current.slice(index + 1)];

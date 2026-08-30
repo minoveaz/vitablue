@@ -75,6 +75,13 @@ import {
   constrainCarouselCompositionToBrand,
   normalizeBrandVisualCompositionConfig,
 } from '../utils/carouselCompositionIdentity';
+import {
+  clearSelection as clearCreativeSelection,
+  createSelectionState,
+  selectLayer as selectCreativeLayer,
+  selectLayers as selectCreativeLayers,
+  toggleLayerSelection as toggleCreativeLayerSelection,
+} from '../../packages/creative-document/src/selection';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...normalizeStoredProject(project),
@@ -109,7 +116,7 @@ export function useImageProjectEditor(
   );
   const selectedLayerId = selectedLayerIds[0] ?? null;
   const setSelectedLayerId = useCallback((id: string | null) => {
-    setSelectedLayerIds(id ? [id] : []);
+    setSelectedLayerIds([...selectCreativeLayers(createSelectionState(), id ? [id] : []).selectedLayerIds]);
   }, []);
 
   const [zoom, setZoom] = useState<number>(0.55);
@@ -368,26 +375,22 @@ export function useImageProjectEditor(
 
   const selectLayer = useCallback((id: string | null, isShift = false) => {
     if (!id) {
-      setSelectedLayerIds([]);
+      setSelectedLayerIds([...clearCreativeSelection().selectedLayerIds]);
       return;
     }
-    if (isShift) {
-      setSelectedLayerIds((prev) =>
-        prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-      );
-    } else {
-      setSelectedLayerIds([id]);
-    }
+    setSelectedLayerIds((prev) => [
+      ...selectCreativeLayer(createSelectionState(prev), id, isShift).selectedLayerIds,
+    ]);
   }, []);
 
   const selectMultipleLayers = useCallback((ids: string[]) => {
-    setSelectedLayerIds(ids);
+    setSelectedLayerIds([...selectCreativeLayers(createSelectionState(), ids).selectedLayerIds]);
   }, []);
 
   const toggleLayerSelection = useCallback((id: string) => {
-    setSelectedLayerIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setSelectedLayerIds((prev) => [
+      ...toggleCreativeLayerSelection(createSelectionState(prev), id).selectedLayerIds,
+    ]);
   }, []);
 
   const deleteSelectedLayers = useCallback((layerIds = selectedLayerIds) => {

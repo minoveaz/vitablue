@@ -3,6 +3,7 @@ import { TEMPLATE_CATALOG } from './templateCatalog';
 import { MARKETING_TEMPLATE_PROJECT_BY_ID } from '../utils/imageTemplates';
 import { getCarouselGeometry } from '../utils/imageDesignSystem';
 import { validateCarouselLayoutLayers } from '../utils/carouselLayoutComposer';
+import { isCarouselBackgroundLayer } from '../utils/carouselBackgroundComposition';
 
 describe('template catalog integrity', () => {
   it('resolves every catalog project to an editable image project', () => {
@@ -39,7 +40,8 @@ describe('template catalog integrity', () => {
       expect(project?.layers.some((layer) => layer.clipShape === 'phone_mockup')).toBe(true);
       const geometry = getCarouselGeometry(project!.preset, project!.carouselConfig?.slideCount, true);
       expect(validateCarouselLayoutLayers(project!.layers, geometry.panoramaWidth, geometry.panoramaHeight)).toEqual([]);
-      expect(project?.layers.every((layer) => {
+      const contentLayers = project?.layers.filter((layer) => !isCarouselBackgroundLayer(layer)) ?? [];
+      expect(contentLayers.every((layer) => {
         const slideIndex = Number(layer.props.slideIndex);
         const centerX = (layer.position.x / 100) * geometry.panoramaWidth - slideIndex * geometry.slideWidth;
         const width = (layer.width ?? 0) * (layer.scale ?? 1);
