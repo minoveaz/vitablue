@@ -1,11 +1,13 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Hand, Maximize2, Minus, MousePointer, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Hand, Maximize2, Minus, MousePointer, PenLine, Plus } from 'lucide-react';
 import type { CarouselGeometry } from '../../types/imageStudio';
 
 interface ImageStageToolbarProps {
   zoom: number;
   onSetZoom: (zoom: number) => void;
   setToolMode: (mode: 'select' | 'hand') => void;
+  rapidDrawMode: 'line' | 'curve' | 'polyline' | null;
+  onSetRapidDrawMode: (mode: 'line' | 'curve' | 'polyline' | null) => void;
   effectiveHandMode: boolean;
   handleResetFit: () => void;
   isCarousel: boolean;
@@ -14,7 +16,7 @@ interface ImageStageToolbarProps {
   onSetCurrentSlide?: (slide: number) => void;
 }
 
-export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSetZoom, setToolMode, effectiveHandMode, handleResetFit, isCarousel, activeSlideIndex, carouselGeometry, onSetCurrentSlide }) => (
+export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSetZoom, setToolMode, rapidDrawMode, onSetRapidDrawMode, effectiveHandMode, handleResetFit, isCarousel, activeSlideIndex, carouselGeometry, onSetCurrentSlide }) => (
   <>
       {/* BOTTOM CONTROLS BAR: TOOL SWITCH & ZOOM & SAFE ZONES (CENTERED) */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center justify-center gap-2 sm:gap-2.5 rounded-2xl border border-slate-800/90 bg-[#001219]/90 p-1.5 shadow-2xl backdrop-blur-xl z-40 text-white text-xs animate-fadeIn">
@@ -49,6 +51,31 @@ export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSe
             <span className="hidden sm:inline">Mano</span>
             <kbd className="text-[9px] font-mono opacity-60">H</kbd>
           </button>
+        </div>
+
+        <div className="h-4 w-px bg-slate-800" />
+
+        <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
+          {([
+            ['line', 'Línea'],
+            ['curve', 'Curva'],
+            ['polyline', 'Multi'],
+          ] as const).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => onSetRapidDrawMode(rapidDrawMode === mode ? null : mode)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                rapidDrawMode === mode
+                  ? 'bg-accent/25 text-amber-200 shadow-xs border border-accent/40'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
+              }`}
+              title={`Dibujar ${label.toLowerCase()} directamente en el lienzo`}
+            >
+              {mode === 'line' && <PenLine className="size-3" />}
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
 
         <div className="h-4 w-px bg-slate-800" />

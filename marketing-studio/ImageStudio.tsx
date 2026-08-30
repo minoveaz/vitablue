@@ -34,6 +34,7 @@ import {
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
 import type { CarouselAspectRatio, CarouselCreativeVariant, ImageCrop, ImageProject } from './types/imageStudio';
+import type { EditableVectorPoint } from './types/vectorGeometry';
 import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
   LayoutTemplate,
@@ -120,6 +121,41 @@ export const ImageStudio: React.FC = () => {
     reloadProject: getCreativeProject,
     onExported: (blob, format) => persistRemoteExport(blob, format),
   });
+  const addBlockLayer = editor.addBlockLayer;
+  const canvasWidth = editor.project.preset.width;
+  const canvasHeight = editor.project.preset.height;
+  const handleCreateVectorLayer = React.useCallback(
+    (points: EditableVectorPoint[], mode: 'line' | 'curve' | 'polyline') => {
+      const minX = Math.min(...points.map((point) => point.x));
+      const maxX = Math.max(...points.map((point) => point.x));
+      const minY = Math.min(...points.map((point) => point.y));
+      const maxY = Math.max(...points.map((point) => point.y));
+      const widthRatio = Math.max(0.04, maxX - minX);
+      const heightRatio = Math.max(mode === 'line' ? 0.02 : 0.04, maxY - minY);
+      const normalizedPoints = points.map((point) => ({
+        x: (point.x - minX) / widthRatio,
+        y: (point.y - minY) / heightRatio,
+      }));
+      addBlockLayer('GeometricShape', {
+        shapeType: mode,
+        fill: 'transparent',
+        stroke: '#94D2BD',
+        strokeWidth: 4,
+        width: Math.round(widthRatio * canvasWidth),
+        height: Math.round(heightRatio * canvasHeight),
+        position: {
+          x: ((minX + maxX) / 2) * 100,
+          y: ((minY + maxY) / 2) * 100,
+        },
+        vectorGeometry: {
+          version: 1,
+          kind: 'bezier',
+          points: normalizedPoints,
+        },
+      });
+    },
+    [addBlockLayer, canvasHeight, canvasWidth],
+  );
   const uploadImage = React.useCallback(
     (file: File) => uploadCreativeImage(file, remoteProject?.id),
     [remoteProject?.id],
@@ -744,6 +780,7 @@ export const ImageStudio: React.FC = () => {
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
           onUpdateLayerProps={editor.updateLayerProps}
+          onCreateVectorLayer={handleCreateVectorLayer}
           cropEditingLayerId={cropEditingLayerId}
           cropDraft={cropDraft}
           onCropChange={setCropDraft}

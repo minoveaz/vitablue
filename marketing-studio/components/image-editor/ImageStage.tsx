@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ImageCrop, ImageProject, ImagePreviewMode } from '../../types/imageStudio';
 import { createDefaultGuideSettings, getCarouselGeometry, getGuideSnapLines, getPlatformGuideProfile, isCarouselProject } from '../../utils/imageDesignSystem';
 import { useImageStageViewport } from '../../hooks/useImageStageViewport';
@@ -9,6 +9,8 @@ import { ImageStageLayers } from './ImageStageLayers';
 import { ImageStageMultiSelection } from './ImageStageMultiSelection';
 import { ImageStageToolbar } from './ImageStageToolbar';
 import type { ImageStageActions } from './ImageStage.types';
+import type { EditableVectorPoint } from '../../types/vectorGeometry';
+import { clientToCanvasPoint } from '../../utils/imageStageGeometry';
 
 export interface ImageStageProps extends ImageStageActions {
   project: ImageProject;
@@ -34,6 +36,7 @@ export interface ImageStageProps extends ImageStageActions {
   onSetZoom: (zoom: number) => void;
   onSetCurrentSlide?: (slide: number) => void;
   onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
+  onCreateVectorLayer?: (points: EditableVectorPoint[], mode: 'line' | 'curve' | 'polyline') => void;
   cropEditingLayerId?: string | null;
   cropDraft?: ImageCrop;
   onCropChange?: (crop: ImageCrop) => void;
@@ -46,11 +49,15 @@ export const ImageStage: React.FC<ImageStageProps> = ({
   onPasteLayerStyle, onToggleFlipHorizontal, onToggleFlipVertical, onNudgeSelectedLayers, onToggleLock,
   onToggleVisibility, onMoveZIndex, onAlignSelectedLayers, onDistributeSelectedLayers, onSelectCanvas, onDeselectAll, onUpdatePosition,
   onUpdateScale, onUpdateWidth, onUpdateHeight, onUpdateRotation, onCommitPositionChange, onFitToCanvas,
-  onUngroupLayer, onSaveToMyDesigns, onDuplicateLayer, onRemoveLayer, onUpdateLayerProps, onSetZoom, onSetCurrentSlide,
+  onUngroupLayer, onSaveToMyDesigns, onDuplicateLayer, onRemoveLayer, onUpdateLayerProps, onSetZoom, onSetCurrentSlide, onCreateVectorLayer,
   cropEditingLayerId, cropDraft, onCropChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasMouseDownPosRef = useRef({ x: 0, y: 0 });
+  const [rapidDrawMode, setRapidDrawMode] = useState<'line' | 'curve' | 'polyline' | null>(null);
+  const [rapidDrawPoints, setRapidDrawPoints] = useState<EditableVectorPoint[]>([]);
+  const rapidDrawPointsRef = useRef<EditableVectorPoint[]>([]);
+  const rapidDrawPointerRef = useRef<number | null>(null);
   const guideSettings = project.guideSettings ?? createDefaultGuideSettings(project.preset);
   const guideProfile = getPlatformGuideProfile(project.preset, guideSettings.profileId);
   const guideSnapLines = getGuideSnapLines(project.preset, guideSettings);
@@ -67,8 +74,62 @@ export const ImageStage: React.FC<ImageStageProps> = ({
     onSelectMultipleLayers, onDeselectAll, onSetCurrentSlide, onUpdatePosition, onUpdateScale, onUpdateWidth,
     onUpdateHeight, onUpdateRotation, onCommitPositionChange,
   });
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (rapidDrawPointerRef.current !== event.pointerId || !canvasRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
+      const point = clientToCanvasPoint(event.clientX, event.clientY, rect, project.preset.width, project.preset.height);
+      const nextPoint = {
+        x: Math.max(0, Math.min(1, point.x / project.preset.width)),
+        y: Math.max(0, Math.min(1, point.y / project.preset.height)),
+      };
+      const previous = rapidDrawPointsRef.current[rapidDrawPointsRef.current.length - 1];
+      if (previous && Math.hypot(nextPoint.x - previous.x, nextPoint.y - previous.y) < 0.006) return;
+      const next = [...rapidDrawPointsRef.current, nextPoint];
+      rapidDrawPointsRef.current = next;
+      setRapidDrawPoints(next);
+    };
+    const handlePointerEnd = (event: PointerEvent) => {
+      if (rapidDrawPointerRef.current !== event.pointerId) return;
+      const points = rapidDrawPointsRef.current;
+      if (points.length >= 2 && rapidDrawMode) onCreateVectorLayer?.(points, rapidDrawMode);
+      rapidDrawPointerRef.current = null;
+      rapidDrawPointsRef.current = [];
+      setRapidDrawPoints([]);
+    };
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerEnd);
+    window.addEventListener('pointercancel', handlePointerEnd);
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerEnd);
+      window.removeEventListener('pointercancel', handlePointerEnd);
+    };
+  }, [canvasRef, onCreateVectorLayer, project.preset.height, project.preset.width, rapidDrawMode]);
+
   const handleCanvasPointerDown = (event: React.PointerEvent) => {
     canvasMouseDownPosRef.current = { x: event.clientX, y: event.clientY };
+    if (rapidDrawMode && event.button === 0 && event.target === event.currentTarget) {
+      event.preventDefault();
+      event.stopPropagation();
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const point = clientToCanvasPoint(event.clientX, event.clientY, rect, project.preset.width, project.preset.height);
+        const initialPoint = {
+          x: Math.max(0, Math.min(1, point.x / project.preset.width)),
+          y: Math.max(0, Math.min(1, point.y / project.preset.height)),
+        };
+        rapidDrawPointerRef.current = event.pointerId;
+        rapidDrawPointsRef.current = [initialPoint];
+        setRapidDrawPoints([initialPoint]);
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          // Pointer capture is unavailable in some embedded contexts.
+        }
+      }
+      return;
+    }
     interactions.handleCanvasPointerDown(event);
   };
   const actions: ImageStageActions = {
@@ -94,12 +155,24 @@ export const ImageStage: React.FC<ImageStageProps> = ({
         </div>
         <div ref={canvasRef} onPointerDown={handleCanvasPointerDown} onClick={(event) => { if (interactions.consumeCanvasClick()) return; const distance = Math.hypot(event.clientX - canvasMouseDownPosRef.current.x, event.clientY - canvasMouseDownPosRef.current.y); if (distance > 5) return; event.stopPropagation(); onSelectCanvas(); }} className={`artboard-bg relative overflow-visible transition-all ${isCanvasSelected ? 'ring-2 ring-primary ring-offset-4 ring-offset-[#001219]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.6)]'}`} style={{ width: `${project.preset.width}px`, height: `${project.preset.height}px`, background: project.background.gradient ?? project.background.color ?? '#001219' }}>
           {interactions.marqueeBox && <div data-export-exclude="true" className="pointer-events-none absolute z-50 rounded-xs border-2 border-dashed border-brand-cyan bg-brand-cyan/20 shadow-[0_0_20px_rgba(148,210,189,0.35)] backdrop-blur-xs transition-none" style={{ left: `${Math.min(interactions.marqueeBox.startX, interactions.marqueeBox.currentX)}px`, top: `${Math.min(interactions.marqueeBox.startY, interactions.marqueeBox.currentY)}px`, width: `${Math.abs(interactions.marqueeBox.currentX - interactions.marqueeBox.startX)}px`, height: `${Math.abs(interactions.marqueeBox.currentY - interactions.marqueeBox.startY)}px` }} />}
+          {rapidDrawPoints.length >= 2 && (
+           <svg data-export-exclude="true" className="pointer-events-none absolute inset-0 z-[45] h-full w-full text-brand-cyan" viewBox="0 0 1 1" preserveAspectRatio="none">
+             <polyline
+               points={rapidDrawPoints.map((point) => `${point.x},${point.y}`).join(' ')}
+               fill="none"
+               stroke="currentColor"
+               strokeWidth="0.006"
+               strokeLinecap="round"
+               strokeLinejoin="round"
+             />
+           </svg>
+          )}
           <ImageStageGuides project={project} previewMode={previewMode} zoom={zoom} showGuideOverlay={showGuideOverlay} isCarousel={isCarousel} activeSlideIndex={activeSlideIndex} carouselGeometry={carouselGeometry} guideSettings={guideSettings} guideProfile={guideProfile} />
           {interactions.guides.map((guide, index) => <div data-export-exclude="true" key={index} className="pointer-events-none absolute z-40" style={{ backgroundColor: guide.color, left: guide.orientation === 'vertical' ? `${guide.points[0]}px` : 0, top: guide.orientation === 'horizontal' ? `${guide.points[1]}px` : 0, width: guide.orientation === 'horizontal' ? '100%' : '1.5px', height: guide.orientation === 'vertical' ? '100%' : '1.5px', boxShadow: `0 0 8px ${guide.color}` }} />)}
           <ImageStageLayers project={project} selectedLayerId={selectedLayerId} selectedLayerIds={selectedLayerIds} effectiveHandMode={viewport.effectiveHandMode} isPanning={viewport.isPanning} draggingLayerId={interactions.draggingLayerId} onUpdateLayerProps={onUpdateLayerProps} cropEditingLayerId={cropEditingLayerId} cropDraft={cropDraft} onCropChange={onCropChange} {...interactions.handlers} />
         </div>
       </div>
-      <ImageStageToolbar zoom={zoom} onSetZoom={onSetZoom} setToolMode={viewport.setToolMode} effectiveHandMode={viewport.effectiveHandMode} handleResetFit={viewport.handleResetFit} isCarousel={isCarousel} activeSlideIndex={activeSlideIndex} carouselGeometry={carouselGeometry} onSetCurrentSlide={onSetCurrentSlide} />
+      <ImageStageToolbar zoom={zoom} onSetZoom={onSetZoom} setToolMode={viewport.setToolMode} rapidDrawMode={rapidDrawMode} onSetRapidDrawMode={setRapidDrawMode} effectiveHandMode={viewport.effectiveHandMode} handleResetFit={viewport.handleResetFit} isCarousel={isCarousel} activeSlideIndex={activeSlideIndex} carouselGeometry={carouselGeometry} onSetCurrentSlide={onSetCurrentSlide} />
     </div>
   );
 };

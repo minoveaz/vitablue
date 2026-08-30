@@ -229,7 +229,7 @@ const VectorPointsEditor: React.FC<{
       </div>
       <div className="space-y-1.5">
         {points.map((point, index) => (
-          <div key={`${index}-${point.x}-${point.y}`} className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-1">
+          <div key={index} className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-1">
             <span className="w-5 text-[9px] text-slate-500">P{index + 1}</span>
             <NumberInput aria-label={`Punto ${index + 1} X`} value={Math.round(point.x * 100)} min={0} max={100} onChange={(value) => updatePoint(index, 'x', value)} className="w-full rounded-md border border-slate-800 bg-slate-950 px-1.5 py-1 text-[10px] text-white" />
             <NumberInput aria-label={`Punto ${index + 1} Y`} value={Math.round(point.y * 100)} min={0} max={100} onChange={(value) => updatePoint(index, 'y', value)} className="w-full rounded-md border border-slate-800 bg-slate-950 px-1.5 py-1 text-[10px] text-white" />
@@ -239,6 +239,45 @@ const VectorPointsEditor: React.FC<{
       </div>
       <p className="text-[9px] text-slate-500">Coordenadas relativas al lienzo (0–100%).</p>
     </div>
+  );
+};
+
+const VectorPathEditor: React.FC<{
+  geometry: EditableVectorGeometry;
+  onChange: (geometry: EditableVectorGeometry) => void;
+}> = ({ geometry, onChange }) => {
+  const [draft, setDraft] = useState(() => getEditableVectorPath(geometry));
+  const focusedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!focusedRef.current) setDraft(getEditableVectorPath(geometry));
+  }, [geometry]);
+
+  return (
+    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      Ruta SVG reutilizable
+      <textarea
+        aria-label="Ruta SVG reutilizable"
+        rows={3}
+        value={draft}
+        onFocus={() => { focusedRef.current = true; }}
+        onChange={(event) => {
+          const path = event.target.value;
+          setDraft(path);
+          const nextGeometry = normalizeEditableVectorGeometry({
+            kind: 'path',
+            path,
+            closed: /[Zz]\s*$/.test(path.trim()),
+          });
+          if (nextGeometry) onChange(nextGeometry);
+        }}
+        onBlur={() => {
+          focusedRef.current = false;
+          setDraft(getEditableVectorPath(geometry));
+        }}
+        className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 font-mono text-[10px] text-white"
+      />
+    </label>
   );
 };
 
@@ -1390,24 +1429,10 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                   geometry={normalizeEditableVectorGeometry(props.vectorGeometry)!}
                   onChange={(geometry) => onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry })}
                 />
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Ruta SVG reutilizable
-                  <textarea
-                    aria-label="Ruta SVG reutilizable"
-                    rows={3}
-                    value={getEditableVectorPath(normalizeEditableVectorGeometry(props.vectorGeometry)!)}
-                    onChange={(event) => {
-                      const path = event.target.value;
-                      const geometry = normalizeEditableVectorGeometry({
-                        kind: 'path',
-                        path,
-                        closed: /[Zz]\s*$/.test(path.trim()),
-                      });
-                      onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry });
-                    }}
-                    className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 font-mono text-[10px] text-white"
-                  />
-                </label>
+                <VectorPathEditor
+                  geometry={normalizeEditableVectorGeometry(props.vectorGeometry)!}
+                  onChange={(geometry) => onUpdateLayerProps(selectedLayer.id, { vectorGeometry: geometry })}
+                />
               </>
             )}
           </fieldset>

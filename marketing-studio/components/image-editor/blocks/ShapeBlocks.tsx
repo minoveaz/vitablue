@@ -330,7 +330,13 @@ export const GeometricShapeGraphic: React.FC<GeometricShapeGraphicProps> = ({
       ...normalizedVectorGeometry,
       curvature: normalizedVectorGeometry.curvature ?? curvature,
       });
-    const isPolyline = shapeType === 'polyline' || shapeType === 'separator-zigzag';
+    const isPolyline = shapeType === 'polyline'
+      || shapeType === 'separator-zigzag'
+      || shapeType === 'line'
+      || shapeType === 'line-dashed'
+      || shapeType === 'line-dotted'
+      || shapeType === 'line-arrow-right'
+      || shapeType === 'line-arrow-both';
     return (
       <svg {...svgProps}>
         {normalizedVectorGeometry.closed

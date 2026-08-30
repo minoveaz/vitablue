@@ -1,7 +1,7 @@
 # Track: Carousel Creative Composition System
 
 **Fecha:** 2026-08-27  
-**Estado:** Pausado temporalmente — priorizar persistencia de Creative Studio  
+**Estado:** Cerrado — alcance funcional completado  
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, carousel, templates, ux, visual-design]`
 
@@ -164,3 +164,15 @@ Las referencias visuales de esta fase incluyen:
   assets.
 - La IA podrá proponer copy o variantes en una fase posterior, siempre mediante
   comandos validados y aprobación humana.
+
+## 7. Cierre del track
+
+El alcance funcional de composición creativa queda completado e integrado en
+`develop`. Las mejoras posteriores de edición gráfica general —dibujo directo,
+selección y transformación, capas, edición vectorial avanzada, layout, texto,
+prototipado, exportación y colaboración— se continúan en el track
+`Image Studio Editor Foundations`.
+
+Las tareas de regresión visual, validación pixel-perfect y pruebas de casos
+extremos quedan registradas como deuda técnica para ese nuevo track, junto con
+la evolución del editor hacia herramientas gráficas de propósito general.

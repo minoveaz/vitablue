@@ -727,6 +727,13 @@ export function useImageProjectEditor(
   const updateLayerProps = useCallback((layerId: string, patch: Record<string, unknown>) => {
     const applyStandardProps = (layer: ImageLayer): ImageLayer => {
       const normalizedPatch = { ...patch };
+      if ('vectorGeometry' in patch && patch.vectorGeometry !== undefined && patch.vectorGeometry !== null) {
+        // Text/path editors can briefly emit an incomplete value while the
+        // user is typing. Do not let that transient value erase the last
+        // valid geometry from the persisted layer.
+        const vectorGeometry = normalizeEditableVectorGeometry(patch.vectorGeometry);
+        if (!vectorGeometry) delete normalizedPatch.vectorGeometry;
+      }
       ['text', 'title', 'subtitle', 'description', 'badge', 'ctaText', 'whatsAppText', 'buttonText', 'verifiedLabel', 'highlight', 'name', 'role', 'message'].forEach((key) => {
         if (typeof normalizedPatch[key] === 'string') normalizedPatch[key] = normalizeTiptapHtml(normalizedPatch[key] as string);
       });
@@ -742,7 +749,7 @@ export function useImageProjectEditor(
         if (vectorGeometry) {
           updated.vectorGeometry = vectorGeometry;
           updated.props.vectorGeometry = vectorGeometry;
-        } else {
+        } else if (patch.vectorGeometry === undefined || patch.vectorGeometry === null) {
           delete updated.vectorGeometry;
           delete updated.props.vectorGeometry;
         }
@@ -1492,7 +1499,7 @@ export function useImageProjectEditor(
           blockType,
           title: initialTitle,
           props: initialProps,
-          position: { x: 50, y: 50 },
+          position: (defaultProps?.position as { x: number; y: number } | undefined) ?? { x: 50, y: 50 },
           zIndex: 999,
           scale: 1,
           width,

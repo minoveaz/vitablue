@@ -7,6 +7,7 @@ import {
   getEditableVectorPath,
   normalizeGeometricShapeProps,
   normalizeEditableVectorGeometry,
+  normalizeEditableVectorPoints,
 } from './vectorGeometry';
 import { normalizeStoredProject } from './imagePersistence';
 
@@ -67,6 +68,22 @@ describe('reusable vector geometry', () => {
     expect(markup).toContain('<path');
     expect(markup).toContain('C');
     expect(markup).not.toContain('data-preview-fallback');
+  });
+
+  it('renders point-backed line geometry as a straight multi-point stroke', () => {
+    const markup = renderToStaticMarkup(
+      <GeometricShapeGraphic
+        shapeType="line"
+        stroke="#94D2BD"
+        strokeWidth={4}
+        vectorGeometry={{
+          version: 1,
+          kind: 'bezier',
+          points: [{ x: 0, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 1, y: 0.3 }],
+        }}
+      />,
+    );
+    expect(markup).toContain('M 0 20 L 50 80 L 100 30');
   });
 
   it('normalizes vector geometry when a project is loaded from persistence', () => {
@@ -185,6 +202,7 @@ describe('reusable vector geometry', () => {
           points: [{ x: 0, y: 0.2 }, { x: 0.5, y: 0.8 }, { x: 1, y: 0.2 }],
         },
     });
+
     expect(props).toMatchObject({
         curvature: 100,
         lineJoin: 'bevel',
@@ -195,6 +213,26 @@ describe('reusable vector geometry', () => {
         endAnchor: { x: 1, y: 0.8 },
     });
     expect(getEditableVectorPath(props.vectorGeometry as never)).toContain('C');
+  });
+
+  it('keeps point identity and order when normalizing a dragged multi-point path', () => {
+    expect(normalizeEditableVectorPoints([
+      { x: 0.8, y: 0.2 },
+      { x: 0.1, y: 0.4 },
+      { x: 0.6, y: 0.8 },
+    ])).toEqual([
+      { x: 0.8, y: 0.2 },
+      { x: 0.1, y: 0.4 },
+      { x: 0.6, y: 0.8 },
+    ]);
+  });
+
+  it('decimates long pointer streams without dropping the drawn endpoint', () => {
+    const points = Array.from({ length: 100 }, (_, index) => ({ x: index / 99, y: index / 99 }));
+    const normalized = normalizeEditableVectorPoints(points)!;
+    expect(normalized).toHaveLength(64);
+    expect(normalized[0]).toEqual(points[0]);
+    expect(normalized.at(-1)).toEqual(points.at(-1));
   });
 
   it('renders configurable rings, arcs, and carousel waves without fallback output', () => {

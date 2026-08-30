@@ -4,6 +4,8 @@ import { ImageLayerBlockRenderer, getBlockDefaultWidth } from './blocks';
 import type { ImageStageInteractionHandlers } from './ImageStage.types';
 import { ImageCropEditor } from './ImageCropEditor';
 import type { ImageCrop } from '../../types/imageStudio';
+import { EditableVectorPointHandles } from './EditableVectorPointHandles';
+import { normalizeEditableVectorGeometry } from '../../utils/vectorGeometry';
 
 interface ImageStageLayersProps extends ImageStageInteractionHandlers {
   project: ImageProject;
@@ -157,6 +159,16 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                     onUpdateLayerProps={onUpdateLayerProps}
                   />
                 )}
+
+                {isSelected && !isLocked && !isCropEditing && !isStructuralBackground && layer.blockType === 'GeometricShape' && (() => {
+                  const geometry = normalizeEditableVectorGeometry(blockProps.vectorGeometry ?? layer.vectorGeometry);
+                  return geometry?.points ? (
+                    <EditableVectorPointHandles
+                      geometry={geometry}
+                      onChange={(nextGeometry) => onUpdateLayerProps?.(layer.id, { vectorGeometry: nextGeometry })}
+                    />
+                  ) : null;
+                })()}
 
                 {/* LOCK BADGE IF SELECTED AND LOCKED */}
                 {isSelected && isLocked && (

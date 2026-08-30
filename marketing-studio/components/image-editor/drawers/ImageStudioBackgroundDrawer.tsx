@@ -770,13 +770,24 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
                   const bounds = event.currentTarget.getBoundingClientRect();
                   const x = clampPointValue((event.clientX - bounds.left) / bounds.width);
                   const y = clampPointValue((event.clientY - bounds.top) / bounds.height);
-                  updateTrajectoryPoints(
-                    trajectoryPoints.map((point, index) =>
-                      index === draggedTrajectoryPoint ? { x, y } : point,
-                    ),
+                  const nextPoints = trajectoryPoints.map((point, index) =>
+                    index === draggedTrajectoryPoint ? { x, y } : point,
                   );
+                  // Composition normalization sorts trajectory points by X.
+                  // Follow the dragged point's new sorted index so crossing
+                  // another point never makes the handle jump or lose data.
+                  const nextIndex = nextPoints
+                    .map((point, index) => ({ point, index }))
+                    .sort((left, right) => left.point.x - right.point.x)
+                    .findIndex(({ index }) => index === draggedTrajectoryPoint);
+                  updateTrajectoryPoints(nextPoints);
+                  if (nextIndex >= 0) {
+                    setDraggedTrajectoryPoint(nextIndex);
+                    setActiveTrajectoryPoint(nextIndex);
+                  }
                 }}
                 onPointerUp={() => setDraggedTrajectoryPoint(null)}
+                onPointerCancel={() => setDraggedTrajectoryPoint(null)}
                 onPointerLeave={() => setDraggedTrajectoryPoint(null)}
               >
                 <path d="M 0 50 H 100" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 3" fill="none" />
@@ -795,7 +806,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
                 <path d={createCarouselBackgroundBezierPath(trajectoryPoints)} className="stroke-current" strokeWidth="2.5" fill="none" />
                 {trajectoryPoints.map((point, index) => (
                   <circle
-                    key={`${point.x}-${index}`}
+                    key={index}
                     cx={point.x * 100}
                     cy={point.y * 100}
                     r="3"
@@ -815,7 +826,7 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
             </div>
             <div className="mt-2 space-y-1.5">
               {trajectoryPoints.map((point, index) => (
-                <div key={`${index}-${point.x}`} className={`flex flex-wrap items-center gap-1.5 rounded-md px-1 py-0.5 ${activeTrajectoryPoint === index ? 'bg-amber-400/10' : ''}`}>
+                <div key={index} className={`flex flex-wrap items-center gap-1.5 rounded-md px-1 py-0.5 ${activeTrajectoryPoint === index ? 'bg-amber-400/10' : ''}`}>
                   <button
                     type="button"
                     onClick={() => setActiveTrajectoryPoint(index)}

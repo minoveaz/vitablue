@@ -24,11 +24,26 @@ const normalizePoint = (value: unknown): EditableVectorPoint | undefined => {
 const normalizePoints = (value: unknown): EditableVectorPoint[] | undefined => {
   if (!Array.isArray(value)) return undefined;
   const points = value
-    .slice(0, MAX_POINTS)
     .map(normalizePoint)
     .filter((point): point is EditableVectorPoint => Boolean(point));
-  return points.length >= 2 ? points : undefined;
+  if (points.length < 2) return undefined;
+  if (points.length <= MAX_POINTS) return points;
+  // Keep both endpoints when a pointer stream produces more samples than the
+  // persistence budget. Uniform decimation preserves the drawn trajectory
+  // instead of truncating the tail of the stroke.
+  return Array.from({ length: MAX_POINTS }, (_, index) =>
+    points[Math.round((index * (points.length - 1)) / (MAX_POINTS - 1))],
+  );
 };
+
+/**
+ * Normalizes editable points without changing their order. Point order is
+ * meaningful for a polyline/Bézier path and must remain stable while a point
+ * is being dragged across another point.
+ */
+export const normalizeEditableVectorPoints = (
+  value: unknown,
+): EditableVectorPoint[] | undefined => normalizePoints(value);
 
 /**
  * SVG path data is deliberately restricted to path commands and numbers.
