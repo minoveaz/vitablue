@@ -1,8 +1,10 @@
 import React from 'react';
 import { Check, Loader2, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import type { CreativeStudioEditorState } from './contracts/creativeStudioShell';
 
-export type ModuleHeaderState = 'saved' | 'saving' | 'unsaved' | 'error';
+/** Legacy header state keeps `unsaved`; lifecycle states are shared with Creative Studio. */
+export type ModuleHeaderState = CreativeStudioEditorState | 'unsaved';
 
 export interface ModuleHeaderBreadcrumb {
   label: string;
@@ -55,6 +57,20 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
           <div className="flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[10px] font-bold text-red-600">
             <AlertCircle className="size-3" aria-hidden="true" />
             <span>{stateLabel ?? 'Error al guardar'}</span>
+          </div>
+        );
+      case 'offline':
+        return (
+          <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-[10px] font-bold text-amber-700">
+            <AlertCircle className="size-3" aria-hidden="true" />
+            <span>{stateLabel ?? 'Sin conexión'}</span>
+          </div>
+        );
+      case 'rendering':
+        return (
+          <div className="flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/10 px-3 py-1.5 text-[10px] font-bold text-primary">
+            <Loader2 className="size-3 animate-spin" aria-hidden="true" />
+            <span>{stateLabel ?? 'Renderizando...'}</span>
           </div>
         );
       case 'saved':

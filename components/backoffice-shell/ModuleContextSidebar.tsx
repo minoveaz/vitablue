@@ -34,7 +34,9 @@ export const ModuleContextSidebar: React.FC<ModuleContextSidebarProps> = ({
 
   return (
     <div
-      className={`flex h-full min-h-0 flex-col border-r ${
+      role="complementary"
+      aria-label={label ?? 'Panel contextual'}
+      className={`flex h-full min-h-0 min-w-0 flex-col border-r ${
         isDark ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 bg-slate-50 text-slate-800'
       } ${widthClasses[width]} ${className}`}
     >
@@ -59,7 +61,7 @@ export const ModuleContextSidebar: React.FC<ModuleContextSidebarProps> = ({
               <button
                 type="button"
                 onClick={onCollapse}
-                className={`flex size-6 items-center justify-center rounded-md transition-colors ${
+                className={`flex min-h-11 min-w-11 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                   isDark
                     ? 'text-slate-400 hover:bg-slate-800 hover:text-white'
                     : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'

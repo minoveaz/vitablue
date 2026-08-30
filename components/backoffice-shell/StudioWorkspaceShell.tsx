@@ -21,6 +21,10 @@ export interface StudioWorkspaceShellProps {
   aside?: React.ReactNode;
   asideVisible?: boolean;
   overlay?: React.ReactNode;
+  /** Creative editors are intentionally limited to tablet/desktop for now. */
+  mobileSafeMode?: boolean;
+  mobileSafeModeTitle?: string;
+  mobileSafeModeDescription?: string;
   children: React.ReactNode;
 }
 
@@ -36,9 +40,13 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
   aside,
   asideVisible = true,
   overlay,
+  mobileSafeMode = false,
+  mobileSafeModeTitle = 'Editor disponible en tablet y escritorio',
+  mobileSafeModeDescription = 'Para editar esta creatividad, abre VitaBlue en una pantalla de al menos 768 px de ancho.',
   children,
 }) => {
   const isDrawerOpen = activeToolId !== null && Boolean(drawerContent);
+  const mobileSafeModeTitleId = React.useId();
 
   const handleToolClick = (toolId: string) => {
     if (activeToolId === toolId) {
@@ -49,7 +57,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-950 text-slate-800 antialiased select-none">
+    <div className="flex h-screen min-h-0 w-full max-w-full flex-col overflow-hidden bg-slate-950 text-slate-800 antialiased select-none">
       {/* 1. PLATFORM HEADER (TOP BAR DE PLATAFORMA) */}
       <PlatformHeader
         suiteTitle={suiteTitle}
@@ -64,10 +72,21 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
       />
 
       {/* 2. BODY PRINCIPAL: RAIL + FLYOUT DRAWER + CANVAS + ASIDE */}
-      <div className="flex min-h-0 flex-1 flex-row overflow-hidden relative">
+      {mobileSafeMode && (
+        <section
+          className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 bg-slate-950 px-6 py-10 text-center md:hidden"
+          aria-labelledby={mobileSafeModeTitleId}
+        >
+          <h1 id={mobileSafeModeTitleId} className="max-w-sm text-lg font-bold text-white">
+            {mobileSafeModeTitle}
+          </h1>
+          <p className="max-w-sm text-sm leading-6 text-slate-300">{mobileSafeModeDescription}</p>
+        </section>
+      )}
+      <div className={`${mobileSafeMode ? 'hidden md:flex' : 'flex'} relative min-h-0 flex-1 flex-row overflow-hidden`}>
         {/* A. CREATIVE TOOL RAIL (ESTILO CANVA) */}
         <aside
-          className="w-16 min-w-16 shrink-0 border-r border-slate-800 bg-slate-900 flex flex-col items-center py-2.5 gap-1.5 z-20"
+          className="w-16 min-w-16 shrink-0 border-r border-slate-800 bg-slate-900 flex flex-col items-center overflow-y-auto py-2.5 gap-1.5 z-20"
           aria-label="Herramientas creativas"
         >
           {tools.map((tool) => {
@@ -110,7 +129,7 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
         {/* B. CREATIVE FLYOUT DRAWER (380px - 410px) */}
         {isDrawerOpen && (
           <aside
-            className="w-[360px] sm:w-[390px] md:w-[410px] min-w-[340px] shrink-0 border-r border-slate-800 bg-slate-900/98 flex flex-col min-h-0 overflow-hidden shadow-2xl z-10 animate-fadeIn"
+            className="w-[min(24rem,32vw)] min-w-0 shrink-0 border-r border-slate-800 bg-slate-900/98 flex flex-col min-h-0 overflow-hidden shadow-2xl z-10 animate-fadeIn"
             aria-label="Panel lateral de herramientas"
           >
             {/* CABECERA DEL DRAWER */}
@@ -121,8 +140,9 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectTool(null)}
-                className="flex size-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                 title="Cerrar panel"
+                aria-label="Cerrar panel"
               >
                 <X className="size-4" />
               </button>
@@ -139,15 +159,16 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
         <button
           type="button"
           onClick={() => onSelectTool(isDrawerOpen ? null : tools[0]?.id ?? null)}
-          className="absolute top-1/2 -translate-y-1/2 z-30 flex size-6 items-center justify-center rounded-r-lg border border-l-0 border-slate-700/60 bg-slate-900/90 text-slate-400 hover:text-white hover:bg-slate-800 shadow-md backdrop-blur-md transition-all"
-          style={{ left: isDrawerOpen ? 'calc(4rem + 390px)' : '4rem' }}
+          className="absolute top-1/2 -translate-y-1/2 z-30 flex min-h-11 min-w-11 items-center justify-center rounded-r-lg border border-l-0 border-slate-700/60 bg-slate-900/90 text-slate-400 hover:text-white hover:bg-slate-800 shadow-md backdrop-blur-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+          style={{ left: isDrawerOpen ? 'calc(4rem + min(24rem, 32vw))' : '4rem' }}
           title={isDrawerOpen ? 'Ocultar panel lateral (❮)' : 'Mostrar panel lateral (❯)'}
+          aria-label={isDrawerOpen ? 'Ocultar panel lateral' : 'Mostrar panel lateral'}
         >
           {isDrawerOpen ? <ChevronLeft className="size-3.5" /> : <ChevronRight className="size-3.5" />}
         </button>
 
         {/* C. MAIN WORKSPACE / CANVAS VIEWPORT */}
-        <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#050B14]">
+        <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-primary-dark" aria-label="Área de trabajo del editor">
           {toolbar && (
             <div className="shrink-0 border-b border-slate-800/90 bg-slate-900/90 px-4 py-1.5 text-white relative z-40 backdrop-blur-md">
               {toolbar}
@@ -166,7 +187,9 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
             {aside && (
               <aside
                 className={`shrink-0 border-l border-slate-800 bg-slate-900 overflow-hidden flex flex-col shadow-2xl z-20 transition-[width,opacity] duration-200 ease-out ${
-                  asideVisible ? 'w-80 lg:w-96 opacity-100' : 'w-0 opacity-0 pointer-events-none border-l-0'
+                  asideVisible
+                    ? 'w-[clamp(16rem,28vw,20rem)] lg:w-[clamp(18rem,24vw,24rem)] opacity-100'
+                    : 'w-0 opacity-0 pointer-events-none border-l-0'
                 }`}
                 aria-label="Panel de inspección"
                 aria-hidden={!asideVisible}

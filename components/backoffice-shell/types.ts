@@ -28,6 +28,11 @@ export interface BackofficeModuleConfig {
   state?: BackofficeModuleState;
 }
 
+/**
+ * @deprecated Legacy shell props retained for type compatibility only.
+ * Import the canonical layout adapter from `components/layouts/BackofficeShell`
+ * for new consumers.
+ */
 export interface BackofficeShellProps {
   children: React.ReactNode;
   navigation?: React.ReactNode;

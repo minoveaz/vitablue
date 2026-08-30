@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fase 4.5 completada; migración de editores pendiente
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4 y el alcance P0 de 4.75.5 completados; 4.75.6+ pendientes
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -17,6 +17,11 @@ El núcleo debe ser independiente del renderer y cubrir escenas, capas,
 geometrías, transforms, constraints, texto, assets, brand tokens, historial y
 persistencia. Image Studio lo consumirá para documentos estáticos y Video
 Studio lo extenderá con timing, animación, audio y renderizado Remotion.
+
+Antes de migrar los editores, ambos deben compartir un shell de trabajo
+estandarizado, inspirado en la coherencia de suites como Adobe, sin ocultar las
+capacidades específicas de composición de Image Studio ni de timeline de Video
+Studio.
 
 ## 2. Prioridades
 
@@ -137,7 +142,109 @@ Studio lo extenderá con timing, animación, audio y renderizado Remotion.
   en adaptadores Image/Video; mantener extensiones cuando Video no puede
   representar una geometría avanzada.
 - [x] Publicar fixtures, pruebas round-trip y contrato neutral de renderers.
-- [ ] Migrar hooks y renderers productivos de Image Studio y Video Studio.
+
+### Fase 4.75 — Creative Studio Shell & Interaction Standard
+
+Objetivo: establecer una experiencia común para Image Studio y Video Studio
+antes de migrar sus hooks y renderers al `CreativeDocument`.
+
+#### Fase 4.75.1 — Contrato y arquitectura del shell
+
+- [x] Definir `CreativeStudioShell` como contrato tipado de composición con
+  props, slots, regiones y estado, sin reemplazar todavía los shells existentes.
+- [x] Estandarizar contractualmente `PlatformHeader`, `SuiteNavigation`,
+  `ModuleHeader`, `ToolRail`, `ResourcePanel`, `Toolbar`, `Stage`, `Inspector`,
+  `LayersPanel`, `BottomWorkspace` y `Overlays`.
+- [x] Definir capacidades y slots de extensión para Image Studio (slide strip,
+  preview, crop/export) y Video Studio (scenes, timeline, transport, audio,
+  Remotion), sin lógica de dominio en el contrato común.
+- [x] Definir el ciclo de estado común `saved`, `saving`, `error`, `offline` y
+  `rendering`, y dejar ownership de paneles, foco y shortcuts como integración
+  opcional del consumidor.
+- [x] Documentar los límites mobile-first y de accesibilidad del contrato.
+
+#### Fase 4.75.2 — Auditoría y consolidación de shells existentes
+
+- [x] Auditar implementaciones y consumidores reales de `BackofficeShell`,
+  `SuiteShell`, `SuiteCanvas`, `StudioWorkspaceShell`, `SuiteSidebar` y
+  `PlatformHeader`.
+- [x] Establecer `SuiteShell`/`SuiteSidebar` como fuente de verdad para
+  navegación global y `PlatformHeader` como header global.
+- [x] Establecer `SuiteCanvas` como composición común de canvas/stage y
+  mantener `StudioWorkspaceShell` como workspace creativo transicional de
+  Image Studio, sin crear otro shell paralelo.
+- [x] Crear `CreativeStudioShellAdapter` como frontera de adopción del
+  contrato 4.75.1, con mapeo explícito de slots y ownership del consumidor.
+- [x] Convertir el `BackofficeShell` antiguo en reexport compatible del
+  adapter canónico de `components/layouts/BackofficeShell`, sin eliminar
+  implementaciones ni romper imports.
+- [x] Mantener Image Studio y Video Studio sin migración visual completa.
+- [x] Documentar decisiones, consumidores, límites y pendientes en
+  `docs/marketing-studio/shared-creative-editor-phase-4.75.2.md`.
+
+#### Fase 4.75.3 — Primitives compartidas (parcialmente completada)
+
+- [x] Extraer primitives opt-in (`StudioToolRail`, paneles de recursos e
+  inspector, `CanvasChrome`, `ZoomPanControls`, `SelectionOverlay`,
+  `LayerActionMenu`, `ShortcutManager`, `LiveStatus` y `BottomWorkspace`) con
+  slots, callbacks y reexports compatibles.
+- [x] Definir controles compartidos para zoom, pan, fit-to-screen, reset,
+  selección, acciones contextuales y visibilidad de paneles, sin asumir lógica
+  de dominio.
+- [x] Unificar la presentación de estados `saved`, `saving`, `error`,
+  `offline` y `rendering` mediante `LiveStatus`, con integración opt-in en el
+  adapter.
+- [x] Centralizar el listener de shortcuts por instancia, con protección para
+  campos editables y control explícito de `preventDefault`.
+- [ ] Migrar `StudioWorkspaceShell`, Image Studio y Video Studio a las
+  primitives sin alterar sus dominios.
+- [ ] Completar responsive/a11y visual, retirar listeners legacy y validar
+  doble aplicación de nudges en los editores migrados.
+
+#### Fase 4.75.4 — Interacción y estados comunes
+
+- [x] Auditar shortcuts/listeners y retirar el doble nudge de Image Studio.
+- [x] Adoptar `ShortcutManager` con scopes, ownership único, enable/disable y
+  cleanup en Image Studio y Video Studio.
+- [x] Unificar la presentación de estados mediante `LiveStatus`, manteniendo
+  errores visibles, offline y reintento explícito.
+- [x] Definir contratos opt-in para selección, paneles, foco y acciones
+  contextuales, conservando ownership del consumidor.
+- [x] Cubrir shortcuts, cleanup, callbacks, estados y no duplicación con tests.
+- [ ] Migrar completamente los shells y los editores (4.75.5+).
+
+#### Fase 4.75.5 — Responsive y accesibilidad P0
+
+- [x] Asegurar un comportamiento mobile-first seguro a 375px, sin
+  desbordamiento del rail, paneles, inspector y canvas, mediante guard explícito
+  mientras la UX editorial móvil completa permanece fuera de alcance.
+- [ ] Convertir paneles laterales en overlays o bottom sheets según viewport.
+- [ ] Definir el timeline: visible en desktop y drawer o bottom workspace en
+  móvil.
+- [x] Añadir roles, labels, foco visible y navegación de teclado a canvas,
+  escenas, capas, timeline, overlays e icon buttons.
+- [x] Garantizar targets táctiles mínimos de 44px y `aria-live` para estados de
+  guardado, render y errores.
+- [x] Revisar colores hard-coded en las superficies modificadas y aplicar
+  tokens semánticos del sistema visual.
+
+#### Disponibilidad y contratos de interacción (pendiente)
+
+- [ ] Confirmar y corregir la disponibilidad de Video Studio fuera de `DEV`
+  antes de considerarlo superficie de producción.
+- [ ] Definir la equivalencia entre Konva/DOM y Remotion como contrato
+  semántico, reservando pixel-perfect para los casos que lo requieran.
+- [ ] Documentar capacidades comunes y extensiones específicas de cada studio.
+- [ ] Validar visualmente y funcionalmente a 375, 768, 1024 y 1440px.
+
+Los siguientes ítems siguen pendientes: migración completa de editores,
+responsive/a11y completa, disponibilidad de Video Studio, equivalencia de
+renderers y validación visual.
+
+Resultado esperado: ambos estudios deben compartir aproximadamente el 80–90%
+del shell y de la interacción, manteniendo como extensiones el carrusel y la
+composición avanzada en Image Studio, y timeline, animación, audio y Remotion
+en Video Studio.
 
 ### Fase 5 — Migrar Image Studio
 
@@ -180,6 +287,10 @@ Studio lo extenderá con timing, animación, audio y renderizado Remotion.
 - Video Studio añade tiempo, animación y audio sin contaminar el modelo estático.
 - Las composiciones funcionan en formatos individuales y panorámicos.
 - El editor es usable desde 375px y mantiene precisión en escritorio.
+- Image Studio y Video Studio comparten el shell, estados, shortcuts,
+  responsive y patrones de accesibilidad definidos en la Fase 4.75.
+- El shell común no contiene lógica específica de carrusel, timeline, audio,
+  exportación o renderer.
 - Las exportaciones no incluyen guías, overlays ni controles del editor.
 
 ## 5. Límites

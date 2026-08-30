@@ -15,15 +15,12 @@ import {
 } from 'lucide-react';
 import {
   SuiteShell,
-  SuiteCanvas,
-  ModuleHeader,
-  type NavigationSchema,
-  type AccessMap,
-  type NavRouteRef,
-  type SuiteCanvasMode,
-  type BackofficeShellMode,
-  type ModuleHeaderState,
-} from '@/components/backoffice-shell';
+} from '../backoffice-shell/SuiteShell';
+import { SuiteCanvas } from '../backoffice-shell/SuiteCanvas';
+import { ModuleHeader } from '../backoffice-shell/ModuleHeader';
+import type { NavigationSchema, AccessMap, NavRouteRef } from '../backoffice-shell/contracts/navigation';
+import type { SuiteCanvasMode } from '../backoffice-shell/contracts/shell';
+import type { BackofficeShellMode, ModuleHeaderState } from '../backoffice-shell/types';
 
 export const backofficeNavigation = [
   { to: '/backoffice', label: 'Inicio del backoffice', icon: LayoutDashboard, end: true },
@@ -141,6 +138,9 @@ export interface BackofficeShellProps {
   aside?: React.ReactNode;
   asidePresentation?: 'inline' | 'drawer' | 'overlay';
   footer?: React.ReactNode;
+  mobileSafeMode?: boolean;
+  mobileSafeModeTitle?: string;
+  mobileSafeModeDescription?: string;
   schema?: NavigationSchema;
   accessMap?: AccessMap;
   contextualSidebarAction?: React.ReactNode | ((isRail: boolean) => React.ReactNode);
@@ -164,6 +164,9 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
   aside,
   asidePresentation = 'inline',
   footer,
+  mobileSafeMode = false,
+  mobileSafeModeTitle,
+  mobileSafeModeDescription,
   schema = vitablueBackofficeSchema,
   accessMap = defaultAccessMap,
   contextualSidebarAction,
@@ -188,6 +191,7 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
     if (path.includes('/campanas')) return 'campaigns';
     if (path.includes('/enlaces')) return 'links';
     if (path.includes('/conexiones')) return 'connections';
+    if (path.includes('/image-studio')) return 'image-studio';
     if (path.includes('/generador-contenido') || path.includes('/video')) return 'content';
     if (path.includes('/document-intelligence')) return 'doc-intel';
     return undefined;
@@ -227,6 +231,9 @@ const BackofficeShell: React.FC<BackofficeShellProps> = ({
         aside={aside}
         asidePresentation={asidePresentation}
         footer={footer}
+        mobileSafeMode={mobileSafeMode}
+        mobileSafeModeTitle={mobileSafeModeTitle}
+        mobileSafeModeDescription={mobileSafeModeDescription}
       >
         {children}
       </SuiteCanvas>
