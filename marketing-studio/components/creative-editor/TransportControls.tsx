@@ -1,6 +1,7 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, SkipBack, SkipForward, Scissors, LoaderCircle } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipBack, SkipForward, Scissors } from 'lucide-react';
 import type { RenderJob } from '../../../packages/video-studio/src/engine/renderJobs';
+import { LiveStatus } from '../../../components/backoffice-shell/primitives';
 
 export interface TransportControlsProps {
   isPlaying: boolean;
@@ -39,50 +40,50 @@ export const TransportControls: React.FC<TransportControlsProps> = ({
   };
 
   return (
-    <div className="flex h-12 shrink-0 items-center justify-between border-y border-slate-800 bg-slate-900 px-4 text-white select-none">
+    <div role="toolbar" aria-label="Controles de reproducción" className="flex min-h-14 max-w-full shrink-0 flex-wrap items-center justify-between gap-2 overflow-x-auto border-y border-slate-800 bg-slate-900 px-4 py-1 text-white select-none">
       {/* Botones de Control Central */}
       <div className="flex items-center gap-2">
         {onPrevScene && (
           <button
             type="button"
             onClick={onPrevScene}
-            className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Escena anterior"
             aria-label="Escena anterior"
           >
-            <SkipBack className="size-4" />
+            <SkipBack className="size-4" aria-hidden="true" />
           </button>
         )}
 
         <button
           type="button"
           onClick={onRestart}
-          className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title="Reiniciar (Frame 0)"
           aria-label="Reiniciar al inicio"
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" aria-hidden="true" />
         </button>
 
         <button
           type="button"
           onClick={onPlayPause}
-          className="flex size-9 items-center justify-center rounded-xl bg-primary text-white hover:bg-primary-dark shadow-md transition-transform active:scale-95"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-primary text-white hover:bg-primary-dark shadow-md transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
           aria-label={isPlaying ? 'Pausar vídeo' : 'Reproducir vídeo'}
         >
-          {isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current ml-0.5" />}
+          {isPlaying ? <Pause className="size-4 fill-current" aria-hidden="true" /> : <Play className="size-4 fill-current ml-0.5" aria-hidden="true" />}
         </button>
 
         {onNextScene && (
           <button
             type="button"
             onClick={onNextScene}
-            className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Siguiente escena"
             aria-label="Siguiente escena"
           >
-            <SkipForward className="size-4" />
+            <SkipForward className="size-4" aria-hidden="true" />
           </button>
         )}
 
@@ -90,10 +91,10 @@ export const TransportControls: React.FC<TransportControlsProps> = ({
           <button
             type="button"
             onClick={onSplitAtPlayhead}
-            className="ml-2 flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-[11px] font-bold text-accent hover:bg-slate-700 transition-colors"
+            className="ml-2 flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-[11px] font-bold text-accent hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Dividir escena en cabezal (Cmd+B)"
           >
-            <Scissors className="size-3.5" />
+            <Scissors className="size-3.5" aria-hidden="true" />
             <span>Dividir</span>
           </button>
         )}
@@ -114,10 +115,7 @@ export const TransportControls: React.FC<TransportControlsProps> = ({
       {/* Estado de Render Worker */}
       <div className="flex items-center gap-3">
         {renderJob && renderJob.status === 'rendering' && (
-          <div className="flex items-center gap-2 text-xs text-accent animate-pulse font-semibold">
-            <LoaderCircle className="size-3.5 animate-spin" />
-            <span>Renderizando {renderJob.progress ?? 0}%</span>
-          </div>
+          <LiveStatus status="rendering" message={`Renderizando ${renderJob.progress ?? 0}%`} className="min-h-11 text-xs" />
         )}
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">30 FPS</span>
       </div>

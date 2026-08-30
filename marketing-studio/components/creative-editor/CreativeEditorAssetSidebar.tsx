@@ -45,11 +45,14 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
       onCollapse={onCollapse}
     >
       {/* PESTAÑAS PRINCIPALES (BRAND KIT | STORYBOARD | ELEMENTOS) */}
-      <div className="flex rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800">
+      <div role="tablist" aria-label="Secciones de biblioteca creativa" className="flex rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800">
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'storyboard'}
+          aria-controls="creative-storyboard-panel"
           onClick={() => setActiveTab('storyboard')}
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
+          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             activeTab === 'storyboard' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
@@ -59,8 +62,11 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
 
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'brand'}
+          aria-controls="creative-brand-panel"
           onClick={() => setActiveTab('brand')}
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
+          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             activeTab === 'brand' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
@@ -70,8 +76,11 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
 
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'elements'}
+          aria-controls="creative-elements-panel"
           onClick={() => setActiveTab('elements')}
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all ${
+          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             activeTab === 'elements' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
@@ -82,7 +91,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
 
       {/* PESTAÑA 1: STORYBOARD & ESCENAS */}
       {activeTab === 'storyboard' && (
-        <div className="space-y-4">
+        <div id="creative-storyboard-panel" role="tabpanel" aria-label="Escenas" className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Storyboard ({scenes.length})</span>
             <button
@@ -103,8 +112,17 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
               return (
                 <div
                   key={scene.id}
+                  role="group"
+                  tabIndex={0}
+                  aria-label={`Seleccionar escena ${index + 1}`}
                   onClick={() => onSelectSlide(scene.id)}
-                  className={`group relative flex cursor-pointer items-center justify-between rounded-xl border p-3 transition-all ${
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelectSlide(scene.id);
+                    }
+                  }}
+                  className={`group relative flex cursor-pointer items-center justify-between rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                     isActive
                       ? 'border-primary bg-primary/20 shadow-xs ring-1 ring-primary/50 text-white'
                       : 'border-slate-800 bg-slate-950/80 hover:border-slate-700 text-slate-300'
@@ -133,7 +151,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onMoveScene(scene.id, 'up'); }}
                       disabled={index === 0}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                       title="Subir escena"
                     >
                       <ChevronUp className="size-3.5" />
@@ -142,7 +160,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onMoveScene(scene.id, 'down'); }}
                       disabled={index === scenes.length - 1}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                       title="Bajar escena"
                     >
                       <ChevronDown className="size-3.5" />
@@ -150,7 +168,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); onDuplicateScene(scene.id); }}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                       title="Duplicar"
                     >
                       <Copy className="size-3.5" />
@@ -159,7 +177,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onRemoveScene(scene.id); }}
-                        className="rounded p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400"
+                        className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                         title="Eliminar"
                       >
                         <Trash2 className="size-3.5" />
@@ -187,7 +205,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
 
       {/* PESTAÑA 2: BRAND KIT & MOTIONKIT */}
       {activeTab === 'brand' && (
-        <div className="space-y-4">
+        <div id="creative-brand-panel" role="tabpanel" aria-label="Kit de marca" className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MotionKit Agnóstico (4)</span>
@@ -276,7 +294,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
 
       {/* PESTAÑA 3: CAPAS & ELEMENTOS TRADICIONALES */}
       {activeTab === 'elements' && (
-        <div className="space-y-3">
+        <div id="creative-elements-panel" role="tabpanel" aria-label="Capas y elementos" className="space-y-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Añadir Capa a la Escena</span>
 
           <button

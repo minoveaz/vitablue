@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PlayerRef } from '@remotion/player';
 import { FolderOpen } from 'lucide-react';
 import BackofficeShell from '@/components/layouts/BackofficeShell';
+import { ShortcutManager, useCreativeStudioOnlineStatus } from '@/components/backoffice-shell';
+import type { ShortcutBinding } from '@/components/backoffice-shell';
 import { useVideoProjectEditor } from './hooks/useVideoProjectEditor';
 import { CreativeEditorToolbar } from './components/creative-editor/CreativeEditorToolbar';
 import { VideoStage, VideoAspectRatio, ZoomLevel } from './components/creative-editor/VideoStage';
@@ -76,6 +78,8 @@ export const SocialGenerator: React.FC = () => {
   // Render & Export State
   const [renderJob, setRenderJob] = useState<RenderJob | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
+  const isOffline = !useCreativeStudioOnlineStatus();
   const renderClient = useRef(createRenderHttpClient()).current;
 
   const totalFrames = scenes.reduce((total, slide) => total + slide.durationInFrames, 0);
@@ -118,39 +122,6 @@ export const SocialGenerator: React.FC = () => {
       player.removeEventListener('pause', onPause);
     };
   }, [playerInstance, scenes, activeSlideId]);
-
-  // Keyboard Shortcuts (CapCut-style)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return;
-      }
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        handlePlayPause();
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        handleSeek(Math.min(totalFrames - 1, currentFrame + (e.shiftKey ? 30 : 1)));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        handleSeek(Math.max(0, currentFrame - (e.shiftKey ? 30 : 1)));
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        handleSplitAtPlayhead();
-      } else if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedLayerId && activeScene) {
-          e.preventDefault();
-          removeLayer(activeScene.id, selectedLayerId);
-          setSelectedLayerId(undefined);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlaying, currentFrame, totalFrames, selectedLayerId, activeScene]);
 
   function handlePlayPause() {
     const player = playerInstance || playerRef.current;
@@ -203,6 +174,7 @@ export const SocialGenerator: React.FC = () => {
 
   const handleExportMp4 = async () => {
     setIsExporting(true);
+    setRenderError(null);
     try {
       const job = await renderClient.create({
         schemaVersion: 'video-schema-v1',
@@ -217,18 +189,44 @@ export const SocialGenerator: React.FC = () => {
       setRenderJob(job);
     } catch (error) {
       console.error('Error starting render job:', error);
+      setRenderError(error instanceof Error ? error.message : 'No se pudo iniciar el render.');
     } finally {
       setIsExporting(false);
     }
   };
 
+  const shortcutBindings: ShortcutBinding[] = [
+    { shortcut: 'Space', onTrigger: () => handlePlayPause() },
+    { shortcut: 'ArrowRight', onTrigger: (event) => handleSeek(Math.min(totalFrames - 1, currentFrame + (event.shiftKey ? 30 : 1))) },
+    { shortcut: 'ArrowLeft', onTrigger: (event) => handleSeek(Math.max(0, currentFrame - (event.shiftKey ? 30 : 1))) },
+    { shortcut: 'mod+b', onTrigger: () => handleSplitAtPlayhead() },
+    { shortcut: 'Delete', preventDefault: false, onTrigger: (event) => {
+      if (selectedLayerId && activeScene) {
+        event.preventDefault();
+        removeLayer(activeScene.id, selectedLayerId);
+        setSelectedLayerId(undefined);
+      }
+    } },
+    { shortcut: 'Backspace', preventDefault: false, onTrigger: (event) => {
+      if (selectedLayerId && activeScene) {
+        event.preventDefault();
+        removeLayer(activeScene.id, selectedLayerId);
+        setSelectedLayerId(undefined);
+      }
+    } },
+  ];
+
   return (
-    <BackofficeShell
+    <ShortcutManager scope="consumer" bindings={shortcutBindings}>
+      <BackofficeShell
       title="Reel Visa Rejection"
       eyebrow="Creative Studio"
       breadcrumbs={['Marketing Studio', 'Video Studio', 'Reel Visa Rejection']}
       mode="full-bleed"
       hideModuleHeader={true}
+      mobileSafeMode
+      mobileSafeModeTitle="Video Studio disponible en tablet y escritorio"
+      mobileSafeModeDescription="La edición completa de escenas y timeline requiere una pantalla de al menos 768 px de ancho."
       toolbar={
         <CreativeEditorToolbar
           projectTitle="Reel Visa Rejection"
@@ -243,7 +241,23 @@ export const SocialGenerator: React.FC = () => {
           onLoadPreset={() => loadPreset(scenes)}
           onExportMp4={handleExportMp4}
           isExporting={isExporting}
-          renderStatus={renderJob?.status === 'rendering' ? 'rendering' : 'saved'}
+          renderStatus={
+            isOffline
+              ? 'offline'
+              : renderError || renderJob?.status === 'failed' || renderJob?.status === 'cancelled'
+                ? 'error'
+                : renderJob?.status === 'pending'
+                  ? 'saving'
+                  : renderJob?.status === 'rendering'
+                    ? 'rendering'
+                    : 'saved'
+          }
+          renderStatusMessage={renderError ?? renderJob?.error}
+          onRetryRender={
+            !isOffline && (renderError || renderJob?.status === 'failed' || renderJob?.status === 'cancelled')
+              ? handleExportMp4
+              : undefined
+          }
         />
       }
       contextAside={
@@ -396,7 +410,8 @@ export const SocialGenerator: React.FC = () => {
           onAddComponent={(comp) => addComponentLayer(activeScene.id, comp)}
         />
       </div>
-    </BackofficeShell>
+      </BackofficeShell>
+    </ShortcutManager>
   );
 };
 

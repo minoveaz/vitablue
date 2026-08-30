@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import BackofficeShell from '../components/layouts/BackofficeShell';
-import { StudioWorkspaceShell, StudioToolItem } from '../components/backoffice-shell';
+import { ShortcutManager, StudioWorkspaceShell, StudioToolItem } from '../components/backoffice-shell';
+import type { ShortcutBinding } from '../components/backoffice-shell';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
@@ -239,101 +240,6 @@ export const ImageStudio: React.FC = () => {
     }
   }, [cropEditingLayerId, editor.selectedLayerId]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target as HTMLElement).isContentEditable
-      ) {
-        return;
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
-        if (e.shiftKey) {
-          editor.redo();
-        } else {
-          editor.undo();
-        }
-        e.preventDefault();
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') {
-        editor.redo();
-        e.preventDefault();
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'g') {
-        e.preventDefault();
-        if (e.shiftKey) {
-          if (editor.selectedLayer) {
-            editor.ungroupLayer(editor.selectedLayer.id);
-          }
-        } else {
-          editor.groupSelectedLayers();
-        }
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
-        if (e.altKey) {
-          editor.copyLayerStyle();
-          showToast('Estilo copiado al portapapeles');
-        } else {
-          editor.copySelectedLayers();
-          showToast('Capa(s) copiada(s) al portapapeles');
-        }
-        e.preventDefault();
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'v') {
-        if (e.altKey) {
-          editor.pasteLayerStyle();
-          showToast('Estilo pegado');
-        } else {
-          editor.pasteLayers();
-          showToast('Capa(s) pegada(s)');
-        }
-        e.preventDefault();
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd') {
-        e.preventDefault();
-        if (editor.selectedLayerIds.length > 1) {
-          editor.duplicateSelectedLayers();
-        } else if (editor.selectedLayerId) {
-          editor.duplicateLayer(editor.selectedLayerId);
-        }
-      }
-
-      if (e.key === 'ArrowLeft') {
-        editor.nudgeSelectedLayers(e.shiftKey ? -2.0 : -0.2, 0);
-        e.preventDefault();
-      } else if (e.key === 'ArrowRight') {
-        editor.nudgeSelectedLayers(e.shiftKey ? 2.0 : 0.2, 0);
-        e.preventDefault();
-      } else if (e.key === 'ArrowUp') {
-        editor.nudgeSelectedLayers(0, e.shiftKey ? -2.0 : -0.2);
-        e.preventDefault();
-      } else if (e.key === 'ArrowDown') {
-        editor.nudgeSelectedLayers(0, e.shiftKey ? 2.0 : 0.2);
-        e.preventDefault();
-      }
-
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (editor.selectedLayerIds.length > 0) {
-          editor.deleteSelectedLayers();
-          e.preventDefault();
-        } else if (editor.selectedLayerId) {
-          editor.removeLayer(editor.selectedLayerId);
-          e.preventDefault();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [editor, showToast]);
-
   const handleSelectLayer = (id: string, isShift?: boolean) => {
     if (editingLayerId && editingLayerId !== id) {
       setEditingLayerId(null);
@@ -548,9 +454,62 @@ export const ImageStudio: React.FC = () => {
     { id: 'video-bridge', label: 'Preparar vídeo', icon: <Video className="size-4" /> },
   ];
 
+  const shortcutBindings: ShortcutBinding[] = [
+    { shortcut: 'mod+z', onTrigger: (event) => event.shiftKey ? editor.redo() : editor.undo() },
+    { shortcut: 'mod+y', onTrigger: () => editor.redo() },
+    { shortcut: 'mod+g', onTrigger: (event) => event.shiftKey
+      ? editor.selectedLayer && editor.ungroupLayer(editor.selectedLayer.id)
+      : editor.groupSelectedLayers() },
+    { shortcut: 'mod+c', onTrigger: (event) => {
+      if (event.altKey) {
+        editor.copyLayerStyle();
+        showToast('Estilo copiado al portapapeles');
+      } else {
+        editor.copySelectedLayers();
+        showToast('Capa(s) copiada(s) al portapapeles');
+      }
+    } },
+    { shortcut: 'mod+v', onTrigger: (event) => {
+      if (event.altKey) {
+        editor.pasteLayerStyle();
+        showToast('Estilo pegado');
+      } else {
+        editor.pasteLayers();
+        showToast('Capa(s) pegada(s)');
+      }
+    } },
+    { shortcut: 'mod+d', onTrigger: () => {
+      if (editor.selectedLayerIds.length > 1) editor.duplicateSelectedLayers();
+      else if (editor.selectedLayerId) editor.duplicateLayer(editor.selectedLayerId);
+    } },
+    { shortcut: 'ArrowLeft', onTrigger: (event) => editor.nudgeSelectedLayers(event.shiftKey ? -2 : -0.2, 0) },
+    { shortcut: 'ArrowRight', onTrigger: (event) => editor.nudgeSelectedLayers(event.shiftKey ? 2 : 0.2, 0) },
+    { shortcut: 'ArrowUp', onTrigger: (event) => editor.nudgeSelectedLayers(0, event.shiftKey ? -2 : -0.2) },
+    { shortcut: 'ArrowDown', onTrigger: (event) => editor.nudgeSelectedLayers(0, event.shiftKey ? 2 : 0.2) },
+    { shortcut: 'Delete', preventDefault: false, onTrigger: (event) => {
+      if (editor.selectedLayerIds.length > 0) {
+        event.preventDefault();
+        editor.deleteSelectedLayers();
+      } else if (editor.selectedLayerId) {
+        event.preventDefault();
+        editor.removeLayer(editor.selectedLayerId);
+      }
+    } },
+    { shortcut: 'Backspace', preventDefault: false, onTrigger: (event) => {
+      if (editor.selectedLayerIds.length > 0) {
+        event.preventDefault();
+        editor.deleteSelectedLayers();
+      } else if (editor.selectedLayerId) {
+        event.preventDefault();
+        editor.removeLayer(editor.selectedLayerId);
+      }
+    } },
+  ];
+
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
   return (
-    <InlineEditingProvider
+    <ShortcutManager scope="consumer" bindings={shortcutBindings}>
+      <InlineEditingProvider
       editingLayerId={editingLayerId}
       onRequestEdit={handleRequestEdit}
       onExitEditing={() => setEditingLayerId(null)}
@@ -558,6 +517,9 @@ export const ImageStudio: React.FC = () => {
       <InlineEditorProvider activeLayerId={activeInlineLayerId}>
       <StudioWorkspaceShell
       suiteTitle="Image & Graphic Studio"
+      mobileSafeMode
+      mobileSafeModeTitle="Image Studio disponible en tablet y escritorio"
+      mobileSafeModeDescription="La edición completa del lienzo requiere una pantalla de al menos 768 px de ancho."
       tools={studioTools}
       activeToolId={activeToolId}
       onSelectTool={setActiveToolId}
@@ -766,7 +728,6 @@ export const ImageStudio: React.FC = () => {
           onPasteLayerStyle={editor.pasteLayerStyle}
           onToggleFlipHorizontal={editor.toggleFlipHorizontal}
           onToggleFlipVertical={editor.toggleFlipVertical}
-          onNudgeSelectedLayers={editor.nudgeSelectedLayers}
           onToggleLock={editor.toggleLayerLock}
           onToggleVisibility={editor.toggleLayerVisibility}
           onMoveZIndex={editor.moveLayerZIndex}
@@ -820,7 +781,8 @@ export const ImageStudio: React.FC = () => {
       </div>
       </StudioWorkspaceShell>
       </InlineEditorProvider>
-    </InlineEditingProvider>
+      </InlineEditingProvider>
+    </ShortcutManager>
   );
 };
 

@@ -52,11 +52,23 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   const activeTransitionScene = scenes.find((s) => s.id === activeTransitionSceneId);
 
   return (
-    <div className="flex h-56 shrink-0 flex-col border-t border-slate-800 bg-slate-950 text-white select-none">
+    <section aria-label="Timeline de vídeo" className="flex h-56 shrink-0 flex-col border-t border-slate-800 bg-slate-950 text-white select-none">
       {/* TIMELINE TIME RULER */}
       <div
         className="relative h-6 shrink-0 border-b border-slate-800/80 bg-slate-900/60 px-4 flex items-center cursor-pointer"
         onClick={handleTimelineClick}
+        role="slider"
+        tabIndex={0}
+        aria-label="Posición del cabezal"
+        aria-valuemin={0}
+        aria-valuemax={totalFrames}
+        aria-valuenow={currentFrame}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft') onSeek(Math.max(0, currentFrame - (event.shiftKey ? fps : 1)));
+          if (event.key === 'ArrowRight') onSeek(Math.min(totalFrames, currentFrame + (event.shiftKey ? fps : 1)));
+          if (event.key === 'Home') onSeek(0);
+          if (event.key === 'End') onSeek(totalFrames);
+        }}
       >
         <div className="relative w-full h-full flex items-center">
           {Array.from({ length: Math.ceil(totalSeconds) + 1 }).map((_, sec) => {
@@ -78,8 +90,11 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
       {/* TRACKS CONTAINER WITH SCRUBBING & PLAYHEAD */}
       <div
         ref={containerRef}
-        className="relative flex-1 overflow-x-hidden overflow-y-auto p-3 space-y-2 cursor-pointer"
+        className="relative flex-1 overflow-x-auto overflow-y-auto p-3 space-y-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
         onClick={handleTimelineClick}
+        role="region"
+        aria-label="Pistas del timeline"
+        tabIndex={0}
       >
         {/* PLAYHEAD (AGUJA ROJA) */}
         <div
@@ -108,18 +123,19 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                       e.stopPropagation();
                       setActiveTransitionSceneId(scene.id);
                     }}
-                    className={`relative z-20 -mx-2.5 flex size-5 shrink-0 items-center justify-center rounded-full border shadow-sm transition-all ${
+                    className={`relative z-20 -mx-2.5 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                       scene.transition?.type && scene.transition.type !== 'none'
                         ? 'border-accent bg-accent text-slate-950 scale-110'
                         : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500 hover:text-white'
                     }`}
                     title={`Transición hacia ${index + 1}: ${scene.transition?.type ?? 'Corte directo'}`}
                   >
-                    <Zap className="size-3" />
+                    <Zap className="size-3" aria-hidden="true" />
                   </button>
                 )}
 
-                <div
+                <button
+                  type="button"
                   style={{ width }}
                   onContextMenu={(e) => {
                     e.preventDefault();
@@ -130,6 +146,8 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                     e.stopPropagation();
                     onSelectScene(scene.id, sceneStart);
                   }}
+                  aria-label={`Seleccionar escena ${index + 1}: ${videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}`}
+                  aria-pressed={isActive}
                   className={`group relative flex h-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
                     isActive
                       ? 'border-primary bg-primary/20 text-white shadow-xs'
@@ -153,7 +171,7 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                       </span>
                     )}
                   </div>
-                </div>
+                </button>
               </React.Fragment>
             );
           })}
@@ -169,6 +187,9 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
             return (
               <div
                 key={layer.id}
+                role="group"
+                tabIndex={0}
+                aria-label={`Seleccionar capa ${layer.type}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectLayer(layer.id);
@@ -177,6 +198,12 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                   e.preventDefault();
                   e.stopPropagation();
                   onContextMenu?.(e, { type: 'layer', sceneId: layer.sceneId, layerId: layer.id });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectLayer(layer.id);
+                  }
                 }}
                 className={`flex items-center gap-2 rounded-lg border px-2.5 py-1 text-xs transition-all cursor-pointer ${
                   isSelected
@@ -230,7 +257,9 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                     e.stopPropagation();
                     onToggleLayer(layer.id, 'visible');
                   }}
-                  className="text-slate-500 hover:text-white ml-1"
+                  className="ml-1 flex min-h-11 min-w-11 items-center justify-center text-slate-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+                  aria-label={layer.visible === false ? 'Mostrar capa' : 'Ocultar capa'}
+                  aria-pressed={layer.visible !== false}
                 >
                   {layer.visible === false ? <EyeOff className="size-3 text-amber-400" /> : <Eye className="size-3" />}
                 </button>
@@ -252,6 +281,6 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
           }}
         />
       )}
-    </div>
+    </section>
   );
 };

@@ -9,7 +9,6 @@ interface UseImageStageViewportOptions {
   isCarousel: boolean;
   carouselGeometry: CarouselGeometry;
   onSetZoom: (zoom: number) => void;
-  onNudgeSelectedLayers?: (dx: number, dy: number) => void;
   activeSlideIndex: number;
 }
 
@@ -21,7 +20,6 @@ export const useImageStageViewport = ({
   isCarousel,
   carouselGeometry,
   onSetZoom,
-  onNudgeSelectedLayers,
   activeSlideIndex,
 }: UseImageStageViewportOptions) => {
   const panStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
@@ -38,19 +36,6 @@ export const useImageStageViewport = ({
       if (event.code === 'Space' && !isSpacePressed) setIsSpacePressed(true);
       if (event.key.toLowerCase() === 'v') setToolMode('select');
       if (event.key.toLowerCase() === 'h') setToolMode('hand');
-      if (event.key === 'ArrowLeft') {
-        onNudgeSelectedLayers?.(event.shiftKey ? -2 : -0.2, 0);
-        event.preventDefault();
-      } else if (event.key === 'ArrowRight') {
-        onNudgeSelectedLayers?.(event.shiftKey ? 2 : 0.2, 0);
-        event.preventDefault();
-      } else if (event.key === 'ArrowUp') {
-        onNudgeSelectedLayers?.(0, event.shiftKey ? -2 : -0.2);
-        event.preventDefault();
-      } else if (event.key === 'ArrowDown') {
-        onNudgeSelectedLayers?.(0, event.shiftKey ? 2 : 0.2);
-        event.preventDefault();
-      }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.code === 'Space') setIsSpacePressed(false);
@@ -61,7 +46,7 @@ export const useImageStageViewport = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isSpacePressed, onNudgeSelectedLayers]);
+  }, [isSpacePressed]);
 
   useEffect(() => {
     const container = containerRef.current;

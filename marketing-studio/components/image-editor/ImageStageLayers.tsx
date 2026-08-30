@@ -11,6 +11,7 @@ interface ImageStageLayersProps extends ImageStageInteractionHandlers {
   project: ImageProject;
   selectedLayerId: string | null;
   selectedLayerIds: string[];
+  onSelectLayer?: (id: string, isShift?: boolean) => void;
   effectiveHandMode: boolean;
   isPanning: boolean;
   draggingLayerId: string | null;
@@ -20,7 +21,7 @@ interface ImageStageLayersProps extends ImageStageInteractionHandlers {
   onCropChange?: (crop: ImageCrop) => void;
 }
 
-export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, selectedLayerId, selectedLayerIds, effectiveHandMode, isPanning, draggingLayerId, onUpdateLayerProps, cropEditingLayerId, cropDraft, onCropChange, handlePointerDown, handleContextMenu, handleResizeStart, handleRotateStart }) => (
+export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, selectedLayerId, selectedLayerIds, onSelectLayer, effectiveHandMode, isPanning, draggingLayerId, onUpdateLayerProps, cropEditingLayerId, cropDraft, onCropChange, handlePointerDown, handleContextMenu, handleResizeStart, handleRotateStart }) => (
   <>
           {/* RENDER LAYERS */}
           {project.layers.map((layer) => {
@@ -94,7 +95,19 @@ export const ImageStageLayers: React.FC<ImageStageLayersProps> = ({ project, sel
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className={`canvas-layer-item absolute transition-shadow shrink-0 [&_*]:cursor-inherit ${
+                role="button"
+                tabIndex={0}
+                aria-label={`Seleccionar capa ${layer.title}`}
+                aria-pressed={isSelected}
+                aria-disabled={isLocked}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onSelectLayer?.(layer.id, event.shiftKey);
+                  }
+                }}
+                className={`canvas-layer-item absolute transition-shadow shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 [&_*]:cursor-inherit ${
                   isCropEditing ? '' : getClipClass(layer.clipShape)
                 } ${
                   effectiveHandMode

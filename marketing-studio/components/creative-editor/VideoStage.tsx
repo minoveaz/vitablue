@@ -171,7 +171,10 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       onPointerUp={handlePointerUp}
       onContextMenu={onContextMenu}
       onClick={() => onSelectLayer?.(undefined)}
-      className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] select-none ${
+      role="region"
+      aria-label="Lienzo de vídeo"
+      tabIndex={0}
+      className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
         isHandToolActive ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
       }`}
     >
@@ -236,10 +239,11 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           <button
             type="button"
             onClick={() => setPanOffset({ x: 0, y: 0 })}
-            className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            aria-label="Centrar lienzo"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Centrar lienzo"
           >
-            <RotateCcw className="size-3.5" />
+            <RotateCcw className="size-3.5" aria-hidden="true" />
           </button>
         )}
 
@@ -247,10 +251,11 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         <button
           type="button"
           onClick={() => handleStepZoom(-10)}
-          className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          aria-label="Reducir zoom"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title="Alejar (Zoom out)"
         >
-          <Minus className="size-3.5" />
+          <Minus className="size-3.5" aria-hidden="true" />
         </button>
 
         {/* SLIDER DE ZOOM */}
@@ -260,6 +265,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           max={200}
           step={5}
           value={numericZoom}
+          aria-label="Nivel de zoom del lienzo"
           onChange={(e) => onZoomLevelChange?.(Number(e.target.value))}
           className="w-20 sm:w-28 accent-primary h-1 bg-slate-700 rounded-lg cursor-pointer"
           title={`Zoom: ${numericZoom}%`}
@@ -269,10 +275,11 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         <button
           type="button"
           onClick={() => handleStepZoom(10)}
-          className="flex size-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+          aria-label="Aumentar zoom"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title="Acercar (Zoom in)"
         >
-          <Plus className="size-3.5" />
+          <Plus className="size-3.5" aria-hidden="true" />
         </button>
 
         {/* INDICADOR DE PORCENTAJE NUMÉRICO */}
@@ -284,14 +291,15 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         <button
           type="button"
           onClick={handleResetFit}
-          className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition-all ${
+          aria-label="Ajustar al lienzo"
+          className={`flex min-h-11 items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             isFit
               ? 'bg-primary/30 text-brand-cyan border border-primary/40'
               : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
           }`}
           title="Ajustar al tamaño de pantalla"
         >
-          <Maximize2 className="size-3" />
+          <Maximize2 className="size-3" aria-hidden="true" />
           <span>Ajustar</span>
         </button>
       </div>

@@ -19,6 +19,7 @@ import {
 } from '../utils/creativeProjectRepository';
 import { clampLayerPosition, validateImageProject, ImageProjectValidationIssue } from '../utils/imageProjectValidation';
 import { saveCustomElement } from '../utils/savedElementsStorage';
+import { useCreativeStudioOnlineStatus } from '../../components/backoffice-shell/primitives';
 import { normalizeEditableVectorGeometry, normalizeGeometricShapeProps } from '../utils/vectorGeometry';
 import { TextPresetItem } from '../data/textPresets';
 import { generateSmartCanvasProject, SmartComposerOptions } from '../utils/smartCanvasComposer';
@@ -125,7 +126,8 @@ export function useImageProjectEditor(
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>(new Date().toISOString());
   const [validationIssues, setValidationIssues] = useState<ImageProjectValidationIssue[]>([]);
-  const [saveState, setSaveState] = useState<'saved' | 'saving' | 'recovery' | 'error'>('saved');
+  const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
+  const isOffline = !useCreativeStudioOnlineStatus();
 
   const lastLoadedProjectRef = useRef<string>('');
   const currentProjectRef = useRef(project);
@@ -2313,6 +2315,8 @@ export function useImageProjectEditor(
   }, [pushHistory]);
 
   const selectedLayer = project.layers.find((l) => l.id === selectedLayerId) ?? null;
+  const effectiveSaveState: 'saved' | 'saving' | 'error' | 'offline' =
+    isOffline ? 'offline' : saveState;
   const retrySave = useCallback(() => {
     const retried = autosaveQueueRef.current?.retry() ?? false;
     if (retried) setSaveState('saving');
@@ -2332,7 +2336,8 @@ export function useImageProjectEditor(
     setPreviewMode,
     isExporting,
     lastSavedAt,
-    saveState,
+    saveState: effectiveSaveState,
+    isOffline,
     retrySave,
     validationIssues,
     canUndo: historyIndex > 0,

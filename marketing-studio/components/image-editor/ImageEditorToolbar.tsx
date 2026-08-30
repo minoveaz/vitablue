@@ -25,7 +25,8 @@ import {
 } from 'lucide-react';
 import { ImageFormatPreset, ImagePreviewMode, ImageProject } from '../../types/imageStudio';
 import { useActiveInlineEditor } from './InlineEditorContext';
-import { formatRelativeSavedTime } from '../../utils/relativeTime';
+import { LiveStatus } from '../../../components/backoffice-shell/primitives';
+import type { CreativeStudioEditorState } from '../../../components/backoffice-shell/contracts/creativeStudioShell';
 
 export interface ImageEditorToolbarProps {
   project: ImageProject;
@@ -36,7 +37,7 @@ export interface ImageEditorToolbarProps {
   previewMode: ImagePreviewMode;
   isInspectorOpen: boolean;
   lastSavedAt?: string;
-  saveState?: 'saved' | 'saving' | 'recovery' | 'error';
+  saveState?: CreativeStudioEditorState;
   onRetrySave?: () => void;
   onBackToHub?: () => void;
   onToggleInspector: () => void;
@@ -84,7 +85,6 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [damSaved, setDamSaved] = useState(false);
-  const [relativeSavedTime, setRelativeSavedTime] = useState(() => formatRelativeSavedTime(lastSavedAt));
 
   const exportRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
@@ -102,13 +102,6 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const updateRelativeSavedTime = () => setRelativeSavedTime(formatRelativeSavedTime(lastSavedAt));
-    updateRelativeSavedTime();
-    const interval = window.setInterval(updateRelativeSavedTime, 60_000);
-    return () => window.clearInterval(interval);
-  }, [lastSavedAt]);
-
   const handleSaveDam = () => {
     onSaveToDam();
     setDamSaved(true);
@@ -116,14 +109,15 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   };
 
   return (
-    <div className="flex h-10 w-full items-center justify-between gap-2.5 text-white select-none">
+    <div role="toolbar" aria-label="Controles de Image Studio" className="flex min-h-11 w-full max-w-full flex-wrap items-center justify-between gap-2.5 overflow-x-auto py-0.5 text-white select-none">
       {/* 1. SECCIÓN IZQUIERDA: VOLVER + NOMBRE DEL DISEÑO + ESTADO DE GUARDADO */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
         {onBackToHub && (
           <button
             type="button"
             onClick={onBackToHub}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-bold text-slate-300 hover:bg-slate-900 hover:text-white hover:border-slate-700 transition-colors shrink-0"
+            aria-label="Volver al Hub de proyectos"
+            className="flex min-h-11 items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1 text-xs font-bold text-slate-300 hover:bg-slate-900 hover:text-white hover:border-slate-700 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Volver al Hub de proyectos"
           >
             <ArrowLeft className="size-3.5 text-slate-400" />
@@ -149,60 +143,12 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         </div>
 
         {/* INDICADOR DINÁMICO DE AUTOGUARDADO */}
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className={`flex items-center gap-1.5 text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 border transition-all ${
-            saveState === 'saving'
-              ? 'text-amber-400 bg-amber-950/40 border-amber-500/30'
-              : saveState === 'recovery'
-              ? 'text-cyan-400 bg-cyan-950/40 border-cyan-500/30'
-              : saveState === 'error'
-              ? 'text-rose-300 bg-rose-950/40 border-rose-500/30'
-              : 'text-emerald-400 bg-emerald-950/40 border-emerald-500/20'
-          }`}
-          title={
-            saveState === 'saving'
-              ? 'Guardando cambios...'
-              : saveState === 'error'
-              ? 'No se pudieron guardar los cambios'
-              : lastSavedAt
-              ? relativeSavedTime
-              : 'Guardado'
-          }
-        >
-          <span
-            className={`size-1.5 rounded-full ${
-              saveState === 'saving'
-                ? 'bg-amber-400 animate-spin'
-                : saveState === 'recovery'
-                ? 'bg-cyan-400'
-                : saveState === 'error'
-                ? 'bg-rose-400'
-                : 'bg-emerald-400'
-            }`}
-          />
-          <span>
-            {saveState === 'saving'
-              ? 'Guardando...'
-              : saveState === 'recovery'
-              ? 'Restaurado'
-              : saveState === 'error'
-              ? 'Error al guardar'
-              : relativeSavedTime}
-          </span>
-          {saveState === 'error' && onRetrySave && (
-            <button
-              type="button"
-              onClick={() => { onRetrySave(); }}
-              className="rounded px-1.5 py-0.5 font-sans text-[10px] font-bold text-rose-100 underline underline-offset-2 hover:bg-rose-900/60"
-              aria-label="Reintentar guardado"
-            >
-              Reintentar
-            </button>
-          )}
-        </div>
+        <LiveStatus
+          status={saveState ?? 'saved'}
+          lastSavedAt={lastSavedAt}
+          onRetry={onRetrySave}
+          className="min-h-0 shrink-0 rounded-full border border-slate-800 px-2 py-0.5 text-[10px] font-mono"
+        />
       </div>
 
       {/* 2. SECCIÓN CENTRAL: DESHACER / REHACER COMPACTO */}
@@ -219,7 +165,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               }
             }}
             disabled={activeInlineEditor ? !activeInlineEditor.editor.can().undo() : !canUndo}
-            className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
+            aria-label="Deshacer"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Deshacer (Cmd+Z)"
           >
             <Undo2 className="size-3.5" />
@@ -236,7 +183,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               }
             }}
             disabled={activeInlineEditor ? !activeInlineEditor.editor.can().redo() : !canRedo}
-            className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors"
+            aria-label="Rehacer"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Rehacer (Cmd+Shift+Z)"
           >
             <Redo2 className="size-3.5" />
@@ -254,7 +202,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               type="button"
               aria-pressed={previewMode === mode}
               onClick={() => onSetPreviewMode(mode)}
-              className={`flex size-7 items-center justify-center rounded-lg transition-colors ${
+              aria-label={label}
+              className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                 previewMode === mode
                   ? 'bg-primary/30 text-brand-cyan'
                   : 'text-slate-500 hover:bg-slate-800 hover:text-slate-200'
@@ -270,7 +219,9 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         <button
           type="button"
           onClick={onToggleSafeZones}
-          className={`flex items-center justify-center size-7 rounded-lg border transition-all ${
+          aria-label={showSafeZones ? 'Ocultar zonas seguras' : 'Mostrar zonas seguras'}
+          aria-pressed={showSafeZones}
+          className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             showSafeZones
               ? 'border-accent bg-accent/20 text-accent shadow-xs'
               : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700 hover:text-slate-200'
@@ -285,7 +236,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           <button
             type="button"
             onClick={onOpenCarouselSimulator}
-            className="flex items-center gap-1.5 rounded-lg border border-brand-cyan/40 bg-brand-cyan/15 px-2.5 py-1 text-xs font-bold text-brand-cyan hover:bg-brand-cyan/25 transition-all shadow-xs"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-brand-cyan/40 bg-brand-cyan/15 px-2.5 py-1 text-xs font-bold text-brand-cyan hover:bg-brand-cyan/25 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Abrir simulador móvil interactivo para probar el deslizamiento (swipe)"
           >
             <Smartphone className="size-3.5" />
@@ -300,7 +251,9 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
         <button
           type="button"
           onClick={onToggleInspector}
-          className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-bold transition-all ${
+          aria-label="Mostrar panel de propiedades"
+          aria-pressed={isInspectorOpen}
+          className={`flex min-h-11 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             isInspectorOpen
               ? 'border-primary bg-primary text-white shadow-xs'
               : 'border-slate-800 bg-slate-950 text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -320,7 +273,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-bold transition-all ${
+            className={`flex min-h-11 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
               copied
                 ? 'border-teal-500 bg-teal-950/60 text-brand-cyan shadow-xs'
                 : 'border-slate-800 bg-slate-950 text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -337,7 +290,8 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
           <button
             type="button"
             onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-            className="flex items-center justify-center size-7 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+            aria-label="Más opciones e integraciones"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-slate-800 bg-slate-950 text-slate-400 hover:text-white hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Más opciones e integraciones"
           >
             <MoreHorizontal className="size-4" />
@@ -351,7 +305,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                   handleSaveDam();
                   setIsMoreMenuOpen(false);
                 }}
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
               >
                 {damSaved ? <CheckCircle2 className="size-4 text-emerald-400" /> : <Layers className="size-4 text-slate-400" />}
                 <span>{damSaved ? 'Guardado en DAM' : 'Guardar en DAM'}</span>
@@ -363,7 +317,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                   onSendToVideoStudio?.();
                   setIsMoreMenuOpen(false);
                 }}
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
               >
                 <Video className="size-4 text-brand-cyan" />
                 <span>Preparar para Video Studio</span>
@@ -378,7 +332,10 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
             type="button"
             disabled={isExporting}
             onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-            className="flex items-center gap-1.5 rounded-xl bg-accent px-3 py-1.5 text-xs font-bold text-primary-dark hover:bg-amber-400 shadow-sm transition-all disabled:opacity-50"
+            aria-haspopup="menu"
+            aria-expanded={isExportMenuOpen}
+            aria-label="Descargar diseño"
+            className="flex min-h-11 items-center gap-1.5 rounded-xl bg-accent px-3 py-1.5 text-xs font-bold text-primary-dark hover:bg-amber-400 shadow-sm transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           >
             {isExporting ? <LoaderCircle className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
             <span>Descargar</span>
@@ -399,7 +356,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                       else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     <span>Pack de Diapositivas (ZIP)</span>
                     <span className="rounded bg-brand-cyan/20 text-brand-cyan px-1.5 py-0.5 text-[9px] font-mono font-bold">1-Click</span>
@@ -411,7 +368,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                       else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     <span>Documento LinkedIn (PDF)</span>
                     <span className="rounded bg-blue-500/20 text-blue-300 px-1.5 py-0.5 text-[9px] font-mono font-bold">Doc</span>
@@ -423,7 +380,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                       else onExport('png');
                       setIsExportMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     <span>Tira Panorámica Completa</span>
                     <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">PNG</span>
@@ -437,7 +394,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                       onExport('png');
                       setIsExportMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     <span>Descargar PNG</span>
                     <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-brand-cyan">1080p</span>
@@ -448,7 +405,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
                       onExport('jpeg');
                       setIsExportMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-200 hover:bg-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     <span>Descargar JPEG</span>
                     <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-400">Web</span>

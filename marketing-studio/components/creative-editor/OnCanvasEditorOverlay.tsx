@@ -141,7 +141,26 @@ export const OnCanvasEditorOverlay: React.FC<OnCanvasEditorOverlayProps> = ({
                   setEditingLayerId(layer.id);
                 }
               }}
-              className={`absolute pointer-events-auto cursor-move transition-shadow duration-75 p-2 rounded-xl ${
+              role="group"
+              tabIndex={0}
+              aria-label={`Seleccionar capa ${'title' in layer ? layer.title : layer.type}`}
+              aria-current={isSelected ? 'true' : undefined}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onSelectLayer(layer.id);
+                } else if (event.key.startsWith('Arrow') && !layer.locked) {
+                  event.preventDefault();
+                  const delta = event.shiftKey ? 5 : 1;
+                  const current = resolveLayerPosition('position' in layer ? layer.position : undefined);
+                  const next = {
+                    x: Math.max(0, Math.min(100, current.x + (event.key === 'ArrowLeft' ? -delta : event.key === 'ArrowRight' ? delta : 0))),
+                    y: Math.max(0, Math.min(100, current.y + (event.key === 'ArrowUp' ? -delta : event.key === 'ArrowDown' ? delta : 0))),
+                  };
+                  onUpdateLayerPosition(scene.id, layer.id, next);
+                }
+              }}
+              className={`absolute pointer-events-auto cursor-move transition-shadow duration-75 p-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                 isSelected
                   ? 'border-2 border-primary ring-4 ring-primary/20 shadow-2xl bg-primary/5'
                   : 'hover:border hover:border-dashed hover:border-brand-cyan/60'
