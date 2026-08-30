@@ -120,7 +120,17 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
         )}
       </div>
 
-      {footer && <footer className="shrink-0 border-t border-slate-200 bg-white px-5 py-3">{footer}</footer>}
+      {footer && (
+        <footer
+          className={`shrink-0 border-t ${
+            isFullBleed
+              ? 'border-slate-800 bg-slate-900 p-0'
+              : 'border-slate-200 bg-white px-5 py-3'
+          }`}
+        >
+          {footer}
+        </footer>
+      )}
       </div>
     </div>
   );

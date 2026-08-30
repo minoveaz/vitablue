@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4 y el alcance P0 de 4.75.5 completados; 4.75.6+ pendientes
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4, el alcance P0 de 4.75.5 y la integración progresiva de 4.75.6 completados; fases posteriores pendientes
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -227,6 +227,22 @@ antes de migrar sus hooks y renderers al `CreativeDocument`.
   guardado, render y errores.
 - [x] Revisar colores hard-coded en las superficies modificadas y aplicar
   tokens semánticos del sistema visual.
+
+#### Fase 4.75.6 — Integración progresiva de los shells
+
+- [x] Auditar `ImageStudio.tsx` y localizar la composición efectiva de toolbar,
+  sidebar/layers, stage, inspector, carrusel, preview, crop y exportación.
+- [x] Integrar el workspace de Image Studio con `CreativeStudioShellAdapter`,
+  `SuiteShell`, `SuiteCanvas` y `StudioToolRail` sin anidar
+  `StudioWorkspaceShell` ni duplicar `PlatformHeader`/paneles.
+- [x] Mantener carrusel, slide strip, preview, crop, exportación y edición
+  vectorial como extensiones de dominio; el adapter solo compone regiones.
+- [x] Propagar el guard seguro móvil al adapter y conservar funcionalidad de
+  tablet/escritorio y navegación existente.
+- [x] Añadir pruebas de contrato/integración para el mapping de Image Studio y
+  documentar la frontera de migración.
+- [ ] Extraer completamente las superficies legacy de Image Studio, migrar
+  Video Studio o sustituir sus fachadas.
 
 #### Disponibilidad y contratos de interacción (pendiente)
 

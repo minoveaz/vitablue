@@ -40,6 +40,10 @@ export interface CreativeStudioShellAdapterProps<
   profileSlot?: ReactNode;
   onNavModeChange?: (mode: 'expanded' | 'rail') => void;
   canvasMode?: SuiteCanvasMode;
+  /** Opt-in mobile guard; the editor remains available only from md upward. */
+  mobileSafeMode?: boolean;
+  mobileSafeModeTitle?: string;
+  mobileSafeModeDescription?: string;
   /**
    * Opt-in status presentation for hosts that want the shared lifecycle
    * primitive. Existing editors keep their current status UI by default.
@@ -63,7 +67,6 @@ export const CreativeStudioShellAdapter = <
       {mappedSlots.footer}
     </div>
   ) : mappedSlots.footer;
-
   // Global header and navigation are deliberately owned by SuiteShell. The
   // contract slots for those regions are reserved for a future host override,
   // so accepting them here must not render a second header or sidebar.
@@ -91,6 +94,9 @@ export const CreativeStudioShellAdapter = <
           contextAside={mappedSlots.contextAside}
           aside={mappedSlots.aside}
           footer={footer}
+          mobileSafeMode={props.mobileSafeMode}
+          mobileSafeModeTitle={props.mobileSafeModeTitle}
+          mobileSafeModeDescription={props.mobileSafeModeDescription}
         >
           {mappedSlots.stage}
         </SuiteCanvas>

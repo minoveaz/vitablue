@@ -1,8 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import BackofficeShell from '../components/layouts/BackofficeShell';
-import { ShortcutManager, StudioWorkspaceShell, StudioToolItem } from '../components/backoffice-shell';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import BackofficeShell, { vitablueBackofficeSchema } from '../components/layouts/BackofficeShell';
+import {
+  CreativeStudioShellAdapter,
+  ShortcutManager,
+  StudioToolRail,
+  type StudioToolRailItem,
+} from '../components/backoffice-shell';
 import type { ShortcutBinding } from '../components/backoffice-shell';
+import type { CreativeStudioImageStudioExtension } from '../components/backoffice-shell/contracts';
 import { useImageProjectEditor } from './hooks/useImageProjectEditor';
 import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar';
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
@@ -53,6 +59,7 @@ import {
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const assetId = searchParams.get('assetId');
 
@@ -430,7 +437,7 @@ export const ImageStudio: React.FC = () => {
     );
   }
 
-  const studioTools: StudioToolItem[] = [
+  const studioTools: StudioToolRailItem[] = [
     // 🌟 Posición 1: Biblioteca Personal Unificada
     { id: 'my-designs', label: 'Mis Diseños', icon: <FolderHeart className="size-4" /> },
 
@@ -506,7 +513,89 @@ export const ImageStudio: React.FC = () => {
     } },
   ];
 
-  // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
+  const assetSidebar = (
+    <ImageStudioAssetSidebar
+      activeTab={activeToolId}
+      project={editor.project}
+      selectedLayerId={editor.selectedLayerId}
+      selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
+      selectedLayerIds={editor.selectedLayerIds}
+      onSelectLayer={handleSelectLayer}
+      onLoadTemplate={handleLoadTemplate}
+      onAddBlock={handleAddBlock}
+      onAddTextLayer={editor.addTextLayer}
+      onAddImageLayer={editor.addImageLayer}
+      onInsertSavedLayer={editor.insertSavedLayer}
+      onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
+      onToggleLock={editor.toggleLayerLock}
+      onToggleVisibility={editor.toggleLayerVisibility}
+      onToggleAllLock={editor.toggleAllLayersLock}
+      onToggleAllVisibility={editor.toggleAllLayersVisibility}
+      onMoveZIndex={editor.moveLayerZIndex}
+      onDistributeSelectedLayers={editor.distributeSelectedLayers}
+      onReorderLayers={editor.reorderLayers}
+      onRenameLayer={editor.renameLayer}
+      onDuplicateLayer={editor.duplicateLayer}
+      onRemoveLayer={editor.removeLayer}
+      onDeleteSelectedLayers={editor.deleteSelectedLayers}
+      onUpdateGuideSettings={editor.updateGuideSettings}
+      onAutoLayout={editor.applyAutoLayout}
+      onFitText={editor.fitSelectedText}
+      onApplyVariant={editor.applyStyleVariant}
+      onAlignSelectedLayers={editor.alignSelectedLayers}
+      onGroupSelectedLayers={editor.groupSelectedLayers}
+      onUngroupLayer={editor.ungroupLayer}
+      onUpdateLayerProps={editor.updateLayerProps}
+      onReplaceLayerContent={editor.replaceLayerContent}
+      onUpdateLayerPosition={editor.updateLayerPosition}
+      onUpdateLayerOpacity={editor.updateLayerOpacity}
+      onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
+      onUpdateLayerBorder={editor.updateLayerBorder}
+      onPrepareVideo={(settings) => {
+        const videoProject = saveImageVideoHandoff(editor.project);
+        localStorage.setItem('vitablue:image-video-preparation', JSON.stringify(settings));
+        showToast(`Vídeo preparado: ${settings.durationInSeconds}s`);
+        window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
+      }}
+      onRegenerateBackground={editor.regenerateCarouselBackground}
+      onUpdateBrandCompositionConfig={editor.updateBrandCompositionConfig}
+      onUploadImage={uploadImage}
+      onListImages={listImages}
+      onDeleteImage={deleteImage}
+      onListProjects={listProjects}
+      onDuplicateProject={duplicateProject}
+      onArchiveProject={archiveProject}
+    />
+  );
+
+  const imageExtension: CreativeStudioImageStudioExtension = {
+    domain: 'image',
+    capabilities: ['slide-strip', 'preview', 'crop', 'export'],
+    slots: {
+      slideStrip: (
+        <CarouselSlideStrip
+          project={editor.project}
+          activeSlideIndex={activeSlideIndex}
+          onSelectSlide={editor.setCurrentSlide}
+          onReorderSlides={editor.reorderCarouselSlides}
+          onDuplicateSlide={editor.duplicateCarouselSlide}
+          onChangeLayout={editor.updateCarouselLayout}
+        />
+      ),
+      preview: (
+        <CarouselMobileSimulator
+          isOpen={isCarouselSimulatorOpen}
+          onClose={() => setIsCarouselSimulatorOpen(false)}
+          project={editor.project}
+          comparisonBefore={carouselComparisonBefore}
+          onApplyVariant={handleApplyCarouselVariant}
+          onAdaptAspectRatio={handleAdaptCarouselAspectRatio}
+        />
+      ),
+    },
+  };
+
+  // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (ADAPTER DEL SHELL COMPARTIDO)
   return (
     <ShortcutManager scope="consumer" bindings={shortcutBindings}>
       <InlineEditingProvider
@@ -515,69 +604,45 @@ export const ImageStudio: React.FC = () => {
       onExitEditing={() => setEditingLayerId(null)}
     >
       <InlineEditorProvider activeLayerId={activeInlineLayerId}>
-      <StudioWorkspaceShell
-      suiteTitle="Image & Graphic Studio"
+      <CreativeStudioShellAdapter
+      domain="image"
+      state={{ status: editor.saveState, lastSavedAt: editor.lastSavedAt }}
+      extensions={imageExtension}
+      capabilities={['platform-header', 'suite-navigation', 'toolbar', 'stage', 'inspector', 'bottom-workspace', 'overlays']}
       mobileSafeMode
       mobileSafeModeTitle="Image Studio disponible en tablet y escritorio"
       mobileSafeModeDescription="La edición completa del lienzo requiere una pantalla de al menos 768 px de ancho."
-      tools={studioTools}
-      activeToolId={activeToolId}
-      onSelectTool={setActiveToolId}
-      drawerContent={
-        <ImageStudioAssetSidebar
-          activeTab={activeToolId}
-          project={editor.project}
-          selectedLayerId={editor.selectedLayerId}
-          selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
-          selectedLayerIds={editor.selectedLayerIds}
-          onSelectLayer={handleSelectLayer}
-          onLoadTemplate={handleLoadTemplate}
-          onAddBlock={handleAddBlock}
-          onAddTextLayer={editor.addTextLayer}
-          onAddImageLayer={editor.addImageLayer}
-          onInsertSavedLayer={editor.insertSavedLayer}
-          onUpdateBackground={(gradient, color) => editor.updateBackground({ gradient, color })}
-          onToggleLock={editor.toggleLayerLock}
-          onToggleVisibility={editor.toggleLayerVisibility}
-          onToggleAllLock={editor.toggleAllLayersLock}
-          onToggleAllVisibility={editor.toggleAllLayersVisibility}
-          onMoveZIndex={editor.moveLayerZIndex}
-          onDistributeSelectedLayers={editor.distributeSelectedLayers}
-          onReorderLayers={editor.reorderLayers}
-          onRenameLayer={editor.renameLayer}
-          onDuplicateLayer={editor.duplicateLayer}
-          onRemoveLayer={editor.removeLayer}
-          onDeleteSelectedLayers={editor.deleteSelectedLayers}
-          onUpdateGuideSettings={editor.updateGuideSettings}
-          onAutoLayout={editor.applyAutoLayout}
-          onFitText={editor.fitSelectedText}
-          onApplyVariant={editor.applyStyleVariant}
-          onAlignSelectedLayers={editor.alignSelectedLayers}
-          onGroupSelectedLayers={editor.groupSelectedLayers}
-          onUngroupLayer={editor.ungroupLayer}
-          onUpdateLayerProps={editor.updateLayerProps}
-          onReplaceLayerContent={editor.replaceLayerContent}
-          onUpdateLayerPosition={editor.updateLayerPosition}
-          onUpdateLayerOpacity={editor.updateLayerOpacity}
-          onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
-          onUpdateLayerBorder={editor.updateLayerBorder}
-          onPrepareVideo={(settings) => {
-            const videoProject = saveImageVideoHandoff(editor.project);
-            localStorage.setItem('vitablue:image-video-preparation', JSON.stringify(settings));
-            showToast(`Vídeo preparado: ${settings.durationInSeconds}s`);
-            window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
-          }}
-          onRegenerateBackground={editor.regenerateCarouselBackground}
-          onUpdateBrandCompositionConfig={editor.updateBrandCompositionConfig}
-          onUploadImage={uploadImage}
-          onListImages={listImages}
-          onDeleteImage={deleteImage}
-          onListProjects={listProjects}
-          onDuplicateProject={duplicateProject}
-          onArchiveProject={archiveProject}
-        />
-      }
-      toolbar={
+      schema={vitablueBackofficeSchema}
+      onNavigate={(route) => navigate(route.routeId)}
+      activeModuleId="image-studio"
+      suiteTitle="Image & Graphic Studio"
+      slots={{
+        toolRail: (
+          <StudioToolRail
+            items={studioTools}
+            activeToolId={activeToolId}
+            onSelect={(toolId) => setActiveToolId((current) => (current === toolId ? null : toolId))}
+          />
+        ),
+        resourcePanel: activeToolId ? (
+          <div className="flex min-h-0 min-w-0 w-[min(24rem,32vw)] shrink-0 flex-col border-r border-slate-800 bg-slate-900/98 text-white shadow-2xl">
+            <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-slate-800 bg-slate-950 px-4 py-2">
+              <span className="truncate text-xs font-black uppercase tracking-wider text-slate-200">
+                {studioTools.find((tool) => tool.id === activeToolId)?.label ?? 'Herramientas'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveToolId(null)}
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+                aria-label="Cerrar panel lateral"
+              >
+                ×
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 custom-scrollbar">{assetSidebar}</div>
+          </div>
+        ) : null,
+      toolbar: <>
         <ImageEditorToolbar
           project={editor.project}
           canUndo={editor.canUndo}
@@ -614,8 +679,6 @@ export const ImageStudio: React.FC = () => {
             showToast('Composición enviada a Video Studio');
           }}
         />
-      }
-      contextualToolbar={
         <ContextualToolbar
           context={
             editor.selectedLayerIds.length > 1
@@ -663,9 +726,9 @@ export const ImageStudio: React.FC = () => {
             />
           ) : null}
         </ContextualToolbar>
-      }
-      asideVisible={isInspectorOpen}
-      aside={
+      </>,
+      inspector:
+        isInspectorOpen ? (
           <ImageStudioInspector
             project={editor.project}
             selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
@@ -700,8 +763,9 @@ export const ImageStudio: React.FC = () => {
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />
-      }
-    >
+        ) : undefined
+      ,
+      stage: (
       <div className="flex h-full w-full flex-col overflow-hidden relative">
         {/* CENTER CANVAS STAGE (MOTIONKIT + 8-POINT BOUNDING BOX + ROTATION + SNAPPING) */}
         <ImageStage
@@ -753,25 +817,6 @@ export const ImageStudio: React.FC = () => {
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
         />
-        <CarouselSlideStrip
-          project={editor.project}
-          activeSlideIndex={activeSlideIndex}
-          onSelectSlide={editor.setCurrentSlide}
-          onReorderSlides={editor.reorderCarouselSlides}
-          onDuplicateSlide={editor.duplicateCarouselSlide}
-          onChangeLayout={editor.updateCarouselLayout}
-        />
-
-        {/* CAROUSEL MOBILE INTERACTIVE SIMULATOR MODAL */}
-        <CarouselMobileSimulator
-          isOpen={isCarouselSimulatorOpen}
-          onClose={() => setIsCarouselSimulatorOpen(false)}
-          project={editor.project}
-          comparisonBefore={carouselComparisonBefore}
-          onApplyVariant={handleApplyCarouselVariant}
-          onAdaptAspectRatio={handleAdaptCarouselAspectRatio}
-        />
-
         {/* TOAST NOTIFICATION */}
         {toastMessage && (
           <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-slate-900 px-4 py-3 text-xs font-bold text-white shadow-2xl border border-slate-700 animate-slideUp">
@@ -779,7 +824,9 @@ export const ImageStudio: React.FC = () => {
           </div>
         )}
       </div>
-      </StudioWorkspaceShell>
+      )
+      }}
+    />
       </InlineEditorProvider>
       </InlineEditingProvider>
     </ShortcutManager>
