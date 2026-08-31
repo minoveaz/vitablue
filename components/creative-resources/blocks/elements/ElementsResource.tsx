@@ -27,26 +27,22 @@ import {
   filterElementCatalog,
   getElementCatalogTool,
   StaticElementCatalogPayload,
-} from '../../../data/elementCatalog';
+} from '../../../../marketing-studio/data/elementCatalog';
 import {
   ElementCatalogCategoryId,
   ElementCatalogResource,
   ElementResourceScope,
   ElementStudioFormat,
-} from '../../../types/elementCatalog';
-import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
+} from '../../../../marketing-studio/types/elementCatalog';
+import { ImageBlockType, ImageLayer } from '../../../../marketing-studio/types/imageStudio';
 import {
   getSavedCustomElements,
   SavedCustomElement,
-} from '../../../utils/savedElementsStorage';
-import { ElementResourcePreview } from '../blocks/ElementResourcePreview';
+} from '../../../../marketing-studio/utils/savedElementsStorage';
+import { ElementResourcePreview } from '../../../../marketing-studio/components/image-editor/blocks/ElementResourcePreview';
+import type { ResourceBlockProps } from '../ResourceBlockProps';
 
-export interface ImageStudioElementsDrawerProps {
-  onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
-  onAddImageLayer?: (imageUrl: string, options?: { title?: string }) => void;
-  onInsertSavedLayer?: (layer: ImageLayer) => void;
-}
-
+export type ElementsResourceProps = ResourceBlockProps;
 type DrawerPayload =
   | StaticElementCatalogPayload
   | { source: 'saved'; saved: SavedCustomElement };
@@ -207,11 +203,13 @@ const ResourceCard: React.FC<{
   );
 };
 
-export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps> = ({
-  onAddBlock,
-  onAddImageLayer,
-  onInsertSavedLayer,
-}) => {
+export const ElementsResource: React.FC<ElementsResourceProps> = ({ context }) => {
+  const onAddBlock = (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) =>
+    context.actions.insert?.({ kind: 'element', value: { blockType, defaultProps } } as never);
+  const onAddImageLayer = (imageUrl: string, options?: { title?: string }) =>
+    context.actions.insert?.({ kind: 'media', value: { imageUrl, options } } as never);
+  const onInsertSavedLayer = (layer: ImageLayer) =>
+    context.actions.insert?.({ kind: 'element', value: { savedLayer: layer } } as never);
   const [activeTool, setActiveTool] = useState<ActiveTool>('forma');
   const [selectedCategory, setSelectedCategory] = useState<CatalogSelection>('all');
   const [selectedScope, setSelectedScope] = useState<ElementResourceScope>('system');
@@ -374,9 +372,13 @@ export const ImageStudioElementsDrawer: React.FC<ImageStudioElementsDrawerProps>
 
   const showDiscovery = !searchQuery.trim() && activeTool !== 'all' && !showMoreResources;
 
+  if (context.state === 'disabled') return <div role="status" className="p-4 text-xs text-slate-400">Elementos no disponibles en este estudio.</div>;
+  if (context.state === 'loading') return <div role="status" className="p-4 text-xs text-slate-400">Cargando elementos…</div>;
+  if (context.state === 'error') return <div role="alert" className="p-4 text-xs text-rose-200">{context.error ?? 'No se pudieron cargar los elementos.'}</div>;
+
   return (
-    <div className="flex h-full flex-col bg-primary-dark text-slate-100">
-      <div className="shrink-0 space-y-3 border-b border-slate-800 bg-primary-dark p-3">
+    <div className="flex h-full flex-col bg-primary-dark text-slate-100" data-resource-block="elements" data-core-resource-content="elements">
+      <div data-resource-header className="shrink-0 space-y-3 border-b border-slate-800 bg-primary-dark p-3">
         <label className="relative block">
           <span className="sr-only">Buscar elementos</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />

@@ -27,6 +27,8 @@ export interface StudioToolRailItem {
   icon?: React.ReactNode;
   badge?: React.ReactNode;
   disabled?: boolean;
+  section?: 'core' | 'extensions';
+  sectionLabel?: string;
 }
 
 export interface StudioToolRailProps {
@@ -66,35 +68,56 @@ export const StudioToolRail: React.FC<StudioToolRailProps> = ({
           : 'w-full flex-row flex-wrap items-center border-b'
       } ${className}`}
     >
-      {items.map((item) => {
+      {items.map((item, index) => {
         const active = item.id === activeToolId;
+        const previousItem = items[index - 1];
+        const startsSection = item.section && item.section !== previousItem?.section;
         return (
-          <button
-            key={item.id}
-            type="button"
-            disabled={item.disabled}
-            aria-label={item.label}
-            aria-pressed={active}
-            title={item.label}
-            onClick={() => onSelect(item.id)}
-            className={`group relative flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border px-1.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
-              orientation === 'vertical' ? 'flex-col' : 'flex-row'
-            } ${
-              active
-                ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan'
-                : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-            } disabled:pointer-events-none disabled:opacity-40`}
-          >
-            {item.icon && <span aria-hidden="true">{item.icon}</span>}
-            <span className={orientation === 'vertical' ? 'max-w-14 truncate text-[9px] font-bold' : 'text-xs font-semibold'}>
-              {item.label}
-            </span>
-            {item.badge !== undefined && (
-              <span className="absolute right-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-black text-primary-dark">
-                {item.badge}
+          <React.Fragment key={item.id}>
+            {startsSection && index > 0 && (
+              <div
+                role="separator"
+                aria-label={item.sectionLabel}
+                data-creative-resource-navigation={item.section}
+                className="mx-2 my-2 border-t border-slate-700"
+              />
+            )}
+            {startsSection && item.sectionLabel && (
+              <span
+                aria-hidden="true"
+                className="max-w-14 truncate px-1 py-1 text-center text-[8px] font-black uppercase tracking-wider text-slate-500"
+              >
+                {item.sectionLabel}
               </span>
             )}
-          </button>
+            <button
+              type="button"
+              disabled={item.disabled}
+              aria-label={item.label}
+              aria-pressed={active}
+              title={item.label}
+              data-creative-resource-item={item.id}
+              data-creative-resource-section={item.section}
+              onClick={() => onSelect(item.id)}
+              className={`group relative flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-xl border px-1.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
+                orientation === 'vertical' ? 'flex-col' : 'flex-row'
+              } ${
+                active
+                  ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan'
+                  : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+              } disabled:pointer-events-none disabled:opacity-40`}
+            >
+              {item.icon && <span aria-hidden="true">{item.icon}</span>}
+              <span className={orientation === 'vertical' ? 'max-w-14 truncate text-[9px] font-bold' : 'text-xs font-semibold'}>
+                {item.label}
+              </span>
+              {item.badge !== undefined && (
+                <span className="absolute right-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-black text-primary-dark">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          </React.Fragment>
         );
       })}
       {footerSlot && <div className="mt-auto shrink-0">{footerSlot}</div>}

@@ -10,16 +10,48 @@ describe('Video Studio Image Studio visual contract', () => {
     const source = readProjectFile(
       'marketing-studio/components/creative-editor/CreativeEditorToolbar.tsx',
     );
+    const sharedSource = readProjectFile(
+      'components/backoffice-shell/primitives/StudioToolbar.tsx',
+    );
 
-    expect(source).toContain('data-visual-contract="image-studio-toolbar"');
-    expect(source).toContain('min-h-11');
-    expect(source).toContain('rounded-xl border border-slate-800 bg-slate-950');
-    expect(source).toContain('bg-primary/30 text-brand-cyan');
-    expect(source).toContain('focus-visible:ring-2 focus-visible:ring-brand-cyan/80');
+    expect(source).toContain('<StudioToolbar');
+    expect(sharedSource).toContain('data-visual-contract="image-studio-toolbar"');
+    expect(sharedSource).toContain('min-h-11');
+    expect(sharedSource).toContain('rounded-xl border border-slate-800 bg-slate-950');
+    expect(sharedSource).toContain('bg-primary/30 text-brand-cyan');
+    expect(sharedSource).toContain('focus-visible:ring-2 focus-visible:ring-brand-cyan/80');
     expect(source).toContain('onAspectRatioChange');
     expect(source).toContain('onToggleSafeZones');
     expect(source).toContain('onZoomLevelChange');
     expect(source).toContain('onExportMp4');
+  });
+
+  it('renders both studio toolbars through one shared contract', () => {
+    const imageSource = readProjectFile(
+      'marketing-studio/components/image-editor/ImageEditorToolbar.tsx',
+    );
+    const videoSource = readProjectFile(
+      'marketing-studio/components/creative-editor/CreativeEditorToolbar.tsx',
+    );
+    const sharedSource = readProjectFile(
+      'components/backoffice-shell/primitives/StudioToolbar.tsx',
+    );
+
+    expect(imageSource).toContain('<StudioToolbar');
+    expect(videoSource).toContain('<StudioToolbar');
+    expect(imageSource).not.toContain('role="toolbar"');
+    expect(videoSource).not.toContain('role="toolbar"');
+    expect(imageSource).not.toContain('data-visual-contract="image-studio-toolbar"');
+    expect(videoSource).not.toContain('data-visual-contract="image-studio-toolbar"');
+    for (const control of [
+      'LiveStatus',
+      'onToggleSafeZones',
+      'onToggleInspector',
+      'exportOptions',
+      'focus-visible:ring-2 focus-visible:ring-brand-cyan/80',
+    ]) {
+      expect(sharedSource).toContain(control);
+    }
   });
 
   it('keeps both inspectors on the same shared panel contract', () => {
@@ -32,16 +64,19 @@ describe('Video Studio Image Studio visual contract', () => {
     const primitiveSource = readProjectFile(
       'components/backoffice-shell/primitives/StudioPrimitives.tsx',
     );
+    const sharedInspectorSource = readProjectFile(
+      'components/creative-resources/inspector/StudioInspector.tsx',
+    );
 
     for (const source of [imageSource, videoSource]) {
-      expect(source).toContain('<StudioInspectorPanel');
-      expect(source).toContain('as="div"');
-      expect(source).toContain('width="standard"');
-      expect(source).toContain('variant="dark"');
+      expect(source).toContain('<StudioInspector');
       expect(source).toContain('onClose={onClose}');
-      expect(source).toContain('data-creative-studio-region="inspector-content"');
-      expect(source).not.toContain('<ModuleContextPanel');
     }
+    expect(sharedInspectorSource).toContain('<StudioInspectorPanel');
+    expect(sharedInspectorSource).toContain('data-creative-studio-region="inspector-content"');
+    expect(sharedInspectorSource).toContain('as={as}');
+    expect(sharedInspectorSource).toContain('width={width}');
+    expect(sharedInspectorSource).toContain('variant={variant}');
 
     expect(primitiveSource).toContain("panelKind?: 'resource' | 'inspector'");
     expect(primitiveSource).toContain('data-visual-contract={`shared-studio-${panelKind}-panel`}');
@@ -50,17 +85,17 @@ describe('Video Studio Image Studio visual contract', () => {
   });
 
   it('keeps the contextual inspector header, lock states and visible retry errors', () => {
-    const source = readProjectFile(
-      'marketing-studio/components/creative-editor/CreativeEditorInspector.tsx',
-    );
+    const source = readProjectFile('components/creative-resources/inspector/StudioInspector.tsx');
+    const styles = readProjectFile('components/creative-resources/inspector/studioInspectorStyles.ts');
 
-    expect(source).toContain('inspectorIconButtonClass');
+    expect(styles).toContain('studioInspectorIconButtonClass');
     expect(source).toContain('role="alert"');
     expect(source).toContain('No se pudo renderizar el vídeo');
-    expect(source).toContain('onRetryRender');
-    expect(source).toContain('selectedLayer.locked');
-    expect(source).toContain('aria-label={`Color de texto ${c}`}');
-    expect(source).toContain('min-h-11 min-w-11');
+    expect(source).toContain('onRetry');
+    expect(source).toContain('layer.locked');
+    expect(source).toContain('aria-label={layer.visible === false ?');
+    expect(source).toContain('Transformación y posición');
+    expect(styles).toContain('min-h-11 min-w-11');
   });
 
   it('keeps the stage zoom toolbar aligned with the image stage toolbar', () => {
@@ -79,6 +114,26 @@ describe('Video Studio Image Studio visual contract', () => {
     expect(source).toContain('onZoomLevelChange');
     expect(source).toContain('handleResetFit');
     expect(source).toContain("if (zoomLevel === 'fit')");
+  });
+
+  it('keeps stage tool and zoom controls owned by one shared contract', () => {
+    const imageSource = readProjectFile(
+      'marketing-studio/components/image-editor/ImageStageToolbar.tsx',
+    );
+    const videoSource = readProjectFile(
+      'marketing-studio/components/creative-editor/VideoStage.tsx',
+    );
+    const sharedSource = readProjectFile(
+      'components/backoffice-shell/primitives/StudioStageToolbarControls.tsx',
+    );
+
+    expect(imageSource).toContain('<StudioStageToolbarControls');
+    expect(videoSource).toContain('<StudioStageToolbarControls');
+    expect(sharedSource).toContain('aria-label="Herramienta selección"');
+    expect(sharedSource).toContain('aria-label="Nivel de zoom del lienzo"');
+    expect(sharedSource).toContain('aria-label="Ajustar al lienzo"');
+    expect(imageSource).not.toContain('aria-label="Reducir zoom"');
+    expect(videoSource).not.toContain('aria-label="Reducir zoom"');
   });
 
   it('keeps the shared stage parent as a flex column so the renderer receives height', () => {
@@ -131,10 +186,14 @@ describe('Video Studio Image Studio visual contract', () => {
     const source = readProjectFile(
       'marketing-studio/components/creative-editor/CreativeEditorAssetSidebar.tsx',
     );
+    const registryCatalog = readProjectFile(
+      'components/creative-resources/registry/creativeResourceCatalog.ts',
+    );
 
-    for (const label of ['Escenas', 'Brand Kit', 'Capas', 'Audio', 'Storyboard']) {
+    for (const label of ['Escenas', 'Audio', 'Storyboard']) {
       expect(source).toContain(label);
     }
+    expect(registryCatalog).toContain("label: 'Kit de Marca'");
     for (const callback of [
       'onSelectSlide',
       'onAddScene',
@@ -146,7 +205,8 @@ describe('Video Studio Image Studio visual contract', () => {
     ]) {
       expect(source).toContain(callback);
     }
-    expect(source).toContain('role="tablist"');
-    expect(source).toContain('aria-selected={activeTab ===');
+    expect(source).not.toContain('ResourceTabs');
+    expect(readProjectFile('marketing-studio/SocialGenerator.tsx')).toContain('createCreativeResourceToolRail');
+    expect(readProjectFile('components/backoffice-shell/primitives/StudioPrimitives.tsx')).toContain('data-creative-resource-section={item.section}');
   });
 });

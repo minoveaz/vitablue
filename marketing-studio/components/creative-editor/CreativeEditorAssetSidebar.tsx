@@ -1,29 +1,51 @@
-import React, { useState } from 'react';
-import { Layers, Palette, Sparkles, Plus, Copy, Trash2, ChevronUp, ChevronDown, Type, MessageSquare, ShieldCheck, Image, Music, Shield } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Sparkles, Plus, Copy, Trash2, ChevronUp, ChevronDown, Music } from 'lucide-react';
 import type { Scene, SceneTemplateId, LayerType } from '../../../packages/video-studio/src/domain/videoProject';
 import { defaultVisaRejectionProject } from '../../../packages/video-studio/src/domain/defaultProject';
+import {
+  CreativeResourceRegistry,
+  createVideoCreativeResourceContext,
+  CreativeResourceSlot,
+  type CreativeResourceBlockId,
+} from '../../../components/creative-resources';
+
+export type CreativeEditorResourceTab =
+  | 'storyboard'
+  | 'text'
+  | 'elements'
+  | 'media'
+  | 'layers'
+  | 'brand'
+  | 'backgrounds'
+  | 'layout'
+  | 'audio';
 
 export interface CreativeEditorAssetSidebarProps {
   scenes: Scene[];
+  documentId?: string;
   activeSlideId: string;
   onSelectSlide: (sceneId: string) => void;
   onAddScene: (templateId?: SceneTemplateId) => void;
   onDuplicateScene: (sceneId: string) => void;
   onRemoveScene: (sceneId: string) => void;
   onMoveScene: (sceneId: string, direction: 'up' | 'down') => void;
-  onAddLayer: (type: LayerType) => void;
+  onAddLayer: (type: LayerType, assetSrc?: string) => void;
   onAddTextLayer: (text?: string) => void;
   onAddSubtitleLayer: (text?: string) => void;
   onAddComponentLayer: (componentId: string) => void;
   onLoadPreset: (presetScenes: Scene[]) => void;
+  selectedLayerId?: string;
+  onSelectLayer?: (layerId: string | undefined) => void;
+  onUpdateLayerPosition?: (layerId: string, position: { x: number; y: number }) => void;
   /** Kept for callers migrating from the legacy self-contained sidebar. */
   onCollapse?: () => void;
-  activeTab?: 'storyboard' | 'brand' | 'elements' | 'audio';
-  onActiveTabChange?: (tab: 'storyboard' | 'brand' | 'elements' | 'audio') => void;
+  activeTab?: CreativeEditorResourceTab;
+  onActiveTabChange?: (tab: CreativeEditorResourceTab) => void;
 }
 
 export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProps> = ({
   scenes,
+  documentId = 'video-studio',
   activeSlideId,
   onSelectSlide,
   onAddScene,
@@ -35,76 +57,103 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
   onAddSubtitleLayer,
   onAddComponentLayer,
   onLoadPreset,
+  selectedLayerId,
+  onSelectLayer,
+  onUpdateLayerPosition,
   activeTab: controlledActiveTab,
-  onActiveTabChange,
 }) => {
-  const [internalActiveTab, setInternalActiveTab] = useState<'storyboard' | 'brand' | 'elements' | 'audio'>('storyboard');
-  const activeTab = controlledActiveTab ?? internalActiveTab;
-  const selectTab = (tab: 'storyboard' | 'brand' | 'elements' | 'audio') => {
-    setInternalActiveTab(tab);
-    onActiveTabChange?.(tab);
-  };
+  const activeTab = controlledActiveTab ?? 'storyboard';
+
+  const commonResourceId: CreativeResourceBlockId | null =
+    activeTab === 'text' || activeTab === 'elements' || activeTab === 'media' ||
+      activeTab === 'layers' || activeTab === 'brand' || activeTab === 'backgrounds' ||
+      activeTab === 'layout' ? activeTab : null;
+  const resourceContext = useMemo(() => createVideoCreativeResourceContext({
+    documentId,
+    activeSceneId: activeSlideId,
+    selectedLayerIds: selectedLayerId ? [selectedLayerId] : [],
+    scenes,
+    capabilities: [
+      'scene-content-slot',
+      ...(commonResourceId === 'text' || commonResourceId === 'elements' || commonResourceId === 'media' || commonResourceId === 'brand' ? ['insert'] : []),
+      ...(commonResourceId === 'layout' && Boolean(selectedLayerId && onUpdateLayerPosition) ? ['layout-update'] : []),
+      ...(onSelectLayer ? ['select'] : []),
+    ],
+    actions: {
+    upload: async (file: File) => {
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) throw new Error('Selecciona una imagen o vídeo válido.');
+      const src = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('No se pudo leer el archivo.'));
+        reader.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+        reader.readAsDataURL(file);
+      });
+      onAddLayer(file.type.startsWith('video/') ? 'video' : 'image', src);
+    },
+    insert: ({ kind, value }) => {
+      if (kind === 'text' && typeof value === 'object' && value !== null) {
+        const preset = value as { defaultText?: unknown; value?: unknown; tag?: string; role?: string };
+        const text = String(preset.defaultText ?? preset.value ?? 'Nuevo titular');
+        if (preset.tag === 'h2' || preset.role === 'h2') onAddSubtitleLayer(text);
+        else onAddTextLayer(text);
+      } else if (kind === 'text') onAddTextLayer(String(value ?? 'Nuevo titular'));
+        if (kind === 'element') {
+          onAddLayer('shape');
+        }
+        if (kind === 'media' && (value === 'image' || value === 'video' || value === 'audio')) onAddLayer(value);
+        if (kind === 'brand') {
+          const brand = value && typeof value === 'object' ? value as { blockType?: string } : undefined;
+          onAddComponentLayer(brand?.blockType ?? String(value ?? 'brand'));
+        }
+      },
+      update: ({ layerId, value }) => {
+        if (layerId && typeof value === 'object' && value !== null && 'x' in value && 'y' in value) {
+          onUpdateLayerPosition?.(layerId, { x: Number(value.x), y: Number(value.y) });
+        }
+        if (layerId && typeof value === 'object' && value !== null && 'action' in value) {
+          const action = value as { action?: string; value?: string };
+          if (action.action === 'align' && action.value === 'center') onUpdateLayerPosition?.(layerId, { x: 50, y: 50 });
+        }
+      },
+      select: onSelectLayer,
+    },
+    media: commonResourceId === 'media' ? {
+      upload: async (file: File) => {
+        const signedUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => typeof reader.result === 'string'
+            ? resolve(reader.result)
+            : reject(new Error('No se pudo leer el archivo.'));
+          reader.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+          reader.readAsDataURL(file);
+        });
+        return {
+          id: `video-upload-${Date.now()}`,
+          name: file.name,
+          signedUrl,
+          storagePath: file.name,
+          kind: file.type.startsWith('video/') ? 'video' : 'image',
+        };
+      },
+      insert: (source, options) => {
+        onAddLayer(options?.kind === 'video' ? 'video' : 'image', source);
+      },
+      accept: 'image/png,image/jpeg,image/webp,image/svg+xml,video/*',
+      validateFile: (file) => file.type.startsWith('image/') || file.type.startsWith('video/')
+        ? undefined
+        : 'Por favor selecciona un archivo de imagen o vídeo válido.',
+    } : undefined,
+  }), [activeSlideId, commonResourceId, documentId, onAddComponentLayer, onAddLayer, onAddSubtitleLayer, onAddTextLayer, onSelectLayer, onUpdateLayerPosition, scenes, selectedLayerId]);
 
   return (
     <div className="min-w-0 select-none" data-visual-contract="shared-studio-resource-content">
-      {/* PESTAÑAS PRINCIPALES (BRAND KIT | STORYBOARD | ELEMENTOS) */}
-      <div role="tablist" aria-label="Secciones de biblioteca creativa" className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-800 bg-slate-950 p-1">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'storyboard'}
-          aria-controls="creative-storyboard-panel"
-          onClick={() => selectTab('storyboard')}
-          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'storyboard' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-          }`}
-        >
-          <Layers className="size-3.5" />
-          <span>Escenas</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'brand'}
-          aria-controls="creative-brand-panel"
-          onClick={() => selectTab('brand')}
-          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'brand' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-          }`}
-        >
-          <Shield className="size-3.5 text-accent" />
-          <span>Brand Kit</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'elements'}
-          aria-controls="creative-elements-panel"
-          onClick={() => selectTab('elements')}
-          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'elements' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-          }`}
-        >
-          <Plus className="size-3.5" />
-          <span>Capas</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'audio'}
-          aria-controls="creative-audio-panel"
-          onClick={() => selectTab('audio')}
-          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'audio' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-          }`}
-        >
-          <Music className="size-3.5" />
-          <span>Audio</span>
-        </button>
-      </div>
+      {commonResourceId && CreativeResourceRegistry.resolve(commonResourceId, 'video') && (
+        <CreativeResourceSlot
+          id={commonResourceId}
+          domain="video"
+          context={resourceContext}
+        />
+      )}
 
       {/* PESTAÑA 1: STORYBOARD & ESCENAS */}
       {activeTab === 'storyboard' && (
@@ -220,157 +269,6 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
         </div>
       )}
 
-      {/* PESTAÑA 2: BRAND KIT & MOTIONKIT */}
-      {activeTab === 'brand' && (
-        <div id="creative-brand-panel" role="tabpanel" aria-label="Kit de marca" className="space-y-4">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MotionKit Agnóstico (4)</span>
-              <a
-                href="/backoffice/marketing-studio/assets"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[10px] font-bold text-brand-cyan hover:underline"
-              >
-                Asset Studio ↗
-              </a>
-            </div>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => onAddComponentLayer('MotionAdvisorCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all group"
-              >
-                <div>
-                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-brand-cyan">Tarjeta Asesor (Vertical)</strong>
-                  <span className="text-[10px] text-slate-400">Glassmorphism con WhatsApp directo</span>
-                </div>
-                <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddComponentLayer('MotionTrustBadge')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-accent hover:bg-accent/10 transition-all group"
-              >
-                <div>
-                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-accent">Sello de Garantía Consular</strong>
-                  <span className="text-[10px] text-slate-400">Certificación 100% válido para visado</span>
-                </div>
-                <Shield className="size-4 text-accent shrink-0" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddComponentLayer('MotionProviderGrid')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-brand-cyan hover:bg-brand-cyan/10 transition-all group"
-              >
-                <div>
-                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-brand-cyan">Grid de Aseguradoras</strong>
-                  <span className="text-[10px] text-slate-400">Sanitas, Adeslas, Asisa y DKV</span>
-                </div>
-                <Palette className="size-4 text-brand-cyan shrink-0" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onAddComponentLayer('MotionComparisonCard')}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all group"
-              >
-                <div>
-                  <strong className="block text-xs font-bold text-slate-100 group-hover:text-primary">Comparativa Visual</strong>
-                  <span className="text-[10px] text-slate-400">Seguro de viaje ❌ vs Visado ✅</span>
-                </div>
-                <Sparkles className="size-4 text-brand-cyan shrink-0" />
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Ilustraciones Vectoriales</span>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { id: 'health', label: 'Salud' },
-                { id: 'pet', label: 'Mascotas' },
-                { id: 'travel', label: 'Viajes' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onAddLayer('image')}
-                  className="flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950/80 p-2.5 text-center hover:border-primary hover:text-white transition-colors"
-                >
-                  <Image className="size-4 text-brand-cyan mb-1" />
-                  <span className="text-[10px] font-bold text-slate-300">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PESTAÑA 3: CAPAS & ELEMENTOS TRADICIONALES */}
-      {activeTab === 'elements' && (
-        <div id="creative-elements-panel" role="tabpanel" aria-label="Capas y elementos" className="space-y-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Añadir Capa a la Escena</span>
-
-          <button
-            type="button"
-            onClick={() => onAddTextLayer('Nuevo titular')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
-          >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 text-brand-cyan">
-              <Type className="size-4" />
-            </div>
-            <div>
-              <strong className="block text-xs font-bold text-slate-100">Texto / Titular</strong>
-              <span className="text-[10px] text-slate-400">Texto libre con tipografía y color</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onAddSubtitleLayer('Subtítulo estilo TikTok')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-accent hover:bg-accent/10 transition-all"
-          >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-accent/20 text-accent">
-              <MessageSquare className="size-4" />
-            </div>
-            <div>
-              <strong className="block text-xs font-bold text-slate-100">Subtítulo Viral</strong>
-              <span className="text-[10px] text-slate-400">Subtítulo amarillo con caja negra</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onAddLayer('shape')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-brand-cyan hover:bg-brand-cyan/10 transition-all"
-          >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-brand-cyan/20 text-brand-cyan">
-              <Palette className="size-4" />
-            </div>
-            <div>
-              <strong className="block text-xs font-bold text-slate-100">Forma / Pill Badge</strong>
-              <span className="text-[10px] text-slate-400">Caja de resalte o insignia</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onAddLayer('audio')}
-            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
-          >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-slate-800 text-purple-400">
-              <Music className="size-4" />
-            </div>
-            <div>
-              <strong className="block text-xs font-bold text-slate-100">Pista de Audio</strong>
-              <span className="text-[10px] text-slate-400">Música de fondo o voz en off</span>
-            </div>
-          </button>
-        </div>
-      )}
       {activeTab === 'audio' && (
         <div id="creative-audio-panel" role="tabpanel" aria-label="Audio" className="space-y-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Audio de la escena</span>

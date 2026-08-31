@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4, el alcance P0 de 4.75.5, 4.75.6, 4.75.7 y la auditoría común correctiva 4.75.8 verificadas; Fase 5 y fases posteriores pendientes
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1–4.75.9, 4.75.10 (bloques core), 4.75.11 (inspector), 4.75.12 (toolbar) y 4.75.13 (hubs) implementadas en código y tests; escritorio validado visualmente; mejoras responsive de tablet y algunas capacidades de persistencia de Video quedan pospuestas; Fase 5 y fases posteriores pendientes
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -319,6 +319,20 @@ antes de migrar sus hooks y renderers al `CreativeDocument`.
 - [ ] Migrar el modelo a `CreativeDocument`, retirar bridges/fachadas legacy o
   completar UX editorial móvil (Fase 5+).
 
+#### Fase 4.75.9 — Paridad interna de bloques core
+
+- [x] Montar los siete bloques core mediante componentes únicos de
+  `components/creative-resources` en Image Studio y Video Studio.
+- [x] Compartir búsqueda, filtros, categorías, cards, acciones base y estados
+  explícitos en Texto, Elementos, Medios, Capas y Kit de Marca.
+- [x] Compartir variantes, categorías y aplicación/disabled state en Fondos, y
+  controles de diseño/alineación/safe zones con capabilities en Diseño.
+- [ ] Completar equivalencia de catálogos enriquecidos, upload/stock, composición
+  de carrusel y edición tipográfica avanzada en Video; son extensiones que no
+  existen en su modelo actual y no se consideran paridad core pendiente.
+- [ ] Validar manualmente la composición visual en navegador a 768, 1024 y
+  1440 px y ampliar cobertura de callbacks específicos de cada adapter.
+
 Los siguientes ítems siguen pendientes: migración completa de editores,
 responsive/a11y completa, disponibilidad de Video Studio, equivalencia de
 renderers y validación visual.
@@ -327,6 +341,86 @@ Resultado esperado: ambos estudios deben compartir aproximadamente el 80–90%
 del shell y de la interacción, manteniendo como extensiones el carrusel y la
 composición avanzada en Image Studio, y timeline, animación, audio y Remotion
 en Video Studio.
+
+### Fase 4.75.9 — Creative Resource Registry & Shared Tool Content
+
+Objetivo: convertir cada bloque de recursos de Image Studio en un componente
+core independiente, gobernado por props y contratos, reutilizable por Image
+Studio y Video Studio sin duplicar presentación ni lógica de interacción.
+
+- [x] Auditar por separado Texto, Elementos, Medios, Capas, Fondos, Diseño,
+  Kit de Marca, Bloques, Plantillas y Preparar para Video.
+- [x] Definir contratos tipados de entrada, estado, acciones y capacidades para
+  cada bloque, incluyendo el contexto document/scene/layer de Video.
+- [x] Extraer la presentación común de cada bloque sin acoplarla a
+  `ImageProject`, `VideoProject`, carrusel, timeline o renderer.
+- [x] Crear `CreativeResourceRegistry` con metadata, permisos, orden, icono,
+  disponibilidad por dominio y renderer del contenido.
+- [x] Crear adapters mínimos para traducir cada bloque al contexto Image o
+  Video.
+- [x] Mantener una implementación visual única por bloque; las diferencias de
+  dominio deben resolverse mediante props/capabilities, no forks de JSX.
+- [x] Integrar y verificar en Video Studio Texto, Elementos, Medios, Capas y
+  Kit de Marca mediante el registry y callbacks de escena/capa.
+- [x] Integrar y verificar la parte compatible de Diseño (centrar una capa
+  seleccionada) y dejar Fondos como fachada explícita mientras el renderer no
+  acepte mutaciones de fondo.
+- [x] Compartir tokens, tabs internas, búsqueda, filtros, estados vacíos,
+  loading, error, focus y acciones primarias.
+- [x] Mantener como extensiones específicas: carrusel/slides, plantillas
+  estáticas, bloques de campaña, crop, panorama y preparar para Video en Image;
+  escenas, timeline, transport, audio, keyframes, transiciones y Remotion en
+  Video.
+- [x] Garantizar que una modificación de un componente core se refleja en ambos
+  estudios mediante el registry y sus adapters.
+- [x] Añadir tests por bloque, tests de registry y matriz de compatibilidad
+  Image/Video.
+- [x] Documentar la clasificación y el estado real en
+  `docs/marketing-studio/shared-creative-resource-registry.md`.
+- [x] Validar desktop/tablet y conservar el guard seguro móvil.
+
+#### Decisión de paridad visual — 2026-08-31
+
+- [x] Consolidar el orden y la disponibilidad de los bloques core en
+  `CORE_CREATIVE_RESOURCE_IDS`/`createCreativeResourceToolRail`: Texto,
+  Elementos, Medios, Capas, Fondos, Diseño y Kit de Marca.
+- [x] Renderizar los bloques desde un `StudioToolRail` vertical compartido en
+  ambos estudios; eliminar cualquier selector horizontal principal.
+- [x] Separar Escenas y Audio como extensiones verticales de Video sin
+  sustituir la navegación core; timeline, transport y Remotion conservan sus
+  slots actuales.
+- [x] Cubrir orden, disponibilidad, estructura y separación de extensiones con
+  `creativeResourceNavigationContract.test.ts`.
+
+Regla de navegación: el rail vertical es el único selector de bloques. El
+panel/header/search/filter/spacing/scroll muestra únicamente el bloque activo y
+mantiene el chrome compartido de Image Studio. `ResourceTabs` solo puede
+aparecer como subcategoría interna. Image mantiene drawers legacy dentro del
+slot registry para preservar persistencia y callbacks; la migración interna de
+su contenido a bloques registry sigue pendiente.
+
+### Fase 4.75.12 — Paridad de toolbars Image/Video
+
+**En ejecución.** Image Studio es la fuente visual de verdad para el chrome de
+edición. `StudioToolbar` centraliza el contrato y la presentación de la barra
+superior (título, estado, historial, safe zones, preview, inspector, copiar,
+menús, exportación, foco y targets táctiles); Image Studio y Video Studio la
+consumen mediante fachadas delgadas. `StudioStageToolbarControls` centraliza
+selección/mano, zoom, fit, separadores y reset de pan en ambos stages. Video
+mantiene únicamente sus extensiones de formato, zoom de visor, presets y
+exportación MP4; playback, timeline y audio permanecen en el workspace inferior.
+
+- [x] Extraer `StudioToolbar` y sus contratos tipados desde
+  `ImageEditorToolbar`.
+- [x] Migrar `ImageEditorToolbar` y `CreativeEditorToolbar` al componente común
+  sin duplicar JSX de toolbar.
+- [x] Centralizar los controles comunes de `StudioStageToolbar` y conservar
+  dibujo/carrusel como extensiones de Image Studio.
+- [x] Mantener labels, orden, estados, focus rings, responsividad y
+  accesibilidad de teclado en los componentes compartidos.
+- [x] Añadir pruebas estructurales focalizadas para el ownership único de las
+  toolbars y los controles de stage.
+- [ ] Validar manualmente la paridad visual en navegador a 768, 1024 y 1440 px.
 
 ### Fase 5 — Migrar Image Studio
 
@@ -381,3 +475,110 @@ en Video Studio.
 - No introduce generación autónoma de diseños sin validación.
 - La colaboración en tiempo real queda preparada conceptualmente, pero se
   implementará cuando exista una necesidad operativa concreta.
+### Fase 4.75.10 — Paridad visual 100% de bloques core
+
+**Objetivo:** Image Studio y Video Studio deben renderizar exactamente el mismo
+componente para cada recurso core. Los adapters solo pueden aportar datos,
+capacidades y callbacks del dominio; no pueden duplicar JSX ni añadir contenido
+visual al panel compartido.
+
+**Criterios de cierre:**
+
+- `Text`, `Elements`, `Media`, `Layers`, `Backgrounds`, `Layout` y `Brand Kit`
+  se resuelven desde el mismo `CreativeResourceRegistry`.
+- El panel core activo muestra únicamente el componente registrado; las
+  extensiones específicas quedan aisladas en sus tabs propias.
+- No se renderiza el drawer legacy como footer, fallback ni contenido adicional
+  cuando el tab activo es core.
+- Los tests verifican la misma estructura visual, frame, búsqueda, filtros,
+  tarjetas, estados y acciones en ambos dominios.
+- Se valida manualmente en 768, 1024 y 1440 px antes de declarar la fase
+  completada.
+
+**Decisión de implementación:** se trabajará bloque por bloque tomando la
+implementación actual de Image Studio como fuente visual y funcional de verdad.
+Cada bloque se extraerá completo a `components/creative-resources/blocks/` y el
+mismo componente se renderizará en Image Studio y Video Studio. Los adapters
+solo resolverán datos, capacidades y callbacks; no contendrán JSX alternativo.
+
+#### Fase 4.75.10.1 — Bloque Medios
+
+**En ejecución.** Auditar y extraer el bloque Medios actual de Image Studio,
+incluyendo subida, drag-and-drop, biblioteca remota, scopes, búsqueda,
+categorías, selección de clip shape, inserción, eliminación, estados de carga y
+errores. Después se sustituirá el bloque de Video Studio por ese mismo
+componente y se validará la paridad visual en 768, 1024 y 1440 px.
+
+#### Fase 4.75.10.2 — Bloque Elements
+
+**Completado en código y tests focalizados.** `ElementsResource` contiene la
+implementación completa de Image Studio (scopes, búsqueda, categorías, filtros,
+recientes, favoritos, recomendaciones, dibujo rápido, guardados, estados y
+callbacks) y se resuelve desde el registry en Image y Video. Video puede
+insertar elementos, pero no expone persistencia propia para favoritos/recientes.
+
+#### Fase 4.75.10.3 — Bloque Layers
+
+**Completado en código y tests focalizados.** `LayersResource` comparte árbol,
+selección, visibilidad, bloqueo, filtro, renombrado, duplicado, eliminación,
+z-order y drag-and-drop. El adapter de Video normaliza las capas de la escena
+activa; las acciones solo persisten si el host las proporciona.
+
+#### Fase 4.75.10.4 — Bloque Backgrounds
+
+**Completado en código y tests focalizados.** `BackgroundsResource` conserva el
+asistente de composición, propuestas, paletas, continuidad, intensidad,
+escala, acentos, composiciones guardadas, trayectoria, preview y reset. Video
+muestra una limitación explícita porque actualmente no ofrece persistencia de
+fondos; Image conserva los callbacks de regeneración y configuración de marca.
+
+#### Fase 4.75.10.5 — Bloque Layout
+
+**Completado en código y tests focalizados.** `LayoutResource` comparte guías,
+grid, márgenes, safe zones, snapping, alineación, distribución, z-order,
+agrupación, edición de contenido, tipografía, estilos, opacidad, bordes,
+sombras, variantes y auto-layout. Video muestra estado no disponible mientras
+su adapter no exponga `layout-update` ni callbacks de persistencia.
+
+#### Fase 4.75.10.6 — Bloque Brand Kit
+
+**Completado en código y tests focalizados.** `BrandKitResource` comparte logos,
+destacados, descargas, colores copiables, fondos, componentes y reglas de uso.
+Video puede insertar componentes mediante su callback de dominio, pero no
+persiste la configuración del Brand Kit ni sus composiciones guardadas.
+
+**Validación restante:** quedan pendientes la comprobación visual manual en
+768/1024/1440 px y la validación de build/prerender; typecheck y lint pasan sin
+errores (lint mantiene warnings preexistentes y avisos de tipos `any`).
+
+### Fase 4.75.11 — Inspector compartido Image/Video
+
+**Completado en código.** Se extrajo `StudioInspector` y su contrato declarativo
+a `components/creative-resources/inspector/`. Image Studio conserva su inspector
+completo como fuente visual, usando ahora el mismo panel y chrome; Video Studio
+usa el mismo componente para selección, visibilidad, bloqueo, transformación,
+posición, dimensiones, rotación, opacidad, tipografía, color, alineación,
+escena, timing y medios. Las secciones de timing/media son extensiones explícitas
+del adapter de Video y los adapters solo entregan datos y callbacks.
+
+**Validación:** typecheck y pruebas focalizadas pasan; lint no reporta errores
+(solo warnings existentes). La validación visual manual en 768/1024/1440 px y
+el build completo/prerender quedan pendientes de ejecutar en este entorno.
+
+### Fase 4.75.13 — Hubs de proyectos Image/Video
+
+**Implementado en código y tests focalizados.** Ambos hubs comparten el chrome
+visual de tarjetas (`StudioHubProjectCard`) para mantener la misma jerarquía,
+previews, metadatos, acciones, estados y responsive grid. Video Studio conserva
+copy, formatos y controles específicos de vídeo. La frontera de persistencia
+clasifica documentos por `draftDocument.mode`/composición (`imageStudio` o
+`videoStudio`), por lo que Image Studio nunca muestra proyectos de vídeo ni
+acepta abrirlos por ID. Se mantiene el archivado como estado reversible y la
+creación abre el proyecto recién persistido.
+
+**Estado actual del track:** el shell, los bloques core, inspector, toolbar y
+hubs ya comparten componentes y contratos. La validación visual de escritorio
+queda aceptada; la optimización específica para tablet se pospone para una fase
+responsive posterior. También quedan pendientes algunas capacidades de
+persistencia de Video antes de iniciar la migración operativa completa hacia
+`CreativeDocument` de la Fase 5.

@@ -46,18 +46,12 @@ import type { EditableVectorPoint } from './types/vectorGeometry';
 import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
   LayoutTemplate,
-  Type,
-  Shapes,
-  Image as ImageIcon,
   Sparkles,
-  Palette,
-  Layers,
   Wand2,
   FolderHeart,
-  Grid3X3,
   Video,
-  Waves,
 } from 'lucide-react';
+import { createCreativeResourceToolRail } from '../components/creative-resources';
 
 export const ImageStudio: React.FC = () => {
   const navigate = useNavigate();
@@ -442,24 +436,15 @@ export const ImageStudio: React.FC = () => {
     // 🌟 Posición 1: Biblioteca Personal Unificada
     { id: 'my-designs', label: 'Mis Diseños', icon: <FolderHeart className="size-4" /> },
 
-    // 🟢 Zona 1: Creación Atómica y Frecuente (2 - 5)
-    { id: 'text', label: 'Texto', icon: <Type className="size-4" /> },
-    { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
-    { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
-    { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
-    { id: 'backgrounds', label: 'Fondos', icon: <Waves className="size-4" /> },
-    { id: 'layout', label: 'Diseño', icon: <Grid3X3 className="size-4" /> },
+    ...createCreativeResourceToolRail({ domain: 'image', layerCount: editor.project.layers.length }),
 
-    // 🔵 Zona 2: Identidad y Marca (6)
-    { id: 'brand', label: 'Kit de Marca', icon: <Palette className="size-4" /> },
-
-    // 🟣 Zona 3: Aceleración y Composición Rápida (7 - 8)
-    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" /> },
-    { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" /> },
+    // Extensiones específicas de Image Studio.
+    { id: 'blocks', label: 'Bloques', icon: <Sparkles className="size-4" />, section: 'extensions', sectionLabel: 'Extensiones de Image Studio' },
+    { id: 'templates', label: 'Plantillas', icon: <LayoutTemplate className="size-4" />, section: 'extensions' },
 
     // 🟡 Zona 4: Inteligencia y Multimedia (9 - 10)
-    { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" /> },
-    { id: 'video-bridge', label: 'Preparar vídeo', icon: <Video className="size-4" /> },
+    { id: 'ai-copy', label: 'Copys con IA', icon: <Wand2 className="size-4" />, section: 'extensions' },
+    { id: 'video-bridge', label: 'Preparar vídeo', icon: <Video className="size-4" />, section: 'extensions' },
   ];
 
   const shortcutBindings: ShortcutBinding[] = [
@@ -517,6 +502,7 @@ export const ImageStudio: React.FC = () => {
   const assetSidebar = (
     <ImageStudioAssetSidebar
       activeTab={activeToolId}
+      onActiveTabChange={(tab) => setActiveToolId(tab)}
       project={editor.project}
       selectedLayerId={editor.selectedLayerId}
       selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
@@ -628,7 +614,7 @@ export const ImageStudio: React.FC = () => {
         ),
         resourcePanel: activeToolId ? (
           <StudioResourcePanel
-            title={studioTools.find((tool) => tool.id === activeToolId)?.label ?? 'Herramientas'}
+            title={studioTools.find((tool) => tool.id === activeToolId)?.label ?? 'Recursos'}
             onClose={() => setActiveToolId(null)}
             variant="dark"
             className="w-[min(24rem,32vw)] border-r border-slate-800 bg-slate-900/98 text-white shadow-2xl"

@@ -35,7 +35,7 @@ import {
   Lock,
   Unlock,
 } from 'lucide-react';
-import { StudioInspectorPanel } from '../../../components/backoffice-shell/primitives';
+import { StudioInspector } from '../../../components/creative-resources/inspector';
 import {
   ImageLayer,
   CanvasBackground,
@@ -667,7 +667,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
     return (
       <>
-        <StudioInspectorPanel
+        <StudioInspector
           as="div"
           title="Propiedades del Lienzo"
           width="standard"
@@ -849,7 +849,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             💡 <strong>Tip:</strong> Haz clic en cualquier texto o tarjeta en el lienzo para editar sus propiedades específicas.
           </div>
         </div>
-      </StudioInspectorPanel>
+      </StudioInspector>
 
       <ImageCanvasFormatsModal
         isOpen={isFormatsModalOpen}
@@ -978,7 +978,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   return (
     <div data-inline-editor-inspector="true" className="h-full min-h-0 min-w-0">
-    <StudioInspectorPanel
+    <StudioInspector
       as="div"
       title={`Bloque: ${selectedLayer.title}`}
       width="standard"
@@ -2773,7 +2773,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
       </div>
-    </StudioInspectorPanel>
+    </StudioInspector>
     </div>
   );
 };

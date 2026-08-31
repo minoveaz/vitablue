@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import type { ResourceBlockProps } from '../ResourceBlockProps';
 import { Check, Eye, Layers, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Sparkles, Trash2 } from 'lucide-react';
-import type { ImageLayer, ImageProject } from '../../../types/imageStudio';
+import type { ImageLayer, ImageProject } from '../../../../marketing-studio/types/imageStudio';
 import type {
   CarouselBackgroundColorVariant,
   CarouselBackgroundComposition,
@@ -9,8 +10,8 @@ import type {
   CarouselBackgroundContinuity,
   CarouselBackgroundShapeType,
   CarouselBackgroundTrajectoryPoint,
-} from '../../../types/carouselBackgroundComposition';
-import type { BrandVisualCompositionConfigInput } from '../../../types/carouselCompositionIdentity';
+} from '../../../../marketing-studio/types/carouselBackgroundComposition';
+import type { BrandVisualCompositionConfigInput } from '../../../../marketing-studio/types/carouselCompositionIdentity';
 import {
   CAROUSEL_BACKGROUND_PALETTES,
   applyCarouselBackgroundPresetToComposition,
@@ -19,29 +20,24 @@ import {
   getCarouselBackgroundTrajectoryPoints,
   isCarouselBackgroundLayer,
   resolveCarouselBackgroundComposition,
-} from '../../../utils/carouselBackgroundComposition';
+} from '../../../../marketing-studio/utils/carouselBackgroundComposition';
 import {
   constrainCarouselCompositionToBrand,
   filterCarouselBackgroundPalettes,
   filterCarouselBackgroundPresets,
   filterCarouselCompositionAccents,
   normalizeBrandVisualCompositionConfig,
-} from '../../../utils/carouselCompositionIdentity';
+} from '../../../../marketing-studio/utils/carouselCompositionIdentity';
 import {
   generateCarouselCompositionProposals,
   type CarouselCompositionAccent,
   type CarouselCompositionDominantZone,
   type CarouselCompositionVisualStyle,
-} from '../../../utils/carouselCompositionAssistant';
-import { getCarouselGeometry } from '../../../utils/imageDesignSystem';
-import { ImageLayerBlockRenderer } from '../blocks/BlockRenderer';
+} from '../../../../marketing-studio/utils/carouselCompositionAssistant';
+import { getCarouselGeometry } from '../../../../marketing-studio/utils/imageDesignSystem';
+import { ImageLayerBlockRenderer } from '../../../../marketing-studio/components/image-editor/blocks/BlockRenderer';
 
-export interface ImageStudioBackgroundDrawerProps {
-  project: ImageProject;
-  onRegenerateBackground: (composition: CarouselBackgroundCompositionInput) => void;
-  onUpdateBrandCompositionConfig?: (patch: BrandVisualCompositionConfigInput) => void;
-}
-
+export type BackgroundsResourceProps = ResourceBlockProps;
 const VARIANT_LABELS: Record<CarouselBackgroundColorVariant, string> = {
   white: 'Blanco',
   midnight: 'Midnight',
@@ -231,11 +227,12 @@ const AssistantProposalPreview: React.FC<{ proposal: { composition: CarouselBack
   );
 };
 
-export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerProps> = ({
-  project,
-  onRegenerateBackground,
-  onUpdateBrandCompositionConfig,
-}) => {
+export const BackgroundsResource: React.FC<BackgroundsResourceProps> = ({ context }) => {
+  const source = (context.data && typeof context.data === 'object' && !Array.isArray(context.data) ? context.data : {}) as ImageProject;
+  const project = { ...source, layers: source.layers ?? [] } as ImageProject;
+  const preset = project.preset ?? ({ id: 'video', width: 1080, height: 1920, aspectRatio: '9:16', category: 'tiktok', name: 'Video', description: '', iconName: 'Video', recommendedFor: '', isCarousel: false, defaultSlideCount: 1 } as ImageProject['preset']);
+  const onRegenerateBackground = (composition: CarouselBackgroundCompositionInput) => context.actions.update?.({ kind: 'background', value: composition } as never);
+  const onUpdateBrandCompositionConfig = context.actions.update ? (patch: BrandVisualCompositionConfigInput) => context.actions.update?.({ kind: 'brand-config', value: patch } as never) : undefined;
   const [showContent, setShowContent] = useState(true);
   const [draggedTrajectoryPoint, setDraggedTrajectoryPoint] = useState<number | null>(null);
   const [activeTrajectoryPoint, setActiveTrajectoryPoint] = useState<number | null>(null);
@@ -254,8 +251,8 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
     () => ASSISTANT_STYLE_OPTIONS.filter((option) => brandConfig.preferredStyleFamilies.includes(option.id)),
     [brandConfig],
   );
-  const isCarousel = Boolean(project.carouselConfig?.enabled || project.preset.isCarousel);
-  const slideCount = project.carouselConfig?.slideCount ?? project.preset.defaultSlideCount ?? 1;
+  const isCarousel = Boolean(project.carouselConfig?.enabled || preset.isCarousel);
+  const slideCount = project.carouselConfig?.slideCount ?? preset.defaultSlideCount ?? 1;
   const [assistantVisualStyle, setAssistantVisualStyle] = useState<CarouselCompositionVisualStyle>(
     availableStyles[0]?.id ?? 'editorial',
   );
@@ -394,10 +391,26 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
     setAssistantStatus(`Guardada: ${name}.`);
   };
 
+  if (context.state === 'disabled') return <div role="status" className="p-4 text-xs text-slate-400">Fondos no disponibles en este estudio.</div>;
+  if (context.state === 'loading') return <div role="status" className="p-4 text-xs text-slate-400">Cargando fondos…</div>;
+  if (context.state === 'error') return <div role="alert" className="p-4 text-xs text-rose-200">{context.error ?? 'No se pudieron cargar los fondos.'}</div>;
+
+  if (context.domain === 'video' && !context.capabilities.includes('background-update')) {
+    return (
+      <div role="status" data-core-resource-content="backgrounds" data-resource-block="backgrounds" className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm text-slate-300">
+        <div data-resource-header className="flex items-center gap-2 font-bold text-white">
+          <Layers className="size-4 text-brand-cyan" />
+          Fondos de carrusel
+        </div>
+        <p className="text-xs leading-relaxed text-slate-400">Video Studio no permite aplicar fondos persistentes desde este panel.</p>
+      </div>
+    );
+  }
+
   if (!isCarousel) {
     return (
-      <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm text-slate-300">
-        <div className="flex items-center gap-2 font-bold text-white">
+      <div data-core-resource-content="backgrounds" data-resource-block="backgrounds" className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm text-slate-300">
+        <div data-resource-header className="flex items-center gap-2 font-bold text-white">
           <Layers className="size-4 text-brand-cyan" />
           Fondos de carrusel
         </div>
@@ -409,7 +422,8 @@ export const ImageStudioBackgroundDrawer: React.FC<ImageStudioBackgroundDrawerPr
   }
 
   return (
-    <div className="space-y-4">
+    <div data-core-resource-content="backgrounds" data-resource-block="backgrounds" className="space-y-4">
+      <div data-resource-header className="sr-only">Fondos de carrusel</div>
       <section className="rounded-2xl border border-brand-cyan/30 bg-gradient-to-br from-primary/30 via-slate-950 to-slate-950 p-3" aria-labelledby="composition-assistant-title">
         <div className="flex items-start justify-between gap-3">
           <div>

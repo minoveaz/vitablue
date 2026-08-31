@@ -124,4 +124,32 @@ describe('Video Studio shared shell integration', () => {
     });
     expect(navigationItem?.kind === 'module' ? navigationItem.route.routeId : undefined).toBe(route?.path);
   });
+
+  it('provides a persisted Video Studio hub and editor project adapter', async () => {
+    const hub = await import('../components/creative-editor/VideoStudioHub');
+    expect(hub.VideoStudioHub).toBeDefined();
+    const remoteSource = await import('../utils/creativeStudioRemote');
+    expect(remoteSource.listVideoProjects).toBeDefined();
+    expect(remoteSource.getVideoProject).toBeDefined();
+    expect(remoteSource.saveVideoProject).toBeDefined();
+    expect(remoteSource.archiveCreativeProject).toBeDefined();
+  });
+
+  it('keeps project naming and hub navigation in the shared toolbar contract', async () => {
+    const toolbar = await import('../components/creative-editor/CreativeEditorToolbar');
+    const source = await import('node:fs').then(({ readFileSync }) =>
+      readFileSync(new URL('../components/creative-editor/CreativeEditorToolbar.tsx', import.meta.url), 'utf8'));
+    expect(toolbar.CreativeEditorToolbar).toBeDefined();
+    expect(source).toContain('onUpdateTitle');
+    expect(source).toContain('onBackToHub');
+    expect(source).toContain('onCopyProject');
+    expect(source).toContain('lastSavedAt');
+  });
+
+  it('binds the editor toolbar and resource document to the persisted project identity', async () => {
+    const source = await import('node:fs').then(({ readFileSync }) =>
+      readFileSync(new URL('../SocialGenerator.tsx', import.meta.url), 'utf8'));
+    expect(source).toContain('projectTitle={editor.project.name}');
+    expect(source).toContain('documentId={editor.project.id}');
+  });
 });

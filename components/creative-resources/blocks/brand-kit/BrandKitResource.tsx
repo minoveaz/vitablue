@@ -7,19 +7,16 @@ import {
   Layers,
   Loader2,
 } from 'lucide-react';
-import Logo from '../../../../components/atoms/Logo';
-import { ImageBlockType } from '../../../types/imageStudio';
+import Logo from '../../../atoms/Logo';
+import { ImageBlockType } from '../../../../marketing-studio/types/imageStudio';
+import type { ResourceBlockProps } from '../ResourceBlockProps';
 import {
   HIGHLIGHT_PRESETS,
   HighlightVectorIcon,
   downloadHighlightCoverPng,
-} from '../blocks/HighlightCoverBlocks';
+} from '../../../../marketing-studio/components/image-editor/blocks/HighlightCoverBlocks';
 
-export interface ImageStudioBrandKitDrawerProps {
-  onAddBlock: (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) => void;
-  onUpdateBackground: (gradient: string, color: string) => void;
-}
-
+export type BrandKitResourceProps = ResourceBlockProps;
 interface LogoVariantPreset {
   id: string;
   title: string;
@@ -208,10 +205,16 @@ const BRAND_BACKGROUNDS = [
   },
 ];
 
-export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps> = ({
-  onAddBlock,
-  onUpdateBackground,
-}) => {
+export const BrandKitResource: React.FC<BrandKitResourceProps> = ({ context }) => {
+  const canInsert = Boolean(context.actions.insert);
+  const canUpdateBackground = Boolean(context.actions.update) && (
+    context.domain === 'image' || context.capabilities.includes('background-update')
+  );
+  const onAddBlock = (blockType: ImageBlockType, defaultProps?: Record<string, unknown>) =>
+    context.actions.insert?.({ kind: 'brand', value: { blockType, defaultProps } } as never);
+  const onUpdateBackground = canUpdateBackground
+    ? (gradient: string, color: string) => context.actions.update?.({ kind: 'background', value: { gradient, color } } as never)
+    : undefined;
   const [logoTab, setLogoTab] = useState<'all' | 'identity' | 'tokens' | 'backgrounds' | 'components' | 'rules'>('all');
   const [identityFilter, setIdentityFilter] = useState<'all' | 'logos' | 'isotypes' | 'stacked'>('all');
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
@@ -297,9 +300,9 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
   );
 
   return (
-    <div className="flex flex-col h-full bg-[#001219] text-slate-100 font-sans select-none overflow-hidden">
+    <div className="flex flex-col h-full bg-[#001219] text-slate-100 font-sans select-none overflow-hidden" data-core-resource-content="brand" data-resource-block="brand">
       {/* 1. CABECERA DEL BRAND KIT */}
-      <div className="p-3.5 border-b border-slate-800/80 bg-[#070e17] shrink-0 space-y-3">
+      <div data-resource-header className="p-3.5 border-b border-slate-800/80 bg-[#070e17] shrink-0 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-lg bg-teal-500/20 text-brand-cyan">
@@ -312,6 +315,11 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               <p className="text-[10px] text-slate-400">
                 Logos, destacados, colores y gradientes oficiales
               </p>
+              {context.domain === 'video' && (
+                <p className="mt-1 text-[10px] leading-4 text-amber-200">
+                  Video Studio permite insertar activos, pero no persiste cambios del kit.
+                </p>
+              )}
             </div>
           </div>
           <span className="text-[10px] font-mono text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded-md border border-brand-cyan/20">
@@ -451,6 +459,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
                     <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
                       <button
                         type="button"
+                        disabled={!canInsert}
                         onClick={() => handleInsertHighlight(item)}
                         className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-primary/20 hover:bg-primary/40 text-brand-cyan text-[10px] font-bold border border-brand-cyan/30 transition-colors"
                         title="Insertar este sello en el lienzo actual"
@@ -507,8 +516,9 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
             {filteredLogos.map((preset) => (
               <div
                 key={preset.id}
-                onClick={() => handleInsertLogo(preset)}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0d1624] p-3 hover:border-brand-cyan hover:shadow-lg transition-all cursor-pointer text-center"
+                onClick={() => canInsert && handleInsertLogo(preset)}
+                aria-disabled={!canInsert}
+                className={`group relative flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#0d1624] p-3 transition-all text-center ${canInsert ? 'cursor-pointer hover:border-brand-cyan hover:shadow-lg' : 'cursor-not-allowed opacity-60'}`}
               >
                 {/* PREVIEW CAJA DE LOGO */}
                 <div
@@ -590,8 +600,9 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
               <button
                 key={bg.name}
                 type="button"
-                onClick={() => onUpdateBackground(bg.gradient, bg.color)}
-                className="flex flex-col items-center rounded-2xl border border-slate-800 bg-[#0d1624] p-2.5 hover:border-brand-cyan hover:bg-slate-900 transition-all text-center group"
+                disabled={!onUpdateBackground}
+                onClick={() => onUpdateBackground?.(bg.gradient, bg.color)}
+                className="flex flex-col items-center rounded-2xl border border-slate-800 bg-[#0d1624] p-2.5 hover:border-brand-cyan hover:bg-slate-900 transition-all text-center group disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <div
                   className="w-full h-14 rounded-xl border border-white/20 shadow-inner mb-2 group-hover:scale-105 transition-transform"
@@ -640,7 +651,7 @@ export const ImageStudioBrandKitDrawer: React.FC<ImageStudioBrandKitDrawerProps>
                    <strong className="block text-xs font-bold text-slate-200">{component.name}</strong>
                    <span className="text-[10px] text-slate-400">{component.description}</span>
                  </div>
-                 <button type="button" onClick={() => onAddBlock(component.blockType)} className="shrink-0 rounded-lg border border-brand-cyan/30 bg-brand-cyan/10 px-2 py-1 text-[10px] font-bold text-brand-cyan hover:bg-brand-cyan/20">
+                 <button type="button" disabled={!canInsert} onClick={() => onAddBlock(component.blockType)} className="shrink-0 rounded-lg border border-brand-cyan/30 bg-brand-cyan/10 px-2 py-1 text-[10px] font-bold text-brand-cyan hover:bg-brand-cyan/20 disabled:cursor-not-allowed disabled:opacity-50">
                    Insertar
                  </button>
                </div>

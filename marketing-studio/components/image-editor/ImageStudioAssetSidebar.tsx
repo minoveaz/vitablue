@@ -5,28 +5,28 @@ import {
   ImageProject,
   ImageStyleVariantId,
 } from '../../types/imageStudio';
-import { ImageStudioLayersPanel } from './ImageStudioLayersPanel';
-import { ImageStudioTextDrawer } from './drawers/ImageStudioTextDrawer';
 import { ImageStudioMyDesignsDrawer } from './drawers/ImageStudioMyDesignsDrawer';
-import { ImageStudioElementsDrawer } from './drawers/ImageStudioElementsDrawer';
-import { ImageStudioMediaDrawer } from './drawers/ImageStudioMediaDrawer';
-import { ImageStudioBrandKitDrawer } from './drawers/ImageStudioBrandKitDrawer';
-import { ImageStudioLayoutDrawer } from './drawers/ImageStudioLayoutDrawer';
 import { ImageStudioTemplatesDrawer } from './drawers/ImageStudioTemplatesDrawer';
 import { ImageStudioBlocksDrawer } from './drawers/ImageStudioBlocksDrawer';
 import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
-import { ImageStudioBackgroundDrawer } from './drawers/ImageStudioBackgroundDrawer';
 import type { CarouselBackgroundCompositionInput } from '../../types/carouselBackgroundComposition';
 import type { BrandVisualCompositionConfigInput } from '../../types/carouselCompositionIdentity';
 import type { RuntimeCreativeAsset } from '../../utils/creativeStudioRemote';
+import {
+  CreativeResourceRegistry,
+  createImageCreativeResourceContext,
+  CreativeResourceSlot,
+  type CreativeResourceBlockId,
+} from '../../../components/creative-resources';
 
 type RemoteImageMedia = RuntimeCreativeAsset;
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
+  onActiveTabChange?: (tab: CreativeResourceBlockId) => void;
   project: ImageProject;
   selectedLayerId: string | null;
   selectedLayer?: ImageLayer | null;
@@ -84,49 +84,15 @@ export interface ImageStudioAssetDrawerContentProps {
   onArchiveProject?: (project: ImageProject) => Promise<void>;
 }
 
-export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
+const LegacyImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
   activeTab,
-  project,
-  selectedLayerId,
-  selectedLayer,
-  selectedLayerIds = [],
-  onSelectLayer,
   onLoadTemplate,
   onAddBlock,
   onAddTextLayer,
-  onAddImageLayer,
   onInsertSavedLayer,
-  onUpdateBackground,
-  onToggleLock,
-  onToggleVisibility,
-  onToggleAllLock,
-  onToggleAllVisibility,
-  onMoveZIndex,
-  onReorderLayers,
-  onRenameLayer,
-  onDuplicateLayer,
-  onRemoveLayer,
-  onDeleteSelectedLayers,
-  onUpdateGuideSettings,
-  onAutoLayout,
-  onFitText,
-  onApplyVariant,
-  onAlignSelectedLayers,
-  onDistributeSelectedLayers,
-  onGroupSelectedLayers,
-  onUngroupLayer,
-  onUpdateLayerProps,
+  selectedLayer,
   onReplaceLayerContent,
-  onUpdateLayerPosition,
-  onUpdateLayerOpacity,
-  onUpdateLayerShadowPreset,
-  onUpdateLayerBorder,
   onPrepareVideo,
-  onRegenerateBackground,
-  onUpdateBrandCompositionConfig,
-  onUploadImage,
-  onListImages,
-  onDeleteImage,
   onListProjects,
   onDuplicateProject,
   onArchiveProject,
@@ -152,13 +118,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 1. TEXTO & TIPOGRAFÍAS */}
-      {activeTab === 'text' && onAddTextLayer && (
-        <div className="-m-4 h-[calc(100vh-140px)]">
-          <ImageStudioTextDrawer onAddTextLayer={onAddTextLayer} />
-        </div>
-      )}
-
       {/* 1. PLANTILLAS EN GRID DE 2 COLUMNAS (AMPLIO Y VISUAL) */}
       {activeTab === 'templates' && <ImageStudioTemplatesDrawer onLoadTemplate={onLoadTemplate} />}
 
@@ -169,101 +128,6 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         </div>
       )}
 
-      {/* 3. ÁRBOL DE CAPAS (LAYERS TREE) */}
-      {activeTab === 'layers' && (
-        <ImageStudioLayersPanel
-          project={project}
-          selectedLayerId={selectedLayerId}
-          selectedLayerIds={selectedLayerIds}
-          onSelectLayer={onSelectLayer}
-          onToggleLock={onToggleLock}
-          onToggleVisibility={onToggleVisibility}
-          onToggleAllLock={onToggleAllLock}
-          onToggleAllVisibility={onToggleAllVisibility}
-          onMoveZIndex={onMoveZIndex}
-          onReorderLayers={onReorderLayers}
-          onRenameLayer={onRenameLayer}
-          onDuplicateLayer={onDuplicateLayer}
-          onRemoveLayer={onRemoveLayer}
-          onDeleteSelectedLayers={onDeleteSelectedLayers}
-        />
-      )}
-      {activeTab === 'backgrounds' && onRegenerateBackground && (
-        <div className="-m-4 h-[calc(100vh-140px)] overflow-y-auto p-4">
-          <ImageStudioBackgroundDrawer
-            project={project}
-            onRegenerateBackground={onRegenerateBackground}
-            onUpdateBrandCompositionConfig={onUpdateBrandCompositionConfig}
-          />
-        </div>
-      )}
-      {activeTab === 'layout' && onUpdateGuideSettings && onAutoLayout && onFitText && onApplyVariant && (
-        <ImageStudioLayoutDrawer
-          project={project}
-          selectedLayers={project.layers.filter((layer) => selectedLayerIds.includes(layer.id))}
-          onUpdateGuideSettings={onUpdateGuideSettings}
-          onAutoLayout={onAutoLayout}
-          onFitText={onFitText}
-          onApplyVariant={onApplyVariant}
-          onToggleLock={onToggleLock}
-          onAlignSelectedLayers={onAlignSelectedLayers}
-          onDistributeSelectedLayers={onDistributeSelectedLayers}
-          onMoveZIndex={onMoveZIndex}
-          onGroupSelectedLayers={onGroupSelectedLayers}
-          onUngroupLayer={onUngroupLayer}
-          onUpdateLayerProps={onUpdateLayerProps}
-          onReplaceLayerContent={onReplaceLayerContent}
-          onUpdateLayerPosition={onUpdateLayerPosition}
-          onUpdateLayerOpacity={onUpdateLayerOpacity}
-          onUpdateLayerShadowPreset={onUpdateLayerShadowPreset}
-          onUpdateLayerBorder={onUpdateLayerBorder}
-        />
-      )}
-
-      {/* 4. BRAND KIT OFICIAL (LOGOS, ISOTIPOS, DESTACADOS IG, COLORES Y GRADIENTES) */}
-      {activeTab === 'brand' && (
-        <div className="-m-4 h-[calc(100vh-140px)]">
-          <ImageStudioBrandKitDrawer
-            onAddBlock={onAddBlock}
-            onUpdateBackground={onUpdateBackground}
-          />
-        </div>
-      )}
-
-      {/* 5. MEDIOS, FOTOS DE STOCK & ASESORAS */}
-      {activeTab === 'media' && (
-        <div className="-m-4 h-[calc(100vh-140px)]">
-          <ImageStudioMediaDrawer
-            onInsertImageLayer={(url, options) => {
-              if (onAddImageLayer) {
-                onAddImageLayer(url, options);
-              } else {
-                onAddBlock('ImageMedia' as ImageBlockType, { imageUrl: url, ...options });
-              }
-            }}
-            onSetBackgroundImage={(url) => {
-              onUpdateBackground(
-                `linear-gradient(rgba(0, 18, 25, 0.75), rgba(0, 18, 25, 0.85)), url('${url}') center/cover no-repeat`,
-                '#001219'
-              );
-            }}
-            onUploadImage={onUploadImage}
-            onListImages={onListImages}
-            onDeleteImage={onDeleteImage}
-          />
-        </div>
-      )}
-
-      {/* 6. ELEMENTOS Y FORMAS (DRAWER MODULAR PROFESIONAL) */}
-      {activeTab === 'elements' && (
-        <div className="-m-4 h-[calc(100vh-140px)]">
-          <ImageStudioElementsDrawer
-            onAddBlock={onAddBlock}
-            onAddImageLayer={onAddImageLayer}
-            onInsertSavedLayer={onInsertSavedLayer}
-          />
-        </div>
-      )}
 
       {/* 8. COPYS CON IA & HOOKS DE CONVERSIÓN */}
       {activeTab === 'ai-copy' && (
@@ -326,6 +190,119 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
       )}
     </div>
   );
+};
+
+const isCreativeResourceBlockId = (value: string | null): value is CreativeResourceBlockId =>
+  value !== null && Boolean(CreativeResourceRegistry.get(value as CreativeResourceBlockId));
+
+/** Resolves shared core resources and keeps Image-only extensions on the legacy path. */
+export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = (props) => {
+  const { activeTab, project, selectedLayerIds = [] } = props;
+  const registryTab = activeTab === 'video-bridge' ? 'prepare-video' : activeTab;
+  const resourceId = isCreativeResourceBlockId(registryTab) ? registryTab : null;
+  const content = !resourceId || !CreativeResourceRegistry.resolve(resourceId, 'image')
+    ? <LegacyImageStudioAssetDrawerContent {...props} />
+    : (
+      <CreativeResourceSlot
+        id={resourceId}
+        domain="image"
+        context={createImageCreativeResourceContext({
+          project,
+          selectedLayerIds,
+          capabilities: ['legacy-content-slot', 'layout-update', 'background-update', 'visibility', 'lock', 'reorder'],
+          actions: {
+          upload: async (file: File) => {
+            if (!props.onUploadImage || !props.onAddImageLayer) throw new Error('Subida de medios no disponible.');
+            const asset = await props.onUploadImage(file);
+            props.onAddImageLayer(asset.signedUrl, { title: asset.name });
+          },
+          insert: ({ kind, value }: { kind?: string; value?: unknown }) => {
+              if (kind === 'text' && props.onAddTextLayer) {
+                props.onAddTextLayer(value && typeof value === 'object' ? value as TextPresetItem : {
+                  id: `shared-text-${Date.now()}`,
+                  category: 'basics',
+                  title: 'Texto',
+                  previewText: String(value ?? 'Nuevo texto'),
+                  defaultText: String(value ?? 'Nuevo texto'),
+                  tag: 'h2',
+                  fontSize: 42,
+                  fontWeight: '700',
+                  fontFamily: 'Poppins, sans-serif',
+                  fill: '#FFFFFF',
+                  align: 'center',
+                });
+              } else if (kind === 'element') {
+                const element = value && typeof value === 'object' ? value as { blockType?: ImageBlockType; defaultProps?: Record<string, unknown>; savedLayer?: ImageLayer } : undefined;
+                if (element?.savedLayer && props.onInsertSavedLayer) props.onInsertSavedLayer(element.savedLayer);
+                else props.onAddBlock(element?.blockType ?? 'GeometricShape', element?.defaultProps ?? { shapeType: value ?? 'circle' });
+              } else if (kind === 'media') {
+                const media = value && typeof value === 'object' ? value as { imageUrl?: string; options?: { title?: string } } : undefined;
+                props.onAddImageLayer?.(media?.imageUrl ?? (typeof value === 'string' && value.startsWith('http') ? value : ''), media?.options ?? { title: String(value ?? 'Medio') });
+              } else if (kind === 'brand') {
+                const brand = value && typeof value === 'object' ? value as { blockType?: ImageBlockType; defaultProps?: Record<string, unknown> } : undefined;
+                props.onAddBlock(brand?.blockType ?? 'BrandLogo', brand?.defaultProps ?? { variant: value ?? 'default' });
+              } else if (kind === 'background') {
+                const background = value && typeof value === 'object' ? value as { gradient?: string; color?: string } : undefined;
+                props.onUpdateBackground(background?.gradient ?? 'linear-gradient(135deg, rgba(0, 95, 115, 0.85), #001219)', background?.color ?? '#001219');
+              }
+            },
+            update: ({ kind, value }: { kind?: string; value?: unknown }) => {
+              if (kind === 'background' && props.onUpdateBackground) {
+                if (value && typeof value === 'object' && ('shape' in value || 'trajectory' in value || 'colorVariant' in value)) {
+                  props.onRegenerateBackground?.(value as CarouselBackgroundCompositionInput);
+                } else {
+                  const background = value && typeof value === 'object' ? value as { gradient?: string; color?: string } : undefined;
+                  props.onUpdateBackground(background?.gradient ?? 'linear-gradient(135deg, rgba(0, 95, 115, 0.85), #001219)', background?.color ?? '#001219');
+                }
+              }
+              if (kind === 'brand-config' && value && typeof value === 'object') {
+                props.onUpdateBrandCompositionConfig?.(value as BrandVisualCompositionConfigInput);
+              }
+              if (kind === 'layout' && value && typeof value === 'object' && 'action' in value) {
+                const action = value as { action?: string; value?: string };
+                if (action.action === 'align' && props.onAlignSelectedLayers) props.onAlignSelectedLayers(action.value as 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom');
+                if (action.action === 'auto-layout' && props.onAutoLayout) props.onAutoLayout(action.value as 'vertical' | 'horizontal' | 'grid');
+                if (action.action === 'guide-settings') props.onUpdateGuideSettings?.((value as { patch?: Partial<CanvasGuideSettings> }).patch ?? {});
+                if (action.action === 'fit-text') props.onFitText?.();
+                if (action.action === 'variant') props.onApplyVariant?.(action.value as ImageStyleVariantId);
+                if (action.action === 'distribute') props.onDistributeSelectedLayers?.(action.value as 'horizontal' | 'vertical');
+                if (action.action === 'position') props.onUpdateLayerPosition?.((value as { layerId?: string }).layerId ?? '', (value as { value?: { x: number; y: number } }).value ?? { x: 50, y: 50 });
+                if (action.action === 'opacity') props.onUpdateLayerOpacity?.((value as { layerId?: string }).layerId ?? '', Number((value as { value?: number }).value ?? 1));
+                if (action.action === 'shadow') props.onUpdateLayerShadowPreset?.((value as { layerId?: string }).layerId ?? '', (value as { value?: ImageLayer['shadowPreset'] }).value);
+                if (action.action === 'border') props.onUpdateLayerBorder?.((value as { layerId?: string }).layerId ?? '', (value as { value?: { borderWidth?: number; borderColor?: string; borderRadius?: number } }).value ?? {});
+                if (action.action === 'layer-props') props.onUpdateLayerProps?.((value as { layerId?: string }).layerId ?? '', (value as { patch?: Record<string, unknown> }).patch ?? {});
+                if (action.action === 'replace-content') props.onReplaceLayerContent?.((value as { layerId?: string }).layerId ?? '', (value as { value?: { text?: string; imageUrl?: string } }).value ?? {});
+              }
+            },
+            select: (id, options) => props.onSelectLayer(id, options?.additive),
+            remove: (id) => props.onRemoveLayer(id),
+            toggleVisibility: props.onToggleVisibility,
+            toggleLock: props.onToggleLock,
+            move: props.onMoveZIndex,
+            rename: props.onRenameLayer,
+            reorder: (ids) => props.onReorderLayers?.([...ids]),
+            duplicate: props.onDuplicateLayer,
+          },
+          media: resourceId === 'media' ? {
+            insert: (source, options) => {
+              if (props.onAddImageLayer) props.onAddImageLayer(source, options);
+              else props.onAddBlock('ImageMedia' as ImageBlockType, { imageUrl: source, ...options });
+            },
+            setBackground: (source) => props.onUpdateBackground(
+              `linear-gradient(rgba(0, 18, 25, 0.75), rgba(0, 18, 25, 0.85)), url('${source}') center/cover no-repeat`,
+              '#001219',
+            ),
+            upload: props.onUploadImage,
+            list: props.onListImages,
+            delete: props.onDeleteImage
+              ? async (asset) => { await props.onDeleteImage?.(asset as RemoteImageMedia); }
+              : undefined,
+          } : undefined,
+        })}
+      />
+    );
+
+  return <div className="min-w-0 space-y-3">{content}</div>;
 };
 
 // Backwards-compatible wrapper

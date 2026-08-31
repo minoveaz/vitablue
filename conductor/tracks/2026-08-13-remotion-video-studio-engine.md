@@ -1,7 +1,7 @@
 # Track: VitaBlue Social Video & Creative Studio
 
 **Fecha:** 2026-08-13 (Actualizado: 2026-08-19)
-**Estado:** Image Studio Core + Phase 4 (Layers Tree, StudioWorkspaceShell Canva-Style, Modular Blocks, Punteros V/H, Deep-Cloned Undo/Redo) Completados al 100% · En curso: Rail de 9 Herramientas Estilo Canva + Carrusel Multi-Página · En cola: 1-Click Video Bridge con Remotion
+**Estado:** Image Studio Core + Phase 4 (Layers Tree, StudioWorkspaceShell Canva-Style, Modular Blocks, Punteros V/H, Deep-Cloned Undo/Redo) Completados al 100% · Video Studio shell, hub de proyectos y persistencia de proyectos implementados · En curso: Rail de 9 Herramientas Estilo Canva + Carrusel Multi-Página
 **Rama:** `feat/remotion-video-studio-engine`
 
 ## 1. Objetivo
@@ -164,6 +164,13 @@ Estos contratos no obligan a implementar ahora persistencia, resolución remota 
 - Renderizado serverless antes de estabilizar el render local.
 
 ## 5. Principio de eficiencia
+
+### 5.1 Paridad de shell y persistencia (2026-08-31)
+
+- Image Studio y Video Studio consumen el mismo `StudioToolbar`: navegación al Hub, nombre editable, estado de guardado, propiedades, copiar, más acciones y exportación.
+- Video Studio usa `listVideoProjects`, `getVideoProject` y `saveVideoProject` como adaptadores explícitos sobre `CreativeProjectRepository`; no mantiene una segunda persistencia local ficticia.
+- `/backoffice/marketing-studio/generador-contenido` es el Hub de proyectos. El editor se abre con `?projectId=<uuid>` y el botón Hub vuelve a la lista.
+- El borrado remoto sigue siendo archivado porque LoopDev no permite `DELETE` de proyectos.
 
 Cada decisión debe evaluarse con esta pregunta:
 

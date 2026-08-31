@@ -1,8 +1,23 @@
 import React from 'react';
-import { Trash2, AlertTriangle, Eye, EyeOff, Lock, Unlock, RefreshCw } from 'lucide-react';
-import { StudioInspectorPanel } from '../../../components/backoffice-shell/primitives';
-import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, AudioLayer, TransitionType, TextAnimationType, SubtitleStylePreset } from '../../../packages/video-studio/src/domain/videoProject';
+import type {
+  AudioLayer,
+  ComponentLayer,
+  Layer,
+  Scene,
+  SceneTemplateId,
+  SubtitleLayer,
+  TextAnimationType,
+  TextLayer,
+  SubtitleStylePreset,
+  TransitionType,
+} from '../../../packages/video-studio/src/domain/videoProject';
 import { resolveLayerPosition } from '../../../packages/video-studio/src/domain/videoProject';
+import {
+  StudioInspector,
+  type StudioInspectorControl,
+  type StudioInspectorLayer,
+  type StudioInspectorSection,
+} from '../../../components/creative-resources/inspector';
 
 export interface CreativeEditorInspectorProps {
   activeScene: Scene | undefined;
@@ -17,650 +32,190 @@ export interface CreativeEditorInspectorProps {
   onRetryRender?: () => void;
 }
 
-const inspectorControlClass =
-  'w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 transition-colors focus:border-brand-cyan focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
+const selectOptions = (values: readonly [string, string][]) => values.map(([value, label]) => ({ value, label }));
+const field = (
+  kind: Exclude<StudioInspectorControl['kind'], 'button' | 'info'>,
+  label: string,
+  value: string | number,
+  onChange: (value: string | number) => void,
+  options?: readonly { value: string; label: string }[],
+  min?: number,
+  max?: number,
+  step?: number,
+): StudioInspectorControl => ({ kind, label, value, onChange, options, min, max, step });
 
-const inspectorSelectClass =
-  'w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-slate-200 transition-colors focus:border-brand-cyan focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
-
-const inspectorIconButtonClass =
-  'flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
-
-const RenderIssueNotice: React.FC<{ error?: string; onRetryRender?: () => void }> = ({ error, onRetryRender }) =>
-  error ? (
-    <div
-      role="alert"
-      className="flex items-start gap-2 rounded-2xl border border-rose-500/40 bg-rose-500/10 p-3 text-[11px] leading-relaxed text-rose-200"
-    >
-      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-rose-300" />
-      <div className="min-w-0 flex-1">
-        <p className="font-bold text-rose-300">No se pudo renderizar el vídeo</p>
-        <p>{error}</p>
-        {onRetryRender && (
-          <button
-            type="button"
-            onClick={onRetryRender}
-            className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-rose-400/40 px-2 py-1 text-[10px] font-bold text-rose-200 transition-colors hover:bg-rose-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
-          >
-            <RefreshCw className="size-3" />
-            Reintentar
-          </button>
-        )}
-      </div>
-    </div>
-  ) : null;
-
-export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = ({
-  activeScene,
-  selectedLayerId,
-  onUpdateScene,
-  onUpdateSceneContent,
-  onUpdateLayer,
-  onRemoveLayer,
-  warnings,
-  onClose,
-  error,
-  onRetryRender,
-}) => {
-  if (!activeScene) {
-    return (
-      <StudioInspectorPanel as="div" width="standard" variant="dark" onClose={onClose}>
-        <div className="space-y-4" data-creative-studio-region="inspector-content">
-          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
-          <p className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 text-xs leading-relaxed text-slate-400">
-            Selecciona una escena o capa para editar sus propiedades.
-          </p>
-        </div>
-      </StudioInspectorPanel>
-    );
+const layerSections = (
+  scene: Scene,
+  layer: Layer,
+  update: (patch: Record<string, unknown>) => void,
+): StudioInspectorSection[] => {
+  const sections: StudioInspectorSection[] = [];
+  if (layer.type === 'text') {
+    const text = layer as TextLayer;
+    sections.push({
+      id: 'text',
+      title: 'Texto y animación',
+      controls: [
+        field('textarea', 'Texto', text.text, (value) => update({ text: String(value) })),
+        field('select', 'Animación de entrada', text.animation ?? 'none', (value) => update({ animation: value as TextAnimationType }), selectOptions([
+          ['none', 'Ninguna'], ['pop', 'Pop (Rebote elástico)'], ['slide-up', 'Slide up'], ['fade', 'Fade in'], ['typewriter', 'Typewriter'],
+        ])),
+        field('range', `Tamaño de fuente: ${text.fontSize ?? 40}px`, text.fontSize ?? 40, (value) => update({ fontSize: Number(value) }), undefined, 24, 96, 1),
+        field('color', 'Color del texto', text.color ?? '#FFFFFF', (value) => update({ color: String(value) })),
+        field('text', 'Familia tipográfica', String((text as TextLayer & { fontFamily?: string }).fontFamily ?? 'Poppins, sans-serif'), (value) => update({ fontFamily: String(value) })),
+        field('select', 'Peso tipográfico', String((text as TextLayer & { fontWeight?: string }).fontWeight ?? '700'), (value) => update({ fontWeight: String(value) }), selectOptions([
+          ['400', 'Regular'], ['500', 'Medium'], ['600', 'Semibold'], ['700', 'Bold'], ['800', 'Extra bold'],
+        ])),
+      ],
+    });
   }
+  if (layer.type === 'subtitle') {
+    const subtitle = layer as SubtitleLayer;
+    sections.push({
+      id: 'subtitle',
+      title: 'Subtítulo',
+      controls: [
+        field('textarea', 'Texto del subtítulo', subtitle.text, (value) => update({ text: String(value) }), undefined),
+        field('select', 'Animación de entrada', subtitle.animation ?? 'pop', (value) => update({ animation: value as TextAnimationType }), selectOptions([
+          ['pop', 'Pop (Rebote viral)'], ['slide-up', 'Slide up'], ['fade', 'Fade in'], ['none', 'Ninguna'],
+        ])),
+        field('select', 'Estilo de subtítulo', subtitle.stylePreset ?? 'viral-yellow', (value) => update({ stylePreset: value as SubtitleStylePreset }), selectOptions([
+          ['viral-yellow', 'Amarillo Viral TikTok (Recomendado)'], ['clean-white', 'Blanco limpio con sombra'], ['classic-box', 'Caja azul oscuro VitaBlue'],
+        ])),
+      ],
+    });
+  }
+  if (layer.type === 'component') {
+    const component = layer as ComponentLayer;
+    const props = component.props;
+    const controls: StudioInspectorControl[] = [
+      { kind: 'info', label: 'component', value: <span>Props: <strong>{component.componentId}</strong> · MotionKit</span> },
+    ];
+    const add = (key: string, label: string, fallback = '') => controls.push(field('text', label, String(props[key] ?? fallback), (value) => {
+      const nextProps = { ...props, [key]: String(value) };
+      if (key === 'whatsAppText') nextProps.cta = String(value);
+      update({ props: nextProps });
+    }));
+    if (component.componentId === 'MotionAdvisorCard' || component.componentId === 'AdvisorCard') {
+      add('name', 'Nombre asesor', 'Sofía'); add('role', 'Cargo / especialidad', 'Asesora Especialista');
+      add('message', 'Mensaje / cita'); add('whatsAppText', 'Texto botón WhatsApp', 'Pregúntanos por WhatsApp');
+    } else if (component.componentId === 'MotionTrustBadge') {
+      add('title', 'Título', 'PÓLIZA 100% VÁLIDA PARA VISADO'); add('subtitle', 'Subtítulo'); add('highlight', 'Insignia / highlight', 'GARANTÍA CONSULAR');
+    } else if (component.componentId === 'MotionProviderGrid') {
+      add('title', 'Título principal', 'COMPAÑÍAS LÍDERES AUTORIZADAS'); add('subtitle', 'Subtítulo');
+    } else if (component.componentId === 'MotionComparisonCard') {
+      add('title', 'Título', '¿SEGURO DE VIAJE O SEGURO DE VISADO?'); add('wrongOptionTitle', 'Opción incorrecta', 'Seguro de Viaje Común'); add('correctOptionTitle', 'Opción correcta', 'Seguro VitaBlue Extranjería');
+    }
+    sections.push({ id: 'component', title: 'Contenido del componente', controls });
+  }
+  if (layer.type === 'audio') {
+    const audio = layer as AudioLayer;
+    sections.push({
+      id: 'audio',
+      title: 'Audio',
+      controls: [
+        field('range', `Volumen: ${Math.round((audio.volume ?? 1) * 100)}%`, audio.volume ?? 1, (value) => update({ volume: Number(value) }), undefined, 0, 1, 0.05),
+        field('number', 'Entrada (frames)', audio.fadeInDuration ?? 15, (value) => update({ fadeInDuration: Number(value) })),
+        field('number', 'Salida (frames)', audio.fadeOutDuration ?? 15, (value) => update({ fadeOutDuration: Number(value) })),
+      ],
+    });
+  }
+  const timing = layer.timing ?? { startFrame: 0, durationInFrames: scene.durationInFrames };
+  const asset = 'asset' in layer ? layer.asset : undefined;
+  sections.push({
+    id: 'timing',
+    title: 'Tiempo y medios',
+    controls: [
+      field('number', 'Frame de inicio', timing.startFrame, (value) => update({ timing: { ...timing, startFrame: Number(value) } })),
+      field('number', 'Duración (frames)', timing.durationInFrames, (value) => update({ timing: { ...timing, durationInFrames: Number(value) } })),
+      ...(asset ? [field('text', 'URL del medio', asset.src ?? '', (value) => update({ asset: { ...asset, src: String(value) } }))] : []),
+      ...(layer.type === 'video' ? [field('text', 'Texto alternativo', String((layer as Layer & { alt?: string }).alt ?? ''), (value) => update({ alt: String(value) }))] : []),
+    ],
+  });
+  const visual = layer as Layer & {
+    borderColor?: string;
+    borderWidth?: number;
+    borderRadius?: number;
+    shadowPreset?: string;
+    color?: string;
+  };
+  if (layer.type !== 'audio') sections.push({
+    id: 'appearance',
+    title: 'Colores, bordes y sombra',
+    controls: [
+      field('color', 'Color principal', visual.color ?? '#005F73', (value) => update({ color: String(value) })),
+      field('range', `Grosor de borde: ${visual.borderWidth ?? 0}px`, visual.borderWidth ?? 0, (value) => update({ borderWidth: Number(value) }), undefined, 0, 16, 1),
+      field('range', `Radio de esquinas: ${visual.borderRadius ?? 0}px`, visual.borderRadius ?? 0, (value) => update({ borderRadius: Number(value) }), undefined, 0, 9999, 1),
+      field('select', 'Sombra', visual.shadowPreset ?? 'none', (value) => update({ shadowPreset: String(value) }), selectOptions([
+        ['none', 'Ninguna'], ['soft', 'Suave'], ['deep', 'Profunda'], ['glow_teal', 'Glow Teal'], ['glow_gold', 'Glow Gold'],
+      ])),
+    ],
+  });
+  return sections;
+};
 
-  const selectedLayer = activeScene.layers.find((l) => l.id === selectedLayerId);
+const sceneSections = (scene: Scene, onUpdateScene: CreativeEditorInspectorProps['onUpdateScene'], onUpdateSceneContent: CreativeEditorInspectorProps['onUpdateSceneContent']): StudioInspectorSection[] => {
+  const content = scene.content;
+  const updateContent = (key: string, value: unknown) => onUpdateSceneContent(scene.id, key, value);
+  const controls: StudioInspectorControl[] = [
+    field('select', 'Plantilla de escena', scene.templateId, (value) => onUpdateScene(scene.id, { templateId: value as SceneTemplateId }), selectOptions([
+      ['text_hook', 'Hook inicial (Titular)'], ['requirements_list', 'Lista de requisitos (Checklist)'], ['advisor_cta', 'CTA Asesoría (WhatsApp)'], ['provider_logos', 'Logos aseguradoras'],
+    ])),
+    field('range', `Duración: ${(scene.durationInFrames / 30).toFixed(1)}s (${scene.durationInFrames} frames)`, scene.durationInFrames, (value) => onUpdateScene(scene.id, { durationInFrames: Number(value) }), undefined, 30, 300, 15),
+    field('select', 'Transición de entrada', scene.transition?.type ?? 'none', (value) => onUpdateScene(scene.id, { transition: { type: value as TransitionType, durationInFrames: scene.transition?.durationInFrames ?? 15 } }), selectOptions([
+      ['none', 'Ninguna (Corte directo)'], ['fade', 'Disolver (Fade)'], ['slide', 'Deslizar (Slide)'], ['zoom', 'Zoom (Zoom in)'], ['wipe', 'Barrido (Wipe)'],
+    ])),
+  ];
+  if (scene.templateId === 'text_hook') {
+    controls.push(field('textarea', 'Titular principal', String(content.text ?? ''), (value) => updateContent('text', String(value))));
+    controls.push(field('text', 'Texto de badge', String(content.badge ?? 'VISA READY'), (value) => updateContent('badge', String(value))));
+  }
+  if (scene.templateId === 'requirements_list') {
+    controls.push(field('text', 'Título de la lista', String(content.title ?? 'Requisitos Visado'), (value) => updateContent('title', String(value))));
+    controls.push(field('textarea', 'Requisitos (uno por línea)', Array.isArray(content.items) ? content.items.join('\n') : '', (value) => updateContent('items', String(value).split('\n').filter(Boolean))));
+  }
+  if (scene.templateId === 'advisor_cta') {
+    controls.push(field('text', 'Nombre asesor', String(content.advisorName ?? ''), (value) => updateContent('advisorName', String(value))));
+    controls.push(field('text', 'Cargo / especialidad', String(content.role ?? ''), (value) => updateContent('role', String(value))));
+    controls.push(field('text', 'Llamada a la acción (botón)', String(content.cta ?? 'Pregúntanos por WhatsApp'), (value) => updateContent('cta', String(value))));
+  }
+  return [{ id: 'scene', title: 'Escena activa', controls }];
+};
+
+export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (props) => {
+  const { activeScene, selectedLayerId, onUpdateLayer, onRemoveLayer, onClose, error, onRetryRender, warnings } = props;
+  const selectedLayer = activeScene?.layers.find((layer) => layer.id === selectedLayerId);
+  const updateLayer = (patch: Record<string, unknown>) => {
+    if (activeScene && selectedLayer) onUpdateLayer(activeScene.id, selectedLayer.id, patch as Partial<Layer>);
+  };
+  const adapterLayer: StudioInspectorLayer | undefined = activeScene && selectedLayer ? {
+    id: selectedLayer.id,
+    title: selectedLayer.name ?? `${selectedLayer.type} Layer`,
+    type: selectedLayer.type,
+    visible: selectedLayer.visible,
+    locked: selectedLayer.locked,
+    position: 'position' in selectedLayer ? resolveLayerPosition(selectedLayer.position) : undefined,
+    width: selectedLayer.type === 'audio' ? undefined : ('width' in selectedLayer ? selectedLayer.width ?? 100 : 100),
+    height: selectedLayer.type === 'audio' ? undefined : ('height' in selectedLayer ? selectedLayer.height ?? 100 : 100),
+    rotation: Number((selectedLayer as Layer & { rotation?: number }).rotation ?? 0),
+    opacity: Number((selectedLayer as Layer & { opacity?: number }).opacity ?? 1),
+    supportsTransform: selectedLayer.type !== 'audio',
+    onUpdate: updateLayer,
+    onToggleVisibility: () => updateLayer({ visible: selectedLayer.visible === false }),
+    onToggleLock: () => updateLayer({ locked: !selectedLayer.locked }),
+    onRemove: () => activeScene && onRemoveLayer(activeScene.id, selectedLayer.id),
+  } : undefined;
 
   return (
-    <StudioInspectorPanel
-      as="div"
-      title={selectedLayer ? `Capa: ${selectedLayer.type.toUpperCase()}` : `Escena: ${activeScene.id}`}
-      width="standard"
-      variant="dark"
+    <StudioInspector
+      title={adapterLayer ? `Capa: ${selectedLayer?.type.toUpperCase()}` : activeScene ? `Escena: ${activeScene.id}` : 'Inspector'}
       onClose={onClose}
-    >
-      {/* MODO A: INSPECTOR DE CAPA SELECCIONADA */}
-      {selectedLayer ? (
-        <div className="space-y-4" data-creative-studio-region="inspector-content">
-          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-md bg-primary/20 text-brand-cyan text-xs font-bold uppercase">
-                {selectedLayer.type[0]}
-              </span>
-              <strong className="text-xs text-slate-200 capitalize">{selectedLayer.type} Layer</strong>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { visible: selectedLayer.visible === false ? true : false })}
-                aria-pressed={selectedLayer.visible !== false}
-                aria-label={selectedLayer.visible === false ? 'Mostrar capa' : 'Ocultar capa'}
-                className={inspectorIconButtonClass}
-                title={selectedLayer.visible === false ? 'Mostrar capa' : 'Ocultar capa'}
-              >
-                {selectedLayer.visible === false ? <EyeOff className="size-4 text-amber-400" /> : <Eye className="size-4" />}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { locked: !selectedLayer.locked })}
-                aria-pressed={Boolean(selectedLayer.locked)}
-                aria-label={selectedLayer.locked ? 'Desbloquear capa' : 'Bloquear capa'}
-                className={inspectorIconButtonClass}
-                title={selectedLayer.locked ? 'Desbloquear' : 'Bloquear'}
-              >
-                {selectedLayer.locked ? <Lock className="size-4 text-brand-cyan" /> : <Unlock className="size-4" />}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onRemoveLayer(activeScene.id, selectedLayer.id)}
-                aria-label="Eliminar capa"
-                className={`${inspectorIconButtonClass} hover:border-rose-500/40 hover:bg-rose-500/20 hover:text-rose-300`}
-                title="Eliminar capa"
-              >
-                <Trash2 className="size-4" />
-              </button>
-            </div>
-          </div>
-
-          {selectedLayer.locked && (
-            <div
-              role="status"
-              className="flex items-start gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-200"
-            >
-              <Lock className="mt-0.5 size-4 shrink-0 text-amber-300" />
-              <span>Capa protegida. Desbloquéala para cambiar sus propiedades de vídeo.</span>
-            </div>
-          )}
-
-          {/* EDITOR ESPECÍFICO DE TEXTO */}
-          <fieldset
-            disabled={Boolean(selectedLayer.locked)}
-            className="min-w-0 space-y-4 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-          {selectedLayer.type === 'text' && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto</label>
-                <textarea
-                  value={(selectedLayer as TextLayer).text}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { text: e.target.value })}
-                  rows={3}
-                  className={inspectorControlClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
-                <select
-                  value={(selectedLayer as TextLayer).animation ?? 'none'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as TextAnimationType })}
-                  className={inspectorSelectClass}
-                >
-                  <option value="none">Ninguna</option>
-                  <option value="pop">Pop (Rebote elástico)</option>
-                  <option value="slide-up">Slide up (Deslizar hacia arriba)</option>
-                  <option value="fade">Fade in (Aparecer)</option>
-                  <option value="typewriter">Typewriter (Máquina de escribir)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Tamaño de Fuente: {(selectedLayer as TextLayer).fontSize ?? 40}px
-                </label>
-                <input
-                  type="range"
-                  min={24}
-                  max={96}
-                  value={(selectedLayer as TextLayer).fontSize ?? 40}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fontSize: Number(e.target.value) })}
-                  className="w-full accent-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Color del Texto</label>
-                <div className="flex items-center gap-2">
-                  {['#ffffff', '#EE9B00', '#94D2BD', '#005F73'].map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { color: c })}
-                      aria-label={`Color de texto ${c}`}
-                      style={{ backgroundColor: c }}
-                      className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-slate-700 shadow-xs transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* EDITOR ESPECÍFICO DE SUBTÍTULO */}
-          {selectedLayer.type === 'subtitle' && (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto del Subtítulo</label>
-                <textarea
-                  value={(selectedLayer as SubtitleLayer).text}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { text: e.target.value })}
-                  rows={2}
-                  className={inspectorControlClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
-                <select
-                  value={(selectedLayer as SubtitleLayer).animation ?? 'pop'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as TextAnimationType })}
-                  className={inspectorSelectClass}
-                >
-                  <option value="pop">Pop (Rebote Viral)</option>
-                  <option value="slide-up">Slide up</option>
-                  <option value="fade">Fade in</option>
-                  <option value="none">Ninguna</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Estilo de Subtítulo</label>
-                <select
-                  value={(selectedLayer as SubtitleLayer).stylePreset ?? 'viral-yellow'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { stylePreset: e.target.value as SubtitleStylePreset })}
-                  className={inspectorSelectClass}
-                >
-                  <option value="viral-yellow">Amarillo Viral TikTok (Recomendado)</option>
-                  <option value="clean-white">Blanco Limpio con Sombra</option>
-                  <option value="classic-box">Caja Azul Oscuro VitaBlue</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* EDITOR ESPECÍFICO DE COMPONENTES MOTIONKIT */}
-          {selectedLayer.type === 'component' && (() => {
-            const compLayer = selectedLayer as ComponentLayer;
-            const compId = compLayer.componentId;
-            const props = compLayer.props as Record<string, unknown>;
-
-            return (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">
-                    Props: {compId}
-                  </span>
-                  <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-300">
-                    MotionKit
-                  </span>
-                </div>
-
-                {(compId === 'MotionAdvisorCard' || compId === 'AdvisorCard') && (
-                  <>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Asesor</label>
-                      <input
-                        type="text"
-                        value={(props.name as string) ?? 'Sofía'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, name: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo / Especialidad</label>
-                      <input
-                        type="text"
-                        value={(props.role as string) ?? 'Asesora Especialista'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, role: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Mensaje / Cita</label>
-                      <textarea
-                        value={(props.message as string) ?? ''}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, message: e.target.value } })}
-                        rows={2}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto Botón WhatsApp</label>
-                      <input
-                        type="text"
-                        value={(props.whatsAppText as string) ?? (props.cta as string) ?? 'Pregúntanos por WhatsApp'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, whatsAppText: e.target.value, cta: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {compId === 'MotionTrustBadge' && (
-                  <>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título</label>
-                      <input
-                        type="text"
-                        value={(props.title as string) ?? 'PÓLIZA 100% VÁLIDA PARA VISADO'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Subtítulo</label>
-                      <input
-                        type="text"
-                        value={(props.subtitle as string) ?? ''}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Insignia / Highlight</label>
-                      <input
-                        type="text"
-                        value={(props.highlight as string) ?? 'GARANTÍA CONSULAR'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, highlight: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {compId === 'MotionProviderGrid' && (
-                  <>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título Principal</label>
-                      <input
-                        type="text"
-                        value={(props.title as string) ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Subtítulo</label>
-                      <input
-                        type="text"
-                        value={(props.subtitle as string) ?? ''}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {compId === 'MotionComparisonCard' && (
-                  <>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título</label>
-                      <input
-                        type="text"
-                        value={(props.title as string) ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-red-400 mb-1">Opción Incorrecta</label>
-                      <input
-                        type="text"
-                        value={(props.wrongOptionTitle as string) ?? 'Seguro de Viaje Común'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, wrongOptionTitle: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">Opción Correcta</label>
-                      <input
-                        type="text"
-                        value={(props.correctOptionTitle as string) ?? 'Seguro VitaBlue Extranjería'}
-                        onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, correctOptionTitle: e.target.value } })}
-                        className={inspectorControlClass}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })()}
-
-          {/* EDITOR ESPECÍFICO DE AUDIO */}
-          {selectedLayer.type === 'audio' && (
-            <div className="space-y-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">Propiedades de Audio</span>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Volumen</label>
-                  <span className="font-mono text-xs font-bold text-purple-400">
-                    {Math.round(((selectedLayer as AudioLayer).volume ?? 1) * 100)}%
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={(selectedLayer as AudioLayer).volume ?? 1}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { volume: Number(e.target.value) })}
-                  className="w-full accent-purple-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fade In (frames)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={60}
-                    value={(selectedLayer as AudioLayer).fadeInDuration ?? 15}
-                    onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeInDuration: Number(e.target.value) })}
-                    className={inspectorControlClass}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fade Out (frames)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={60}
-                    value={(selectedLayer as AudioLayer).fadeOutDuration ?? 15}
-                    onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeOutDuration: Number(e.target.value) })}
-                    className={inspectorControlClass}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECCIÓN DE POSICIÓN Y ALINEACIÓN (COMÚN A TODAS LAS CAPAS VISUALES) */}
-          {selectedLayer.type !== 'audio' && (() => {
-            const layerPos = resolveLayerPosition('position' in selectedLayer ? selectedLayer.position : undefined);
-            return (
-              <div className="pt-3 border-t border-slate-800 space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">Posición en el Lienzo</span>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                      Eje X: {layerPos.x}%
-                    </label>
-                    <input
-                      type="range"
-                      min={5}
-                      max={95}
-                      value={layerPos.x}
-                      onChange={(e) => {
-                        onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: Number(e.target.value), y: layerPos.y } });
-                      }}
-                      className="w-full accent-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                      Eje Y: {layerPos.y}%
-                    </label>
-                    <input
-                      type="range"
-                      min={5}
-                      max={95}
-                      value={layerPos.y}
-                      onChange={(e) => {
-                        onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: layerPos.x, y: Number(e.target.value) } });
-                      }}
-                      className="w-full accent-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* BOTONES DE ALINEACIÓN RÁPIDA */}
-                <div className="flex items-center gap-1.5 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 15 } })}
-                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-                  >
-                    Arriba
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 50 } })}
-                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-                  >
-                    Centro
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 80 } })}
-                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-                  >
-                    Abajo
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
-          </fieldset>
-        </div>
-      ) : (
-        /* MODO B: INSPECTOR DE ESCENA ACTIVA */
-        <div className="space-y-5" data-creative-studio-region="inspector-content">
-          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
-          {/* Advertencias de desbordamiento */}
-          {warnings.length > 0 && (
-          <div role="alert" className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300 space-y-1.5">
-              <div className="flex items-center gap-1.5 font-bold text-amber-400">
-                <AlertTriangle className="size-4 shrink-0" />
-                <span>Advertencias de escena:</span>
-              </div>
-              {warnings.map((w, idx) => (
-                <p key={idx} className="text-[11px] leading-relaxed text-amber-200">• {w}</p>
-              ))}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Plantilla de Escena</label>
-            <select
-              value={activeScene.templateId}
-              onChange={(e) => onUpdateScene(activeScene.id, { templateId: e.target.value as SceneTemplateId })}
-              className={`${inspectorSelectClass} font-bold`}
-            >
-              <option value="text_hook">Hook inicial (Titular)</option>
-              <option value="requirements_list">Lista de requisitos (Checklist)</option>
-              <option value="advisor_cta">CTA Asesoría (WhatsApp)</option>
-              <option value="provider_logos">Logos Aseguradoras</option>
-            </select>
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Duración de Escena</label>
-              <span className="font-mono text-xs font-bold text-brand-cyan">{(activeScene.durationInFrames / 30).toFixed(1)}s ({activeScene.durationInFrames} frames)</span>
-            </div>
-            <input
-              type="range"
-              min={30}
-              max={300}
-              step={15}
-              value={activeScene.durationInFrames}
-              onChange={(e) => onUpdateScene(activeScene.id, { durationInFrames: Number(e.target.value) })}
-              className="w-full accent-primary"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Transición de Entrada</label>
-            <select
-              value={activeScene.transition?.type ?? 'none'}
-              onChange={(e) => onUpdateScene(activeScene.id, { transition: { type: e.target.value as TransitionType, durationInFrames: activeScene.transition?.durationInFrames ?? 15 } })}
-              className={inspectorControlClass}
-            >
-              <option value="none">Ninguna (Corte directo)</option>
-              <option value="fade">Disolver (Fade)</option>
-              <option value="slide">Deslizar (Slide)</option>
-              <option value="zoom">Zoom (Zoom In)</option>
-              <option value="wipe">Barrido (Wipe)</option>
-            </select>
-          </div>
-
-          {/* CAMPOS ESPECÍFICOS DE LA PLANTILLA */}
-          <div className="pt-3 border-t border-slate-800 space-y-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan block">Contenido de la Escena</span>
-
-            {activeScene.templateId === 'text_hook' && (
-              <>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Titular Principal</label>
-                  <textarea
-                    value={(activeScene.content.text as string) ?? ''}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'text', e.target.value)}
-                    rows={3}
-                    className={inspectorControlClass}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Texto de Badge</label>
-                  <input
-                    type="text"
-                    value={(activeScene.content.badge as string) ?? 'VISA READY'}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'badge', e.target.value)}
-                    className={inspectorControlClass}
-                  />
-                </div>
-              </>
-            )}
-
-            {activeScene.templateId === 'requirements_list' && (
-              <>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Título de la Lista</label>
-                  <input
-                    type="text"
-                    value={(activeScene.content.title as string) ?? 'Requisitos Visado'}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'title', e.target.value)}
-                    className={`${inspectorControlClass} mb-2`}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Requisitos (uno por línea)</label>
-                  <textarea
-                    value={Array.isArray(activeScene.content.items) ? (activeScene.content.items as string[]).join('\n') : ''}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'items', e.target.value.split('\n').filter(Boolean))}
-                    rows={4}
-                    className={inspectorControlClass}
-                  />
-                </div>
-              </>
-            )}
-
-            {activeScene.templateId === 'advisor_cta' && (
-              <>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Asesor</label>
-                  <input
-                    type="text"
-                    value={(activeScene.content.advisorName as string) ?? ''}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'advisorName', e.target.value)}
-                    className={inspectorControlClass}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo / Especialidad</label>
-                  <input
-                    type="text"
-                    value={(activeScene.content.role as string) ?? ''}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'role', e.target.value)}
-                    className={inspectorControlClass}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Llamada a la Acción (Botón)</label>
-                  <input
-                    type="text"
-                    value={(activeScene.content.cta as string) ?? 'Pregúntanos por WhatsApp'}
-                    onChange={(e) => onUpdateSceneContent(activeScene.id, 'cta', e.target.value)}
-                    className={inspectorControlClass}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </StudioInspectorPanel>
+      error={error}
+      onRetry={onRetryRender}
+      warnings={warnings}
+      layer={adapterLayer}
+      sections={activeScene && selectedLayer ? layerSections(activeScene, selectedLayer, updateLayer) : activeScene ? sceneSections(activeScene, props.onUpdateScene, props.onUpdateSceneContent) : []}
+      emptyStateMessage={!activeScene ? 'Selecciona una escena o capa para editar sus propiedades.' : undefined}
+    />
   );
 };

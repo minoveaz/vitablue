@@ -21,41 +21,59 @@ import {
   Check,
   GripVertical,
 } from 'lucide-react';
-import { ImageLayer, ImageProject } from '../../types/imageStudio';
+import type { ResourceBlockProps } from '../ResourceBlockProps';
 
-export interface ImageStudioLayersPanelProps {
-  project: ImageProject;
-  selectedLayerId: string | null;
-  selectedLayerIds?: string[];
-  onSelectLayer: (id: string, isShift?: boolean) => void;
-  onToggleLock: (id: string) => void;
-  onToggleVisibility: (id: string) => void;
-  onToggleAllLock?: (locked: boolean) => void;
-  onToggleAllVisibility?: (visible: boolean) => void;
-  onMoveZIndex: (id: string, direction: 'up' | 'down') => void;
-  onReorderLayers?: (layerIds: string[]) => void;
-  onRenameLayer: (id: string, title: string) => void;
-  onDuplicateLayer: (id: string) => void;
-  onRemoveLayer: (id: string) => void;
-  onDeleteSelectedLayers?: () => void;
+interface LayerLike {
+  id: string;
+  title: string;
+  name?: string;
+  type?: string;
+  blockType?: string;
+  props?: Record<string, unknown>;
+  zIndex: number;
+  visible?: boolean;
+  locked?: boolean;
 }
 
-export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
-  project,
-  selectedLayerId,
-  selectedLayerIds = [],
-  onSelectLayer,
-  onToggleLock,
-  onToggleVisibility,
-  onToggleAllLock,
-  onToggleAllVisibility,
-  onMoveZIndex,
-  onReorderLayers,
-  onRenameLayer,
-  onDuplicateLayer,
-  onRemoveLayer,
-  onDeleteSelectedLayers,
-}) => {
+type LayersResourceProps = ResourceBlockProps;
+
+export const LayersResource: React.FC<LayersResourceProps> = ({ context }) => {
+  const raw = context.data as unknown;
+  const rawLayers = Array.isArray(raw)
+    ? ((raw.find((scene) => scene && typeof scene === 'object' && (scene as { id?: string }).id === context.selection.sceneId) as { layers?: unknown[] } | undefined)?.layers ?? [])
+    : (raw && typeof raw === 'object' && Array.isArray((raw as { layers?: unknown[] }).layers) ? (raw as { layers: unknown[] }).layers : []);
+  const project = { layers: rawLayers.map((value, index): LayerLike => {
+    const layer = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>;
+    const props = (layer.props && typeof layer.props === 'object' ? layer.props : {}) as Record<string, unknown>;
+    const text = typeof layer.text === 'string' ? layer.text : undefined;
+    return {
+      id: String(layer.id ?? `layer-${index}`),
+      title: String(layer.title ?? layer.name ?? layer.type ?? `Capa ${index + 1}`),
+      name: typeof layer.name === 'string' ? layer.name : undefined,
+      type: typeof layer.type === 'string' ? layer.type : undefined,
+      blockType: typeof layer.blockType === 'string' ? layer.blockType : undefined,
+      props: Object.keys(props).length ? props : text ? { text } : {},
+      zIndex: Number(layer.zIndex ?? rawLayers.length - index),
+      visible: layer.visible !== false,
+      locked: Boolean(layer.locked),
+    };
+  }) };
+  const selectedLayerIds = [...context.selection.layerIds];
+  const selectedLayerId = selectedLayerIds[0] ?? null;
+  const onSelectLayer = (id: string, options?: { additive?: boolean }) => context.actions.select?.(id, options);
+  const onToggleLock = (id: string) => context.actions.toggleLock?.(id);
+  const onToggleVisibility = (id: string) => context.actions.toggleVisibility?.(id);
+  const onToggleAllLock = context.actions.toggleLock ? (locked: boolean) => project.layers.forEach((layer) => { if (Boolean(layer.locked) !== locked) context.actions.toggleLock?.(layer.id); }) : undefined;
+  const onToggleAllVisibility = context.actions.toggleVisibility ? (visible: boolean) => project.layers.forEach((layer) => { if ((layer.visible !== false) !== visible) context.actions.toggleVisibility?.(layer.id); }) : undefined;
+  const onMoveZIndex = context.actions.move
+    ? (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => context.actions.move?.(id, direction)
+    : undefined;
+  const onReorderLayers = context.actions.reorder ? (ids: string[]) => context.actions.reorder?.(ids) : undefined;
+  const onRenameLayer = context.actions.rename ? (id: string, title: string) => context.actions.rename?.(id, title) : undefined;
+  const onDuplicateLayer = context.actions.duplicate ? (id: string) => context.actions.duplicate?.(id) : undefined;
+  const onRemoveLayer = context.actions.remove ? (id: string) => context.actions.remove?.(id) : undefined;
+  const onDeleteSelectedLayers = context.actions.remove ? () => selectedLayerIds.forEach((id) => context.actions.remove?.(id)) : undefined;
+
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState<string>('');
   const [draggedLayerId, setDraggedLayerId] = useState<string | null>(null);
@@ -72,7 +90,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
     ? sortedLayers.filter((layer) => selectedLayerIds.includes(layer.id))
     : sortedLayers;
 
-  const getLayerIcon = (layer: ImageLayer) => {
+  const getLayerIcon = (layer: LayerLike) => {
     switch (layer.blockType) {
       case 'AdvisorAvatarBadge':
         return <User className="size-3.5 text-amber-400" />;
@@ -98,7 +116,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
     }
   };
 
-  const getLayerSnippet = (layer: ImageLayer): string | null => {
+  const getLayerSnippet = (layer: LayerLike): string | null => {
     const p = layer.props as Record<string, unknown>;
     if (layer.blockType === 'WhatsAppCtaButton') return String(p.whatsAppText ?? 'WhatsApp');
     if (layer.blockType === 'AdvisorQuoteBox') return String(p.message ?? '').slice(0, 30);
@@ -108,7 +126,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
     return null;
   };
 
-  const startEditing = (layer: ImageLayer, e: React.MouseEvent) => {
+  const startEditing = (layer: LayerLike, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingLayerId(layer.id);
     setEditingTitle(layer.title);
@@ -116,7 +134,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
 
   const handleSaveTitle = (layerId: string) => {
     if (editingTitle.trim()) {
-      onRenameLayer(layerId, editingTitle.trim());
+      onRenameLayer?.(layerId, editingTitle.trim());
     }
     setEditingLayerId(null);
   };
@@ -155,9 +173,13 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
     onReorderLayers(newOrder);
   };
 
+  if (context.state === 'disabled') return <div role="status" className="p-4 text-xs text-slate-400">Capas no disponibles en este estudio.</div>;
+  if (context.state === 'loading') return <div role="status" className="p-4 text-xs text-slate-400">Cargando capas…</div>;
+  if (context.state === 'error') return <div role="alert" className="p-4 text-xs text-rose-200">{context.error ?? 'No se pudieron cargar las capas.'}</div>;
+
   return (
-    <div className="flex flex-col space-y-2.5 select-none text-xs">
-    <div className="grid grid-cols-2 gap-1 border-b border-slate-800/80 pb-2">
+    <div className="flex flex-col space-y-2.5 select-none text-xs" data-core-resource-content="layers" data-resource-block="layers">
+    <div data-resource-header className="grid grid-cols-2 gap-1 border-b border-slate-800/80 pb-2">
       {([
         ['organize', 'Organizar'],
         ['layers', 'Capas'],
@@ -188,8 +210,8 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
             <button
               key={direction}
               type="button"
-              disabled={!selectedLayerId}
-              onClick={() => selectedLayerId && onMoveZIndex(selectedLayerId, direction)}
+              disabled={!selectedLayerId || !onMoveZIndex}
+              onClick={() => selectedLayerId && onMoveZIndex?.(selectedLayerId, direction)}
               className="min-h-9 rounded-lg border border-slate-700 bg-slate-900 px-2 text-xs text-slate-300 transition-colors hover:border-brand-cyan/60 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {label}
@@ -302,7 +324,7 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                 onDrop={(e) => handleDrop(e, index)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectLayer(layer.id, e.shiftKey || e.metaKey || e.ctrlKey);
+                  onSelectLayer(layer.id, { additive: e.shiftKey || e.metaKey || e.ctrlKey });
                 }}
                 className={`group relative flex items-center justify-between gap-1.5 rounded-xl border p-2 transition-all cursor-pointer ${
                   isDropTarget ? 'border-brand-cyan bg-brand-cyan/10 ring-2 ring-brand-cyan' : ''
@@ -387,8 +409,8 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       type="button"
-                      onClick={() => onMoveZIndex(layer.id, 'up')}
-                      disabled={index === 0}
+                      disabled={!onMoveZIndex || index === 0}
+                      onClick={() => onMoveZIndex?.(layer.id, 'up')}
                       className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
                       title="Traer al frente"
                     >
@@ -396,8 +418,8 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => onMoveZIndex(layer.id, 'down')}
-                      disabled={index === sortedLayers.length - 1}
+                      disabled={!onMoveZIndex || index === sortedLayers.length - 1}
+                      onClick={() => onMoveZIndex?.(layer.id, 'down')}
                       className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-20 transition-colors"
                       title="Enviar al fondo"
                     >
@@ -405,16 +427,18 @@ export const ImageStudioLayersPanel: React.FC<ImageStudioLayersPanelProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => onDuplicateLayer(layer.id)}
-                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                      disabled={!onDuplicateLayer}
+                      onClick={() => onDuplicateLayer?.(layer.id)}
+                      className="flex size-5 items-center justify-center rounded text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
                       title="Duplicar capa"
                     >
                       <Copy className="size-3" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => onRemoveLayer(layer.id)}
-                      className="flex size-5 items-center justify-center rounded text-slate-400 hover:bg-rose-950/60 hover:text-rose-400 transition-colors"
+                      disabled={!onRemoveLayer}
+                      onClick={() => onRemoveLayer?.(layer.id)}
+                      className="flex size-5 items-center justify-center rounded text-white hover:bg-rose-950/60 hover:text-rose-300 transition-colors"
                       title="Eliminar capa"
                     >
                       <Trash2 className="size-3" />

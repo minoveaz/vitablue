@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { Layer, LayerType, Scene, SceneTemplateId, ShapeLayer, SubtitleLayer, TextLayer, ComponentLayer } from '../../packages/video-studio/src/domain/videoProject';
+import { useEffect, useRef, useState, type SetStateAction } from 'react';
+import type { Layer, LayerType, Scene, SceneTemplateId, ShapeLayer, SubtitleLayer, TextLayer, ComponentLayer, VideoProject } from '../../packages/video-studio/src/domain/videoProject';
 import { defaultVisaRejectionProject } from '../../packages/video-studio/src/domain/defaultProject';
 import { getVideoSceneWarnings } from './videoSceneValidation';
 import { DEFAULT_LAYER_LAYOUT_CONSTRAINTS } from '../../packages/video-studio/src/domain/layoutConstraints';
@@ -41,8 +41,72 @@ const cloneVideoScene = (scene: Scene): Scene => ({
   layers: scene.layers.map(cloneVideoLayer),
 });
 
-export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaRejectionProject.scenes) => {
-  const [scenes, setScenes] = useState<Scene[]>(() => initialScenes.map(cloneVideoScene));
+export interface VideoProjectEditorOptions {
+  persistenceReady?: boolean;
+  persistProject?: (project: VideoProject, expectedUpdatedAt?: string) => Promise<VideoProject>;
+}
+
+export const useVideoProjectEditor = (
+  initialScenesOrProject: Scene[] | VideoProject = defaultVisaRejectionProject.scenes,
+  options: VideoProjectEditorOptions = {},
+) => {
+  const { persistenceReady = true, persistProject } = options;
+  const initialProject = Array.isArray(initialScenesOrProject)
+    ? { ...defaultVisaRejectionProject, scenes: initialScenesOrProject }
+    : initialScenesOrProject;
+  const [scenes, setScenesState] = useState<Scene[]>(() => initialProject.scenes.map(cloneVideoScene));
+  const [projectName, setProjectNameState] = useState(initialProject.name);
+  const [projectId, setProjectId] = useState(initialProject.id);
+  const [updatedAt, setUpdatedAt] = useState<string | undefined>(
+    'updatedAt' in initialProject ? (initialProject as VideoProject & { updatedAt?: string }).updatedAt : undefined,
+  );
+  const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
+  const [lastSavedAt, setLastSavedAt] = useState<string | undefined>(updatedAt);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const lastLoadedProjectRef = useRef(initialProject.id);
+  const projectRef = useRef(initialProject);
+  const setScenes = (next: SetStateAction<Scene[]>) => {
+    setHasLocalChanges(true);
+    setScenesState(next);
+  };
+
+  useEffect(() => {
+    if (initialProject.id === lastLoadedProjectRef.current) return;
+    lastLoadedProjectRef.current = initialProject.id;
+    setScenesState(initialProject.scenes.map(cloneVideoScene));
+    setProjectNameState(initialProject.name);
+    setProjectId(initialProject.id);
+    setUpdatedAt('updatedAt' in initialProject ? (initialProject as VideoProject & { updatedAt?: string }).updatedAt : undefined);
+    setLastSavedAt('updatedAt' in initialProject ? (initialProject as VideoProject & { updatedAt?: string }).updatedAt : undefined);
+    setHasLocalChanges(false);
+  }, [initialProject]);
+
+  useEffect(() => {
+    projectRef.current = { ...initialProject, id: projectId, name: projectName, scenes };
+  }, [initialProject, projectId, projectName, scenes]);
+
+  useEffect(() => {
+    if (!hasLocalChanges || !persistProject || !persistenceReady) return;
+    const snapshot = projectRef.current;
+    setSaveState('saving');
+    const timer = window.setTimeout(() => {
+      void persistProject(snapshot, updatedAt)
+        .then((saved) => {
+          setProjectId(saved.id);
+          setUpdatedAt('updatedAt' in saved ? (saved as VideoProject & { updatedAt?: string }).updatedAt : undefined);
+          setLastSavedAt('updatedAt' in saved ? (saved as VideoProject & { updatedAt?: string }).updatedAt : new Date().toISOString());
+          setHasLocalChanges(false);
+          setSaveState('saved');
+        })
+        .catch(() => setSaveState('error'));
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [hasLocalChanges, persistProject, persistenceReady, scenes, projectName, updatedAt]);
+
+  const updateProjectName = (name: string) => {
+    setProjectNameState(name);
+    setHasLocalChanges(true);
+  };
 
   const loadPreset = (presetScenes: Scene[]) => {
     setScenes(presetScenes.map(cloneVideoScene));
@@ -62,7 +126,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
     )));
   };
 
-  const addLayer = (sceneId: string, type: LayerType) => {
+  const addLayer = (sceneId: string, type: LayerType, assetSrc = '') => {
     setScenes((current) => current.map((scene) => {
       if (scene.id !== sceneId) return scene;
       const id = `${scene.id}-${type}-${scene.layers.length + 1}`;
@@ -88,7 +152,7 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
         case 'image':
         case 'video':
         default:
-          layer = { id, type: type as 'image' | 'video', asset: { src: '', alt: '' }, timing };
+          layer = { id, type: type as 'image' | 'video', asset: { src: assetSrc, alt: '' }, timing };
           break;
       }
 
@@ -290,6 +354,11 @@ export const useVideoProjectEditor = (initialScenes: Scene[] = defaultVisaReject
 
   return {
     scenes,
+    project: { ...initialProject, id: projectId, name: projectName, scenes, ...(updatedAt ? { updatedAt } : {}) } as VideoProject,
+    projectName,
+    updateProjectName,
+    saveState,
+    lastSavedAt,
     setScenes,
     updateScene,
     updateSceneContent,

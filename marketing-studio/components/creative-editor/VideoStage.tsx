@@ -5,8 +5,10 @@ import { vitablueBrandAdapter } from '../../../packages/video-studio/src/adapter
 import type { Scene, Layer } from '../../../packages/video-studio/src/domain/videoProject';
 import { SafeZonesOverlay } from './SafeZonesOverlay';
 import { OnCanvasEditorOverlay } from './OnCanvasEditorOverlay';
-import { Hand, Minus, MousePointer, Plus, Maximize2, RotateCcw } from 'lucide-react';
-import { StudioStageToolbar } from '../../../components/backoffice-shell/primitives';
+import {
+  StudioStageToolbar,
+  StudioStageToolbarControls,
+} from '../../../components/backoffice-shell/primitives';
 
 export type VideoAspectRatio = 'vertical' | 'square' | 'landscape';
 export type ZoomLevel = 'fit' | number;
@@ -163,11 +165,6 @@ export const VideoStage: React.FC<VideoStageProps> = ({
     setPanOffset({ x: 0, y: 0 });
   };
 
-  const handleStepZoom = (delta: number) => {
-    const next = Math.max(25, Math.min(200, numericZoom + delta));
-    onZoomLevelChange?.(next);
-  };
-
   const scaleTransform = isFit ? 1 : numericZoom / 100;
 
   return (
@@ -236,7 +233,6 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         </div>
       </div>
 
-      {/* BARRA INFERIOR FLOTANTE DE CONTROL DE ZOOM (ESTILO CANVA / CAPCUT) */}
       <StudioStageToolbar
         role="toolbar"
         aria-label="Controles del lienzo"
@@ -244,103 +240,27 @@ export const VideoStage: React.FC<VideoStageProps> = ({
         className=""
         onClick={(e) => e.stopPropagation()}
       >
-         <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
-           <button
-             type="button"
-             onClick={() => setIsHandToolActive(false)}
-             aria-pressed={!isHandToolActive}
-             aria-label="Herramienta selección"
-             className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-               !isHandToolActive ? 'border border-brand-cyan/30 bg-primary/25 text-brand-cyan shadow-xs' : 'border border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-             }`}
-             title="Herramienta selección (V)"
-           >
-             <MousePointer className="size-3.5" aria-hidden="true" />
-             <span className="hidden sm:inline">Selección</span>
-           </button>
-           <button
-             type="button"
-             onClick={() => setIsHandToolActive(true)}
-             aria-pressed={isHandToolActive}
-             aria-label="Herramienta mano"
-             className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-               isHandToolActive ? 'border border-brand-cyan/30 bg-primary/25 text-brand-cyan shadow-xs' : 'border border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
-             }`}
-             title="Herramienta mano / pan (H)"
-           >
-             <Hand className="size-3.5" aria-hidden="true" />
-             <span className="hidden sm:inline">Mano</span>
-           </button>
-         </div>
-         <div className="h-4 w-px bg-slate-800" />
-         {/* BOTÓN RESTABLECER PAN SI SE HA MOVIDO */}
-        {(panOffset.x !== 0 || panOffset.y !== 0) && (
-          <button
-            type="button"
-            onClick={() => setPanOffset({ x: 0, y: 0 })}
-            aria-label="Centrar lienzo"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-            title="Centrar lienzo"
-          >
-            <RotateCcw className="size-3.5" aria-hidden="true" />
-          </button>
-        )}
-
-        {/* BOTÓN ZOOM OUT (-) */}
-        <button
-          type="button"
-          onClick={() => handleStepZoom(-10)}
-          aria-label="Reducir zoom"
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-          title="Alejar (Zoom out)"
-        >
-          <Minus className="size-3.5" aria-hidden="true" />
-        </button>
-
-        {/* SLIDER DE ZOOM */}
-        <input
-          type="range"
-          min={25}
-          max={200}
-          step={5}
-          value={numericZoom}
-          aria-label="Nivel de zoom del lienzo"
-          onChange={(e) => onZoomLevelChange?.(Number(e.target.value))}
-          className="h-1 w-20 cursor-pointer rounded-lg bg-slate-700 accent-primary sm:w-28"
-          title={`Zoom: ${numericZoom}%`}
+        <StudioStageToolbarControls
+          isHandToolActive={isHandToolActive}
+          onHandToolChange={(active) => {
+            setIsHandToolActive(active);
+            isHandToolActiveRef.current = active;
+          }}
+          zoom={numericZoom}
+          minZoom={25}
+          maxZoom={200}
+          zoomStep={5}
+          zoomButtonStep={10}
+          onZoomChange={(value) => onZoomLevelChange?.(value)}
+          formatZoom={(value) => `${value}%`}
+          isFit={isFit}
+          onFit={handleResetFit}
+          onResetPan={
+            panOffset.x !== 0 || panOffset.y !== 0
+              ? () => setPanOffset({ x: 0, y: 0 })
+              : undefined
+          }
         />
-
-        {/* BOTÓN ZOOM IN (+) */}
-        <button
-          type="button"
-          onClick={() => handleStepZoom(10)}
-          aria-label="Aumentar zoom"
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-          title="Acercar (Zoom in)"
-        >
-          <Plus className="size-3.5" aria-hidden="true" />
-        </button>
-
-        {/* INDICADOR DE PORCENTAJE NUMÉRICO */}
-        <span className="font-mono text-[11px] font-bold text-slate-200 min-w-[36px] text-center">
-          {isFit ? 'Ajustar' : `${numericZoom}%`}
-        </span>
-
-        {/* BOTÓN AJUSTAR (FIT) */}
-        <button
-          type="button"
-          onClick={handleResetFit}
-          aria-label="Ajustar al lienzo"
-          className={`flex min-h-11 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            isFit
-              ? 'border-brand-cyan/30 bg-primary/30 text-brand-cyan'
-              : 'border-transparent bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-          }`}
-          title="Ajustar al tamaño de pantalla"
-        >
-          <Maximize2 className="size-3" aria-hidden="true" />
-          <span>Ajustar</span>
-        </button>
       </StudioStageToolbar>
     </div>
   );

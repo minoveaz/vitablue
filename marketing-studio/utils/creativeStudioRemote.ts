@@ -7,6 +7,12 @@ import {
   type CreativeScope,
 } from '../contracts/creativePersistence';
 import type { ImageProject } from '../types/imageStudio';
+import type { VideoProject } from '../../packages/video-studio/src/domain/videoProject';
+import {
+  creativeDocumentToVideoProject,
+  videoProjectToCreativeDocument,
+} from '../../packages/creative-document/src/adapters/videoProjectAdapter';
+import type { CreativeDocument } from '../../packages/creative-document/src/types';
 import {
   createSupabaseCreativeProjectRepository,
   CreativeProjectConflictError,
@@ -255,12 +261,45 @@ const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
   };
+
 };
 
-const resolveAssetReferences = async (
-  project: ImageProject,
+export type PersistedVideoProject = VideoProject & {
+  creativeStatus: 'draft' | 'ready' | 'archived';
+  createdAt: string;
+  updatedAt: string;
+  currentVersionNumber: number;
+  autosaveRevision: number;
+};
+
+const videoProjectFromCreative = (project: CreativeProject): PersistedVideoProject => {
+  const document = project.draftDocument as unknown as CreativeDocument;
+  const video = creativeDocumentToVideoProject(document);
+  return {
+    ...video,
+    id: project.id,
+    name: project.name,
+    creativeStatus: project.status === 'approved' ? 'ready' : project.status === 'in_review' ? 'draft' : project.status,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+    currentVersionNumber: project.currentVersionNumber,
+    autosaveRevision: project.autosaveRevision,
+  };
+};
+
+const videoStudioComposition = (project: VideoProject): Record<string, unknown> => {
+  const cleanProject = mapKnownSignedUrls(clone(project)) as VideoProject;
+  if (containsInline(cleanProject)) {
+    throw new Error('Sube los recursos de vídeo al Storage privado antes de guardar el proyecto.');
+  }
+  const document = videoProjectToCreativeDocument(cleanProject);
+  return mapKnownSignedUrls(clone(document)) as unknown as Record<string, unknown>;
+};
+
+const resolveAssetReferences = async <T>(
+  project: T,
   client: SupabaseClient,
-): Promise<ImageProject> => {
+): Promise<T> => {
   const references = new Set<string>();
   const collect = (value: unknown): void => {
     if (typeof value === 'string' && value.startsWith(CREATIVE_ASSET_REFERENCE_PREFIX)) {
@@ -290,7 +329,7 @@ const resolveAssetReferences = async (
       mapped = mapped.split(reference).join(signedUrl);
     });
     return mapped === candidate ? undefined : mapped;
-  }) as ImageProject;
+  }) as T;
 };
 
 /** LoopDev stores the canonical creative type/status vocabulary. */
@@ -298,19 +337,98 @@ const canonicalProjectType = (_project: ImageProject): 'social_post' => 'social_
 const canonicalProjectStatus = (status: ImageProject['creativeStatus']): 'draft' | 'approved' | 'archived' =>
   status === 'ready' ? 'approved' : status ?? 'draft';
 
+type CreativeDocumentTypeFields = {
+  mode?: unknown;
+  imageStudio?: unknown;
+  videoStudio?: unknown;
+};
+
+const documentTypeFields = (project: CreativeProject): CreativeDocumentTypeFields => {
+  const composition = project.draftDocument;
+  return composition && typeof composition === 'object' && !Array.isArray(composition)
+    ? composition as CreativeDocumentTypeFields
+    : {};
+};
+
+/** A project is an image project only when its persisted document identifies it as one. */
+export const isImageCreativeProject = (project: CreativeProject): boolean => {
+  const composition = documentTypeFields(project);
+  if (composition.mode === 'video' || Boolean(composition.videoStudio)) return false;
+  return composition.mode === 'image'
+    || Boolean(composition.imageStudio)
+    // Keep already-persisted legacy ImageProject documents readable during migration.
+    || ('preset' in composition && 'layers' in composition);
+};
+
+/** Keep the video boundary explicit so the two hubs cannot render each other's documents. */
+export const isVideoCreativeProject = (project: CreativeProject): boolean => {
+  const composition = documentTypeFields(project);
+  return composition.mode === 'video' || Boolean(composition.videoStudio);
+};
+
 const repositoryFor = (client: SupabaseClient): CreativeProjectRepository =>
   createSupabaseCreativeProjectRepository(client);
 
 export const listCreativeProjects = async (client: SupabaseClient = supabase): Promise<ImageProject[]> => {
   const { scope } = await getCreativeScope(client);
   const rows = await repositoryFor(client).list(scope);
-  return Promise.all(rows.map((row) => resolveAssetReferences(imageProjectFromCreative(row), client)));
+  return Promise.all(rows
+    .filter(isImageCreativeProject)
+    .map((row) => resolveAssetReferences(imageProjectFromCreative(row), client)));
+};
+
+export const listVideoProjects = async (
+  client: SupabaseClient = supabase,
+): Promise<PersistedVideoProject[]> => {
+  const { scope } = await getCreativeScope(client);
+  const rows = await repositoryFor(client).list(scope);
+  return Promise.all(rows
+    .filter((row) => row.type === 'social_post' || row.type === 'story' || row.type === 'advertisement' || row.type === 'other')
+    .filter(isVideoCreativeProject)
+    .map(async (row) => resolveAssetReferences(videoProjectFromCreative(row), client)));
+};
+
+export const getVideoProject = async (
+  id: string,
+  client: SupabaseClient = supabase,
+): Promise<PersistedVideoProject | null> => {
+  const { scope } = await getCreativeScope(client);
+  const row = await repositoryFor(client).get(id, scope);
+  if (!row || !isVideoCreativeProject(row)) return null;
+  return resolveAssetReferences(videoProjectFromCreative(row), client);
+};
+
+export const saveVideoProject = async (
+  project: VideoProject,
+  options: {
+    expectedUpdatedAt?: string;
+    changeSummary?: string | null;
+    createNew?: boolean;
+  } = {},
+  client: SupabaseClient = supabase,
+): Promise<PersistedVideoProject> => {
+  const { scope, user } = await getCreativeScope(client);
+  const persistedId = getCreativeProjectSaveId(project.id, options.createNew);
+  const row = await repositoryFor(client).save({
+    id: persistedId,
+    ...scope,
+    ownerUserId: user.id,
+    name: project.name,
+    type: 'other',
+    status: 'draft',
+    draftDocument: videoStudioComposition(project),
+    expectedUpdatedAt: options.expectedUpdatedAt,
+    changeSummary: options.changeSummary,
+  });
+  return videoProjectFromCreative(row);
 };
 
 export const getCreativeProject = async (id: string, client: SupabaseClient = supabase): Promise<ImageProject | null> => {
   const { scope } = await getCreativeScope(client);
   const row = await repositoryFor(client).get(id, scope);
-  return row ? resolveAssetReferences(imageProjectFromCreative(row), client) : null;
+  return row && isImageCreativeProject(row)
+    ? resolveAssetReferences(imageProjectFromCreative(row), client)
+    : null;
 };
 
 export const saveCreativeProject = async (

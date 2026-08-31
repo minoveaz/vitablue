@@ -1,7 +1,10 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Hand, Maximize2, Minus, MousePointer, PenLine, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PenLine } from 'lucide-react';
 import type { CarouselGeometry } from '../../types/imageStudio';
-import { StudioStageToolbar } from '../../../components/backoffice-shell/primitives';
+import {
+  StudioStageToolbar,
+  StudioStageToolbarControls,
+} from '../../../components/backoffice-shell/primitives';
 
 interface ImageStageToolbarProps {
   zoom: number;
@@ -17,130 +20,63 @@ interface ImageStageToolbarProps {
   onSetCurrentSlide?: (slide: number) => void;
 }
 
-export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSetZoom, setToolMode, rapidDrawMode, onSetRapidDrawMode, effectiveHandMode, handleResetFit, isCarousel, activeSlideIndex, carouselGeometry, onSetCurrentSlide }) => (
-  <>
-      {/* BOTTOM CONTROLS BAR: TOOL SWITCH & ZOOM & SAFE ZONES (CENTERED) */}
-      <StudioStageToolbar data-visual-contract="image-studio-stage-toolbar" className="animate-fadeIn">
-        {/* SELECTOR DE MODO DE HERRAMIENTA (SELECCIÓN / MANO) */}
-        <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
-          <button
-            type="button"
-            onClick={() => setToolMode('select')}
-            aria-pressed={!effectiveHandMode}
-            aria-label="Herramienta selección"
-            className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-              !effectiveHandMode
-                ? 'bg-primary/25 text-brand-cyan shadow-xs border border-brand-cyan/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
-            }`}
-            title="Herramienta Selección (V)"
-          >
-            <MousePointer className="size-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Selección</span>
-            <kbd className="text-[9px] font-mono opacity-60">V</kbd>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setToolMode('hand')}
-            aria-pressed={effectiveHandMode}
-            aria-label="Herramienta mano"
-            className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-              effectiveHandMode
-                ? 'bg-primary/25 text-brand-cyan shadow-xs border border-brand-cyan/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
-            }`}
-            title="Herramienta Mano / Pan (H o mantener barra Espaciadora)"
-          >
-            <Hand className="size-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Mano</span>
-            <kbd className="text-[9px] font-mono opacity-60">H</kbd>
-          </button>
-        </div>
-
-        <div className="h-4 w-px bg-slate-800" />
-
-        <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
-          {([
-            ['line', 'Línea'],
-            ['curve', 'Curva'],
-            ['polyline', 'Multi'],
-          ] as const).map(([mode, label]) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => onSetRapidDrawMode(rapidDrawMode === mode ? null : mode)}
-              aria-pressed={rapidDrawMode === mode}
-              aria-label={`Dibujar ${label.toLowerCase()}`}
-              className={`flex min-h-11 min-w-11 items-center justify-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-                rapidDrawMode === mode
-                  ? 'bg-accent/25 text-amber-200 shadow-xs border border-accent/40'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
-              }`}
-              title={`Dibujar ${label.toLowerCase()} directamente en el lienzo`}
-            >
-              {mode === 'line' && <PenLine className="size-3" aria-hidden="true" />}
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="h-4 w-px bg-slate-800" />
-
-        {/* CONTROLES DE ZOOM */}
-        <div className="flex items-center gap-1 px-0.5 sm:px-1">
-          <button
-            type="button"
-            onClick={() => onSetZoom(Math.max(0.25, zoom - 0.1))}
-            aria-label="Reducir zoom"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-            title="Reducir zoom"
-          >
-            <Minus className="size-3.5" aria-hidden="true" />
-          </button>
-
-          <input
-            type="range"
-            min={0.25}
-            max={1.5}
-            step={0.05}
-            value={zoom}
-            aria-label="Nivel de zoom del lienzo"
-            onChange={(e) => onSetZoom(parseFloat(e.target.value))}
-            className="w-16 sm:w-20 accent-primary cursor-pointer"
-          />
-
-          <button
-            type="button"
-            onClick={() => onSetZoom(Math.min(1.5, zoom + 0.1))}
-            aria-label="Aumentar zoom"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-            title="Aumentar zoom"
-          >
-            <Plus className="size-3.5" aria-hidden="true" />
-          </button>
-
-          <span className="font-mono text-[11px] text-brand-cyan min-w-[36px] text-center font-bold">
-            {Math.round(zoom * 100)}%
-          </span>
-        </div>
-
-        <div className="h-4 w-px bg-slate-800" />
-
-        <button
-          type="button"
-          onClick={handleResetFit}
-          aria-label="Centrar y ajustar al lienzo"
-          className="flex min-h-11 items-center gap-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:text-white transition-colors shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
-          title="Centrar y ajustar al lienzo"
-        >
-          <Maximize2 className="size-3 text-brand-cyan" aria-hidden="true" />
-          <span>Ajustar</span>
-        </button>
-
-        {isCarousel && (
+export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({
+  zoom,
+  onSetZoom,
+  setToolMode,
+  rapidDrawMode,
+  onSetRapidDrawMode,
+  effectiveHandMode,
+  handleResetFit,
+  isCarousel,
+  activeSlideIndex,
+  carouselGeometry,
+  onSetCurrentSlide,
+}) => (
+  <StudioStageToolbar data-visual-contract="image-studio-stage-toolbar" className="animate-fadeIn">
+    <StudioStageToolbarControls
+      isHandToolActive={effectiveHandMode}
+      onHandToolChange={(active) => setToolMode(active ? 'hand' : 'select')}
+      zoom={zoom}
+      minZoom={0.25}
+      maxZoom={1.5}
+      zoomStep={0.1}
+      onZoomChange={onSetZoom}
+      isFit={false}
+      onFit={handleResetFit}
+      beforeZoom={
+        <>
+          <div className="h-4 w-px bg-slate-800" role="separator" />
+          <div className="flex items-center rounded-xl border border-slate-800/80 bg-slate-950/80 p-0.5">
+            {([
+              ['line', 'Línea'],
+              ['curve', 'Curva'],
+              ['polyline', 'Multi'],
+            ] as const).map(([mode, label]) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => onSetRapidDrawMode(rapidDrawMode === mode ? null : mode)}
+                aria-pressed={rapidDrawMode === mode}
+                aria-label={`Dibujar ${label.toLowerCase()}`}
+                className={`flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+                  rapidDrawMode === mode
+                    ? 'border-accent/40 bg-accent/25 text-amber-200 shadow-xs'
+                    : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+                }`}
+                title={`Dibujar ${label.toLowerCase()} directamente en el lienzo`}
+              >
+                {mode === 'line' && <PenLine className="size-3" aria-hidden="true" />}
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      }
+      afterFit={
+        isCarousel ? (
           <>
-            <div className="h-4 w-px bg-slate-800" />
+            <div className="h-4 w-px bg-slate-800" role="separator" />
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -159,7 +95,7 @@ export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSe
                 type="button"
                 onClick={() =>
                   onSetCurrentSlide?.(
-                    Math.min(carouselGeometry.slideCount - 1, activeSlideIndex + 1)
+                    Math.min(carouselGeometry.slideCount - 1, activeSlideIndex + 1),
                   )
                 }
                 disabled={activeSlideIndex === carouselGeometry.slideCount - 1}
@@ -171,8 +107,8 @@ export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSe
               </button>
             </div>
           </>
-        )}
-
-      </StudioStageToolbar>
-  </>
+        ) : undefined
+      }
+    />
+  </StudioStageToolbar>
 );

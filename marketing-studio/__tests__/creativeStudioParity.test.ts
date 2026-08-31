@@ -20,13 +20,12 @@ describe('Creative Studio shared parity matrix', () => {
     }
 
     for (const source of [image, video]) {
-      for (const slot of ['moduleHeader:', 'toolRail:', 'resourcePanel:', 'toolbar:', 'inspector:', 'stage:']) {
+      for (const slot of ['toolRail:', 'resourcePanel:', 'toolbar:', 'inspector:', 'stage:']) {
         expect(source).toContain(slot);
       }
       expect(source).toContain('<CreativeStudioShellAdapter');
       expect(source).toContain('<StudioToolRail');
       expect(source).toContain('<StudioResourcePanel');
-      expect(source).toContain('<ModuleHeader');
       expect(source).toContain('scope="consumer"');
       expect(source).not.toContain('<SuiteSidebar');
     }

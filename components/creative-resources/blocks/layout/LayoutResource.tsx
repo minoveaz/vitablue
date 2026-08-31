@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ResourceBlockProps } from '../ResourceBlockProps';
 import {
   AlignCenter,
   AlignLeft,
@@ -26,33 +27,10 @@ import {
   ImagePlatformGuideId,
   ImageProject,
   ImageStyleVariantId,
-} from '../../../types/imageStudio';
-import { getPlatformGuideProfile } from '../../../utils/imageDesignSystem';
+} from '../../../../marketing-studio/types/imageStudio';
+import { getPlatformGuideProfile } from '../../../../marketing-studio/utils/imageDesignSystem';
 
-interface ImageStudioLayoutDrawerProps {
-  project: ImageProject;
-  selectedLayers: ImageLayer[];
-  onUpdateGuideSettings: (patch: Partial<CanvasGuideSettings>) => void;
-  onAutoLayout: (direction: 'vertical' | 'horizontal' | 'grid') => void;
-  onFitText: () => void;
-  onApplyVariant: (variant: ImageStyleVariantId) => void;
-  onToggleLock: (id: string) => void;
-  onAlignSelectedLayers?: (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => void;
-  onDistributeSelectedLayers?: (direction: 'horizontal' | 'vertical') => void;
-  onMoveZIndex?: (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => void;
-  onGroupSelectedLayers?: () => void;
-  onUngroupLayer?: (id: string) => void;
-  onUpdateLayerProps?: (id: string, patch: Record<string, unknown>) => void;
-  onReplaceLayerContent?: (id: string, replacement: { text?: string; imageUrl?: string }) => void;
-  onUpdateLayerPosition?: (id: string, position: { x: number; y: number }) => void;
-  onUpdateLayerOpacity?: (id: string, opacity: number) => void;
-  onUpdateLayerShadowPreset?: (id: string, preset: ImageLayer['shadowPreset']) => void;
-  onUpdateLayerBorder?: (
-    id: string,
-    border: { borderWidth?: number; borderColor?: string; borderRadius?: number }
-  ) => void;
-}
-
+export type LayoutResourceProps = ResourceBlockProps;
 const Toggle: React.FC<{
   label: string;
   description: string;
@@ -115,26 +93,32 @@ const ColorField: React.FC<{
   );
 };
 
-export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = ({
-  project,
-  selectedLayers,
-  onUpdateGuideSettings,
-  onAutoLayout,
-  onFitText,
-  onApplyVariant,
-  onToggleLock,
-  onAlignSelectedLayers,
-  onDistributeSelectedLayers,
-  onMoveZIndex,
-  onGroupSelectedLayers,
-  onUngroupLayer,
-  onUpdateLayerProps,
-  onReplaceLayerContent,
-  onUpdateLayerPosition,
-  onUpdateLayerOpacity,
-  onUpdateLayerShadowPreset,
-  onUpdateLayerBorder,
-}) => {
+export const LayoutResource: React.FC<LayoutResourceProps> = ({ context }) => {
+  const source = (context.data && typeof context.data === 'object' && !Array.isArray(context.data) ? context.data : {}) as ImageProject;
+  const project = {
+    ...source,
+    preset: source.preset ?? ({ id: 'video', width: 1080, height: 1920, aspectRatio: '9:16', category: 'tiktok', name: 'Video', description: '', iconName: 'Video', recommendedFor: '' } as ImageProject['preset']),
+    layers: source.layers ?? [],
+    guideSettings: source.guideSettings ?? { profileId: 'auto', showRulers: true, showGrid: false, showColumns: false, showMargins: true, showSafeZone: true, snapToGuides: true, columns: 4, columnGap: 24, customVerticalGuides: [], customHorizontalGuides: [] },
+  } as ImageProject;
+  const selectedLayers = project.layers.filter((layer) => context.selection.layerIds.includes(layer.id));
+  const emit = (value: unknown) => context.actions.update?.({ kind: 'layout', value } as never);
+  const onUpdateGuideSettings = (patch: Partial<CanvasGuideSettings>) => emit({ action: 'guide-settings', patch });
+  const onAutoLayout = (direction: 'vertical' | 'horizontal' | 'grid') => emit({ action: 'auto-layout', value: direction });
+  const onFitText = () => emit({ action: 'fit-text' });
+  const onApplyVariant = (variant: ImageStyleVariantId) => emit({ action: 'variant', value: variant });
+  const onToggleLock = (id: string) => context.actions.toggleLock?.(id);
+  const onAlignSelectedLayers = (alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') => emit({ action: 'align', value: alignment, layerIds: context.selection.layerIds });
+  const onDistributeSelectedLayers = (direction: 'horizontal' | 'vertical') => emit({ action: 'distribute', value: direction, layerIds: context.selection.layerIds });
+  const onMoveZIndex = (id: string, direction: 'up' | 'down' | 'top' | 'bottom') => context.actions.move?.(id, direction);
+  const onGroupSelectedLayers = () => emit({ action: 'group', layerIds: context.selection.layerIds });
+  const onUngroupLayer = (id: string) => emit({ action: 'ungroup', layerId: id });
+  const onUpdateLayerProps = (id: string, patch: Record<string, unknown>) => emit({ action: 'layer-props', layerId: id, patch });
+  const onReplaceLayerContent = (id: string, replacement: { text?: string; imageUrl?: string }) => emit({ action: 'replace-content', layerId: id, value: replacement });
+  const onUpdateLayerPosition = (id: string, position: { x: number; y: number }) => emit({ action: 'position', layerId: id, value: position });
+  const onUpdateLayerOpacity = (id: string, opacity: number) => emit({ action: 'opacity', layerId: id, value: opacity });
+  const onUpdateLayerShadowPreset = (id: string, preset: ImageLayer['shadowPreset']) => emit({ action: 'shadow', layerId: id, value: preset });
+  const onUpdateLayerBorder = (id: string, border: { borderWidth?: number; borderColor?: string; borderRadius?: number }) => emit({ action: 'border', layerId: id, value: border });
   const [guideAxis, setGuideAxis] = React.useState<'vertical' | 'horizontal'>('vertical');
   const [guidePercent, setGuidePercent] = React.useState(50);
   const [activeSection, setActiveSection] = React.useState<'design' | 'organize' | 'content' | 'style'>('design');
@@ -209,9 +193,21 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
     setImageUrlDraft(String(selectedImageLayer?.props.imageUrl ?? selectedImageLayer?.src ?? ''));
   }, [selectedImageLayer?.id, selectedImageLayer?.props.imageUrl, selectedImageLayer?.src]);
 
+  if (context.domain === 'video' && !context.capabilities.includes('layout-update')) {
+    return (
+      <div role="status" data-core-resource-content="layout" data-resource-block="layout" className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm text-slate-300">
+        <div data-resource-header className="flex items-center gap-2 font-bold text-white">
+          <ShieldCheck className="size-4 text-brand-cyan" />
+          Diseño del lienzo
+        </div>
+        <p className="text-xs leading-relaxed text-slate-400">Video Studio no expone controles de diseño persistentes para esta escena.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="-m-4 flex h-[calc(100vh-140px)] flex-col bg-[#050B14]">
-      <header className="border-b border-slate-800 px-4 py-3">
+    <div className="-m-4 flex h-[calc(100vh-140px)] flex-col bg-[#050B14]" data-core-resource-content="layout" data-resource-block="layout">
+      <header data-resource-header className="border-b border-slate-800 px-4 py-3">
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-4 text-brand-cyan" />
           <h2 className="text-sm font-bold text-slate-100">Diseño del lienzo</h2>
@@ -861,7 +857,7 @@ export const ImageStudioLayoutDrawer: React.FC<ImageStudioLayoutDrawerProps> = (
               ))}
             </div>
           </div>
-          {selectedLayers.length > 0 && onUpdateLayerProps && (
+          {selectedLayers.length > 0 && (
             <>
               <div className="rounded-xl border border-slate-800 bg-slate-950 p-2.5">
                 <span className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">Colores</span>

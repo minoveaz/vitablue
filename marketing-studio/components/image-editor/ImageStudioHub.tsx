@@ -6,7 +6,6 @@ import {
   Copy,
   Archive,
   Sparkles,
-  Calendar,
   X,
   LayoutTemplate,
   Square,
@@ -27,6 +26,7 @@ import {
 } from '../../utils/creativeStudioRemote';
 import { ImageLayerBlockRenderer } from './blocks/BlockRenderer';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
+import { StudioHubProjectCard, studioHubIconButtonClass } from '../shared/StudioHubPrimitives';
 
 export interface ImageStudioHubProps {
   onOpenProject: (projectId: string) => void;
@@ -409,88 +409,51 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
             });
 
             return (
-              <article
+              <StudioHubProjectCard
                 key={project.id}
-                onClick={() => onOpenProject(project.id)}
-                className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md cursor-pointer"
-              >
-                <div>
-                  {/* PREVIEW VISUAL REAL DEL LIENZO */}
-                  <CanvasThumbnailPreview project={project} />
-
-                  {/* CABECERA DE METADATOS */}
-                  <div className="mt-4 flex items-start justify-between gap-3">
-                    <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[9px] font-black uppercase text-slate-700">
-                      {project.preset.name}
-                    </span>
-                    <span className="text-[10px] font-mono font-semibold text-slate-400">
-                      #{project.preset.aspectRatio} · {project.preset.width}×{project.preset.height}
-                    </span>
-                  </div>
-
-                  {/* TÍTULO PRINCIPAL */}
-                  <h3
-                    className="mt-3 line-clamp-2 font-display text-lg font-black text-slate-900 group-hover:text-primary transition-colors"
-                    title={project.title}
-                  >
-                    {project.title}
-                  </h3>
-
-                  {/* DETALLES DE CAPAS */}
-                  <p className="mt-1 line-clamp-1 text-xs font-medium leading-relaxed text-slate-500">
-                    {project.layers.length} {project.layers.length === 1 ? 'capa activa' : 'capas activas'} · {project.background.gradient ? 'Fondo Gradiente' : 'Fondo Sólido'}
-                  </p>
-                </div>
-
-                {/* PIE DE TARJETA CON FECHA Y ACCIONES */}
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400">
-                    <Calendar size={12} /> {updatedAtFormatted}
-                  </span>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenProject(project.id);
-                      }}
-                      className="inline-flex items-center gap-1 rounded-xl bg-primary px-3 py-1.5 text-[11px] font-black text-white transition-colors hover:bg-primary-dark"
-                    >
-                      Abrir Editor <ArrowRight size={12} />
-                    </button>
-
+                title={project.title}
+                formatLabel={project.preset.name}
+                dimensionsLabel={`#${project.preset.aspectRatio} · ${project.preset.width}×${project.preset.height}`}
+                detail={`${project.layers.length} ${project.layers.length === 1 ? 'capa activa' : 'capas activas'} · ${project.background.gradient ? 'Fondo Gradiente' : 'Fondo Sólido'}`}
+                updatedAtLabel={updatedAtFormatted}
+                preview={<CanvasThumbnailPreview project={project} />}
+                archived={project.creativeStatus === 'archived'}
+                onOpen={() => onOpenProject(project.id)}
+                actions={(
+                  <>
                     <button
                       type="button"
                       onClick={(e) => handleDuplicate(project.id, e)}
                       title="Duplicar diseño"
-                      className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-colors hover:bg-slate-100"
+                      aria-label="Duplicar diseño"
+                      className={studioHubIconButtonClass}
                     >
-                      <Copy size={13} />
+                      <Copy className="size-3.5" aria-hidden="true" />
                     </button>
-
                     {project.creativeStatus !== 'archived' ? (
                       <button
                         type="button"
                         onClick={(e) => handleDelete(project, e)}
                         title="Archivar diseño"
-                        className="rounded-xl border border-amber-100 p-2 text-amber-600 transition-colors hover:bg-amber-50"
+                        aria-label="Archivar diseño"
+                        className={`${studioHubIconButtonClass} border-amber-100 text-amber-600 hover:bg-amber-50`}
                       >
-                        <Archive size={13} />
+                        <Archive className="size-3.5" aria-hidden="true" />
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={(e) => void handleReactivate(project, e)}
                         title="Reactivar diseño"
-                        className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-colors hover:bg-slate-100"
+                        aria-label="Reactivar diseño"
+                        className={studioHubIconButtonClass}
                       >
                         ↩
                       </button>
                     )}
-                  </div>
-                </div>
-              </article>
+                  </>
+                )}
+              />
             );
           })}
         </div>

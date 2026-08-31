@@ -3,6 +3,8 @@ import {
   exportCreativeProject,
   getCreativeProjectSaveId,
   getCreativeScope,
+  isImageCreativeProject,
+  isVideoCreativeProject,
   importCreativeProject,
   isCreativeProjectId,
   archiveCreativeProject,
@@ -33,6 +35,22 @@ describe('Creative Studio remote adapter', () => {
     expect(getCreativeProjectSaveId(project.id)).toBe(project.id);
     expect(getCreativeProjectSaveId(project.id, true)).toBeUndefined();
     expect(getCreativeProjectSaveId('project-local-draft')).toBeUndefined();
+  });
+
+  it('classifies hub projects from persisted document fields, never their titles', () => {
+    const imageRow = {
+      type: 'social_post',
+      draftDocument: { schemaVersion: 1, imageStudio: { title: 'Vídeo promocional' } },
+    } as never;
+    const videoRow = {
+      type: 'other',
+      draftDocument: { schemaVersion: 1, mode: 'video', name: 'Diseño gráfico' },
+    } as never;
+
+    expect(isImageCreativeProject(imageRow)).toBe(true);
+    expect(isVideoCreativeProject(imageRow)).toBe(false);
+    expect(isImageCreativeProject(videoRow)).toBe(false);
+    expect(isVideoCreativeProject(videoRow)).toBe(true);
   });
 
   it('round-trips a JSON-only project package', () => {
