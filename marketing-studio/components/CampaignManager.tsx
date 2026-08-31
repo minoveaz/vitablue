@@ -39,6 +39,7 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
   const [mockupPlatform, setMockupPlatform] = useState<SocialPlatformId>('instagram');
   const [previewAssetType, setPreviewAssetType] = useState<'post' | 'story'>('post');
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [activity, setActivity] = useState<CampaignActivityEntry[]>(() => {
     try { return JSON.parse(window.localStorage.getItem(`vitablue.campaign-activity.${campaignId}`) || '[]'); } catch { return []; }
   });
@@ -77,12 +78,14 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
     window.localStorage.setItem(`vitablue.campaign-activity.${nextCampaign.id}`, JSON.stringify(nextActivity));
     saveCampaigns(campaigns.map((item) => item.id === nextCampaign.id ? nextCampaign : item));
     setSaveState('saving');
+    setSaveError(null);
     if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(() => {
       void saveCampaignToSupabase(nextCampaign).then((saved) => {
         setSaveState(saved ? 'saved' : 'error');
-      }).catch(() => {
+      }).catch((error) => {
         setSaveState('error');
+        setSaveError(error instanceof Error ? error.message : 'No se pudo guardar la campaña.');
       });
     }, 450);
   };
@@ -195,6 +198,9 @@ export const CampaignManager: React.FC<CampaignManagerProps> = ({ campaigns, set
                   {saveState === 'error' && <CircleAlert size={11} />}
                   {saveState === 'saving' ? 'Guardando...' : saveState === 'saved' ? 'Guardado' : saveState === 'error' ? 'Error al guardar' : 'Guardado automático'}
                 </span>
+                {saveError && saveState === 'error' && (
+                  <p className="mt-2 text-xs font-semibold text-rose-600" role="alert">{saveError}</p>
+                )}
               </div>
               <input
                 type="text"

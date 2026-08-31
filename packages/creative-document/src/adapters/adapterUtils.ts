@@ -106,7 +106,7 @@ export const legacyCenterFromGeometry = (
 
 export const isUnsafeAssetReference = (reference: string): boolean =>
   (!reference.startsWith('creative-asset:') && /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(reference)) ||
-  /[?#]/.test(reference) ||
+  /[?]/.test(reference) ||
   /(?:\/sign(?:ed)?\/|[?&]token=|[?&]signature=)/i.test(reference);
 
 /** Stable reference used when a runtime only has an asset id, not its path. */

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
 import { BottomWorkspace } from './primitives';
 import {
   CREATIVE_STUDIO_DEFAULT_INTERACTION_OWNERSHIP,
@@ -26,14 +26,22 @@ const resolveSlot = <TDomainExtension extends CreativeStudioShellExtension>(
   context: CreativeStudioShellSlotContext<TDomainExtension>,
 ): ReactNode => (typeof slot === 'function' ? slot(context) : slot);
 
+const withStableKeys = (parts: ReactNode[], prefix: string): ReactNode[] =>
+  Children.toArray(parts).map((part, index) =>
+    isValidElement(part) ? cloneElement(part, { key: `${prefix}-${index}` }) : part,
+  );
+
 const composePanel = (label: string, parts: ReactNode[], direction: 'column' | 'row' = 'column'): ReactNode => {
   const visibleParts = parts.filter((part) => part !== undefined && part !== null && part !== false);
   if (visibleParts.length === 0) return undefined;
-  if (visibleParts.length === 1) return visibleParts[0];
+  if (visibleParts.length === 1) {
+    const keyed = withStableKeys(visibleParts, label);
+    return keyed.length === 1 ? keyed[0] : keyed;
+  }
 
   return (
     <div className={`flex min-h-0 ${direction === 'row' ? 'flex-row' : 'flex-col'}`} aria-label={label}>
-      {visibleParts}
+      {withStableKeys(visibleParts, label)}
     </div>
   );
 };
@@ -119,7 +127,7 @@ export const mapCreativeStudioShellSlots = <
     ? undefined
     : (
       <BottomWorkspace aria-label="Área de trabajo inferior">
-        {footerParts}
+        {withStableKeys(footerParts, 'footer')}
       </BottomWorkspace>
     );
 

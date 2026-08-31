@@ -205,14 +205,18 @@ const containsInline = (value: unknown): boolean => {
 
 export type ImageCreativeDocumentPersistenceFormat = 'legacy' | 'creative-document';
 
+/** Image Studio rolls out canonical v1 by default; false is the explicit rollback. */
+export const getImageStudioDocumentFormat = (
+  canonicalEnabled = true,
+): ImageCreativeDocumentPersistenceFormat => canonicalEnabled ? 'creative-document' : 'legacy';
+
 /**
- * The legacy envelope remains the default. The canonical format is an opt-in
- * write path so old consumers can continue reading existing projects while the
- * decoder above accepts both representations.
+ * Canonical v1 is the default write path. Callers that still need the
+ * compatibility envelope must opt into `legacy` explicitly.
  */
 export const imageStudioComposition = (
   project: ImageProject,
-  format: ImageCreativeDocumentPersistenceFormat = 'legacy',
+  format: ImageCreativeDocumentPersistenceFormat = getImageStudioDocumentFormat(),
 ): Record<string, unknown> => {
   if (format === 'creative-document') {
     // Runtime signed URLs are replaced with their opaque Storage references
@@ -661,7 +665,7 @@ export const restoreCreativeProjectVersion = async (
 
 /** A portable project package contains JSON only; binary assets stay in Storage. */
 export const exportCreativeProject = (project: ImageProject): string =>
-  JSON.stringify({ schemaVersion: 1, project: imageStudioComposition(project) });
+  JSON.stringify({ schemaVersion: 1, project: imageStudioComposition(project, 'legacy') });
 
 export const importCreativeProject = (serialized: string, projectId: string = crypto.randomUUID()): ImageProject => {
   const parsed = JSON.parse(serialized) as { schemaVersion?: number; project?: { imageStudio?: ImageProject } };

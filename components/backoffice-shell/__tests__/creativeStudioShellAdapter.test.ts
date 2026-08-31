@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import CanonicalBackofficeShell from '../../layouts/BackofficeShell';
 import LegacyBackofficeShell from '../BackofficeShell';
 import { mapCreativeStudioShellSlots } from '../CreativeStudioShellAdapter.utils';
@@ -50,5 +52,28 @@ describe('Creative Studio shell composition boundaries', () => {
 
   it('keeps the old BackofficeShell import as an alias of the canonical layout adapter', () => {
     expect(LegacyBackofficeShell).toBe(CanonicalBackofficeShell);
+  });
+
+  it('assigns keys to generated element children without emitting React warnings', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      const mapped = mapCreativeStudioShellSlots({
+        domain: 'image',
+        state: { status: 'saved' },
+        extensions: { domain: 'image', capabilities: [] },
+        interaction: { focusedRegion: 'stage' },
+        slots: {
+          toolRail: React.createElement('span', null, 'tools'),
+          resourcePanel: React.createElement('span', null, 'resources'),
+          layersPanel: React.createElement('span', null, 'layers'),
+          inspector: React.createElement('span', null, 'inspector'),
+          stage: React.createElement('span', null, 'stage'),
+        },
+      });
+      renderToStaticMarkup(React.createElement(React.Fragment, null, mapped.contextAside, mapped.aside));
+      expect(error).not.toHaveBeenCalledWith(expect.stringContaining('unique "key" prop'));
+    } finally {
+      error.mockRestore();
+    }
   });
 });

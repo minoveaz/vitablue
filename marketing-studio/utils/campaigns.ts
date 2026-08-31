@@ -53,6 +53,91 @@ export interface Campaign {
 const storageKey = 'vitablue.campaigns';
 export const campaignsUpdatedEvent = 'vitablue:campaigns-updated';
 
+export type CampaignPersistenceErrorKind = 'authentication' | 'permission' | 'schema' | 'network';
+
+export class CampaignPersistenceError extends Error {
+  readonly kind: CampaignPersistenceErrorKind;
+  readonly operation: 'read' | 'write' | 'delete';
+  readonly code?: string;
+
+  constructor(
+    kind: CampaignPersistenceErrorKind,
+    operation: 'read' | 'write' | 'delete',
+    message: string,
+    code?: string,
+  ) {
+    super(message);
+    this.name = 'CampaignPersistenceError';
+    this.kind = kind;
+    this.operation = operation;
+    this.code = code;
+  }
+}
+
+type SupabaseErrorLike = { code?: string; message?: string; status?: number };
+
+const isPermissionError = (error: SupabaseErrorLike): boolean =>
+  error.status === 401 || error.status === 403 || error.code === '42501' || error.code === '401';
+
+const isSchemaError = (error: SupabaseErrorLike): boolean =>
+  error.code === '42P01' || error.code === '42703' || error.code === '42883'
+    || error.code === 'PGRST204' || error.code === 'PGRST205';
+
+const campaignPersistenceError = (
+  error: SupabaseErrorLike,
+  operation: CampaignPersistenceError['operation'],
+): CampaignPersistenceError => {
+  const code = error.code;
+  if (isPermissionError(error)) {
+    return new CampaignPersistenceError(
+      error.status === 401 || error.code === '401' ? 'authentication' : 'permission',
+      operation,
+      operation === 'read'
+        ? 'No se pudieron leer las campañas: inicia sesión y verifica que tu usuario tenga acceso al Marketing Studio.'
+        : `No se pudo ${operation === 'delete' ? 'eliminar' : 'guardar'} la campaña: tu usuario necesita el rol editor o admin en public.user_roles. Solicita que un administrador lo asigne; no se ha modificado ninguna política RLS.`,
+      code,
+    );
+  }
+  if (isSchemaError(error)) {
+    return new CampaignPersistenceError(
+      'schema',
+      operation,
+      'No se pudo persistir la campaña porque el esquema de Supabase no está actualizado. Aplica las migraciones de marketing_campaigns (incluida 06_marketing_auth_roles.sql).',
+      code,
+    );
+  }
+  return new CampaignPersistenceError(
+    'network',
+    operation,
+    `No se pudo ${operation === 'read' ? 'leer' : operation === 'delete' ? 'eliminar' : 'guardar'} la campaña por un error de red. Comprueba la conexión e inténtalo de nuevo.`,
+    code,
+  );
+};
+
+const campaignColumns = 'id,name,objective,status,start_date,platforms,content_types,automatic_platforms,automatic_platforms_configured,copies,assets,created_at,updated_at';
+
+const mapCampaignRow = (item: Record<string, unknown>): Campaign => ({
+  id: String(item.id ?? ''),
+  name: String(item.name ?? ''),
+  objective: typeof item.objective === 'string' ? item.objective : '',
+  status: item.status === 'scheduled' || item.status === 'active' || item.status === 'completed' ? item.status : 'draft',
+  startDate: typeof item.start_date === 'string' ? item.start_date : '',
+  platforms: Array.isArray(item.platforms) ? item.platforms as SocialPlatformId[] : [],
+  contentTypes: Array.isArray(item.content_types) ? item.content_types as CampaignContentType[] : ['text'],
+  automaticPlatforms: Array.isArray(item.automatic_platforms) ? item.automatic_platforms as SocialPlatformId[] : [],
+  automaticPlatformsConfigured: item.automatic_platforms_configured === true,
+  copies: item.copies && typeof item.copies === 'object' ? item.copies as Record<string, string> : {},
+  assets: Array.isArray(item.assets) ? item.assets as CampaignAsset[] : [],
+  ...(typeof item.created_at === 'string' ? { created_at: item.created_at } : {}),
+});
+
+const hasCampaignWriteAccess = async (): Promise<boolean> => {
+  if (typeof supabase.rpc !== 'function') return false;
+  const { data, error } = await supabase.rpc('has_marketing_role', { required_role: 'editor' });
+  if (error) throw campaignPersistenceError(error, 'write');
+  return data === true;
+};
+
 export const defaultCampaigns: Campaign[] = [
   {
     id: 'lanzamiento-marca-v2',
@@ -139,40 +224,51 @@ export const saveCampaigns = (campaigns: Campaign[]): void => {
  * Fetches campaigns from Supabase, updates LocalStorage, and dispatches sync event.
  */
 export const syncCampaignsWithSupabase = async (): Promise<Campaign[]> => {
+  let authResult;
   try {
-    const { data, error } = await supabase
+    authResult = await supabase.auth.getUser();
+  } catch (error) {
+    throw campaignPersistenceError(error as SupabaseErrorLike, 'read');
+  }
+  if (authResult.error) throw campaignPersistenceError(authResult.error, 'read');
+  // Marketing campaigns are protected by RLS. Do not issue anonymous requests
+  // (or attempt to bootstrap defaults) when the backoffice session is absent.
+  if (!authResult.data.user) return getCampaigns();
+
+  let data: Record<string, unknown>[] = [];
+  try {
+    const result = await supabase
       .from('marketing_campaigns')
-      .select('*')
+      .select(campaignColumns)
       .order('created_at', { ascending: false });
+    if (result.error) throw result.error;
+    data = (result.data ?? []) as Record<string, unknown>[];
+  } catch (error) {
+    const typed = campaignPersistenceError(error as SupabaseErrorLike, 'read');
+    if (typed.kind !== 'network') throw typed;
+    console.warn(typed.message);
+    return getCampaigns();
+  }
 
-    if (error) {
-      console.warn('Supabase marketing_campaigns fetch failed, using local fallback:', error.message);
-      return getCampaigns();
-    }
-
-    if (data && data.length > 0) {
+  if (data.length > 0) {
       // Map database schema back to UI model
-      const dbCampaigns: Campaign[] = data.map((item) => ({
-        id: item.id,
-        name: item.name,
-        objective: item.objective || '',
-        status: item.status || 'draft',
-        startDate: item.start_date || '',
-        platforms: item.platforms || [],
-        contentTypes: item.content_types || ['text'],
-        automaticPlatforms: item.automatic_platforms || [],
-        automaticPlatformsConfigured: item.automatic_platforms_configured || false,
-        copies: item.copies || {},
-        assets: item.assets || []
-      }));
+      const dbCampaigns: Campaign[] = data.map(mapCampaignRow);
       
       // Merge and update default campaigns
       const mergedCampaigns = [...dbCampaigns];
+      const needsDefaultWrite = defaultCampaigns.some((defaultCamp) => {
+        const existing = mergedCampaigns.find((campaign) => campaign.id === defaultCamp.id);
+        return !existing
+          || existing.name !== defaultCamp.name
+          || JSON.stringify(existing.copies) !== JSON.stringify(defaultCamp.copies)
+          || JSON.stringify(existing.assets) !== JSON.stringify(defaultCamp.assets);
+      });
+      const canWrite = needsDefaultWrite ? await hasCampaignWriteAccess() : false;
       for (const defaultCamp of defaultCampaigns) {
         const index = mergedCampaigns.findIndex((c) => c.id === defaultCamp.id);
         if (index === -1) {
           mergedCampaigns.push(defaultCamp);
-          await saveCampaignToSupabase(defaultCamp);
+          if (canWrite) await saveCampaignToSupabase(defaultCamp);
         } else {
           // Force update copies, assets and name of default campaigns to push fresh code updates
           mergedCampaigns[index] = {
@@ -181,23 +277,20 @@ export const syncCampaignsWithSupabase = async (): Promise<Campaign[]> => {
             copies: defaultCamp.copies,
             assets: defaultCamp.assets
           };
-          await saveCampaignToSupabase(mergedCampaigns[index]);
+          if (canWrite) await saveCampaignToSupabase(mergedCampaigns[index]);
         }
       }
       
       saveCampaigns(mergedCampaigns);
       return mergedCampaigns;
-    } else {
-      // If db is empty, upload defaults
-      for (const campaign of defaultCampaigns) {
-        await saveCampaignToSupabase(campaign);
-      }
-      saveCampaigns(defaultCampaigns);
-      return defaultCampaigns;
+  } else {
+    // An empty result may be a read-only user's valid view. Check the role
+    // before attempting to bootstrap defaults, avoiding predictable 403s.
+    if (await hasCampaignWriteAccess()) {
+      for (const campaign of defaultCampaigns) await saveCampaignToSupabase(campaign);
     }
-  } catch (err) {
-    console.warn('Network error syncing with Supabase:', err);
-    return getCampaigns();
+    saveCampaigns(defaultCampaigns);
+    return defaultCampaigns;
   }
 };
 
@@ -205,6 +298,21 @@ export const syncCampaignsWithSupabase = async (): Promise<Campaign[]> => {
  * Uploads/Updates a single campaign to Supabase.
  */
 export const saveCampaignToSupabase = async (campaign: Campaign): Promise<boolean> => {
+  let authResult;
+  try {
+    authResult = await supabase.auth.getUser();
+  } catch (error) {
+    throw campaignPersistenceError(error as SupabaseErrorLike, 'write');
+  }
+  if (authResult.error) throw campaignPersistenceError(authResult.error, 'write');
+  if (!authResult.data.user) {
+    throw new CampaignPersistenceError(
+      'authentication',
+      'write',
+      'No se pudo guardar la campaña: inicia sesión en el Marketing Studio para continuar.',
+    );
+  }
+
   try {
     // Database payload structure
     const dbPayload = {
@@ -226,13 +334,12 @@ export const saveCampaignToSupabase = async (campaign: Campaign): Promise<boolea
 
     const { error } = await query;
     if (error) {
-      console.warn('Could not upload campaign to Supabase:', error.message);
-      return false;
+      throw campaignPersistenceError(error, 'write');
     }
     return true;
-  } catch (err) {
-    console.warn('Network error saving campaign to Supabase:', err);
-    return false;
+  } catch (error) {
+    if (error instanceof CampaignPersistenceError) throw error;
+    throw campaignPersistenceError(error as SupabaseErrorLike, 'write');
   }
 };
 
@@ -244,9 +351,13 @@ export const deleteCampaign = async (id: string, allCampaigns: Campaign[]): Prom
   saveCampaigns(nextCampaigns);
   
   try {
+    const authResult = await supabase.auth.getUser();
+    if (authResult.error) throw campaignPersistenceError(authResult.error, 'delete');
+    if (!authResult.data.user) throw new CampaignPersistenceError('authentication', 'delete', 'No se pudo eliminar la campaña: inicia sesión en el Marketing Studio para continuar.');
     const { error } = await supabase.from('marketing_campaigns').delete().eq('id', id);
-    if (error) console.warn('Could not delete campaign in Supabase:', error.message);
-  } catch (err) {
-    console.warn('Network error deleting campaign in Supabase:', err);
+    if (error) throw campaignPersistenceError(error, 'delete');
+  } catch (error) {
+    if (error instanceof CampaignPersistenceError) throw error;
+    throw campaignPersistenceError(error as SupabaseErrorLike, 'delete');
   }
 };

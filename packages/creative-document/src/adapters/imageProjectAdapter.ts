@@ -216,6 +216,7 @@ const toCreativeLayer = (
   const legacyGeometry = vectorGeometryFromLegacy({
     ...layer.props,
     ...(layer.vectorGeometry === undefined ? {} : { vectorGeometry: layer.vectorGeometry }),
+    blockType: layer.blockType,
   });
   if (layer.type === 'shape' || (layer.type === 'block' && legacyGeometry)) {
     if (!legacyGeometry && layer.type === 'block') {
@@ -405,8 +406,19 @@ export const creativeDocumentToImageProject = (document: CreativeDocument): Imag
     throw new Error('Cannot convert a video CreativeDocument to ImageProject.');
   }
   const source = legacySource(document.extensions);
-  const sourceProject = recordValue(source.source);
-  const background = (sourceProject?.background as CanvasBackground | undefined) ?? { type: 'solid', color: '#ffffff' };
+  // `legacySource` already unwraps the document's `legacy.source`; older
+  // documents occasionally stored one additional `source` wrapper.
+  const sourceProject = recordValue(source.source) ?? source;
+  const legacyBackground = recordValue(document.extensions?.legacy)?.background;
+  const canonicalFillColor = stringValue(
+    recordValue(recordValue(document.canvas.background)?.fill)?.color,
+  );
+  const sourceBackground = sourceProject?.background as CanvasBackground | undefined;
+  const background =
+    (legacyBackground as CanvasBackground | undefined) ??
+    (sourceBackground?.gradient || sourceBackground?.color ? sourceBackground : undefined) ??
+    (canonicalFillColor ? { type: 'solid', color: canonicalFillColor } : undefined) ??
+    { type: 'solid', color: '#001219' };
   const layers = document.scenes.flatMap((scene) => scene.layers.flatMap((layer) => toLegacyLayer(layer, document.canvas)));
   const project: ImageProject = {
     ...(sourceProject as Partial<ImageProject> | undefined),

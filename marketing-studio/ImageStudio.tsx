@@ -38,6 +38,7 @@ import {
   createCreativeThumbnailBlob,
   uploadCreativeThumbnail,
   isCreativeProjectId,
+  getImageStudioDocumentFormat,
 } from './utils/creativeStudioRemote';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
 import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
@@ -67,10 +68,12 @@ export const ImageStudio: React.FC = () => {
   const [persistenceError, setPersistenceError] = useState<string | null>(null);
   const [carouselComparisonBefore, setCarouselComparisonBefore] = useState<ImageProject | null>(null);
   const [remoteProject, setRemoteProject] = useState<ImageProject | undefined>(undefined);
-  const useCreativeDocumentPersistence =
+  const imageDocumentFormat = getImageStudioDocumentFormat(
     // Canonical v1 is the rollout default. Set the flag to "false" to retain
     // the legacy envelope while a consumer is being migrated.
-    import.meta.env.VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION !== 'false';
+    import.meta.env.VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION !== 'false',
+  );
+  const useCreativeDocumentPersistence = imageDocumentFormat === 'creative-document';
 
   useEffect(() => {
     if (!assetId || !isCreativeProjectId(assetId)) {
@@ -111,9 +114,9 @@ export const ImageStudio: React.FC = () => {
       saveCreativeProject(project, {
         expectedUpdatedAt,
         clientMutationId,
-        documentFormat: useCreativeDocumentPersistence ? 'creative-document' : 'legacy',
+        documentFormat: imageDocumentFormat,
       }),
-    [useCreativeDocumentPersistence],
+    [imageDocumentFormat],
   );
   const persistRemoteExport = React.useCallback(
     async (blob: Blob, format: string) => {

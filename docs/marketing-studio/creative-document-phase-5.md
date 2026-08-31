@@ -47,6 +47,22 @@ and retain runtime asset URLs.
 - Storage asset references remain logical paths/IDs; signed URLs are resolved
   only at runtime. Inline payloads are rejected by the canonical boundary.
 
+## Image Studio operational rehearsal
+
+The deterministic rehearsal in
+`marketing-studio/utils/imagePersistenceRehearsal.test.ts` covers three
+representative persisted inputs: a legacy `ImageProject`, the legacy
+`imageStudio` envelope, and canonical `CreativeDocument` v1. It models a
+save/reopen boundary with a JSON clone and checks Image Studio's carousel,
+panorama, crop, export metadata, groups, transforms, constraints, and opaque
+asset references.
+
+`getImageStudioDocumentFormat()` is canonical by default. Passing `false` is
+the explicit legacy rollback path. The rehearsal is synthetic: it does not
+contact Supabase or exercise production rows. Before rollout, run the same
+matrix against a redacted production sample and verify the rollback flag in
+the target deployment.
+
 ## Deliberately deferred
 
 - Image Studio still owns specialized carousel, crop, panorama, preview and
@@ -64,6 +80,7 @@ and retain runtime asset URLs.
   authored and round-tripped as temporal extensions, but Remotion still owns
   animation evaluation and the new controls do not claim interpolation
   support beyond the existing renderer behavior.
-- Operational verification against a representative persisted sample and
-  manual visual validation at 768/1024/1440px remain outstanding; no legacy
-  consumers have been removed or declared unsupported.
+- Operational verification against a representative production persisted sample
+  and manual visual validation at 768/1024/1440px remain outstanding; the
+  deterministic synthetic Image Studio matrix does not replace either check.
+  No legacy consumers have been removed or declared unsupported.

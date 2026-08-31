@@ -122,6 +122,7 @@ const MarketingStudio: React.FC = () => {
   const [mockupTheme, setMockupTheme] = useState<'light' | 'dark'>('light');
   const [socialProfiles, setSocialProfiles] = useState<SocialProfiles>(getSocialProfiles);
   const [campaigns, setCampaigns] = useState<Campaign[]>(getCampaigns);
+  const [campaignSyncError, setCampaignSyncError] = useState<string | null>(null);
   const [connections, setConnections] = useState<SocialConnections>(getConnections);
   const [pendingDisconnect, setPendingDisconnect] = useState<PlatformId | null>(null);
   const [disconnectError, setDisconnectError] = useState<string | null>(null);
@@ -164,10 +165,13 @@ const MarketingStudio: React.FC = () => {
       setSocialProfiles(synced);
     });
     syncCampaignsWithSupabase().then((syncedCamps) => {
+      setCampaignSyncError(null);
       setCampaigns((currentCampaigns) => {
         const currentById = new Map(currentCampaigns.map((campaign) => [campaign.id, campaign]));
         return syncedCamps.map((syncedCampaign) => currentById.get(syncedCampaign.id) ?? syncedCampaign);
       });
+    }).catch((error: unknown) => {
+      setCampaignSyncError(error instanceof Error ? error.message : 'No se pudieron sincronizar las campañas.');
     });
     syncConnectionsWithSupabase().then((syncedConnections) => {
       setConnections(syncedConnections);
@@ -1028,6 +1032,11 @@ const MarketingStudio: React.FC = () => {
         {/* CAMPAIGN MANAGER MODULE */}
         {section === 'campaigns' && (
           <div className="animate-fadeIn">
+            {campaignSyncError && (
+              <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800" role="alert">
+                {campaignSyncError}
+              </div>
+            )}
             {campaignId ? (
               <CampaignManager campaigns={campaigns} setCampaigns={setCampaigns} campaignId={campaignId} canEdit={canEdit} />
             ) : (

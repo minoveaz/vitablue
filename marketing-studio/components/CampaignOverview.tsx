@@ -34,6 +34,7 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
   const [isCreating, setIsCreating] = useState(false);
   const [newCampaignName, setNewCampaignName] = useState('Lanzamiento de Marca');
   const [pendingDelete, setPendingDelete] = useState<Campaign | null>(null);
+  const [persistenceError, setPersistenceError] = useState<string | null>(null);
 
   const handleCreateCampaign = async () => {
     if (!canEdit) return;
@@ -90,10 +91,14 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
     const nextCampaigns = [newCampaign, ...campaigns];
     setCampaigns(nextCampaigns);
     saveCampaigns(nextCampaigns);
-    await saveCampaignToSupabase(newCampaign);
-    setNewCampaignName('');
-    setIsCreating(false);
-    navigate(`/backoffice/marketing-studio/campanas/${newCampaign.id}`);
+    try {
+      await saveCampaignToSupabase(newCampaign);
+      setNewCampaignName('');
+      setIsCreating(false);
+      navigate(`/backoffice/marketing-studio/campanas/${newCampaign.id}`);
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : 'No se pudo guardar la campaña.');
+    }
   };
 
   const handleDeleteCampaign = async (campaign: Campaign) => {
@@ -102,14 +107,24 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
   };
 
   const performDeleteCampaign = async (campaign: Campaign) => {
-    await deleteCampaign(campaign.id, campaigns);
-    const remaining = campaigns.filter((item) => item.id !== campaign.id);
-    setCampaigns(remaining);
-    saveCampaigns(remaining);
+    try {
+      await deleteCampaign(campaign.id, campaigns);
+      const remaining = campaigns.filter((item) => item.id !== campaign.id);
+      setCampaigns(remaining);
+      saveCampaigns(remaining);
+    } catch (error) {
+      setPersistenceError(error instanceof Error ? error.message : 'No se pudo eliminar la campaña.');
+      throw error;
+    }
   };
 
   return (
     <div className="space-y-8">
+      {persistenceError && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert">
+          {persistenceError}
+        </div>
+      )}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">Workspace de campañas</p>
@@ -193,7 +208,9 @@ export const CampaignOverview: React.FC<CampaignOverviewProps> = ({ campaigns, s
         confirmLabel="Eliminar campaña"
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
-          if (pendingDelete) await performDeleteCampaign(pendingDelete);
+          if (pendingDelete) {
+            try { await performDeleteCampaign(pendingDelete); } catch { /* message is shown above */ }
+          }
           setPendingDelete(null);
         }}
       />

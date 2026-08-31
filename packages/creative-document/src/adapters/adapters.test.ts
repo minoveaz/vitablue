@@ -165,6 +165,7 @@ describe('ImageProject adapter', () => {
       filter: 'grayscale',
       constraints: { horizontal: 'center', preserveAspectRatio: true },
     });
+
     const roundTrip = creativeDocumentToImageProject(document);
     expect(roundTrip.layers[0]).toMatchObject({
       position: { x: 25, y: 50 },
@@ -177,6 +178,31 @@ describe('ImageProject adapter', () => {
       constraints: { horizontal: 'center', preserveAspectRatio: true },
     });
     expect(roundTrip.layers[3]?.props).toMatchObject({ label: 'Trusted', imageUrl: 'assets/badge.png' });
+  });
+
+  it('restores the canonical canvas background when legacy extensions are absent', () => {
+    const document = imageProjectToCreativeDocument(imageProject());
+    delete document.extensions;
+
+    expect(creativeDocumentToImageProject(document).background).toEqual({
+      type: 'solid',
+      color: '#ffffff',
+    });
+
+  });
+
+  it('preserves gradient background colors through the canonical document', () => {
+    const project = imageProject();
+    project.background = {
+      type: 'gradient',
+      color: '#001219',
+      gradient: 'linear-gradient(135deg, #005F73 0%, #001219 100%)',
+    };
+
+    const document = imageProjectToCreativeDocument(project);
+    const roundTrip = creativeDocumentToImageProject(document);
+
+    expect(roundTrip.background).toEqual(project.background);
   });
 
   it('maps the Image Studio CustomGroup contract without flattening children', () => {
@@ -211,6 +237,33 @@ describe('ImageProject adapter', () => {
       type: 'block',
       blockType: 'CustomGroup',
       props: { children: [{ id: 'child', type: 'text' }] },
+    });
+  });
+
+  it('migrates legacy GeometricShape blocks to explicit canonical geometry', () => {
+    const project = imageProject();
+    project.layers.push({
+      id: 'legacy-triangle',
+      type: 'block',
+      blockType: 'GeometricShape',
+      title: 'Triangle',
+      props: { shapeType: 'triangle', fill: '#EE9B00', customOption: 'keep-me' },
+      position: { x: 50, y: 50 },
+      zIndex: 5,
+      scale: 1,
+      width: 180,
+      height: 180,
+    });
+    const document = imageProjectToCreativeDocument(project);
+    const layer = document.scenes[0]?.layers.at(-1);
+    expect(layer).toMatchObject({ type: 'shape', vectorGeometry: { kind: 'path', closed: true } });
+    expect(layer?.extensions?.legacy?.source).toMatchObject({
+      blockType: 'GeometricShape',
+      props: { shapeType: 'triangle', customOption: 'keep-me' },
+    });
+    expect(creativeDocumentToImageProject(document).layers.at(-1)?.props).toMatchObject({
+      shapeType: 'triangle',
+      customOption: 'keep-me',
     });
   });
 
