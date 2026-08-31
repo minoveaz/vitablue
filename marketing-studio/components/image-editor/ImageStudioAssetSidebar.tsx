@@ -39,6 +39,7 @@ export interface ImageStudioAssetDrawerContentProps {
     imageUrl: string,
     options?: {
       title?: string;
+      assetId?: string;
       width?: number;
       height?: number;
       clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon';
@@ -214,7 +215,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           upload: async (file: File) => {
             if (!props.onUploadImage || !props.onAddImageLayer) throw new Error('Subida de medios no disponible.');
             const asset = await props.onUploadImage(file);
-            props.onAddImageLayer(asset.signedUrl, { title: asset.name });
+            props.onAddImageLayer(asset.signedUrl, { title: asset.name, assetId: asset.id });
           },
           insert: ({ kind, value }: { kind?: string; value?: unknown }) => {
               if (kind === 'text' && props.onAddTextLayer) {
@@ -236,7 +237,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
                 if (element?.savedLayer && props.onInsertSavedLayer) props.onInsertSavedLayer(element.savedLayer);
                 else props.onAddBlock(element?.blockType ?? 'GeometricShape', element?.defaultProps ?? { shapeType: value ?? 'circle' });
               } else if (kind === 'media') {
-                const media = value && typeof value === 'object' ? value as { imageUrl?: string; options?: { title?: string } } : undefined;
+                const media = value && typeof value === 'object'
+                  ? value as { imageUrl?: string; options?: { title?: string; assetId?: string } }
+                  : undefined;
                 props.onAddImageLayer?.(media?.imageUrl ?? (typeof value === 'string' && value.startsWith('http') ? value : ''), media?.options ?? { title: String(value ?? 'Medio') });
               } else if (kind === 'brand') {
                 const brand = value && typeof value === 'object' ? value as { blockType?: ImageBlockType; defaultProps?: Record<string, unknown> } : undefined;

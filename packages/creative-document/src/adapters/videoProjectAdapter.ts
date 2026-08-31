@@ -3,6 +3,7 @@ import type {
   CreativeDocument,
   CreativeLayer,
   ShapeKind,
+  TemporalExtensions,
 } from '../types';
 import type {
   AssetRef as LegacyAssetRef,
@@ -128,6 +129,26 @@ const layerExtras = (layer: LegacyLayer): LegacyRecord => {
   return Object.fromEntries(Object.entries(layer).filter(([key]) => !mapped.has(key)));
 };
 
+const temporalLayerExtensions = (layer: LegacyLayer): TemporalExtensions | undefined => {
+  const source = layer as unknown as LegacyRecord;
+  const audio = layer.type === 'audio'
+    ? {
+        ...(source.fadeInDuration === undefined ? {} : { fadeInDuration: source.fadeInDuration }),
+        ...(source.fadeOutDuration === undefined ? {} : { fadeOutDuration: source.fadeOutDuration }),
+      }
+    : undefined;
+  const keyframes = source.keyframes;
+  const animation = source.animation;
+  if (keyframes === undefined && animation === undefined && (!audio || Object.keys(audio).length === 0)) return undefined;
+  return {
+    ...(keyframes && typeof keyframes === 'object' && !Array.isArray(keyframes)
+      ? { keyframes: toSafeJsonObject(keyframes as LegacyRecord) }
+      : {}),
+    ...(animation === undefined ? {} : { animation: toSafeJsonObject({ type: animation }) }),
+    ...(audio && Object.keys(audio).length > 0 ? { audio: toSafeJsonObject(audio) } : {}),
+  } as TemporalExtensions;
+};
+
 const toCreativeLayer = (
   layer: LegacyLayer,
   canvas: { width: number; height: number },
@@ -161,17 +182,26 @@ const toCreativeLayer = (
     ...(layer.visible === undefined ? {} : { visible: layer.visible }),
     ...(layer.locked === undefined ? {} : { locked: layer.locked }),
     ...(layer.zIndex === undefined ? {} : { zIndex: layer.zIndex }),
-    extensions: withLegacySource(source, {
-      ...layerExtras(layer),
-      ...(layer.constraints === undefined ? {} : { constraints: layer.constraints }),
-      ...(layer.type === 'subtitle' ? { subtitle: { highlightWords: layer.highlightWords, stylePreset: layer.stylePreset } } : {}),
-    }),
+    ...(layer.constraints === undefined ? {} : { constraints: toSafeJsonObject(layer.constraints as unknown as LegacyRecord) }),
+    extensions: {
+      ...withLegacySource(source, {
+        ...layerExtras(layer),
+        ...(layer.constraints === undefined ? {} : { constraints: layer.constraints }),
+        ...(layer.type === 'subtitle' ? { subtitle: { highlightWords: layer.highlightWords, stylePreset: layer.stylePreset } } : {}),
+      }),
+      ...(temporalLayerExtensions(layer) ? { temporal: temporalLayerExtensions(layer) } : {}),
+    },
   };
   if (layer.type === 'text' || layer.type === 'subtitle') {
     return { ...common, type: 'text', text: layer.text };
   }
   if (layer.type === 'image') {
-    return { ...common, type: 'image', asset: assetOf(layer), ...(layer.alt ? { extensions: withLegacySource(source, { ...layerExtras(layer), alt: layer.alt }) } : {}) };
+    return {
+      ...common,
+      type: 'image',
+      asset: assetOf(layer),
+      ...(layer.alt ? { extensions: { ...common.extensions, ...withLegacySource(source, { ...layerExtras(layer), alt: layer.alt }) } } : {}),
+    };
   }
   if (layer.type === 'video') return { ...common, type: 'video', asset: assetOf(layer) };
   if (layer.type === 'shape') {
@@ -230,12 +260,20 @@ const audioLayer = (
     geometry: { x: 0, y: 0, width: 1 / canvas.width, height: 1 / canvas.height },
     timing,
     ...(track.volume === undefined ? {} : { volume: clamp(track.volume, 0, 1) }),
-    extensions: withLegacySource(track as unknown as LegacyRecord, { audioTrack: true }),
+    extensions: {
+      ...withLegacySource(track as unknown as LegacyRecord, { audioTrack: true }),
+      temporal: {
+        audio: {
+          track: true,
+          ...(track.volume === undefined ? {} : { volume: track.volume }),
+        },
+      },
+    },
   };
 };
 
 const projectExtensions = (project: VideoProject): { legacy: ReturnType<typeof toJsonObject> } => ({
-  legacy: toJsonObject({ source: project, fps: project.fps, format: project.format, metadata: project.metadata, layout: project.layout }),
+  legacy: toSafeJsonObject({ source: project, fps: project.fps, format: project.format, metadata: project.metadata, layout: project.layout }),
 });
 
 export const videoProjectToCreativeDocument = (project: VideoProject): CreativeDocument => {
@@ -252,11 +290,21 @@ export const videoProjectToCreativeDocument = (project: VideoProject): CreativeD
         startMs: framesToMs(startFrames, project.fps),
         durationMs: Math.max(1, framesToMs(scene.durationInFrames, project.fps)),
       },
-      extensions: withLegacySource(scene as unknown as LegacyRecord, {
-        templateId: scene.templateId,
-        content: scene.content,
-        transition: scene.transition,
-      }),
+      extensions: {
+        ...withLegacySource(scene as unknown as LegacyRecord, {
+          templateId: scene.templateId,
+          content: scene.content,
+          transition: scene.transition,
+        }),
+        ...(scene.transition ? {
+          temporal: {
+            transition: {
+              type: scene.transition.type,
+              durationMs: framesToMs(scene.transition.durationInFrames ?? 0, project.fps),
+            },
+          },
+        } : {}),
+      },
     };
   });
   if (project.audio) {
@@ -278,7 +326,20 @@ export const videoProjectToCreativeDocument = (project: VideoProject): CreativeD
     canvas: { id: `${project.id}-canvas`, width: project.width, height: project.height },
     scenes,
     ...(uniqueAssets.length ? { assets: uniqueAssets } : {}),
-    extensions: projectExtensions(project),
+    extensions: {
+      ...projectExtensions(project),
+      ...(project.audio?.length ? {
+        temporal: {
+          audio: {
+            tracks: project.audio.map((track) => ({
+              id: track.id,
+              startMs: framesToMs(track.startFrame, project.fps),
+              durationMs: framesToMs(track.durationInFrames ?? 1, project.fps),
+            })),
+          },
+        },
+      } : {}),
+    },
   };
 };
 
@@ -289,6 +350,10 @@ const legacyTiming = (layer: CreativeLayer, fps: number): LayerTiming => ({
 
 const toLegacyLayer = (layer: CreativeLayer, canvas: { width: number; height: number }, fps: number): LegacyLayer => {
   const source = legacySource(layer.extensions);
+  const temporal = layer.extensions?.temporal;
+  const temporalAnimation = recordValue(temporal?.animation)?.type;
+  const temporalAudio = recordValue(temporal?.audio);
+  const temporalKeyframes = temporal?.keyframes;
   const placement = legacyCenterFromGeometry(layer.geometry, layer.transform.position, canvas);
   const common: LegacyRecord = {
     ...source,
@@ -301,7 +366,13 @@ const toLegacyLayer = (layer: CreativeLayer, canvas: { width: number; height: nu
     visible: layer.visible,
     locked: layer.locked,
     zIndex: layer.zIndex,
-    constraints: source.constraints,
+    constraints: layer.constraints ? fromJsonObject(layer.constraints) : source.constraints,
+    ...(source.animation === undefined && temporalAnimation !== undefined ? { animation: temporalAnimation } : {}),
+    ...(temporalKeyframes === undefined ? {} : { keyframes: temporalKeyframes }),
+    ...(layer.type === 'audio' && temporalAudio ? {
+      ...(temporalAudio.fadeInDuration === undefined ? {} : { fadeInDuration: temporalAudio.fadeInDuration }),
+      ...(temporalAudio.fadeOutDuration === undefined ? {} : { fadeOutDuration: temporalAudio.fadeOutDuration }),
+    } : {}),
   };
   if (layer.type === 'text') {
     const subtitle = recordValue(source.subtitle);
@@ -368,7 +439,7 @@ export const creativeDocumentToVideoProject = (document: CreativeDocument): Vide
     const sceneRecord = recordValue(sceneSource.source);
     const sceneTimingFrames = Math.max(1, msToFrames(scene.timing?.durationMs ?? 1000, fps));
     const layers = scene.layers.flatMap((layer) => {
-      if (layer.type === 'audio') {
+      if (layer.type === 'audio' && layer.extensions?.legacy?.audioTrack === true) {
         const source = legacySource(layer.extensions);
         const track: AudioTrack = {
           ...(source as Partial<AudioTrack>),
@@ -391,7 +462,17 @@ export const creativeDocumentToVideoProject = (document: CreativeDocument): Vide
       durationInFrames: sceneTimingFrames,
       layers,
       content: (recordValue(sceneSource.content) ?? {}) as Record<string, unknown>,
-      ...(sceneSource.transition === undefined ? {} : { transition: sceneSource.transition as LegacyScene['transition'] }),
+      ...(() => {
+        const temporalTransition = recordValue(scene.extensions?.temporal?.transition);
+        const transition = sceneSource.transition ?? (temporalTransition
+          ? {
+              type: temporalTransition.type,
+              durationInFrames: temporalTransition.durationInFrames
+                ?? msToFrames(numberValue(temporalTransition.durationMs) ?? 0, fps),
+            }
+          : undefined);
+        return transition === undefined ? {} : { transition: transition as LegacyScene['transition'] };
+      })(),
     };
   });
   const sourceFormat = stringValue(sourceProject?.format);

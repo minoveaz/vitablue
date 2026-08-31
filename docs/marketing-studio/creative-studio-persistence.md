@@ -1,7 +1,7 @@
 # Contratos de persistencia de Creative Studio
 
 **Fecha:** 2026-08-27  
-**Fases:** 1–4 — contratos, persistencia e integración remota
+**Fases:** 1–5 — contratos, persistencia, integración remota y rollout
 **Estado:** VitaBlue conectado al repositorio y Storage privados de LoopDev
 
 ## Referencias revisadas
@@ -153,3 +153,17 @@ nunca desde `user_metadata`, `service_role` ni claims personalizados.
 La importación de datos legacy solo se inicia mediante la acción explícita
 “Importar diseños del navegador”, permite seleccionar proyectos y conserva los
 originales para poder revertir.
+
+## Rollout de CreativeDocument v1
+
+Las rutas de edición escriben `CreativeDocument` v1 por defecto. El rollback es
+explícito y reversible: `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false` mantiene
+el envelope `imageStudio`, y `VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION=false`
+mantiene `videoStudio`. Ambos decoders siguen activos para leer datos existentes.
+
+Antes de activar el rollout en un entorno con datos reales, ejecutar
+`rehearseCreativeDocumentPersistence` con una muestra representativa de cada
+tipo. La rehearsal no escribe en Supabase: valida los dos encoders, la migración
+y el round-trip al modelo legacy. Si falla por un asset sin referencia estable,
+debe promoverse primero a `marketing_creative_assets`; no se debe persistir una
+URL firmada o un payload inline como atajo.

@@ -12,7 +12,13 @@ import {
   creativeDocumentToVideoProject,
   videoProjectToCreativeDocument,
 } from '../../packages/creative-document/src/adapters/videoProjectAdapter';
+import {
+  creativeDocumentToImageProject,
+  imageProjectToCreativeDocument,
+} from '../../packages/creative-document/src/adapters/imageProjectAdapter';
 import type { CreativeDocument } from '../../packages/creative-document/src/types';
+import { CreativeDocumentSchema } from '../../packages/creative-document/src/schema';
+import { migrateCreativeDocument } from '../../packages/creative-document/src/migrations';
 import {
   createSupabaseCreativeProjectRepository,
   CreativeProjectConflictError,
@@ -197,7 +203,27 @@ const containsInline = (value: unknown): boolean => {
   return false;
 };
 
-const imageStudioComposition = (project: ImageProject): Record<string, unknown> => {
+export type ImageCreativeDocumentPersistenceFormat = 'legacy' | 'creative-document';
+
+/**
+ * The legacy envelope remains the default. The canonical format is an opt-in
+ * write path so old consumers can continue reading existing projects while the
+ * decoder above accepts both representations.
+ */
+export const imageStudioComposition = (
+  project: ImageProject,
+  format: ImageCreativeDocumentPersistenceFormat = 'legacy',
+): Record<string, unknown> => {
+  if (format === 'creative-document') {
+    // Runtime signed URLs are replaced with their opaque Storage references
+    // before the binary-free CreativeDocument adapter validates asset paths.
+    const cleanProject = mapKnownSignedUrls(clone(project)) as ImageProject;
+    if (containsInline(cleanProject)) {
+      throw new Error('Sube las imágenes al Storage privado antes de guardar el proyecto.');
+    }
+    const document = imageProjectToCreativeDocument(cleanProject);
+    return CreativeDocumentSchema.parse(document) as unknown as Record<string, unknown>;
+  }
   const copy = mapKnownSignedUrls(clone(project)) as unknown as Record<string, unknown>;
   if (containsInline(copy)) {
     throw new Error('Sube las imágenes al Storage privado antes de guardar el proyecto.');
@@ -230,9 +256,30 @@ const replaceInlinePayloads = async (value: unknown, projectId: string, client: 
   return value;
 };
 
-const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
+export const imageProjectFromCreative = (project: CreativeProject): ImageProject => {
   const composition = project.draftDocument as Record<string, unknown> & { imageStudio?: ImageProject };
   const creativeStatus = project.status === 'approved' ? 'ready' : project.status === 'in_review' ? 'draft' : project.status;
+  const migrated = (() => {
+    try {
+      return migrateCreativeDocument(composition);
+    } catch {
+      return null;
+    }
+  })();
+  if (migrated?.document.mode === 'image' || migrated?.document.mode === 'mixed') {
+    const image = creativeDocumentToImageProject(migrated.document);
+    return {
+      ...image,
+      id: project.id,
+      title: project.name,
+      brandId: project.brandId,
+      creativeStatus,
+      currentVersionNumber: project.currentVersionNumber,
+      autosaveRevision: project.autosaveRevision,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    };
+  }
   if (composition.imageStudio) {
     return {
       ...clone(composition.imageStudio),
@@ -272,8 +319,11 @@ export type PersistedVideoProject = VideoProject & {
   autosaveRevision: number;
 };
 
+export type VideoCreativeDocumentPersistenceFormat = 'legacy' | 'creative-document';
+
 const videoProjectFromCreative = (project: CreativeProject): PersistedVideoProject => {
-  const document = project.draftDocument as unknown as CreativeDocument;
+  const document = migrateCreativeDocument(project.draftDocument).document;
+  if (document.mode === 'image') throw new Error('El proyecto creativo no contiene un documento de vídeo.');
   const video = creativeDocumentToVideoProject(document);
   return {
     ...video,
@@ -293,7 +343,42 @@ const videoStudioComposition = (project: VideoProject): Record<string, unknown> 
     throw new Error('Sube los recursos de vídeo al Storage privado antes de guardar el proyecto.');
   }
   const document = videoProjectToCreativeDocument(cleanProject);
-  return mapKnownSignedUrls(clone(document)) as unknown as Record<string, unknown>;
+  return CreativeDocumentSchema.parse(mapKnownSignedUrls(clone(document))) as unknown as Record<string, unknown>;
+};
+
+const legacyVideoStudioComposition = (project: VideoProject): Record<string, unknown> => {
+  const copy = mapKnownSignedUrls(clone(project)) as unknown as Record<string, unknown>;
+  if (containsInline(copy)) {
+    throw new Error('Sube los recursos de vídeo al Storage privado antes de guardar el proyecto.');
+  }
+  delete copy.updatedAt;
+  delete copy.createdAt;
+  delete copy.currentVersionNumber;
+  delete copy.autosaveRevision;
+  return { schemaVersion: 1, videoStudio: copy };
+};
+
+/**
+ * A read-only rollout rehearsal. It exercises both persistence encoders and
+ * their migration boundary without writing to Supabase. This is intentionally
+ * exported so CI and an operator can run the same check before enabling the
+ * canonical writer flag.
+ */
+export const rehearseCreativeDocumentPersistence = (
+  project: ImageProject | VideoProject,
+  mode: 'image' | 'video',
+): { legacy: Record<string, unknown>; canonical: CreativeDocument; roundTrip: ImageProject | VideoProject } => {
+  const legacy = mode === 'image'
+    ? imageStudioComposition(project as ImageProject, 'legacy')
+    : legacyVideoStudioComposition(project as VideoProject);
+  const canonical = mode === 'image'
+    ? imageProjectToCreativeDocument(project as ImageProject)
+    : videoProjectToCreativeDocument(project as VideoProject);
+  const migrated = migrateCreativeDocument(canonical).document;
+  const roundTrip = mode === 'image'
+    ? creativeDocumentToImageProject(migrated)
+    : creativeDocumentToVideoProject(migrated);
+  return { legacy, canonical, roundTrip };
 };
 
 const resolveAssetReferences = async <T>(
@@ -363,7 +448,12 @@ export const isImageCreativeProject = (project: CreativeProject): boolean => {
 /** Keep the video boundary explicit so the two hubs cannot render each other's documents. */
 export const isVideoCreativeProject = (project: CreativeProject): boolean => {
   const composition = documentTypeFields(project);
-  return composition.mode === 'video' || Boolean(composition.videoStudio);
+  if (composition.mode === 'video' || Boolean(composition.videoStudio)) return true;
+  try {
+    return migrateCreativeDocument(composition).document.mode === 'video';
+  } catch {
+    return false;
+  }
 };
 
 const repositoryFor = (client: SupabaseClient): CreativeProjectRepository =>
@@ -404,6 +494,7 @@ export const saveVideoProject = async (
     expectedUpdatedAt?: string;
     changeSummary?: string | null;
     createNew?: boolean;
+    documentFormat?: VideoCreativeDocumentPersistenceFormat;
   } = {},
   client: SupabaseClient = supabase,
 ): Promise<PersistedVideoProject> => {
@@ -416,7 +507,9 @@ export const saveVideoProject = async (
     name: project.name,
     type: 'other',
     status: 'draft',
-    draftDocument: videoStudioComposition(project),
+    draftDocument: options.documentFormat === 'creative-document'
+      ? videoStudioComposition(project)
+      : legacyVideoStudioComposition(project),
     expectedUpdatedAt: options.expectedUpdatedAt,
     changeSummary: options.changeSummary,
   });
@@ -438,6 +531,7 @@ export const saveCreativeProject = async (
     changeSummary?: string | null;
     clientMutationId?: string;
     createNew?: boolean;
+    documentFormat?: ImageCreativeDocumentPersistenceFormat;
   } = {},
   client: SupabaseClient = supabase,
 ): Promise<ImageProject> => {
@@ -450,7 +544,7 @@ export const saveCreativeProject = async (
     name: project.title,
     type: canonicalProjectType(project),
     status: canonicalProjectStatus(project.creativeStatus),
-    draftDocument: imageStudioComposition(project),
+    draftDocument: imageStudioComposition(project, options.documentFormat),
     expectedUpdatedAt: options.expectedUpdatedAt,
     changeSummary: options.changeSummary,
     clientMutationId: options.clientMutationId,
@@ -550,10 +644,14 @@ export const restoreCreativeProjectVersion = async (
   const versions = await listCreativeProjectVersions(id, client);
   const selected = versions.find((item) => item.versionNumber === version);
   if (!selected) throw new Error('Versión creativa no encontrada.');
-  const composition = selected.document as { imageStudio?: ImageProject };
-  if (!composition.imageStudio) throw new Error('La versión no contiene una composición compatible.');
+  const composition = selected.document as { imageStudio?: ImageProject; mode?: unknown; schemaVersion?: unknown };
+  const restoredProject = composition.imageStudio
+    ?? (composition.mode === 'image' && composition.schemaVersion === 1
+      ? creativeDocumentToImageProject(selected.document as unknown as CreativeDocument)
+      : null);
+  if (!restoredProject) throw new Error('La versión no contiene una composición compatible.');
   return saveCreativeProject({
-    ...clone(composition.imageStudio),
+    ...clone(restoredProject),
     id: current.id,
     title: current.title,
     createdAt: current.createdAt,

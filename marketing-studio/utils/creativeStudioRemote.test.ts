@@ -5,12 +5,17 @@ import {
   getCreativeScope,
   isImageCreativeProject,
   isVideoCreativeProject,
+  imageProjectFromCreative,
+  imageStudioComposition,
   importCreativeProject,
   isCreativeProjectId,
   archiveCreativeProject,
   restoreCreativeProjectVersion,
+  rehearseCreativeDocumentPersistence,
 } from './creativeStudioRemote';
 import type { ImageProject } from '../types/imageStudio';
+import type { VideoProject } from '../../packages/video-studio/src/domain/videoProject';
+import { imageProjectToCreativeDocument } from '../../packages/creative-document/src/adapters/imageProjectAdapter';
 
 const project: ImageProject = {
   id: '10000000-0000-4000-8000-000000000001',
@@ -51,6 +56,67 @@ describe('Creative Studio remote adapter', () => {
     expect(isVideoCreativeProject(imageRow)).toBe(false);
     expect(isImageCreativeProject(videoRow)).toBe(false);
     expect(isVideoCreativeProject(videoRow)).toBe(true);
+  });
+
+  it('decodes canonical CreativeDocument v1 while retaining the legacy decoder', () => {
+    const document = imageProjectToCreativeDocument(project);
+    expect(document.schemaVersion).toBe(1);
+    const decoded = imageProjectFromCreative({
+      id: project.id,
+      name: project.title,
+      brandId: 'brand-1',
+      status: 'draft',
+      currentVersionNumber: 2,
+      autosaveRevision: 3,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      draftDocument: document,
+    } as never);
+    expect(decoded).toMatchObject({
+      id: project.id,
+      title: project.title,
+      currentVersionNumber: 2,
+      autosaveRevision: 3,
+      layers: [{ id: 'text', type: 'text', props: { text: 'Hola' } }],
+    });
+
+    expect(imageStudioComposition(project, 'legacy')).toHaveProperty('imageStudio');
+    expect(imageStudioComposition(project, 'creative-document')).toMatchObject({
+      schemaVersion: 1,
+      mode: 'image',
+      id: project.id,
+    });
+  });
+
+  it('rehearses legacy and canonical persistence without a remote write', () => {
+    const rehearsal = rehearseCreativeDocumentPersistence(project, 'image');
+    expect(rehearsal.legacy).toHaveProperty('imageStudio');
+    expect(rehearsal.canonical).toMatchObject({ schemaVersion: 1, mode: 'image' });
+    expect(rehearsal.roundTrip).toMatchObject({ id: project.id, title: project.title });
+  });
+
+  it('classifies a legacy VideoProject for rollback reads', () => {
+    const video: VideoProject = {
+      schemaVersion: 'video-schema-v1',
+      id: project.id,
+      name: 'Vídeo legacy',
+      fps: 30,
+      format: 'vertical',
+      width: 1080,
+      height: 1920,
+      scenes: [{
+        id: 'scene-1',
+        templateId: 'text_hook',
+        durationInFrames: 30,
+        content: {},
+        layers: [],
+      }],
+    };
+    const row = { draftDocument: video } as never;
+    expect(isVideoCreativeProject(row)).toBe(true);
+    const rehearsal = rehearseCreativeDocumentPersistence(video, 'video');
+    expect(rehearsal.legacy).toHaveProperty('videoStudio');
+    expect(rehearsal.canonical).toMatchObject({ mode: 'video', schemaVersion: 1 });
   });
 
   it('round-trips a JSON-only project package', () => {

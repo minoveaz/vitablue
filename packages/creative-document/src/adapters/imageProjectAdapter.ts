@@ -63,7 +63,7 @@ const legacyExtras = (layer: LegacyImageLayer): LegacyRecord => {
     'id', 'type', 'blockType', 'title', 'props', 'position', 'zIndex', 'scale', 'width', 'height',
     'rotation', 'opacity', 'fill', 'stroke', 'strokeWidth', 'cornerRadius', 'fontFamily', 'fontSize',
     'fontWeight', 'fontStyle', 'align', 'letterSpacing', 'lineHeight', 'borderRadius', 'locked', 'visible',
-    'crop', 'constraints',
+    'crop', 'constraints', 'src',
   ]);
   return Object.fromEntries(Object.entries(layer).filter(([key]) => !mapped.has(key)));
 };
@@ -189,6 +189,7 @@ const toCreativeLayer = (
     ...(layer.visible === undefined ? {} : { visible: layer.visible }),
     ...(layer.locked === undefined ? {} : { locked: layer.locked }),
     ...(layer.zIndex === undefined ? {} : { zIndex: layer.zIndex }),
+    ...(layer.constraints === undefined ? {} : { constraints: toSafeJsonObject(layer.constraints as unknown as LegacyRecord) }),
     extensions: withLegacySource(layer as unknown as LegacyRecord, legacy),
   };
 
@@ -241,7 +242,7 @@ const toCreativeLayer = (
 };
 
 const projectLegacyExtensions = (project: ImageProject): { legacy: ReturnType<typeof toJsonObject> } => ({
-  legacy: toJsonObject({
+  legacy: toSafeJsonObject({
     source: project,
     ...(project.background.type === 'image' || project.background.type === 'gradient' || project.background.type === 'mesh'
       ? { background: project.background }
@@ -338,6 +339,8 @@ const toLegacyLayer = (
       ...inverseAppearance(layer, canvas),
       ...(layer.visible === undefined ? {} : { visible: layer.visible }),
       ...(layer.locked === undefined ? {} : { locked: layer.locked }),
+      ...(layer.constraints === undefined ? {} : { constraints: fromJsonObject(layer.constraints) }),
+      ...(layer.clipContent === undefined ? {} : { clipContent: layer.clipContent }),
     };
     return [group as unknown as LegacyImageLayer];
   }
@@ -356,6 +359,7 @@ const toLegacyLayer = (
     ...inverseAppearance(layer, canvas),
     ...(layer.visible === undefined ? {} : { visible: layer.visible }),
     ...(layer.locked === undefined ? {} : { locked: layer.locked }),
+    ...(layer.constraints === undefined ? {} : { constraints: fromJsonObject(layer.constraints) }),
   };
   if (layer.type === 'text') {
     base.type = 'text';

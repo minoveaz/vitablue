@@ -155,6 +155,7 @@ const videoProject = (): VideoProject => ({
 describe('ImageProject adapter', () => {
   it('round-trips geometry, transforms, appearance, state, crop and component props', () => {
     const document = imageProjectToCreativeDocument(imageProject());
+    expect(document.schemaVersion).toBe(1);
     expect(CreativeDocumentSchema.parse(document)).toEqual(document);
     expect(document.scenes[0]?.layers.map((layer) => layer.type)).toEqual(['image', 'text', 'shape', 'component']);
     expect(document.scenes[0]?.layers[0]?.geometry).toMatchObject({ x: 0.15, y: 0.4, width: 0.2, height: 0.2 });
@@ -222,11 +223,24 @@ describe('ImageProject adapter', () => {
     project.layers[0]!.src = 'https://cdn.example.test/photo.png?token=signed';
     expect(() => imageProjectToCreativeDocument(project)).toThrow(/not allowed/);
   });
+
+  it('uses an opaque asset reference when a runtime URL accompanies an asset id', () => {
+    const project = imageProject();
+    project.layers[0]!.props.assetId = 'asset-123';
+    project.layers[0]!.src = 'https://cdn.example.test/photo.png?token=signed';
+    const document = imageProjectToCreativeDocument(project);
+    expect(document.assets?.[0]).toMatchObject({
+      assetId: 'asset-123',
+      storagePath: 'creative-asset:asset-123',
+    });
+    expect(CreativeDocumentSchema.parse(document)).toEqual(document);
+  });
 });
 
 describe('VideoProject adapter', () => {
   it('round-trips scenes, timing, assets, shape state and metadata with deterministic frame rounding', () => {
     const document = videoProjectToCreativeDocument(videoProject());
+    expect(document.schemaVersion).toBe(1);
     expect(CreativeDocumentSchema.parse(document)).toEqual(document);
     expect(document.scenes[0]?.timing).toEqual({ startMs: 0, durationMs: 2000 });
     expect(document.scenes[0]?.layers[0]?.timing).toEqual({ startMs: 125, durationMs: 1250 });
@@ -251,5 +265,67 @@ describe('VideoProject adapter', () => {
       asset: { src: 'blob:https://example.test/id' },
     };
     expect(() => videoProjectToCreativeDocument(project)).toThrow(/not allowed/);
+  });
+
+  it('keeps video timing extensions explicit while round-tripping audio and keyframes', () => {
+    const project = videoProject();
+    project.scenes[0]!.transition = { type: 'fade', durationInFrames: 12 };
+    project.scenes[0]!.layers[1] = {
+      ...project.scenes[0]!.layers[1]!,
+      animation: 'slide-up',
+      keyframes: {
+        opacity: [{ timeMs: 0, value: 0 }, { timeMs: 250, value: 1, easing: 'ease-out' }],
+      },
+    } as unknown as VideoProject['scenes'][number]['layers'][number];
+    project.audio = [{
+      id: 'music',
+      src: 'assets/music.mp3',
+      startFrame: 2,
+      durationInFrames: 40,
+      volume: 0.5,
+    }];
+
+    const document = videoProjectToCreativeDocument(project);
+    expect(CreativeDocumentSchema.parse(document)).toEqual(document);
+    expect(document.scenes[0]?.extensions?.temporal?.transition).toMatchObject({
+      type: 'fade',
+      durationMs: 500,
+    });
+    expect(document.scenes[0]?.layers[1]?.extensions?.temporal).toMatchObject({
+      animation: { type: 'slide-up' },
+      keyframes: { opacity: [{ timeMs: 0, value: 0 }, { timeMs: 250, value: 1, easing: 'ease-out' }] },
+    });
+    expect(document.scenes[0]?.layers.some((layer) => layer.type === 'audio')).toBe(true);
+    expect(document.scenes[0]?.layers.find((layer) => layer.type === 'audio')?.extensions?.legacy).toMatchObject({ audioTrack: true });
+
+    const roundTrip = creativeDocumentToVideoProject(document);
+    expect(roundTrip.scenes[0]?.transition).toEqual({ type: 'fade', durationInFrames: 12 });
+    expect(roundTrip.scenes[0]?.layers[1]).toMatchObject({
+      animation: 'slide-up',
+      keyframes: { opacity: [{ timeMs: 0, value: 0 }, { timeMs: 250, value: 1, easing: 'ease-out' }] },
+    });
+    expect(roundTrip.audio).toMatchObject([{ id: 'music', startFrame: 2, durationInFrames: 40, volume: 0.5 }]);
+  });
+
+  it('does not promote scene-local audio layers to project audio tracks', () => {
+    const project = videoProject();
+    project.scenes[0]!.layers.push({
+      id: 'scene-audio',
+      type: 'audio',
+      src: 'assets/scene.mp3',
+      timing: { startFrame: 4, durationInFrames: 8 },
+      fadeInDuration: 2,
+      fadeOutDuration: 3,
+    });
+
+    const roundTrip = creativeDocumentToVideoProject(videoProjectToCreativeDocument(project));
+    expect(roundTrip.scenes[0]?.layers).toMatchObject([{}, {}, {}, {
+      id: 'scene-audio',
+      type: 'audio',
+      timing: { startFrame: 4, durationInFrames: 8 },
+      fadeInDuration: 2,
+      fadeOutDuration: 3,
+    }]);
+    expect(roundTrip.audio).toBeUndefined();
   });
 });

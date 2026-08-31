@@ -92,9 +92,19 @@ export const MediaResource: React.FC<MediaResourceProps> = ({ context, items = [
     );
   }, [searchQuery, userMedia]);
 
-  const insert = (source: string, title?: string, kind?: MediaResourceAsset['kind']) => {
+  const insert = (
+    source: string,
+    title?: string,
+    kind?: MediaResourceAsset['kind'],
+    assetId?: string,
+  ) => {
     if (media.insert) {
-      media.insert(source, { title, clipShape: selectedClipShape, kind });
+      media.insert(source, {
+        title,
+        ...(assetId ? { assetId } : {}),
+        clipShape: selectedClipShape,
+        kind,
+      });
     } else if (onInsert) {
       onInsert({ id: `media-${Date.now()}`, label: title ?? source, src: source, kind });
     } else {
@@ -107,7 +117,7 @@ export const MediaResource: React.FC<MediaResourceProps> = ({ context, items = [
     const result = await media.upload(file);
     setUploadError(null);
     setUserMedia((current) => [result, ...current.filter((item) => item.id !== result.id)]);
-    insert(result.signedUrl, result.name, result.kind);
+    insert(result.signedUrl, result.name, result.kind, result.id);
   };
 
   const readUploadedImage = (file: File) => {
@@ -326,7 +336,7 @@ export const MediaResource: React.FC<MediaResourceProps> = ({ context, items = [
                         ? <video src={asset.signedUrl} aria-label={asset.name} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" muted />
                         : <img src={asset.signedUrl} alt={asset.name} className="size-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />}
                       <div className="absolute inset-0 flex flex-col justify-end gap-1.5 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button type="button" onClick={() => insert(asset.signedUrl, asset.name, asset.kind)} className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary py-1.5 text-[11px] font-black text-white shadow-md transition-colors hover:bg-teal-600">
+                        <button type="button" onClick={() => insert(asset.signedUrl, asset.name, asset.kind, asset.id)} className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary py-1.5 text-[11px] font-black text-white shadow-md transition-colors hover:bg-teal-600">
                           <Sparkles className="size-3 text-brand-cyan" />
                           <span>+ Añadir Capa</span>
                         </button>

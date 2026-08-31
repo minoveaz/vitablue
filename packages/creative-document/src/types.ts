@@ -20,7 +20,23 @@ export interface LegacyExtensions {
   legacy?: JsonObject;
   imageStudio?: JsonObject;
   videoStudio?: JsonObject;
-  [extension: string]: JsonValue | undefined;
+  /** Renderer-neutral escape hatch for temporal editor capabilities. */
+  temporal?: TemporalExtensions;
+  [extension: string]: unknown;
+}
+
+export interface Keyframe {
+  timeMs: number;
+  value: JsonValue;
+  easing?: string;
+}
+
+export interface TemporalExtensions {
+  keyframes?: { [property: string]: Keyframe[] };
+  animation?: JsonObject;
+  audio?: JsonObject;
+  transition?: JsonObject;
+  [extension: string]: unknown;
 }
 
 export interface Point {
@@ -137,6 +153,12 @@ export interface CreativeLayerBase {
   visible?: boolean;
   locked?: boolean;
   zIndex?: number;
+  /**
+   * Layout constraints are intentionally renderer-neutral.  Image and Video
+   * keep their richer legacy constraint payload here while migrating callers
+   * to a shared layout contract.
+   */
+  constraints?: JsonObject;
   extensions?: LegacyExtensions;
 }
 

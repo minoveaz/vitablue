@@ -29,7 +29,7 @@ export interface CreativeEditorAssetSidebarProps {
   onDuplicateScene: (sceneId: string) => void;
   onRemoveScene: (sceneId: string) => void;
   onMoveScene: (sceneId: string, direction: 'up' | 'down') => void;
-  onAddLayer: (type: LayerType, assetSrc?: string) => void;
+  onAddLayer: (type: LayerType, assetSrc?: string, assetId?: string) => void;
   onAddTextLayer: (text?: string) => void;
   onAddSubtitleLayer: (text?: string) => void;
   onAddComponentLayer: (componentId: string) => void;
@@ -136,7 +136,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
         };
       },
       insert: (source, options) => {
-        onAddLayer(options?.kind === 'video' ? 'video' : 'image', source);
+        onAddLayer(options?.kind === 'video' ? 'video' : 'image', source, options?.assetId);
       },
       accept: 'image/png,image/jpeg,image/webp,image/svg+xml,video/*',
       validateFile: (file) => file.type.startsWith('image/') || file.type.startsWith('video/')

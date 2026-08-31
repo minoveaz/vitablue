@@ -62,11 +62,42 @@ const BinaryFreeJsonObjectSchema = JsonObjectSchema.superRefine((value, context)
   }
 });
 
+const KeyframeSchema = z.object({
+  timeMs: FiniteNumberSchema.nonnegative(),
+  value: JsonValueSchema,
+  easing: z.string().trim().min(1).optional(),
+}).strict();
+
+const TemporalExtensionsSchema = z.record(z.string(), JsonValueSchema).superRefine((value, context) => {
+  const keyframes = value.keyframes;
+  if (keyframes === undefined) return;
+  if (!keyframes || typeof keyframes !== 'object' || Array.isArray(keyframes)) {
+    context.addIssue({ code: 'custom', path: ['keyframes'], message: 'Temporal keyframes must be grouped by property.' });
+    return;
+  }
+  Object.entries(keyframes).forEach(([property, frames]) => {
+    if (!Array.isArray(frames)) {
+      context.addIssue({ code: 'custom', path: ['keyframes', property], message: 'Keyframes must be arrays.' });
+      return;
+    }
+    frames.forEach((frame, index) => {
+      const result = KeyframeSchema.safeParse(frame);
+      if (!result.success) {
+        result.error.issues.forEach((issue) => context.addIssue({
+          ...issue,
+          path: ['keyframes', property, index, ...issue.path],
+        }));
+      }
+    });
+  });
+});
+
 const LegacyExtensionsSchema = z
   .object({
     legacy: BinaryFreeJsonObjectSchema.optional(),
     imageStudio: BinaryFreeJsonObjectSchema.optional(),
     videoStudio: BinaryFreeJsonObjectSchema.optional(),
+    temporal: TemporalExtensionsSchema.optional(),
   })
   .catchall(JsonValueSchema)
   .superRefine((value, context) => {
@@ -358,6 +389,7 @@ export const CreativeLayerBaseSchema = z
     visible: z.boolean().optional(),
     locked: z.boolean().optional(),
     zIndex: z.number().int().finite().optional(),
+    constraints: BinaryFreeJsonObjectSchema.optional(),
     extensions: LegacyExtensionsSchema.optional(),
   })
   .strict();

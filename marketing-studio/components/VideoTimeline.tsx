@@ -4,6 +4,7 @@ import { videoTemplateRegistry } from '../../packages/video-studio/src/engine/te
 import { Type, MessageSquare, ShieldCheck, Image, Music, Eye, EyeOff, Zap } from 'lucide-react';
 import { TransitionSelectorModal } from './creative-editor/TransitionSelectorModal';
 import { getResizedSceneDuration } from '../utils/videoTimeline';
+import type { Keyframe } from '../../packages/creative-document/src/types';
 
 export interface VideoTimelineProps {
   scenes: Scene[];
@@ -17,6 +18,7 @@ export interface VideoTimelineProps {
   onSelectLayer: (layerId: string) => void;
   onToggleLayer: (layerId: string, property: 'visible' | 'locked') => void;
   onRemoveLayer?: (layerId: string) => void;
+  selectedLayerKeyframes?: Record<string, Keyframe[]>;
   onContextMenu?: (e: React.MouseEvent, target: { type: 'scene'; sceneId: string } | { type: 'layer'; sceneId: string; layerId: string }) => void;
 }
 
@@ -32,6 +34,7 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   onSelectLayer,
   onToggleLayer,
   onContextMenu,
+  selectedLayerKeyframes = {},
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const totalFrames = scenes.reduce((total, scene) => total + scene.durationInFrames, 0);
@@ -51,6 +54,9 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   };
 
   const activeTransitionScene = scenes.find((s) => s.id === activeTransitionSceneId);
+  const keyframeEntries = Object.entries(selectedLayerKeyframes).flatMap(([property, frames]) =>
+    frames.map((keyframe) => ({ property, keyframe })),
+  );
   const [resizeState, setResizeState] = useState<{
     sceneId: string;
     startX: number;
@@ -330,6 +336,37 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
             );
           })}
         </div>
+        {keyframeEntries.length > 0 && (
+          <div className="flex items-center gap-2 py-1">
+            <span className="w-16 shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-500">Keyframes:</span>
+            <div className="relative h-6 min-w-[12rem] flex-1 rounded bg-slate-900/80">
+              {keyframeEntries.map(({ property, keyframe }, index) => {
+                const layer = scenes.flatMap((scene) => scene.layers).find((candidate) => candidate.id === selectedLayerId);
+                const scene = scenes.find((candidate) => candidate.layers.some((candidateLayer) => candidateLayer.id === selectedLayerId));
+                const sceneStart = scene
+                  ? scenes.slice(0, scenes.indexOf(scene)).reduce((total, candidate) => total + candidate.durationInFrames, 0)
+                  : 0;
+                const layerStart = layer?.timing?.startFrame ?? 0;
+                const frame = sceneStart + layerStart + Math.round((keyframe.timeMs * fps) / 1000);
+                const left = totalFrames > 0 ? `${Math.max(0, Math.min(100, (frame / totalFrames) * 100))}%` : '0%';
+                return (
+                  <button
+                    key={`${property}-${keyframe.timeMs}-${index}`}
+                    type="button"
+                    style={{ left }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSeek(Math.max(0, Math.min(totalFrames, frame)));
+                    }}
+                    title={`${property} · ${keyframe.timeMs} ms`}
+                    aria-label={`Ir al keyframe ${property} en ${keyframe.timeMs} ms`}
+                    className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm border border-accent bg-accent shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MODAL DE TRANSICIÓN ENTRE ESCENAS */}

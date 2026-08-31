@@ -14,3 +14,5 @@ export * from './assets';
 export * from './repository';
 export * from './browserAdapters';
 export * from './autosave';
+export * from './migrations';
+export * from './editor';

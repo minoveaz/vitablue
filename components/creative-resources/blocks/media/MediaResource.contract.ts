@@ -20,6 +20,7 @@ export interface MediaResourceAsset {
 
 export interface MediaInsertOptions {
   title?: string;
+  assetId?: string;
   width?: number;
   height?: number;
   clipShape?: MediaClipShape;

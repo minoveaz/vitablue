@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type {
   AudioLayer,
   ComponentLayer,
@@ -11,6 +11,7 @@ import type {
   SubtitleStylePreset,
   TransitionType,
 } from '../../../packages/video-studio/src/domain/videoProject';
+import type { Keyframe } from '../../../packages/creative-document/src/types';
 import { resolveLayerPosition } from '../../../packages/video-studio/src/domain/videoProject';
 import {
   StudioInspector,
@@ -30,6 +31,9 @@ export interface CreativeEditorInspectorProps {
   onClose?: () => void;
   error?: string;
   onRetryRender?: () => void;
+  currentFrame?: number;
+  fps?: number;
+  onUpdateLayerKeyframes?: (sceneId: string, layerId: string, property: string, keyframes: Keyframe[]) => void;
 }
 
 const selectOptions = (values: readonly [string, string][]) => values.map(([value, label]) => ({ value, label }));
@@ -182,8 +186,119 @@ const sceneSections = (scene: Scene, onUpdateScene: CreativeEditorInspectorProps
   return [{ id: 'scene', title: 'Escena activa', controls }];
 };
 
+const KEYFRAME_PROPERTIES = ['opacity', 'position.x', 'position.y', 'rotation', 'scale.x', 'scale.y'] as const;
+
+type LayerWithKeyframes = Layer & { keyframes?: Record<string, Keyframe[]> };
+
+const defaultKeyframeValue = (property: string): string | number =>
+  property === 'opacity' ? 1 : property.startsWith('position.') ? 50 : 0;
+
+const parseKeyframeValue = (value: string, current: Keyframe['value']): Keyframe['value'] => {
+  if (typeof current === 'number') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : current;
+  }
+  if (typeof current === 'boolean') return value === 'true';
+  return value;
+};
+
+const KeyframeAuthoring: React.FC<{
+  layer: LayerWithKeyframes;
+  currentFrame: number;
+  fps: number;
+  onChange: (property: string, keyframes: Keyframe[]) => void;
+}> = ({ layer, currentFrame, fps, onChange }) => {
+  const keyframes = layer.keyframes ?? {};
+  const properties = Array.from(new Set([...KEYFRAME_PROPERTIES, ...Object.keys(keyframes)]));
+  const [property, setProperty] = useState(properties[0] ?? KEYFRAME_PROPERTIES[0]);
+  const frames = keyframes[property] ?? [];
+  const timeAtPlayhead = Math.max(0, Math.round((currentFrame * 1000) / fps));
+
+  const addKeyframe = () => {
+    const existing = frames.find((frame) => frame.timeMs === timeAtPlayhead);
+    const next = existing
+      ? frames
+      : [...frames, { timeMs: timeAtPlayhead, value: defaultKeyframeValue(property), easing: 'linear' }];
+    onChange(property, [...next].sort((left, right) => left.timeMs - right.timeMs));
+  };
+
+  return (
+    <section className="space-y-3 border-t border-slate-800 pt-3" aria-labelledby="inspector-keyframes">
+      <div className="flex items-center justify-between gap-2">
+        <h3 id="inspector-keyframes" className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan">Keyframes</h3>
+        <span className="font-mono text-[10px] text-slate-500">{timeAtPlayhead} ms</span>
+      </div>
+      <p className="text-[10px] leading-relaxed text-slate-500">
+        Añade un valor en el cabezal actual. La animación se conserva como extensión temporal.
+      </p>
+      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        Propiedad animable
+        <select
+          value={property}
+          onChange={(event) => setProperty(event.target.value)}
+          className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-2 text-xs font-semibold text-slate-200 focus:border-brand-cyan focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+        >
+          {properties.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+      </label>
+      <button
+        type="button"
+        onClick={addKeyframe}
+        className="min-h-11 w-full rounded-xl border border-primary/40 bg-primary/20 px-2.5 py-2 text-xs font-bold text-brand-cyan transition-colors hover:bg-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+      >
+        Añadir keyframe en {timeAtPlayhead} ms
+      </button>
+      {frames.length > 0 ? (
+        <div className="space-y-2">
+          {frames.map((frame, index) => (
+            <div key={`${property}-${frame.timeMs}-${index}`} className="grid grid-cols-[5rem_minmax(0,1fr)_2.5rem] items-end gap-1.5">
+              <label className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                Tiempo
+                <input
+                  type="number"
+                  min={0}
+                  value={frame.timeMs}
+                  onChange={(event) => {
+                    const next = [...frames];
+                    next[index] = { ...frame, timeMs: Math.max(0, Number(event.target.value)) };
+                    onChange(property, next.sort((left, right) => left.timeMs - right.timeMs));
+                  }}
+                  className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1.5 text-[11px] text-slate-200"
+                />
+              </label>
+              <label className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                Valor
+                <input
+                  type="text"
+                  value={String(frame.value)}
+                  onChange={(event) => {
+                    const next = [...frames];
+                    next[index] = { ...frame, value: parseKeyframeValue(event.target.value, frame.value) };
+                    onChange(property, next);
+                  }}
+                  className="mt-1 w-full rounded-lg border border-slate-800 bg-slate-950 px-2 py-1.5 text-[11px] text-slate-200"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => onChange(property, frames.filter((_, frameIndex) => frameIndex !== index))}
+                aria-label={`Eliminar keyframe de ${frame.timeMs} ms`}
+                className="flex min-h-11 min-w-10 items-center justify-center rounded-lg border border-slate-800 text-slate-400 hover:border-rose-500/40 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-xl border border-dashed border-slate-800 p-2 text-[10px] text-slate-500">Todavía no hay keyframes para esta propiedad.</p>
+      )}
+    </section>
+  );
+};
+
 export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (props) => {
-  const { activeScene, selectedLayerId, onUpdateLayer, onRemoveLayer, onClose, error, onRetryRender, warnings } = props;
+  const { activeScene, selectedLayerId, onUpdateLayer, onRemoveLayer, onClose, error, onRetryRender, warnings, currentFrame = 0, fps = 30, onUpdateLayerKeyframes } = props;
   const selectedLayer = activeScene?.layers.find((layer) => layer.id === selectedLayerId);
   const updateLayer = (patch: Record<string, unknown>) => {
     if (activeScene && selectedLayer) onUpdateLayer(activeScene.id, selectedLayer.id, patch as Partial<Layer>);
@@ -216,6 +331,15 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
       layer={adapterLayer}
       sections={activeScene && selectedLayer ? layerSections(activeScene, selectedLayer, updateLayer) : activeScene ? sceneSections(activeScene, props.onUpdateScene, props.onUpdateSceneContent) : []}
       emptyStateMessage={!activeScene ? 'Selecciona una escena o capa para editar sus propiedades.' : undefined}
-    />
+    >
+      {activeScene && selectedLayer && onUpdateLayerKeyframes && (
+        <KeyframeAuthoring
+          layer={selectedLayer as LayerWithKeyframes}
+          currentFrame={currentFrame}
+          fps={fps}
+          onChange={(property, keyframes) => onUpdateLayerKeyframes(activeScene.id, selectedLayer.id, property, keyframes)}
+        />
+      )}
+    </StudioInspector>
   );
 };

@@ -8,6 +8,7 @@ export interface ImageStudioMediaDrawerProps {
     imageUrl: string,
     options?: {
       title?: string;
+      assetId?: string;
       width?: number;
       height?: number;
       clipShape?: 'none' | 'circle' | 'squircle' | 'rounded-2xl' | 'hexagon';

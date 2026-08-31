@@ -105,9 +105,12 @@ export const legacyCenterFromGeometry = (
 });
 
 export const isUnsafeAssetReference = (reference: string): boolean =>
-  /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(reference) ||
+  (!reference.startsWith('creative-asset:') && /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(reference)) ||
   /[?#]/.test(reference) ||
   /(?:\/sign(?:ed)?\/|[?&]token=|[?&]signature=)/i.test(reference);
+
+/** Stable reference used when a runtime only has an asset id, not its path. */
+export const creativeAssetReference = (assetId: string): string => `creative-asset:${assetId}`;
 
 export const resolveAssetRef = (
   references: Array<{ field: string; value: string | undefined }>,
@@ -116,14 +119,28 @@ export const resolveAssetRef = (
   const present = references.filter((reference): reference is { field: string; value: string } =>
     typeof reference.value === 'string' && reference.value.trim().length > 0,
   );
+  const safe = present.filter(({ value }) => !isUnsafeAssetReference(value.trim()));
   const rejected = present.find(({ value }) => isUnsafeAssetReference(value.trim()));
-  if (rejected) {
+  const unsafePath = present.find(({ field, value }) =>
+    (field === 'storagePath' || field === 'src' || field.endsWith('.imageUrl')) &&
+    isUnsafeAssetReference(value.trim()));
+  // A runtime URL may accompany a stable asset id, but an unsafe path without
+  // that identity must never silently fall back to a second legacy field.
+  if (unsafePath && !present.some(({ field }) => field === 'assetId')) {
+    throw new CreativeDocumentAdapterError(
+      `Cannot persist ${unsafePath.field} "${unsafePath.value}": inline, remote, or signed asset references are not allowed.`,
+      'asset-reference',
+    );
+  }
+  if (!safe.length && rejected) {
     throw new CreativeDocumentAdapterError(
       `Cannot persist ${rejected.field} "${rejected.value}": inline, remote, or signed asset references are not allowed.`,
       'asset-reference',
     );
   }
-  const source = present.find(({ field }) => field === 'storagePath') ?? present.find(({ field }) => field === 'src') ?? present[0];
+  const source = safe.find(({ field }) => field === 'storagePath')
+    ?? safe.find(({ field }) => field === 'src')
+    ?? safe.find(({ field }) => field === 'assetId');
   if (!source) {
     throw new CreativeDocumentAdapterError(
       `Cannot persist asset for "${fallbackId}": no logical storage path or stable asset id was provided.`,
@@ -133,14 +150,16 @@ export const resolveAssetRef = (
   const assetId = present.find(({ field }) => field === 'assetId')?.value.trim() ?? `legacy-${fallbackId}`;
   return {
     assetId,
-    storagePath: source.value.trim(),
+    storagePath: source.field === 'assetId' ? creativeAssetReference(assetId) : source.value.trim(),
   };
 };
 
 export const withLegacySource = (source: LegacyRecord, extras: LegacyRecord = {}): { legacy: JsonObject } => ({
   legacy: {
     ...toJsonObject(extras),
-    source: toJsonObject(source),
+    // Legacy source is retained for round-tripping, but must not reintroduce
+    // signed/blob URLs into the canonical JSON boundary.
+    source: toSafeJsonObject(source),
   },
 });
 

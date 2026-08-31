@@ -18,6 +18,7 @@ import type { ShortcutBinding } from '@/components/backoffice-shell';
 import type {
   CreativeStudioVideoStudioExtension,
 } from '@/components/backoffice-shell/contracts';
+import type { Layer } from '../packages/video-studio/src/domain/videoProject';
 import { useVideoProjectEditor } from './hooks/useVideoProjectEditor';
 import { CreativeEditorToolbar } from './components/creative-editor/CreativeEditorToolbar';
 import { VideoStage, VideoAspectRatio, ZoomLevel } from './components/creative-editor/VideoStage';
@@ -51,6 +52,10 @@ export const SocialGenerator: React.FC = () => {
   const [remoteProject, setRemoteProject] = useState<Awaited<ReturnType<typeof getVideoProject>>>(null);
   const [persistenceReady, setPersistenceReady] = useState(!videoProjectId);
   const [persistenceError, setPersistenceError] = useState<string | null>(null);
+  // Canonical v1 is the rollout default. Set the flag to "false" to keep the
+  // legacy VideoProject envelope while older consumers are being retired.
+  const useCreativeDocumentRuntime =
+    import.meta.env.VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION !== 'false';
 
   const handlePlayerRef = React.useCallback((instance: PlayerRef | null) => {
     playerRef.current = instance;
@@ -87,11 +92,15 @@ export const SocialGenerator: React.FC = () => {
 
   const persistVideoProject = React.useCallback(
     (project: import('../packages/video-studio/src/domain/videoProject').VideoProject, expectedUpdatedAt?: string) =>
-      saveVideoProject(project, { expectedUpdatedAt }),
-    [],
+      saveVideoProject(project, {
+        expectedUpdatedAt,
+        documentFormat: useCreativeDocumentRuntime ? 'creative-document' : 'legacy',
+      }),
+    [useCreativeDocumentRuntime],
   );
   const editor = useVideoProjectEditor(remoteProject ?? defaultVisaRejectionProject, {
     persistenceReady,
+    canonicalRuntime: useCreativeDocumentRuntime,
     persistProject: persistVideoProject,
   });
   const {
@@ -111,6 +120,7 @@ export const SocialGenerator: React.FC = () => {
     removeLayer,
     updateLayer,
     updateLayerPosition,
+    updateLayerKeyframes,
     reorderLayer,
     getSceneWarnings,
     loadPreset,
@@ -147,6 +157,9 @@ export const SocialGenerator: React.FC = () => {
 
   const totalFrames = scenes.reduce((total, slide) => total + slide.durationInFrames, 0);
   const activeScene = scenes.find((s) => s.id === activeSlideId) ?? scenes[0];
+  const selectedTimelineLayer = scenes
+    .flatMap((scene) => scene.layers)
+    .find((layer) => layer.id === selectedLayerId) as (Layer & { keyframes?: Record<string, import('../packages/creative-document/src/types').Keyframe[]> }) | undefined;
   const editorWarnings = activeScene ? getSceneWarnings(activeScene.id) : [];
   const renderStatus = editor.saveState !== 'saved'
     ? editor.saveState
@@ -323,6 +336,7 @@ export const SocialGenerator: React.FC = () => {
   const videoStage = (
     <VideoStage
       slides={scenes}
+      creativeDocument={useCreativeDocumentRuntime ? editor.creativeDocument : undefined}
       playerRef={handlePlayerRef}
       aspectRatio={aspectRatio}
       activeScene={activeScene}
@@ -448,6 +462,7 @@ export const SocialGenerator: React.FC = () => {
             if (layer) updateLayer(activeScene.id, layerId, { [prop]: !layer[prop] });
           }}
           onRemoveLayer={(layerId) => activeScene && removeLayer(activeScene.id, layerId)}
+          selectedLayerKeyframes={selectedTimelineLayer?.keyframes}
           onContextMenu={(e, target) => {
             setContextMenuPos({ x: e.clientX, y: e.clientY });
             setContextMenuTarget(target);
@@ -546,6 +561,9 @@ export const SocialGenerator: React.FC = () => {
             onUpdateLayer={updateLayer}
             onRemoveLayer={removeLayer}
             warnings={editorWarnings}
+            currentFrame={currentFrame}
+            fps={30}
+            onUpdateLayerKeyframes={updateLayerKeyframes}
             error={renderStatus === 'error' ? renderStatusMessage : undefined}
             onRetryRender={canRetryRender ? handleExportMp4 : undefined}
             onClose={() => setIsInspectorOpen(false)}

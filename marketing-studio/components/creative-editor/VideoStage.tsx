@@ -3,6 +3,8 @@ import { Player, PlayerRef } from '@remotion/player';
 import { ReelVisaRejection, SlideData } from '../../../packages/video-studio/src/compositions/ReelVisaRejection';
 import { vitablueBrandAdapter } from '../../../packages/video-studio/src/adapters/vitablue';
 import type { Scene, Layer } from '../../../packages/video-studio/src/domain/videoProject';
+import { creativeDocumentToVideoProject } from '../../../packages/creative-document/src/adapters/videoProjectAdapter';
+import type { CreativeDocument } from '../../../packages/creative-document/src/types';
 import { SafeZonesOverlay } from './SafeZonesOverlay';
 import { OnCanvasEditorOverlay } from './OnCanvasEditorOverlay';
 import {
@@ -13,8 +15,37 @@ import {
 export type VideoAspectRatio = 'vertical' | 'square' | 'landscape';
 export type ZoomLevel = 'fit' | number;
 
+const isRuntimeAssetUrl = (value: unknown): value is string =>
+  typeof value === 'string' && /^(?:data:|blob:|https?:|\/\/)/i.test(value);
+
+/**
+ * Canonical documents intentionally contain logical asset references. The
+ * editor projection may already have a signed/blob URL for the current
+ * session; keep that runtime-only value at the Remotion boundary.
+ */
+const preserveRuntimeAssetUrls = (runtimeScenes: Scene[], canonicalScenes: Scene[]): Scene[] => {
+  const runtimeUrls = new Map<string, string>();
+  runtimeScenes.forEach((scene) => scene.layers.forEach((layer) => {
+    const source = 'asset' in layer ? layer.asset.src : layer.type === 'audio' ? layer.src : undefined;
+    if (isRuntimeAssetUrl(source)) runtimeUrls.set(layer.id, source);
+  }));
+  if (!runtimeUrls.size) return canonicalScenes;
+  return canonicalScenes.map((scene) => ({
+    ...scene,
+    layers: scene.layers.map((layer) => {
+      const source = runtimeUrls.get(layer.id);
+      if (!source) return layer;
+      if ('asset' in layer) return { ...layer, asset: { ...layer.asset, src: source } };
+      if (layer.type === 'audio') return { ...layer, src: source };
+      return layer;
+    }),
+  }));
+};
+
 export interface VideoStageProps {
   slides: SlideData[];
+  /** Optional canonical renderer input. Legacy slides remain the fallback. */
+  creativeDocument?: CreativeDocument | null;
   playerRef: React.Ref<PlayerRef>;
   aspectRatio: VideoAspectRatio;
   activeScene?: Scene;
@@ -33,6 +64,7 @@ export interface VideoStageProps {
 
 export const VideoStage: React.FC<VideoStageProps> = ({
   slides,
+  creativeDocument,
   playerRef,
   aspectRatio,
   activeScene,
@@ -55,7 +87,19 @@ export const VideoStage: React.FC<VideoStageProps> = ({
   const isHandToolActiveRef = useRef(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const totalFrames = slides.reduce((total, slide) => total + slide.durationInFrames, 0);
+  const rendererSlides = React.useMemo(() => {
+    if (!creativeDocument || creativeDocument.mode === 'image') return slides;
+    try {
+      return preserveRuntimeAssetUrls(slides, creativeDocumentToVideoProject(creativeDocument).scenes);
+    } catch {
+      // A legacy-only asset or extension must not make the preview unusable.
+      return slides;
+    }
+  }, [creativeDocument, slides]);
+  const rendererActiveScene = activeScene
+    ? rendererSlides.find((scene) => scene.id === activeScene.id) ?? activeScene
+    : rendererSlides[0];
+  const totalFrames = rendererSlides.reduce((total, slide) => total + slide.durationInFrames, 0);
 
   // Dynamic Resolution Specs
   const resolutionMap: Record<VideoAspectRatio, { width: number; height: number; label: string; aspectClass: string }> = {
@@ -200,7 +244,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
             ref={playerRef}
             component={ReelVisaRejection}
             inputProps={{
-              slides,
+              slides: rendererSlides,
               brandAdapter: vitablueBrandAdapter,
               aspectRatio,
             }}
@@ -221,7 +265,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
 
           {/* On-Canvas Direct Interactive Layer Overlay */}
           <OnCanvasEditorOverlay
-            scene={activeScene}
+            scene={rendererActiveScene}
             selectedLayerId={selectedLayerId}
             onSelectLayer={onSelectLayer ?? (() => {})}
             onUpdateLayer={onUpdateLayer ?? (() => {})}

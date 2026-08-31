@@ -13,7 +13,11 @@ export interface CreativeResourceSlotProps {
 /** Resolves a registered block without creating a component type in a parent render. */
 export const CreativeResourceSlot: React.FC<CreativeResourceSlotProps> = ({ id, domain, context, slots }) => {
   const resource = CreativeResourceRegistry.resolve(id, domain);
-  return resource
-    ? React.createElement(resource, { context, slots })
-    : <ResourceEmptyState title="Recurso no disponible" description={`Este bloque no está habilitado para ${domain === 'image' ? 'Image' : 'Video'} Studio.`} />;
+  return (
+    <div id={`creative-resource-panel-${id}`}>
+      {resource
+        ? React.createElement(resource, { context, slots })
+        : <ResourceEmptyState title="Recurso no disponible" description={`Este bloque no está habilitado para ${domain === 'image' ? 'Image' : 'Video'} Studio.`} />}
+    </div>
+  );
 };

@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fases 0–4.5, 4.75.1–4.75.9, 4.75.10 (bloques core), 4.75.11 (inspector), 4.75.12 (toolbar) y 4.75.13 (hubs) implementadas en código y tests; escritorio validado visualmente; mejoras responsive de tablet y algunas capacidades de persistencia de Video quedan pospuestas; Fase 5 y fases posteriores pendientes
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1–4.75.9, 4.75.10 (bloques core), 4.75.11 (inspector), 4.75.12 (toolbar), 4.75.13 (hubs) y el corte de Video de Fase 5 están implementados en código y tests. El runtime canónico de Video, la persistencia v1 y la frontera Remotion están activos por defecto; `VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION=false` conserva el rollback legacy. La fachada legacy se conserva en los límites de integración. Quedan únicamente la verificación operativa con muestras persistidas y la validación visual manual
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -424,14 +424,64 @@ exportación MP4; playback, timeline y audio permanecen en el workspace inferior
 
 ### Fase 5 — Migrar Image Studio
 
-- [ ] Migrar capas, transforms, geometrías, grupos, constraints y selección.
-- [ ] Mantener carruseles, panorama, crop, preview y exportación como extensiones.
+- [x] Publicar `CreativeDocument` v1 como frontera canónica validada para capas,
+  transforms, geometrías, grupos, constraints, assets y selección.
+- [x] Exponer operaciones canónicas de capa (add/update/move/resize/rotate/
+  scale/duplicate/reorder/group/remove) con historial semántico y conversión
+  explícita a la fachada `ImageProject`.
+- [x] Mantener carruseles, panorama, crop, preview y exportación como
+  extensiones no destructivas de Image Studio.
+- [ ] Convertir todo el estado React y todos los callbacks existentes al
+  documento canónico; la fachada legacy sigue disponible para extensiones
+  especializadas y fallback de assets sin referencia estable.
+
+#### Fase 5.1 — Primera rebanada segura: frontera de persistencia v1
+
+**Completado en código y tests focalizados.** La frontera de carga de Image
+Studio acepta tanto el envelope legacy (`imageStudio`) como un
+`CreativeDocument` canónico v1 y reconstruye siempre el `ImageProject` que
+esperan los consumidores actuales. El guardado canónico usa
+`documentFormat: 'creative-document'` y está activado por defecto en la ruta
+del editor; `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false` conserva el
+envelope legacy como rollback explícito. La conversión usa los adaptadores
+existentes, conserva extensiones, assets y propiedades no migradas, y valida
+round-trips v1.
+
+- [x] Definir la frontera de compatibilidad y el decoder dual legacy/canónico.
+- [x] Añadir writer canónico opt-in sin cambiar el writer legacy por defecto.
+- [x] Cubrir versión de esquema y round-trips Image/Video en pruebas de
+  adaptadores y remote boundary.
+- [x] Añadir migraciones explícitas y fail-closed para versiones/formats
+  canónicos y envelopes legacy.
+- [x] Migrar selección, transforms, geometrías, grupos y constraints al core
+  mediante `CreativeDocumentEditor` y operaciones opt-in del hook; mantener la
+  fachada `ImageProject` para consumidores no migrados.
+- [ ] Migrar completamente el estado interno del hook de Image Studio a
+  `CreativeDocument`.
+- [x] Activar el writer canónico por defecto en las rutas de editor, con
+  `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false` como rollback explícito,
+  y añadir rehearsal sin escritura remota para validar versiones persistidas.
 
 ### Fase 6 — Migrar Video Studio
 
-- [ ] Migrar capas, escenas, componentes, assets y constraints.
-- [ ] Mantener timeline, frames, keyframes, audio, transiciones y Remotion como
-  extensiones temporales.
+- [x] Migrar capas, escenas, componentes, assets y constraints al runtime
+  `CreativeDocument`, derivando la fachada `Scene[]` para consumidores legacy.
+- [x] Activar el runtime canónico y operaciones de `useVideoProjectEditor`,
+  manteniendo la fachada legacy y rechazando assets que no tengan referencia
+  persistible; `VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION=false` conserva el
+  envelope y renderer legacy como rollback.
+- [x] Mantener timeline y frames como fachada compatible, y representar
+  keyframes, audio metadata y transiciones como extensiones temporales
+  explícitas, sin perder round-trips ni distinguir incorrectamente audio local
+  de pistas globales.
+- [x] Integrar la frontera `CreativeDocument` → escenas Remotion en `VideoStage`,
+  restaurando URLs runtime de la proyección legacy, con fallback legacy y test
+  de regresión.
+- [x] Añadir harness directo de `useVideoProjectEditor` para escenas, capas,
+  timing, extensiones temporales y rollback explícito.
+- [x] Añadir authoring mínimo de keyframes en el inspector y marcadores
+  navegables en el timeline, sin prometer un contrato de interpolación nativo
+  del renderer.
 
 ### Fase 7 — Sustituir el bridge actual
 
@@ -577,8 +627,9 @@ acepta abrirlos por ID. Se mantiene el archivado como estado reversible y la
 creación abre el proyecto recién persistido.
 
 **Estado actual del track:** el shell, los bloques core, inspector, toolbar y
-hubs ya comparten componentes y contratos. La validación visual de escritorio
-queda aceptada; la optimización específica para tablet se pospone para una fase
-responsive posterior. También quedan pendientes algunas capacidades de
-persistencia de Video antes de iniciar la migración operativa completa hacia
-`CreativeDocument` de la Fase 5.
+hubs ya comparten componentes y contratos. La persistencia canónica de Video,
+el runtime interno de escenas/capas, las extensiones temporales, el authoring
+mínimo de keyframes y la frontera de renderizado están activas con rollback
+explícito. La verificación operativa con una muestra persistida y la validación
+visual manual a 768/1024/1440 px siguen pendientes; no se retiran fachadas
+legacy ni se declara soporte renderer-native de interpolación.
