@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fases 0–4.5, 4.75.1–4.75.9, 4.75.10 (bloques core), 4.75.11 (inspector), 4.75.12 (toolbar), 4.75.13 (hubs) y el corte de Video de Fase 5 están implementados en código y tests. El runtime canónico de Video, la persistencia v1 y la frontera Remotion están activos por defecto; `VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION=false` conserva el rollback legacy. La fachada legacy se conserva en los límites de integración. Quedan únicamente la verificación operativa con muestras persistidas y la validación visual manual
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1–4.75.9, 4.75.10 (bloques core), 4.75.11 (inspector), 4.75.12 (toolbar), 4.75.13 (hubs), el corte de Video de Fase 5 y el cutover interno de Image Studio de Fase 5.3 están implementados en código y tests. Los runtimes canónicos y la persistencia v1 están activos por defecto; `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false` y `VITE_CREATIVE_DOCUMENT_VIDEO_MIGRATION=false` conservan los rollbacks legacy. Las fachadas legacy se conservan en los límites de integración. Quedan verificación operativa con muestras persistidas, validación visual manual y fases posteriores de retirada de bridges
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -431,7 +431,7 @@ exportación MP4; playback, timeline y audio permanecen en el workspace inferior
   explícita a la fachada `ImageProject`.
 - [x] Mantener carruseles, panorama, crop, preview y exportación como
   extensiones no destructivas de Image Studio.
-- [ ] Convertir todo el estado React y todos los callbacks existentes al
+- [x] Convertir todo el estado React y todos los callbacks existentes al
   documento canónico; la fachada legacy sigue disponible para extensiones
   especializadas y fallback de assets sin referencia estable.
 
@@ -456,11 +456,32 @@ round-trips v1.
 - [x] Migrar selección, transforms, geometrías, grupos y constraints al core
   mediante `CreativeDocumentEditor` y operaciones opt-in del hook; mantener la
   fachada `ImageProject` para consumidores no migrados.
-- [ ] Migrar completamente el estado interno del hook de Image Studio a
+- [x] Migrar completamente el estado interno del hook de Image Studio a
   `CreativeDocument`.
 - [x] Activar el writer canónico por defecto en las rutas de editor, con
   `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false` como rollback explícito,
   y añadir rehearsal sin escritura remota para validar versiones persistidas.
+
+#### Fase 5.3 — Cutover interno de Image Studio
+
+**Completado en código y tests focalizados.** `useImageProjectEditor` usa
+`CreativeDocument` como estado editable cuando el runtime canónico está activo y
+deriva `ImageProject` únicamente como fachada de compatibilidad para los
+renderers y extensiones existentes. El rollback explícito (`canonicalRuntime:
+false` o `VITE_CREATIVE_DOCUMENT_IMAGE_MIGRATION=false`) sigue disponible.
+
+- [x] Enrutar callbacks de capas, selección, transforms, grupos, constraints,
+  historial y validación a través de `CreativeDocumentEditor` y sus comandos
+  neutrales.
+- [x] Conservar extensiones de carrusel, crop, panorama, preview y exportación
+  sin convertirlas en dependencias del core compartido.
+- [x] Mantener referencias de Storage y URLs runtime separadas; los assets
+  inline/locales usan fallback legacy sin bloquear la edición.
+- [x] Añadir harness del hook y cobertura de operaciones canónicas, rollback,
+  persistencia rehearsal, adaptadores round-trip y preservación de extensiones.
+- [ ] Ejecutar rehearsal operativo contra una muestra persistida y validar
+  visualmente 768/1024/1440px en navegador; no se declara completado sin esa
+  evidencia.
 
 ### Fase 6 — Migrar Video Studio
 

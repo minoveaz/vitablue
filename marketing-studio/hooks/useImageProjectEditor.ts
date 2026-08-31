@@ -84,18 +84,6 @@ import {
   toggleLayerSelection as toggleCreativeLayerSelection,
 } from '../../packages/creative-document/src/selection';
 import {
-  addLayer as addCreativeLayer,
-  duplicateLayer as duplicateCreativeLayer,
-  groupLayers as groupCreativeLayers,
-  moveLayer as moveCreativeLayer,
-  removeLayer as removeCreativeLayer,
-  reorderLayer as reorderCreativeLayer,
-  resizeLayer as resizeCreativeLayer,
-  rotateLayer as rotateCreativeLayer,
-  scaleLayer as scaleCreativeLayer,
-  updateLayer as updateCreativeLayer,
-} from '../../packages/creative-document/src/commands';
-import {
   creativeDocumentToImageProject,
   imageProjectToCreativeDocument,
 } from '../../packages/creative-document/src/adapters/imageProjectAdapter';
@@ -114,6 +102,7 @@ import type {
   ResizeLayerOptions,
   TransformConstraints,
 } from '../../packages/creative-document/src/commands/transforms';
+import { createCreativeDocumentEditor } from '../../packages/creative-document/src/editor';
 
 const withProfessionalDesignDefaults = (project: ImageProject): ImageProject => ({
   ...normalizeStoredProject(project),
@@ -164,7 +153,7 @@ export function useImageProjectEditor(
   initialProject?: ImageProject,
   options: {
     persistenceReady?: boolean;
-    /** Keep legacy state as the default while enabling a reversible v1 cutover. */
+    /** Use CreativeDocument as the runtime source of truth; false is the rollback path. */
     canonicalRuntime?: boolean;
     persistProject?: (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) => Promise<ImageProject>;
     reloadProject?: (projectId: string) => Promise<ImageProject | null>;
@@ -172,32 +161,63 @@ export function useImageProjectEditor(
   } = {},
 ) {
   const persistenceReady = options.persistenceReady ?? true;
-  const canonicalRuntime = options.canonicalRuntime ?? false;
+  const canonicalRuntime = options.canonicalRuntime ?? true;
   const persistProject = options.persistProject;
   const reloadProject = options.reloadProject;
   const onExported = options.onExported;
-  const initialEditorProject = withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0]);
-  const canonicalizeProject = useCallback((candidate: ImageProject): ImageProject => {
-    if (!canonicalRuntime) return candidate;
+  const initialEditorProject = useMemo(
+    () => withProfessionalDesignDefaults(initialProject ?? INITIAL_IMAGE_TEMPLATES[0]),
+    [initialProject],
+  );
+  /*
+   * CreativeDocument is the editable state in the canonical runtime.  The
+   * ImageProject value remains a derived compatibility facade because the
+   * existing image renderer and its extensions still consume that shape.  A
+   * null document is an intentional, per-project fallback for local inline
+   * uploads that have not been promoted to a durable asset reference yet.
+   */
+  const initialCreativeDocument = useMemo<CreativeDocument | null>(() => {
+    if (!canonicalRuntime) return null;
     try {
-      return preserveRuntimeAssetUrls(
-        candidate,
-        withProfessionalDesignDefaults(
-          creativeDocumentToImageProject(imageProjectToCreativeDocument(candidate)),
-        ),
-      );
+      return imageProjectToCreativeDocument(initialEditorProject);
     } catch {
-      // Inline local uploads are intentionally left in the legacy runtime
-      // until they have been promoted to a durable asset reference.
-      return candidate;
+      return null;
+    }
+  }, [canonicalRuntime, initialEditorProject]);
+  const [legacyProjectState, setLegacyProjectState] = useState<ImageProject>(initialEditorProject);
+  const [creativeDocumentState, setCreativeDocumentState] = useState<CreativeDocument | null>(
+    initialCreativeDocument,
+  );
+  const legacyProjectRef = useRef<ImageProject>(initialEditorProject);
+  const creativeDocumentRef = useRef<CreativeDocument | null>(initialCreativeDocument);
+  const project = useMemo(() => {
+    if (!canonicalRuntime || !creativeDocumentState) return legacyProjectState;
+    return preserveRuntimeAssetUrls(
+      legacyProjectState,
+      withProfessionalDesignDefaults(creativeDocumentToImageProject(creativeDocumentState)),
+    );
+  }, [canonicalRuntime, creativeDocumentState, legacyProjectState]);
+  const setProject = useCallback((next: SetStateAction<ImageProject>) => {
+    const previous = legacyProjectRef.current;
+    const resolved = typeof next === 'function' ? next(legacyProjectRef.current) : next;
+    if (resolved === previous) return;
+    legacyProjectRef.current = resolved;
+    setLegacyProjectState(resolved);
+    if (!canonicalRuntime) {
+      creativeDocumentRef.current = null;
+      return;
+    }
+    try {
+      const nextDocument = imageProjectToCreativeDocument(resolved);
+      creativeDocumentRef.current = nextDocument;
+      setCreativeDocumentState(nextDocument);
+    } catch {
+      // Inline local uploads are not persistable yet. Keep the compatibility
+      // facade active until the asset receives a durable reference.
+      creativeDocumentRef.current = null;
+      setCreativeDocumentState(null);
     }
   }, [canonicalRuntime]);
-  const [project, setProjectState] = useState<ImageProject>(initialEditorProject);
-  const setProject = useCallback((next: SetStateAction<ImageProject>) => {
-    setProjectState((current) => canonicalizeProject(
-      typeof next === 'function' ? next(current) : next,
-    ));
-  }, [canonicalizeProject]);
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>(
     project.layers[0]?.id ? [project.layers[0].id] : []
   );
@@ -352,21 +372,26 @@ export function useImageProjectEditor(
    * legacy adapter in one place.
    */
   const creativeDocument = useMemo<CreativeDocument | null>(() => {
+    if (canonicalRuntime && creativeDocumentState) return creativeDocumentState;
     try {
       return imageProjectToCreativeDocument(project);
     } catch {
-      // Local uploads may still be represented by data/blob URLs.  Keep the
-      // legacy editor usable and expose canonical operations only when the
-      // document can be safely persisted.
+      // Inline local uploads remain available through the legacy facade until
+      // they are promoted to a durable asset reference.
       return null;
     }
-  }, [project]);
+  }, [canonicalRuntime, creativeDocumentState, project]);
   const requireCreativeDocument = useCallback((): CreativeDocument => {
-    if (!creativeDocument) {
+    const currentDocument = canonicalRuntime ? creativeDocumentRef.current : creativeDocument;
+    if (!currentDocument) {
       throw new Error('La composición contiene assets inline; súbelos a Storage antes de usar el modelo canónico.');
     }
-    return creativeDocument;
-  }, [creativeDocument]);
+    return currentDocument;
+  }, [canonicalRuntime, creativeDocument]);
+  const createCanonicalEditor = useCallback(
+    () => createCreativeDocumentEditor(requireCreativeDocument()),
+    [requireCreativeDocument],
+  );
   const creativeSelection = useMemo(
     () => createSelectionState(selectedLayerIds),
     [selectedLayerIds],
@@ -374,88 +399,107 @@ export function useImageProjectEditor(
 
   const applyCreativeDocument = useCallback((nextDocument: CreativeDocument, label?: string) => {
     void label;
-    setProject((previous) => {
-      const converted = preserveRuntimeAssetUrls(
-        previous,
-        withProfessionalDesignDefaults(creativeDocumentToImageProject(nextDocument)),
-      );
-      const next = withProfessionalDesignDefaults({
-        ...converted,
-        id: previous.id,
-        title: converted.title || previous.title,
-        brandId: previous.brandId,
-        creativeStatus: previous.creativeStatus,
-        createdAt: previous.createdAt,
-        updatedAt: new Date().toISOString(),
-      });
-      pushHistory(next);
-      return next;
+    /*
+     * Keep the canonical result intact. The ImageProject projection is
+     * updated for existing renderers, but must not be converted back into the
+     * document because that round-trip can normalize away editor metadata.
+     */
+    const previous = legacyProjectRef.current;
+    const converted = preserveRuntimeAssetUrls(
+      previous,
+      withProfessionalDesignDefaults(creativeDocumentToImageProject(nextDocument)),
+    );
+    const next = withProfessionalDesignDefaults({
+      ...converted,
+      id: previous.id,
+      title: converted.title || previous.title,
+      brandId: previous.brandId,
+      creativeStatus: previous.creativeStatus,
+      createdAt: previous.createdAt,
+      updatedAt: new Date().toISOString(),
     });
+    legacyProjectRef.current = next;
+    setLegacyProjectState(next);
+    if (canonicalRuntime) {
+      creativeDocumentRef.current = nextDocument;
+      setCreativeDocumentState(nextDocument);
+    }
+    pushHistory(next);
     return nextDocument;
-  }, [pushHistory]);
+  }, [canonicalRuntime, pushHistory]);
 
   const updateCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     changes: CreativeLayerPatch,
     label?: string,
-  ) => applyCreativeDocument(updateCreativeLayer(requireCreativeDocument(), sceneId, layerId, changes), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().updateLayer(sceneId, layerId, changes, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const addCreativeLayerToDocument = useCallback((
     sceneId: string,
     layer: CreativeLayer,
     parentGroupId?: string,
     label?: string,
-  ) => applyCreativeDocument(addCreativeLayer(requireCreativeDocument(), sceneId, layer, parentGroupId), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().addLayer(sceneId, layer, parentGroupId, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const duplicateCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     options?: { id?: string; offset?: CreativePoint; zIndex?: number },
     label?: string,
-  ) => applyCreativeDocument(duplicateCreativeLayer(requireCreativeDocument(), sceneId, layerId, options), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().duplicateLayer(sceneId, layerId, options, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const removeCreativeLayerFromDocument = useCallback(
-    (sceneId: string, layerId: string, label?: string) => applyCreativeDocument(removeCreativeLayer(requireCreativeDocument(), sceneId, layerId), label),
-    [applyCreativeDocument, requireCreativeDocument],
+    (sceneId: string, layerId: string, label?: string) =>
+      applyCreativeDocument(createCanonicalEditor().removeLayer(sceneId, layerId, label), label),
+    [applyCreativeDocument, createCanonicalEditor],
   );
   const reorderCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     input: ReorderLayerInput,
     label?: string,
-  ) => applyCreativeDocument(reorderCreativeLayer(requireCreativeDocument(), sceneId, layerId, input), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().reorderLayer(sceneId, layerId, input, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const moveCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     input: { x?: number; y?: number; dx?: number; dy?: number },
     constraints?: TransformConstraints,
     label?: string,
-  ) => applyCreativeDocument(moveCreativeLayer(requireCreativeDocument(), sceneId, layerId, input, constraints), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().moveLayer(sceneId, layerId, input, constraints, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const resizeCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     input: ResizeLayerInput,
     options?: ResizeLayerOptions,
     label?: string,
-  ) => applyCreativeDocument(resizeCreativeLayer(requireCreativeDocument(), sceneId, layerId, input, options), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().resizeLayer(sceneId, layerId, input, options, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const rotateCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     rotation: number,
     options?: { relative?: boolean },
     label?: string,
-  ) => applyCreativeDocument(rotateCreativeLayer(requireCreativeDocument(), sceneId, layerId, rotation, options), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().rotateLayer(sceneId, layerId, rotation, options, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const scaleCreativeLayerInDocument = useCallback((
     sceneId: string,
     layerId: string,
     scale: number | CreativePoint,
     constraints?: TransformConstraints,
     label?: string,
-  ) => applyCreativeDocument(scaleCreativeLayer(requireCreativeDocument(), sceneId, layerId, scale, constraints), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().scaleLayer(sceneId, layerId, scale, constraints, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
   const groupCreativeLayersInDocument = useCallback((
     sceneId: string,
     layerIds: string[],
     options?: GroupLayersOptions,
     label?: string,
-  ) => applyCreativeDocument(groupCreativeLayers(requireCreativeDocument(), sceneId, layerIds, options), label), [applyCreativeDocument, requireCreativeDocument]);
+  ) => applyCreativeDocument(createCanonicalEditor().groupLayers(sceneId, layerIds, options, label), label),
+    [applyCreativeDocument, createCanonicalEditor]);
 
   const scheduleTransientCommit = useCallback((nextProject: ImageProject) => {
     transientProjectRef.current = nextProject;
@@ -2524,8 +2568,10 @@ export function useImageProjectEditor(
 
   return {
     project,
+    canonicalRuntime,
     /** Canonical v1 snapshot used by shared domain operations and persistence. */
     creativeDocument,
+    canonicalDocument: canonicalRuntime ? creativeDocumentState : null,
     creativeSelection,
     applyCreativeDocument,
     updateCreativeLayer: updateCreativeLayerInDocument,

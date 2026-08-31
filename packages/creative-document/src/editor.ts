@@ -13,7 +13,7 @@ import {
 import type { CreativeLayer, CreativeDocument, Point } from './types';
 import { createSelectionState, type SelectionState, selectLayer, selectLayers, clearSelection } from './selection';
 import { createSemanticHistory, type SemanticHistory } from './history';
-import type { ResizeLayerInput, ResizeLayerOptions, TransformConstraints } from './commands/transforms';
+import type { MoveLayerInput, ResizeLayerInput, ResizeLayerOptions, TransformConstraints } from './commands/transforms';
 import type { CreativeLayerPatch, GroupLayersOptions, ReorderLayerInput } from './commands/layerCommands';
 import { validateCreativeDocument } from './schema';
 
@@ -31,7 +31,7 @@ export interface CreativeDocumentEditor {
   duplicateLayer(sceneId: string, layerId: string, options?: { id?: string; offset?: Point; zIndex?: number }, label?: string): CreativeDocument;
   removeLayer(sceneId: string, layerId: string, label?: string): CreativeDocument;
   reorderLayer(sceneId: string, layerId: string, input: ReorderLayerInput, label?: string): CreativeDocument;
-  moveLayer(sceneId: string, layerId: string, input: { dx: number; dy: number }, constraints?: TransformConstraints, label?: string): CreativeDocument;
+  moveLayer(sceneId: string, layerId: string, input: MoveLayerInput, constraints?: TransformConstraints, label?: string): CreativeDocument;
   resizeLayer(sceneId: string, layerId: string, input: ResizeLayerInput, options?: ResizeLayerOptions, label?: string): CreativeDocument;
   rotateLayer(sceneId: string, layerId: string, rotation: number, options?: { relative?: boolean }, label?: string): CreativeDocument;
   scaleLayer(sceneId: string, layerId: string, scale: number | Point, constraints?: TransformConstraints, label?: string): CreativeDocument;
