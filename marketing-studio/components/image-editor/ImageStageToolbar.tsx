@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Hand, Maximize2, Minus, MousePointer, PenLine, Plus } from 'lucide-react';
 import type { CarouselGeometry } from '../../types/imageStudio';
+import { StudioStageToolbar } from '../../../components/backoffice-shell/primitives';
 
 interface ImageStageToolbarProps {
   zoom: number;
@@ -19,7 +20,7 @@ interface ImageStageToolbarProps {
 export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSetZoom, setToolMode, rapidDrawMode, onSetRapidDrawMode, effectiveHandMode, handleResetFit, isCarousel, activeSlideIndex, carouselGeometry, onSetCurrentSlide }) => (
   <>
       {/* BOTTOM CONTROLS BAR: TOOL SWITCH & ZOOM & SAFE ZONES (CENTERED) */}
-      <div role="toolbar" aria-label="Controles del lienzo" className="absolute bottom-5 left-1/2 -translate-x-1/2 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center justify-center gap-2 sm:gap-2.5 rounded-2xl border border-slate-800/90 bg-primary-dark/95 p-1.5 shadow-2xl backdrop-blur-xl z-40 text-white text-xs animate-fadeIn">
+      <StudioStageToolbar data-visual-contract="image-studio-stage-toolbar" className="animate-fadeIn">
         {/* SELECTOR DE MODO DE HERRAMIENTA (SELECCIÓN / MANO) */}
         <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
           <button
@@ -172,6 +173,6 @@ export const ImageStageToolbar: React.FC<ImageStageToolbarProps> = ({ zoom, onSe
           </>
         )}
 
-      </div>
+      </StudioStageToolbar>
   </>
 );

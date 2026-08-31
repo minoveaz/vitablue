@@ -195,7 +195,7 @@ export const KonvaStage: React.FC<KonvaStageProps> = ({
       onMouseDown={handleContainerMouseDown}
       onMouseMove={handleContainerMouseMove}
       onMouseUp={handleContainerMouseUp}
-      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#001219] bg-[radial-gradient(#005F73_1px,transparent_1px)] [background-size:24px_24px] p-8 select-none ${
+      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-primary-dark p-8 select-none ${
         isSpacePressed ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
       }`}
     >

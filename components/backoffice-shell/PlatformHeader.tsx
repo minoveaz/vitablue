@@ -134,6 +134,7 @@ export const PlatformHeader: React.FC<PlatformHeaderProps> = ({
     <header
       className="flex min-h-14 shrink-0 items-center justify-between gap-3 border-b border-slate-800 bg-slate-950 px-3 text-white md:px-5"
       aria-label="Platform header"
+      data-visual-contract="creative-studio-platform-header"
     >
       <div className="flex min-w-0 items-center gap-3">
         {onOpenMobileNav && (

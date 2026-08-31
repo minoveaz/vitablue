@@ -3,6 +3,7 @@ import type { Scene, TransitionConfig } from '../../packages/video-studio/src/do
 import { videoTemplateRegistry } from '../../packages/video-studio/src/engine/templateRegistry';
 import { Type, MessageSquare, ShieldCheck, Image, Music, Eye, EyeOff, Zap } from 'lucide-react';
 import { TransitionSelectorModal } from './creative-editor/TransitionSelectorModal';
+import { getResizedSceneDuration } from '../utils/videoTimeline';
 
 export interface VideoTimelineProps {
   scenes: Scene[];
@@ -50,6 +51,23 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
   };
 
   const activeTransitionScene = scenes.find((s) => s.id === activeTransitionSceneId);
+  const [resizeState, setResizeState] = useState<{
+    sceneId: string;
+    startX: number;
+    startDuration: number;
+    framesPerPixel: number;
+  } | null>(null);
+
+  const updateSceneDurationFromResize = (event: React.PointerEvent, sceneId: string) => {
+    if (!resizeState || resizeState.sceneId !== sceneId || !_onResizeScene) return;
+    const nextDuration = getResizedSceneDuration(
+      resizeState.startDuration,
+      event.clientX - resizeState.startX,
+      resizeState.framesPerPixel,
+      1,
+    );
+    _onResizeScene(sceneId, nextDuration);
+  };
 
   return (
     <section aria-label="Timeline de vídeo" className="flex h-56 shrink-0 flex-col border-t border-slate-800 bg-slate-950 text-white select-none">
@@ -134,44 +152,89 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                   </button>
                 )}
 
-                <button
-                  type="button"
+                <div
                   style={{ width }}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onContextMenu?.(e, { type: 'scene', sceneId: scene.id });
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectScene(scene.id, sceneStart);
-                  }}
-                  aria-label={`Seleccionar escena ${index + 1}: ${videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}`}
-                  aria-pressed={isActive}
-                  className={`group relative flex h-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
-                    isActive
-                      ? 'border-primary bg-primary/20 text-white shadow-xs'
-                      : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
-                  }`}
+                  role="group"
+                  aria-label={`Escena ${index + 1}`}
+                  className="relative h-full min-w-0 shrink-0"
                 >
-                  <div className="flex items-center justify-between min-w-0">
-                    <span className="truncate text-[10px] font-bold">
-                      {index + 1}. {videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}
-                    </span>
-                    <span className="font-mono text-[9px] text-slate-400 shrink-0">
-                      {(scene.durationInFrames / fps).toFixed(1)}s
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-[9px] text-slate-500">
-                    <span>{scene.layers.length} capas</span>
-                    {scene.transition?.type && scene.transition.type !== 'none' && (
-                      <span className="rounded bg-accent/20 px-1 text-[8px] font-bold text-accent">
-                        {scene.transition.type}
+                  <button
+                    type="button"
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onContextMenu?.(e, { type: 'scene', sceneId: scene.id });
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectScene(scene.id, sceneStart);
+                    }}
+                    aria-label={`Seleccionar escena ${index + 1}: ${videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}`}
+                    aria-pressed={isActive}
+                    className={`group relative flex h-full w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg border p-2 text-left transition-all ${
+                      isActive
+                        ? 'border-primary bg-primary/20 text-white shadow-xs'
+                        : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between min-w-0">
+                      <span className="truncate text-[10px] font-bold">
+                        {index + 1}. {videoTemplateRegistry[scene.templateId]?.label ?? scene.templateId}
                       </span>
-                    )}
-                  </div>
-                </button>
+                      <span className="font-mono text-[9px] text-slate-400 shrink-0">
+                        {(scene.durationInFrames / fps).toFixed(1)}s
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                      <span>{scene.layers.length} capas</span>
+                      {scene.transition?.type && scene.transition.type !== 'none' && (
+                        <span className="rounded bg-accent/20 px-1 text-[8px] font-bold text-accent">
+                          {scene.transition.type}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                  {_onResizeScene && (
+                    <span
+                      role="slider"
+                      tabIndex={0}
+                      aria-label={`Redimensionar duración de escena ${index + 1}`}
+                      aria-valuemin={1}
+                      aria-valuemax={Math.max(1, totalFrames + 600)}
+                      aria-valuenow={scene.durationInFrames}
+                      className="absolute inset-y-0 right-0 z-10 w-11 cursor-ew-resize rounded-full bg-transparent transition-colors hover:bg-brand-cyan/70 focus-visible:bg-brand-cyan/70 focus-visible:outline-none"
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const bounds = containerRef.current?.getBoundingClientRect();
+                        if (!bounds) return;
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                        setResizeState({
+                          sceneId: scene.id,
+                          startX: event.clientX,
+                          startDuration: scene.durationInFrames,
+                          framesPerPixel: totalFrames / Math.max(bounds.width, 1),
+                        });
+                      }}
+                      onPointerMove={(event) => updateSceneDurationFromResize(event, scene.id)}
+                      onPointerUp={(event) => {
+                        event.stopPropagation();
+                        setResizeState(null);
+                        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                          event.currentTarget.releasePointerCapture(event.pointerId);
+                        }
+                      }}
+                      onPointerCancel={() => setResizeState(null)}
+                      onKeyDown={(event) => {
+                        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                        event.preventDefault();
+                        const delta = event.key === 'ArrowRight' ? fps : -fps;
+                        _onResizeScene(scene.id, Math.max(1, scene.durationInFrames + delta));
+                      }}
+                    />
+                  )}
+                </div>
               </React.Fragment>
             );
           })}
@@ -236,17 +299,17 @@ export const VideoTimeline: React.FC<VideoTimelineProps> = ({
                       ))}
                     </div>
                     <span className="text-[10px] text-purple-300 font-mono">
-                      {Math.round(((layer as any).volume ?? 1) * 100)}%
+                      {Math.round(((layer.type === 'audio' ? layer.volume : undefined) ?? 1) * 100)}%
                     </span>
                   </div>
                 ) : (
                   <span className="truncate max-w-[120px] font-semibold text-[11px]">
                     {layer.type === 'text'
-                      ? (layer as any).text
+                      ? layer.text
                       : layer.type === 'subtitle'
-                        ? (layer as any).text
+                        ? layer.text
                         : layer.type === 'component'
-                          ? (layer as any).componentId
+                          ? layer.componentId
                           : layer.type}
                   </span>
                 )}

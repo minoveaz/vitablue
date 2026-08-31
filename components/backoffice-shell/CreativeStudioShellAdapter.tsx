@@ -14,15 +14,16 @@ import type {
 import { SuiteShell } from './SuiteShell';
 import { SuiteCanvas } from './SuiteCanvas';
 import { mapCreativeStudioShellSlots } from './CreativeStudioShellAdapter.utils';
-import { LiveStatus } from './primitives';
+import { CanvasChrome, LiveStatus } from './primitives';
+import type { CanvasGridProps } from './primitives';
 
 /**
  * Composition boundary for the typed Creative Studio shell contract.
  *
  * SuiteShell remains the only owner of global navigation and PlatformHeader;
- * SuiteCanvas remains the only owner of the common canvas layout. This adapter
- * only maps contract slots to those existing owners and does not extract or
- * replace editor primitives.
+ * SuiteCanvas and CanvasChrome remain the owners of common canvas layout and
+ * stage chrome. This adapter only maps contract slots to those owners and does
+ * not extract or replace editor primitives.
  */
 export interface CreativeStudioShellAdapterProps<
   TDomainExtension extends CreativeStudioShellExtension = CreativeStudioShellExtension,
@@ -39,6 +40,7 @@ export interface CreativeStudioShellAdapterProps<
   rightSlot?: ReactNode;
   profileSlot?: ReactNode;
   onNavModeChange?: (mode: 'expanded' | 'rail') => void;
+  contextualSidebarAction?: ReactNode | ((isRail: boolean) => ReactNode);
   canvasMode?: SuiteCanvasMode;
   /** Opt-in mobile guard; the editor remains available only from md upward. */
   mobileSafeMode?: boolean;
@@ -49,6 +51,8 @@ export interface CreativeStudioShellAdapterProps<
    * primitive. Existing editors keep their current status UI by default.
    */
   showLiveStatus?: boolean;
+  /** Shared stage backdrop configuration for both creative studios. */
+  canvasGrid?: CanvasGridProps | false;
 }
 
 export const CreativeStudioShellAdapter = <
@@ -83,12 +87,15 @@ export const CreativeStudioShellAdapter = <
         centerSlot={props.centerSlot}
         rightSlot={props.rightSlot}
         profileSlot={props.profileSlot}
+        contextualSidebarAction={props.contextualSidebarAction}
         onNavigate={props.onNavigate}
         onNavModeChange={props.onNavModeChange}
         overlay={mappedSlots.overlays}
       >
         <SuiteCanvas
-          mode={props.canvasMode ?? 'workspace'}
+          // Creative stages own their backdrop; avoid the white workspace
+          // padding that is appropriate for regular backoffice surfaces.
+          mode={props.canvasMode ?? 'full-bleed'}
           header={mappedSlots.moduleHeader}
           toolbar={mappedSlots.toolbar}
           contextAside={mappedSlots.contextAside}
@@ -98,7 +105,11 @@ export const CreativeStudioShellAdapter = <
           mobileSafeModeTitle={props.mobileSafeModeTitle}
           mobileSafeModeDescription={props.mobileSafeModeDescription}
         >
-          {mappedSlots.stage}
+          <CanvasChrome
+            stage={mappedSlots.stage}
+            stageLabel={`Lienzo de ${props.domain === 'image' ? 'Image' : 'Video'} Studio`}
+            grid={props.canvasGrid}
+          />
         </SuiteCanvas>
       </SuiteShell>
     </div>

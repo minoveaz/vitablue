@@ -132,7 +132,7 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onArchiveProject,
 }) => {
   return (
-    <div className="space-y-4 select-none">
+    <div className="space-y-4 select-none" data-visual-contract="shared-studio-resource-content">
       {/* 0. MIS DISEÑOS & BIBLIOTECA PERSONAL (POSICIÓN 1) */}
       {activeTab === 'my-designs' && (
         <div className="-m-4 h-[calc(100vh-140px)]">

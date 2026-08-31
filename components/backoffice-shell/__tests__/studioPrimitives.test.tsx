@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import {
   BottomWorkspace,
+  CanvasGrid,
   CanvasChrome,
   LayerActionMenu,
   LiveStatus,
@@ -9,8 +10,10 @@ import {
   ShortcutManager,
   StudioInspectorPanel,
   StudioResourcePanel,
+  StudioStageToolbar,
   StudioToolRail,
   ZoomPanControls,
+  CANVAS_GRID_PATTERNS,
   createShortcutManager,
   handleShortcutEvent,
   matchesShortcut,
@@ -49,6 +52,26 @@ describe('shared Creative Studio primitives', () => {
     expect(html).toContain('footer slot');
   });
 
+  it('keeps resource and inspector panels on the same chrome contract', () => {
+    const resource = renderToStaticMarkup(
+      <StudioResourcePanel onClose={() => undefined}>resources</StudioResourcePanel>,
+    );
+    const inspector = renderToStaticMarkup(
+      <StudioInspectorPanel as="div" onClose={() => undefined}>inspector</StudioInspectorPanel>,
+    );
+
+    for (const html of [resource, inspector]) {
+      expect(html).toContain('min-h-12');
+      expect(html).toContain('border-b');
+      expect(html).toContain('p-4 custom-scrollbar');
+      expect(html).toContain('min-h-11 min-w-11');
+      expect(html).toContain('focus-visible:ring-2');
+    }
+    expect(resource).toContain('data-visual-contract="shared-studio-resource-panel"');
+    expect(inspector).toContain('data-visual-contract="shared-studio-inspector-panel"');
+    expect(inspector).toContain('role="complementary"');
+  });
+
   it('renders an explicit mobile-safe state while keeping the editor tablet-first', () => {
     const canvas = renderToStaticMarkup(
       <SuiteCanvas mobileSafeMode mobileSafeModeTitle="Editor en tablet" aside={<span>Inspector</span>}>
@@ -74,6 +97,49 @@ describe('shared Creative Studio primitives', () => {
     expect(html).toContain('overlay');
     expect(html).toContain('role="region"');
     expect(html).toContain('aria-label="Lienzo de diseño"');
+    expect(html).toContain('data-visual-contract="creative-studio-canvas-chrome"');
+  });
+
+  it('renders the configurable decorative grid without capturing input', () => {
+    const html = renderToStaticMarkup(
+      <CanvasGrid
+        variant="dotted"
+        spacing={32}
+        color="var(--color-primary)"
+        opacity="var(--canvas-grid-opacity, 0.72)"
+        style={{ '--canvas-grid-background': 'var(--color-secondary)' }}
+      />,
+    );
+
+    expect(html).toContain('pointer-events-none');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).toContain('data-visual-contract="creative-studio-canvas-grid"');
+    expect(html).toContain('background-size:32px 32px');
+    expect(html).toContain('--canvas-grid-color:var(--color-primary)');
+    expect(CANVAS_GRID_PATTERNS.technical.backgroundImage).toContain('linear-gradient');
+    expect(renderToStaticMarkup(<CanvasGrid visible={false} />)).toBe('');
+  });
+
+  it('keeps the grid in CanvasChrome and lets hosts opt out', () => {
+    const withGrid = renderToStaticMarkup(<CanvasChrome>stage</CanvasChrome>);
+    const withoutGrid = renderToStaticMarkup(<CanvasChrome grid={false}>stage</CanvasChrome>);
+
+    expect(withGrid).toContain('background-image:radial-gradient');
+    expect(withGrid).toContain('bg-primary-dark');
+    expect(withGrid).toContain('stage');
+    expect(withoutGrid).not.toContain('background-image:radial-gradient');
+  });
+
+  it('keeps stage controls on the shared visual contract', () => {
+    const html = renderToStaticMarkup(
+      <StudioStageToolbar data-visual-contract="image-studio-stage-toolbar">
+        <button type="button">Zoom</button>
+      </StudioStageToolbar>,
+    );
+    expect(html).toContain('role="toolbar"');
+    expect(html).toContain('bottom-5');
+    expect(html).toContain('bg-primary-dark/95');
+    expect(html).toContain('Zoom');
   });
 
   it('exposes zoom callbacks and selection/action visibility contracts', () => {

@@ -1,7 +1,7 @@
 # Track: Shared Creative Editor Foundation
 
 **Fecha:** 2026-08-30  
-**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4, el alcance P0 de 4.75.5 y la integración progresiva de 4.75.6 completados; fases posteriores pendientes
+**Estado:** En ejecución — Fases 0–4.5, 4.75.1, 4.75.2, 4.75.3, 4.75.4, el alcance P0 de 4.75.5, 4.75.6, 4.75.7 y la auditoría común correctiva 4.75.8 verificadas; Fase 5 y fases posteriores pendientes
 **Rama:** `feat/carousel-creative-composition`  
 **Áreas:** `[marketing-studio, image-studio, video-studio, editor, vector, remotion, ux, productivity]`
 
@@ -244,6 +244,33 @@ antes de migrar sus hooks y renderers al `CreativeDocument`.
 - [ ] Extraer completamente las superficies legacy de Image Studio, migrar
   Video Studio o sustituir sus fachadas.
 
+#### Fase 4.75.7 — Integración progresiva y hardening de Video Studio
+
+- [x] Auditar consumidores, rutas privadas y guard DEV de `SocialGenerator` sin
+  cambiar permisos ni convertir la superficie en producción sin evidencia.
+- [x] Integrar Video Studio con `CreativeStudioShellAdapter`, manteniendo
+  `SuiteShell`/`SuiteCanvas` como propietarios del shell global y sin duplicar
+  headers o layouts.
+- [x] Replicar en Video Studio la shell creativa de Image Studio con un único
+  `StudioToolRail`, panel contextual, stage, inspector y workspace inferior,
+  sin reintroducir `SuiteSidebar`.
+- [x] Mantener escenas, timeline, transport, audio y Remotion como extensiones
+  de dominio, conservando las fachadas legacy y sus callbacks.
+- [x] Corregir el callback `onResizeScene` no implementado con resize acotado al
+  mínimo de un frame válido y accesible, sin inventar una política de
+  sincronización de capas.
+- [x] Añadir pruebas de contrato/integración del mapping de Video Studio y del
+  resize de escenas; conservar el guard seguro móvil.
+- [x] Alinear toolbar e inspector de Video Studio con la densidad, tokens,
+  bordes, fondos, estados activos, icon buttons y focus rings de Image Studio,
+  conservando controles específicos de vídeo.
+- [x] Mantener errores de render visibles en el inspector contextual con
+  reintento explícito.
+- [x] Añadir contrato visual/integración sin snapshots frágiles para estructura,
+  clases críticas, callbacks y slots del shell.
+- [ ] Migrar completamente Video Studio a `CreativeDocument`, extraer fachadas
+  legacy, resolver equivalencia entre renderers y completar UX editorial móvil.
+
 #### Disponibilidad y contratos de interacción (pendiente)
 
 - [ ] Confirmar y corregir la disponibilidad de Video Studio fuera de `DEV`
@@ -252,6 +279,45 @@ antes de migrar sus hooks y renderers al `CreativeDocument`.
   semántico, reservando pixel-perfect para los casos que lo requieran.
 - [ ] Documentar capacidades comunes y extensiones específicas de cada studio.
 - [ ] Validar visualmente y funcionalmente a 375, 768, 1024 y 1440px.
+
+#### Fase 4.75.8 — Auditoría común y correctiva
+
+- [x] Verificar la composición real de ambos workspaces con
+  `CreativeStudioShellAdapter`; `SuiteShell` no monta `SuiteSidebar` cuando el
+  modo es `hidden`.
+- [x] Verificar la matriz común de header, ModuleHeader, rail, recursos,
+  toolbar, CanvasChrome/CanvasGrid/stage, inspector, capas, workspace inferior y
+  overlays, dejando las capacidades de carrusel y timeline como extensiones.
+- [x] Verificar ownership único de slots y callbacks; mantener bridges y
+  fachadas legacy durante la migración.
+- [x] Verificar estados `saved`, `saving`, `error`, `offline` y `rendering`,
+  mensajes visibles y reintento explícito.
+- [x] Verificar zoom/pan/fit/reset, selección, focus y targets táctiles en las
+  superficies compartidas; `StudioStageToolbar` centraliza el chrome común.
+- [x] Verificar el guard móvil limitado y el alcance funcional de tablet/escritorio.
+- [x] Verificar rutas privadas y guard DEV sin cambiar permisos; disponibilidad
+  productiva queda pendiente.
+- [x] Añadir `CREATIVE_STUDIO_PARITY_MATRIX` y tests estructurales/
+  visuales-contract sin snapshots frágiles; documentar la matriz completa en
+  `docs/marketing-studio/shared-creative-editor-phase-4.75.8.md`.
+- [x] Corregir divergencias reales de resource panel e inspector usando los
+  primitives compartidos, sin `ModuleContextSidebar` anidado.
+- [x] Recuperar el backdrop técnico como `CanvasGrid`, exportarlo desde el
+  barrel de primitives y montarlo una sola vez en `CanvasChrome` para Image y
+  Video. La API tipada admite `visible`, `pattern` (`dotted`/`technical`),
+  `spacing`/`size`, `color`, `opacity`, `className`, `style` y `decorative`;
+  `pattern`/`variant` admiten `dotted` y `technical`;
+  `CANVAS_GRID_PATTERNS` centraliza los valores del patrón y `canvasGrid` permite
+  configurarlo desde el adapter.
+- [x] Corregir el stage blanco de Video Studio: `SuiteCanvas` no declaraba
+  `flex-col` en su `<main>`, así que el `flex-1` de `CanvasChrome` se ignoraba,
+  Remotion recibía un viewport de altura intrínseca y el resto del canvas
+  mostraba el fondo blanco. Se añadió la clase flex del owner común y una
+  regresión que comprueba el montaje de Remotion con el storyboard actual.
+- [ ] Validar manualmente la composición visual en navegador a 768, 1024 y
+  1440 px.
+- [ ] Migrar el modelo a `CreativeDocument`, retirar bridges/fachadas legacy o
+  completar UX editorial móvil (Fase 5+).
 
 Los siguientes ítems siguen pendientes: migración completa de editores,
 responsive/a11y completa, disponibilidad de Video Studio, equivalencia de

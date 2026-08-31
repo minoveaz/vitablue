@@ -41,7 +41,11 @@ export const SuiteShell: React.FC<SuiteShellProps> = ({
   const [internalNavMode, setInternalNavMode] = useState<'expanded' | 'rail'>(navMode === 'rail' ? 'rail' : 'expanded');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const effectiveNavMode = onNavModeChange ? (navMode === 'hidden' ? 'hidden' : navMode) : internalNavMode;
+  const effectiveNavMode = navMode === 'hidden'
+    ? 'hidden'
+    : onNavModeChange
+      ? navMode ?? internalNavMode
+      : internalNavMode;
 
   const handleNavModeChange = (nextMode: 'expanded' | 'rail') => {
     setInternalNavMode(nextMode);
@@ -49,7 +53,7 @@ export const SuiteShell: React.FC<SuiteShellProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-100 text-slate-800 antialiased">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-100 text-slate-800 antialiased" data-creative-studio-shell="suite">
       <PlatformHeader
         suiteTitle={suiteTitle ?? schema.suite.suiteName}
         leftSlot={leftSlot}
@@ -61,18 +65,20 @@ export const SuiteShell: React.FC<SuiteShellProps> = ({
       />
 
       <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
-        <SuiteSidebar
-          schema={schema}
-          navMode={effectiveNavMode}
-          activeModuleId={activeModuleId}
-          accessMap={accessMap}
-          telemetry={telemetry}
-          contextualSidebarAction={contextualSidebarAction}
-          onNavigate={onNavigate}
-          onNavModeChange={handleNavModeChange}
-          isMobileOpen={isMobileOpen}
-          onCloseMobile={() => setIsMobileOpen(false)}
-        />
+        {effectiveNavMode !== 'hidden' && (
+          <SuiteSidebar
+            schema={schema}
+            navMode={effectiveNavMode}
+            activeModuleId={activeModuleId}
+            accessMap={accessMap}
+            telemetry={telemetry}
+            contextualSidebarAction={contextualSidebarAction}
+            onNavigate={onNavigate}
+            onNavModeChange={handleNavModeChange}
+            isMobileOpen={isMobileOpen}
+            onCloseMobile={() => setIsMobileOpen(false)}
+          />
+        )}
 
         <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-white">
           {children}

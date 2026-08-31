@@ -17,6 +17,9 @@ import type {
   CreativeStudioShellState,
 } from '../contracts/creativeStudioShell';
 import type { ModuleShellZoneWidth } from '../contracts/shell';
+import { CanvasGrid } from './CanvasGrid';
+import { CANVAS_GRID_DEFAULTS } from './CanvasGrid.config';
+import type { CanvasGridProps } from './CanvasGrid';
 
 export interface StudioToolRailItem {
   id: string;
@@ -112,6 +115,10 @@ interface StudioPanelProps {
   presentation?: 'inline' | 'drawer' | 'overlay';
   width?: ModuleShellZoneWidth;
   ariaLabel?: string;
+  /** Identifies the shared chrome contract for visual/integration tests. */
+  panelKind?: 'resource' | 'inspector';
+  /** Avoids nested landmark elements when SuiteCanvas already owns the aside. */
+  as?: 'aside' | 'div';
 }
 
 const StudioPanel: React.FC<StudioPanelProps> = ({
@@ -127,29 +134,35 @@ const StudioPanel: React.FC<StudioPanelProps> = ({
   presentation = 'inline',
   width,
   ariaLabel,
+  panelKind = 'resource',
+  as = 'aside',
 }) => {
   const titleId = useId();
   if (!visible || !open) return null;
   const dark = variant === 'dark';
+  const PanelElement = as;
   const widthClasses: Record<ModuleShellZoneWidth, string> = {
     narrow: 'sm:max-w-56',
     standard: 'sm:max-w-64',
     wide: 'sm:max-w-80',
     'extra-wide': 'sm:max-w-96',
   };
+  const widthClass = as === 'aside' && width ? widthClasses[width] : '';
 
   return (
-    <aside
+    <PanelElement
+      role={as === 'div' ? 'complementary' : undefined}
       aria-labelledby={title ? titleId : undefined}
       aria-label={title ? undefined : ariaLabel}
       data-panel-presentation={presentation}
       data-creative-studio-visible="true"
-      className={`flex min-h-0 w-full shrink-0 flex-col overflow-hidden ${width ? widthClasses[width] : ''} ${
+      data-visual-contract={`shared-studio-${panelKind}-panel`}
+      className={`flex min-h-0 w-full shrink-0 flex-col overflow-hidden ${widthClass} ${
         presentation === 'overlay' ? 'absolute inset-y-0 right-0 z-30 shadow-2xl sm:max-w-sm' : ''
       } ${dark ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-800'} ${className}`}
     >
       {(title || headerSlot || onClose) && (
-        <div className={`flex min-h-12 shrink-0 items-center justify-between gap-2 border-b px-3 py-2 ${
+        <div className={`flex min-h-12 shrink-0 items-center justify-between gap-2 border-b px-4 py-2 ${
           dark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'
         }`}>
           <div className="min-w-0 flex-1">
@@ -170,20 +183,30 @@ const StudioPanel: React.FC<StudioPanelProps> = ({
           )}
         </div>
       )}
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 custom-scrollbar">{children}</div>
       {footerSlot && <div className={`shrink-0 border-t p-3 ${dark ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'}`}>{footerSlot}</div>}
-    </aside>
+    </PanelElement>
   );
 };
 
 export type StudioResourcePanelProps = Omit<StudioPanelProps, 'ariaLabel'> & { ariaLabel?: string };
 export const StudioResourcePanel: React.FC<StudioResourcePanelProps> = (props) => (
-  <StudioPanel {...props} title={props.title ?? 'Recursos'} ariaLabel={props.ariaLabel ?? 'Panel de recursos'} />
+  <StudioPanel
+    {...props}
+    panelKind="resource"
+    title={props.title ?? 'Recursos'}
+    ariaLabel={props.ariaLabel ?? 'Panel de recursos'}
+  />
 );
 
 export type StudioInspectorPanelProps = Omit<StudioPanelProps, 'ariaLabel'> & { ariaLabel?: string };
 export const StudioInspectorPanel: React.FC<StudioInspectorPanelProps> = (props) => (
-  <StudioPanel {...props} title={props.title ?? 'Inspector'} ariaLabel={props.ariaLabel ?? 'Panel de inspección'} />
+  <StudioPanel
+    {...props}
+    panelKind="inspector"
+    title={props.title ?? 'Inspector'}
+    ariaLabel={props.ariaLabel ?? 'Panel de inspección'}
+  />
 );
 
 export interface CanvasChromeProps {
@@ -195,8 +218,44 @@ export interface CanvasChromeProps {
   stageSlot?: React.ReactNode;
   children?: React.ReactNode;
   stageLabel?: string;
+  /** Shared stage backdrop. Pass false to opt out without changing layout. */
+  grid?: CanvasGridProps | false;
   className?: string;
 }
+
+export const STUDIO_STAGE_TOOLBAR_CLASS =
+  'absolute bottom-5 left-1/2 z-40 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 rounded-2xl border border-slate-800/90 bg-primary-dark/95 p-1.5 text-xs text-white shadow-2xl backdrop-blur-xl sm:gap-2.5';
+
+export interface StudioStageToolbarProps {
+  children: React.ReactNode;
+  label?: string;
+  className?: string;
+  role?: 'toolbar';
+  'aria-label'?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  'data-visual-contract'?: string;
+}
+
+/** Shared stage-control chrome. Domain tools are supplied as children. */
+export const StudioStageToolbar: React.FC<StudioStageToolbarProps> = ({
+  children,
+  label = 'Controles del lienzo',
+  className = '',
+  role = 'toolbar',
+  'aria-label': ariaLabel,
+  onClick,
+  'data-visual-contract': visualContract = 'image-studio-stage-toolbar',
+}) => (
+  <div
+    role={role}
+    aria-label={ariaLabel ?? label}
+    data-visual-contract={visualContract}
+    className={`${STUDIO_STAGE_TOOLBAR_CLASS} ${className}`}
+    onClick={onClick}
+  >
+    {children}
+  </div>
+);
 
 export const CanvasChrome: React.FC<CanvasChromeProps> = ({
   toolbar,
@@ -207,18 +266,24 @@ export const CanvasChrome: React.FC<CanvasChromeProps> = ({
   stageSlot,
   children,
   stageLabel = 'Lienzo de diseño',
+  grid = CANVAS_GRID_DEFAULTS,
   className = '',
-}) => (
-  <section data-creative-studio-region="canvas" aria-label="Lienzo de diseño" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-950 ${className}`}>
-    {topSlot && <div className="shrink-0">{topSlot}</div>}
-    {toolbar && <div className="shrink-0 border-b border-slate-800 bg-slate-900/95 px-3 py-2">{toolbar}</div>}
-    <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-      <div className="h-full w-full" role="region" tabIndex={0} aria-label={stageLabel}>{stageSlot ?? stage ?? children}</div>
-      {overlays && <div className="pointer-events-none absolute inset-0 z-20">{overlays}</div>}
-    </div>
-    {bottomSlot && <div className="shrink-0 border-t border-slate-800 bg-slate-900">{bottomSlot}</div>}
-  </section>
-);
+}) => {
+  const stageContent = stageSlot ?? stage ?? children;
+
+  return (
+    <section data-creative-studio-region="canvas" data-visual-contract="creative-studio-canvas-chrome" aria-label="Lienzo de diseño" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-primary-dark ${className}`}>
+      {grid !== false && <CanvasGrid {...grid} />}
+      {topSlot && <div className="relative z-10 shrink-0">{topSlot}</div>}
+      {toolbar && <div className="relative z-10 shrink-0 border-b border-slate-800 bg-slate-900/95 px-3 py-2">{toolbar}</div>}
+      <div className="relative z-10 min-h-0 min-w-0 flex-1 overflow-hidden">
+        <div className="flex h-full w-full min-h-0 min-w-0 flex-col" role="region" tabIndex={0} aria-label={stageLabel}>{stageContent}</div>
+        {overlays && <div className="pointer-events-none absolute inset-0 z-20">{overlays}</div>}
+      </div>
+      {bottomSlot && <div className="relative z-10 shrink-0 border-t border-slate-800 bg-slate-900">{bottomSlot}</div>}
+    </section>
+  );
+};
 
 export interface ZoomPanControlsProps {
   zoom: number;
@@ -382,7 +447,7 @@ export const LayerActionMenu: React.FC<LayerActionMenuProps> = ({
   const toneClasses: Record<NonNullable<LayerAction['tone']>, string> = {
     neutral: 'text-slate-300 hover:bg-slate-800 hover:text-white',
     accent: 'text-brand-cyan hover:bg-primary/30',
-    danger: 'text-slate-300 hover:bg-red-500/20 hover:text-red-400',
+    danger: 'text-red-200 hover:bg-red-500/20 hover:text-red-100',
   };
   return (
     <div role="toolbar" aria-label={label} className={`flex flex-wrap items-center gap-1 rounded-xl border border-slate-700 bg-slate-900/95 p-1 text-white shadow-xl ${className}`}>
@@ -672,6 +737,7 @@ export const LiveStatus: React.FC<LiveStatusProps> = ({
 
 export interface BottomWorkspaceProps {
   title?: string;
+  'aria-label'?: string;
   visible?: boolean;
   open?: boolean;
   onClose?: () => void;
@@ -683,6 +749,7 @@ export interface BottomWorkspaceProps {
 
 export const BottomWorkspace: React.FC<BottomWorkspaceProps> = ({
   title = 'Área de trabajo',
+  'aria-label': ariaLabel,
   visible = true,
   open = true,
   onClose,
@@ -693,7 +760,7 @@ export const BottomWorkspace: React.FC<BottomWorkspaceProps> = ({
 }) => {
   if (!visible || !open) return null;
   return (
-    <section aria-label={title} data-creative-studio-region="bottom-workspace" className={`flex max-h-[45vh] min-h-0 w-full flex-col border-t border-slate-800 bg-slate-900 text-white ${className}`}>
+    <section aria-label={ariaLabel ?? title} data-creative-studio-region="bottom-workspace" data-visual-contract="creative-studio-bottom-workspace" className={`flex max-h-[45vh] min-h-0 w-full flex-col border-t border-slate-800 bg-slate-900 text-white ${className}`}>
       <header className="flex min-h-12 shrink-0 items-center justify-between gap-2 border-b border-slate-800 px-3 py-2">
         <h2 className="truncate text-xs font-black uppercase tracking-wider text-slate-200">{title}</h2>
         <div className="flex items-center gap-1">

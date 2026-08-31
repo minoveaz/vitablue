@@ -61,6 +61,7 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
       key={scrollResetKey}
       className={`flex min-h-0 flex-1 flex-col ${isFullBleed ? 'h-full overflow-hidden' : 'overflow-y-auto hover-scrollbar'} ${className}`}
       data-canvas-mode={mode}
+      data-visual-contract="creative-studio-canvas"
       role="region"
       aria-label="Suite canvas"
     >
@@ -98,7 +99,7 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
         )}
 
         <main
-          className={`min-w-0 flex-1 ${isFullBleed ? 'h-full overflow-hidden' : 'overflow-y-auto hover-scrollbar'} ${geometryClass} ${paddingClass} ${contentClassName}`}
+          className={`min-w-0 flex flex-1 flex-col ${isFullBleed ? 'h-full overflow-hidden' : 'overflow-y-auto hover-scrollbar'} ${geometryClass} ${paddingClass} ${contentClassName}`}
           aria-label="Área de trabajo del editor"
         >
           {children}
@@ -122,7 +123,7 @@ export const SuiteCanvas: React.FC<SuiteCanvasProps> = ({
 
       {footer && (
         <footer
-          className={`shrink-0 border-t ${
+          className={`shrink-0 ${isFullBleed ? 'border-t-0' : 'border-t'} ${
             isFullBleed
               ? 'border-slate-800 bg-slate-900 p-0'
               : 'border-slate-200 bg-white px-5 py-3'

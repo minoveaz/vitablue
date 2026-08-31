@@ -35,7 +35,7 @@ import {
   Lock,
   Unlock,
 } from 'lucide-react';
-import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
+import { StudioInspectorPanel } from '../../../components/backoffice-shell/primitives';
 import {
   ImageLayer,
   CanvasBackground,
@@ -667,13 +667,14 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
     return (
       <>
-        <ModuleContextPanel
-          label="Propiedades del Lienzo"
+        <StudioInspectorPanel
+          as="div"
+          title="Propiedades del Lienzo"
           width="standard"
           variant="dark"
           onClose={onClose}
         >
-          <div className="space-y-4">
+          <div className="space-y-4" data-creative-studio-region="inspector-content">
             {/* FORMATO ACTUAL Y BOTÓN VER MÁS */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -848,7 +849,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             💡 <strong>Tip:</strong> Haz clic en cualquier texto o tarjeta en el lienzo para editar sus propiedades específicas.
           </div>
         </div>
-      </ModuleContextPanel>
+      </StudioInspectorPanel>
 
       <ImageCanvasFormatsModal
         isOpen={isFormatsModalOpen}
@@ -977,13 +978,14 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
 
   return (
     <div data-inline-editor-inspector="true" className="h-full min-h-0 min-w-0">
-    <ModuleContextPanel
-      label={`Bloque: ${selectedLayer.title}`}
+    <StudioInspectorPanel
+      as="div"
+      title={`Bloque: ${selectedLayer.title}`}
       width="standard"
       variant="dark"
       onClose={onClose}
     >
-      <div className="space-y-4">
+      <div className="space-y-4" data-creative-studio-region="inspector-content">
         {/* 1. HEADER LIMPIO + Z-INDEX + GUARDAR EN MIS DISEÑOS */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div className="flex items-center gap-2 truncate">
@@ -998,7 +1000,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
                 type="button"
                 aria-pressed={Boolean(selectedLayer.locked)}
                 onClick={() => onToggleLayerLock(selectedLayer.id)}
-                className={`flex size-7 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                   selectedLayer.locked
                     ? 'border-amber-500/40 bg-amber-500/15 text-amber-300'
                     : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
@@ -1011,7 +1013,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
             <button
               type="button"
               onClick={handleSaveCurrentLayer}
-              className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold border transition-all ${
+              className={`flex min-h-11 items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold border transition-all ${
                 isSavedToDesigns
                   ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
                   : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-amber-400/60 hover:text-amber-300 hover:bg-slate-800'
@@ -2771,7 +2773,7 @@ export const ImageStudioInspector: React.FC<ImageStudioInspectorProps> = ({
           </div>
         </div>
       </div>
-    </ModuleContextPanel>
+    </StudioInspectorPanel>
     </div>
   );
 };

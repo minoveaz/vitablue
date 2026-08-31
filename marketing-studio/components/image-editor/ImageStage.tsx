@@ -146,7 +146,7 @@ export const ImageStage: React.FC<ImageStageProps> = ({
       role="region"
       aria-label="Lienzo de diseño"
       tabIndex={0}
-      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-primary-dark p-3 sm:p-5 lg:p-8 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+      className={`relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-transparent p-3 sm:p-5 lg:p-8 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
         viewport.effectiveHandMode ? (viewport.isPanning ? 'cursor-grabbing' : 'cursor-grab') : interactions.draggingLayerId ? 'cursor-grabbing' : interactions.pendingLayerId ? 'cursor-move' : 'cursor-default'
       }`}
     >

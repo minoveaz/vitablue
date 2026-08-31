@@ -27,7 +27,12 @@ describe('Creative Studio shell composition boundaries', () => {
     expect(mapped.moduleHeader).toBe('saving');
     expect(mapped.toolbar).toBe('image');
     expect(mapped.stage).toBe('stage');
-    expect(mapped.footer).toBe('slides');
+    expect(mapped.footer).toMatchObject({
+      props: {
+        'aria-label': 'Área de trabajo inferior',
+        children: ['slides'],
+      },
+    });
     expect(mapped.overlays).toBe('overlay');
     expect(mapped.contextAside).toMatchObject({
       props: {

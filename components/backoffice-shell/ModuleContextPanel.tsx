@@ -48,7 +48,7 @@ export const ModuleContextPanel: React.FC<ModuleContextPanelProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`flex size-7 items-center justify-center rounded-lg transition-colors ${
+              className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
                 isDark
                   ? 'text-slate-400 hover:bg-slate-800 hover:text-white'
                   : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'

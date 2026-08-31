@@ -20,6 +20,8 @@ export interface ModuleHeaderProps {
   rightSlot?: React.ReactNode;
   actionsSlot?: React.ReactNode;
   showState?: boolean;
+  /** Creative Studio uses the same structure on its dark stage shell. */
+  variant?: 'light' | 'studio';
   className?: string;
 }
 
@@ -32,9 +34,11 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
   rightSlot,
   actionsSlot,
   showState = true,
+  variant = 'light',
   className = '',
 }) => {
   const actions = rightSlot ?? actionsSlot;
+  const studio = variant === 'studio';
 
   const renderStateBadge = () => {
     switch (state) {
@@ -85,10 +89,16 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
   };
 
   return (
-    <header className={`flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-3 md:px-8 ${className}`} aria-label="Module header">
+    <header
+      className={`flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-4 border-b px-5 py-3 md:px-8 ${
+        studio ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 bg-white'
+      } ${className}`}
+      aria-label="Module header"
+      data-visual-contract="creative-studio-module-header"
+    >
       <div className="min-w-0 flex-1">
         {breadcrumbs.length > 0 && (
-          <nav aria-label="Migas de pan" className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400">
+          <nav aria-label="Migas de pan" className={`mb-1 flex items-center gap-1.5 text-[11px] font-semibold ${studio ? 'text-slate-500' : 'text-slate-400'}`}>
             {breadcrumbs.map((crumb, idx) => {
               const isLast = idx === breadcrumbs.length - 1;
               const isObject = typeof crumb === 'object' && crumb !== null;
@@ -99,11 +109,11 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
                 <React.Fragment key={idx}>
                   {idx > 0 && <span className="opacity-40">/</span>}
                   {href && !isLast ? (
-                    <Link to={href} className="transition-colors hover:text-primary">
+                    <Link to={href} className="transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80">
                       {label}
                     </Link>
                   ) : (
-                    <span className={isLast ? 'font-bold text-slate-700' : ''}>{label}</span>
+                    <span className={isLast ? (studio ? 'font-bold text-slate-200' : 'font-bold text-slate-700') : ''}>{label}</span>
                   )}
                 </React.Fragment>
               );
@@ -116,7 +126,7 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
             {eyebrow ?? 'Módulo'}
           </span>
         </div>
-        <h1 className="mt-0.5 text-h2 font-black text-slate-800">{title}</h1>
+        <h1 className={`mt-0.5 text-h2 font-black ${studio ? 'text-slate-100' : 'text-slate-800'}`}>{title}</h1>
       </div>
 
       <div className="flex shrink-0 items-center gap-3">

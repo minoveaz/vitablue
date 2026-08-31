@@ -109,7 +109,7 @@ export const ImageEditorToolbar: React.FC<ImageEditorToolbarProps> = ({
   };
 
   return (
-    <div role="toolbar" aria-label="Controles de Image Studio" className="flex min-h-11 w-full max-w-full flex-wrap items-center justify-between gap-2.5 overflow-x-auto py-0.5 text-white select-none">
+    <div role="toolbar" aria-label="Controles de Image Studio" data-visual-contract="image-studio-toolbar" className="flex min-h-11 w-full max-w-full flex-wrap items-center justify-between gap-2.5 overflow-x-auto py-0.5 text-white select-none">
       {/* 1. SECCIÓN IZQUIERDA: VOLVER + NOMBRE DEL DISEÑO + ESTADO DE GUARDADO */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
         {onBackToHub && (

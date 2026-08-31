@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Layers, Palette, Sparkles, Plus, Copy, Trash2, ChevronUp, ChevronDown, Type, MessageSquare, ShieldCheck, Image, Music, Shield } from 'lucide-react';
-import { ModuleContextSidebar } from '../../../components/backoffice-shell/ModuleContextSidebar';
 import type { Scene, SceneTemplateId, LayerType } from '../../../packages/video-studio/src/domain/videoProject';
 import { defaultVisaRejectionProject } from '../../../packages/video-studio/src/domain/defaultProject';
 
@@ -17,7 +16,10 @@ export interface CreativeEditorAssetSidebarProps {
   onAddSubtitleLayer: (text?: string) => void;
   onAddComponentLayer: (componentId: string) => void;
   onLoadPreset: (presetScenes: Scene[]) => void;
+  /** Kept for callers migrating from the legacy self-contained sidebar. */
   onCollapse?: () => void;
+  activeTab?: 'storyboard' | 'brand' | 'elements' | 'audio';
+  onActiveTabChange?: (tab: 'storyboard' | 'brand' | 'elements' | 'audio') => void;
 }
 
 export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProps> = ({
@@ -33,27 +35,28 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
   onAddSubtitleLayer,
   onAddComponentLayer,
   onLoadPreset,
-  onCollapse,
+  activeTab: controlledActiveTab,
+  onActiveTabChange,
 }) => {
-  const [activeTab, setActiveTab] = useState<'storyboard' | 'brand' | 'elements'>('storyboard');
+  const [internalActiveTab, setInternalActiveTab] = useState<'storyboard' | 'brand' | 'elements' | 'audio'>('storyboard');
+  const activeTab = controlledActiveTab ?? internalActiveTab;
+  const selectTab = (tab: 'storyboard' | 'brand' | 'elements' | 'audio') => {
+    setInternalActiveTab(tab);
+    onActiveTabChange?.(tab);
+  };
 
   return (
-    <ModuleContextSidebar
-      label="Biblioteca Creativa"
-      width="standard"
-      variant="dark"
-      onCollapse={onCollapse}
-    >
+    <div className="min-w-0 select-none" data-visual-contract="shared-studio-resource-content">
       {/* PESTAÑAS PRINCIPALES (BRAND KIT | STORYBOARD | ELEMENTOS) */}
-      <div role="tablist" aria-label="Secciones de biblioteca creativa" className="flex rounded-xl bg-slate-950 p-1 mb-4 border border-slate-800">
+      <div role="tablist" aria-label="Secciones de biblioteca creativa" className="mb-4 flex flex-wrap gap-1 rounded-xl border border-slate-800 bg-slate-950 p-1">
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'storyboard'}
           aria-controls="creative-storyboard-panel"
-          onClick={() => setActiveTab('storyboard')}
-          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'storyboard' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          onClick={() => selectTab('storyboard')}
+          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+            activeTab === 'storyboard' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <Layers className="size-3.5" />
@@ -65,9 +68,9 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
           role="tab"
           aria-selected={activeTab === 'brand'}
           aria-controls="creative-brand-panel"
-          onClick={() => setActiveTab('brand')}
-          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'brand' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          onClick={() => selectTab('brand')}
+          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+            activeTab === 'brand' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <Shield className="size-3.5 text-accent" />
@@ -79,13 +82,27 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
           role="tab"
           aria-selected={activeTab === 'elements'}
           aria-controls="creative-elements-panel"
-          onClick={() => setActiveTab('elements')}
-          className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
-            activeTab === 'elements' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
+          onClick={() => selectTab('elements')}
+          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+            activeTab === 'elements' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <Plus className="size-3.5" />
           <span>Capas</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'audio'}
+          aria-controls="creative-audio-panel"
+          onClick={() => selectTab('audio')}
+          className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border px-1.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+            activeTab === 'audio' ? 'border-brand-cyan/50 bg-primary/25 text-brand-cyan shadow-xs' : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+          }`}
+        >
+          <Music className="size-3.5" />
+          <span>Audio</span>
         </button>
       </div>
 
@@ -177,7 +194,7 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onRemoveScene(scene.id); }}
-                        className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+                        className="flex min-h-11 min-w-11 items-center justify-center rounded p-1 text-red-200 hover:bg-red-500/20 hover:text-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                         title="Eliminar"
                       >
                         <Trash2 className="size-3.5" />
@@ -354,6 +371,24 @@ export const CreativeEditorAssetSidebar: React.FC<CreativeEditorAssetSidebarProp
           </button>
         </div>
       )}
-    </ModuleContextSidebar>
+      {activeTab === 'audio' && (
+        <div id="creative-audio-panel" role="tabpanel" aria-label="Audio" className="space-y-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Audio de la escena</span>
+          <button
+            type="button"
+            onClick={() => onAddLayer('audio')}
+            className="flex w-full items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-left hover:border-primary hover:bg-primary/10 transition-all"
+          >
+            <div className="flex size-8 items-center justify-center rounded-lg bg-slate-800 text-purple-400">
+              <Music className="size-4" />
+            </div>
+            <div>
+              <strong className="block text-xs font-bold text-slate-100">Pista de Audio</strong>
+              <span className="text-[10px] text-slate-400">Música de fondo o voz en off</span>
+            </div>
+          </button>
+        </div>
+      )}
+    </div>
   );
 };

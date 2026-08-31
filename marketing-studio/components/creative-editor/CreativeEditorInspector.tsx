@@ -1,7 +1,7 @@
 import React from 'react';
-import { Trash2, AlertTriangle, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
-import { ModuleContextPanel } from '../../../components/backoffice-shell/ModuleContextPanel';
-import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, AudioLayer, TransitionType } from '../../../packages/video-studio/src/domain/videoProject';
+import { Trash2, AlertTriangle, Eye, EyeOff, Lock, Unlock, RefreshCw } from 'lucide-react';
+import { StudioInspectorPanel } from '../../../components/backoffice-shell/primitives';
+import type { Scene, Layer, SceneTemplateId, TextLayer, SubtitleLayer, ComponentLayer, AudioLayer, TransitionType, TextAnimationType, SubtitleStylePreset } from '../../../packages/video-studio/src/domain/videoProject';
 import { resolveLayerPosition } from '../../../packages/video-studio/src/domain/videoProject';
 
 export interface CreativeEditorInspectorProps {
@@ -13,7 +13,42 @@ export interface CreativeEditorInspectorProps {
   onRemoveLayer: (sceneId: string, layerId: string) => void;
   warnings: string[];
   onClose?: () => void;
+  error?: string;
+  onRetryRender?: () => void;
 }
+
+const inspectorControlClass =
+  'w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 transition-colors focus:border-brand-cyan focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
+
+const inspectorSelectClass =
+  'w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-xs text-slate-200 transition-colors focus:border-brand-cyan focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
+
+const inspectorIconButtonClass =
+  'flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80';
+
+const RenderIssueNotice: React.FC<{ error?: string; onRetryRender?: () => void }> = ({ error, onRetryRender }) =>
+  error ? (
+    <div
+      role="alert"
+      className="flex items-start gap-2 rounded-2xl border border-rose-500/40 bg-rose-500/10 p-3 text-[11px] leading-relaxed text-rose-200"
+    >
+      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-rose-300" />
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-rose-300">No se pudo renderizar el vídeo</p>
+        <p>{error}</p>
+        {onRetryRender && (
+          <button
+            type="button"
+            onClick={onRetryRender}
+            className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-rose-400/40 px-2 py-1 text-[10px] font-bold text-rose-200 transition-colors hover:bg-rose-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+          >
+            <RefreshCw className="size-3" />
+            Reintentar
+          </button>
+        )}
+      </div>
+    </div>
+  ) : null;
 
 export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = ({
   activeScene,
@@ -24,27 +59,36 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
   onRemoveLayer,
   warnings,
   onClose,
+  error,
+  onRetryRender,
 }) => {
   if (!activeScene) {
     return (
-      <ModuleContextPanel label="Inspector" width="standard" variant="dark" onClose={onClose}>
-        <p className="text-xs text-slate-400">Selecciona una escena o capa para editar sus propiedades.</p>
-      </ModuleContextPanel>
+      <StudioInspectorPanel as="div" width="standard" variant="dark" onClose={onClose}>
+        <div className="space-y-4" data-creative-studio-region="inspector-content">
+          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
+          <p className="rounded-2xl border border-slate-800 bg-slate-950/90 p-3 text-xs leading-relaxed text-slate-400">
+            Selecciona una escena o capa para editar sus propiedades.
+          </p>
+        </div>
+      </StudioInspectorPanel>
     );
   }
 
   const selectedLayer = activeScene.layers.find((l) => l.id === selectedLayerId);
 
   return (
-    <ModuleContextPanel
-      label={selectedLayer ? `Capa: ${selectedLayer.type.toUpperCase()}` : `Escena: ${activeScene.id}`}
+    <StudioInspectorPanel
+      as="div"
+      title={selectedLayer ? `Capa: ${selectedLayer.type.toUpperCase()}` : `Escena: ${activeScene.id}`}
       width="standard"
       variant="dark"
       onClose={onClose}
     >
       {/* MODO A: INSPECTOR DE CAPA SELECCIONADA */}
       {selectedLayer ? (
-        <div className="space-y-4">
+        <div className="space-y-4" data-creative-studio-region="inspector-content">
+          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center rounded-md bg-primary/20 text-brand-cyan text-xs font-bold uppercase">
@@ -57,7 +101,9 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               <button
                 type="button"
                 onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { visible: selectedLayer.visible === false ? true : false })}
-                className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                aria-pressed={selectedLayer.visible !== false}
+                aria-label={selectedLayer.visible === false ? 'Mostrar capa' : 'Ocultar capa'}
+                className={inspectorIconButtonClass}
                 title={selectedLayer.visible === false ? 'Mostrar capa' : 'Ocultar capa'}
               >
                 {selectedLayer.visible === false ? <EyeOff className="size-4 text-amber-400" /> : <Eye className="size-4" />}
@@ -66,7 +112,9 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               <button
                 type="button"
                 onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { locked: !selectedLayer.locked })}
-                className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                aria-pressed={Boolean(selectedLayer.locked)}
+                aria-label={selectedLayer.locked ? 'Desbloquear capa' : 'Bloquear capa'}
+                className={inspectorIconButtonClass}
                 title={selectedLayer.locked ? 'Desbloquear' : 'Bloquear'}
               >
                 {selectedLayer.locked ? <Lock className="size-4 text-brand-cyan" /> : <Unlock className="size-4" />}
@@ -75,7 +123,8 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               <button
                 type="button"
                 onClick={() => onRemoveLayer(activeScene.id, selectedLayer.id)}
-                className="rounded p-1 text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+                aria-label="Eliminar capa"
+                className={`${inspectorIconButtonClass} hover:border-rose-500/40 hover:bg-rose-500/20 hover:text-rose-300`}
                 title="Eliminar capa"
               >
                 <Trash2 className="size-4" />
@@ -83,7 +132,21 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
             </div>
           </div>
 
+          {selectedLayer.locked && (
+            <div
+              role="status"
+              className="flex items-start gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-200"
+            >
+              <Lock className="mt-0.5 size-4 shrink-0 text-amber-300" />
+              <span>Capa protegida. Desbloquéala para cambiar sus propiedades de vídeo.</span>
+            </div>
+          )}
+
           {/* EDITOR ESPECÍFICO DE TEXTO */}
+          <fieldset
+            disabled={Boolean(selectedLayer.locked)}
+            className="min-w-0 space-y-4 disabled:cursor-not-allowed disabled:opacity-60"
+          >
           {selectedLayer.type === 'text' && (
             <div className="space-y-3">
               <div>
@@ -92,7 +155,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                   value={(selectedLayer as TextLayer).text}
                   onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { text: e.target.value })}
                   rows={3}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                  className={inspectorControlClass}
                 />
               </div>
 
@@ -100,8 +163,8 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
                 <select
                   value={(selectedLayer as TextLayer).animation ?? 'none'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as any })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-200 focus:border-primary focus:outline-none"
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as TextAnimationType })}
+                  className={inspectorSelectClass}
                 >
                   <option value="none">Ninguna</option>
                   <option value="pop">Pop (Rebote elástico)</option>
@@ -133,8 +196,9 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                       key={c}
                       type="button"
                       onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { color: c })}
+                      aria-label={`Color de texto ${c}`}
                       style={{ backgroundColor: c }}
-                      className="size-6 rounded-full border border-slate-700 shadow-xs focus:ring-2 focus:ring-primary"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-slate-700 shadow-xs transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                     />
                   ))}
                 </div>
@@ -151,7 +215,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                   value={(selectedLayer as SubtitleLayer).text}
                   onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { text: e.target.value })}
                   rows={2}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                  className={inspectorControlClass}
                 />
               </div>
 
@@ -159,8 +223,8 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Animación de Entrada</label>
                 <select
                   value={(selectedLayer as SubtitleLayer).animation ?? 'pop'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as any })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-200 focus:border-primary focus:outline-none"
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { animation: e.target.value as TextAnimationType })}
+                  className={inspectorSelectClass}
                 >
                   <option value="pop">Pop (Rebote Viral)</option>
                   <option value="slide-up">Slide up</option>
@@ -173,8 +237,8 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Estilo de Subtítulo</label>
                 <select
                   value={(selectedLayer as SubtitleLayer).stylePreset ?? 'viral-yellow'}
-                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { stylePreset: e.target.value as any })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-200 focus:border-primary focus:outline-none"
+                  onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { stylePreset: e.target.value as SubtitleStylePreset })}
+                  className={inspectorSelectClass}
                 >
                   <option value="viral-yellow">Amarillo Viral TikTok (Recomendado)</option>
                   <option value="clean-white">Blanco Limpio con Sombra</option>
@@ -209,7 +273,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.name as string) ?? 'Sofía'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, name: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -218,7 +282,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.role as string) ?? 'Asesora Especialista'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, role: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -227,7 +291,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         value={(props.message as string) ?? ''}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, message: e.target.value } })}
                         rows={2}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -236,7 +300,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.whatsAppText as string) ?? (props.cta as string) ?? 'Pregúntanos por WhatsApp'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, whatsAppText: e.target.value, cta: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                   </>
@@ -250,7 +314,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.title as string) ?? 'PÓLIZA 100% VÁLIDA PARA VISADO'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -259,7 +323,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.subtitle as string) ?? ''}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -268,7 +332,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.highlight as string) ?? 'GARANTÍA CONSULAR'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, highlight: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                   </>
@@ -282,7 +346,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.title as string) ?? 'COMPAÑÍAS LÍDERES AUTORIZADAS'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -291,7 +355,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.subtitle as string) ?? ''}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, subtitle: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                   </>
@@ -305,7 +369,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.title as string) ?? '¿SEGURO DE VIAJE O SEGURO DE VISADO?'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, title: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -314,7 +378,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.wrongOptionTitle as string) ?? 'Seguro de Viaje Común'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, wrongOptionTitle: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                     <div>
@@ -323,7 +387,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                         type="text"
                         value={(props.correctOptionTitle as string) ?? 'Seguro VitaBlue Extranjería'}
                         onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { props: { ...props, correctOptionTitle: e.target.value } })}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+                        className={inspectorControlClass}
                       />
                     </div>
                   </>
@@ -363,7 +427,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     max={60}
                     value={(selectedLayer as AudioLayer).fadeInDuration ?? 15}
                     onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeInDuration: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
                 <div>
@@ -374,7 +438,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     max={60}
                     value={(selectedLayer as AudioLayer).fadeOutDuration ?? 15}
                     onChange={(e) => onUpdateLayer(activeScene.id, selectedLayer.id, { fadeOutDuration: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
               </div>
@@ -427,21 +491,21 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                   <button
                     type="button"
                     onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 15 } })}
-                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     Arriba
                   </button>
                   <button
                     type="button"
                     onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 50 } })}
-                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     Centro
                   </button>
                   <button
                     type="button"
                     onClick={() => onUpdateLayer(activeScene.id, selectedLayer.id, { position: { x: 50, y: 80 } })}
-                    className="flex-1 rounded-lg border border-slate-700 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+                    className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
                   >
                     Abajo
                   </button>
@@ -449,13 +513,15 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
               </div>
             );
           })()}
+          </fieldset>
         </div>
       ) : (
         /* MODO B: INSPECTOR DE ESCENA ACTIVA */
-        <div className="space-y-5">
+        <div className="space-y-5" data-creative-studio-region="inspector-content">
+          <RenderIssueNotice error={error} onRetryRender={onRetryRender} />
           {/* Advertencias de desbordamiento */}
           {warnings.length > 0 && (
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300 space-y-1.5">
+          <div role="alert" className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300 space-y-1.5">
               <div className="flex items-center gap-1.5 font-bold text-amber-400">
                 <AlertTriangle className="size-4 shrink-0" />
                 <span>Advertencias de escena:</span>
@@ -471,7 +537,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
             <select
               value={activeScene.templateId}
               onChange={(e) => onUpdateScene(activeScene.id, { templateId: e.target.value as SceneTemplateId })}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs font-bold text-slate-100 focus:border-primary focus:outline-none"
+              className={`${inspectorSelectClass} font-bold`}
             >
               <option value="text_hook">Hook inicial (Titular)</option>
               <option value="requirements_list">Lista de requisitos (Checklist)</option>
@@ -501,7 +567,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
             <select
               value={activeScene.transition?.type ?? 'none'}
               onChange={(e) => onUpdateScene(activeScene.id, { transition: { type: e.target.value as TransitionType, durationInFrames: activeScene.transition?.durationInFrames ?? 15 } })}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 focus:border-primary focus:outline-none"
+              className={inspectorControlClass}
             >
               <option value="none">Ninguna (Corte directo)</option>
               <option value="fade">Disolver (Fade)</option>
@@ -523,7 +589,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     value={(activeScene.content.text as string) ?? ''}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'text', e.target.value)}
                     rows={3}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
                 <div>
@@ -532,7 +598,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     type="text"
                     value={(activeScene.content.badge as string) ?? 'VISA READY'}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'badge', e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
               </>
@@ -546,7 +612,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     type="text"
                     value={(activeScene.content.title as string) ?? 'Requisitos Visado'}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'title', e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none mb-2"
+                    className={`${inspectorControlClass} mb-2`}
                   />
                 </div>
                 <div>
@@ -555,7 +621,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     value={Array.isArray(activeScene.content.items) ? (activeScene.content.items as string[]).join('\n') : ''}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'items', e.target.value.split('\n').filter(Boolean))}
                     rows={4}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
               </>
@@ -569,7 +635,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     type="text"
                     value={(activeScene.content.advisorName as string) ?? ''}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'advisorName', e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
                 <div>
@@ -578,7 +644,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     type="text"
                     value={(activeScene.content.role as string) ?? ''}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'role', e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
                 <div>
@@ -587,7 +653,7 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
                     type="text"
                     value={(activeScene.content.cta as string) ?? 'Pregúntanos por WhatsApp'}
                     onChange={(e) => onUpdateSceneContent(activeScene.id, 'cta', e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2 text-xs text-slate-100 placeholder-slate-500 focus:border-primary focus:outline-none"
+                    className={inspectorControlClass}
                   />
                 </div>
               </>
@@ -595,6 +661,6 @@ export const CreativeEditorInspector: React.FC<CreativeEditorInspectorProps> = (
           </div>
         </div>
       )}
-    </ModuleContextPanel>
+    </StudioInspectorPanel>
   );
 };

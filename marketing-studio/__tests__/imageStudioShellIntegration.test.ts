@@ -37,7 +37,12 @@ describe('Image Studio shared shell integration', () => {
 
     expect(mapped.toolbar).toBe('image-toolbar');
     expect(mapped.stage).toBe('image-stage');
-    expect(mapped.footer).toBe('image-slide-strip');
+    expect(mapped.footer).toMatchObject({
+      props: {
+        'aria-label': 'Área de trabajo inferior',
+        children: ['image-slide-strip'],
+      },
+    });
     expect(mapped.overlays).toBe('image-preview');
   });
 });

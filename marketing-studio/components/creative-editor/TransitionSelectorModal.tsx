@@ -43,6 +43,9 @@ export const TransitionSelectorModal: React.FC<TransitionSelectorModalProps> = (
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="transition-selector-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -57,12 +60,13 @@ export const TransitionSelectorModal: React.FC<TransitionSelectorModalProps> = (
             <div className="flex size-6 items-center justify-center rounded-md bg-accent/20 text-accent">
               <Zap className="size-3.5" />
             </div>
-            <span className="text-xs font-bold text-slate-100">Transición de Entrada</span>
+            <span id="transition-selector-title" className="text-xs font-bold text-slate-100">Transición de Entrada</span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex size-6 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-white"
+            aria-label="Cerrar selector de transición"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           >
             <X className="size-4" />
           </button>
@@ -79,6 +83,7 @@ export const TransitionSelectorModal: React.FC<TransitionSelectorModalProps> = (
                 key={opt.type}
                 type="button"
                 onClick={() => handleSelect(opt.type)}
+                aria-pressed={isSelected}
                 className={`flex w-full items-center justify-between rounded-xl border p-2.5 text-left transition-all ${
                   isSelected
                     ? 'border-accent bg-accent/15 text-white ring-1 ring-accent/50'

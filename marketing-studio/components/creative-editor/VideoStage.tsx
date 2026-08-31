@@ -5,7 +5,8 @@ import { vitablueBrandAdapter } from '../../../packages/video-studio/src/adapter
 import type { Scene, Layer } from '../../../packages/video-studio/src/domain/videoProject';
 import { SafeZonesOverlay } from './SafeZonesOverlay';
 import { OnCanvasEditorOverlay } from './OnCanvasEditorOverlay';
-import { Minus, Plus, Maximize2, RotateCcw } from 'lucide-react';
+import { Hand, Minus, MousePointer, Plus, Maximize2, RotateCcw } from 'lucide-react';
+import { StudioStageToolbar } from '../../../components/backoffice-shell/primitives';
 
 export type VideoAspectRatio = 'vertical' | 'square' | 'landscape';
 export type ZoomLevel = 'fit' | number;
@@ -94,6 +95,12 @@ export const VideoStage: React.FC<VideoStageProps> = ({
     };
   }, [zoomLevel, onZoomLevelChange]);
 
+  useEffect(() => {
+    if (zoomLevel === 'fit') {
+      setPanOffset((current) => current.x === 0 && current.y === 0 ? current : { x: 0, y: 0 });
+    }
+  }, [zoomLevel]);
+
   // 2. DETECCIÓN DE TECLA ALT / OPTION PARA MODO MANO (PAN)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -174,7 +181,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       role="region"
       aria-label="Lienzo de vídeo"
       tabIndex={0}
-      className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-slate-950 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+      className={`relative flex h-full min-h-0 flex-1 items-center justify-center p-4 sm:p-6 overflow-hidden bg-transparent select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
         isHandToolActive ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : ''
       }`}
     >
@@ -230,17 +237,49 @@ export const VideoStage: React.FC<VideoStageProps> = ({
       </div>
 
       {/* BARRA INFERIOR FLOTANTE DE CONTROL DE ZOOM (ESTILO CANVA / CAPCUT) */}
-      <div
-        className="absolute bottom-4 right-4 z-40 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3 py-1.5 text-xs text-white shadow-2xl backdrop-blur-md ring-1 ring-white/5"
+      <StudioStageToolbar
+        role="toolbar"
+        aria-label="Controles del lienzo"
+        data-visual-contract="image-studio-stage-toolbar"
+        className=""
         onClick={(e) => e.stopPropagation()}
       >
-        {/* BOTÓN RESTABLECER PAN SI SE HA MOVIDO */}
+         <div className="flex items-center rounded-xl bg-slate-950/80 p-0.5 border border-slate-800/80">
+           <button
+             type="button"
+             onClick={() => setIsHandToolActive(false)}
+             aria-pressed={!isHandToolActive}
+             aria-label="Herramienta selección"
+             className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+               !isHandToolActive ? 'border border-brand-cyan/30 bg-primary/25 text-brand-cyan shadow-xs' : 'border border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+             }`}
+             title="Herramienta selección (V)"
+           >
+             <MousePointer className="size-3.5" aria-hidden="true" />
+             <span className="hidden sm:inline">Selección</span>
+           </button>
+           <button
+             type="button"
+             onClick={() => setIsHandToolActive(true)}
+             aria-pressed={isHandToolActive}
+             aria-label="Herramienta mano"
+             className={`flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+               isHandToolActive ? 'border border-brand-cyan/30 bg-primary/25 text-brand-cyan shadow-xs' : 'border border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+             }`}
+             title="Herramienta mano / pan (H)"
+           >
+             <Hand className="size-3.5" aria-hidden="true" />
+             <span className="hidden sm:inline">Mano</span>
+           </button>
+         </div>
+         <div className="h-4 w-px bg-slate-800" />
+         {/* BOTÓN RESTABLECER PAN SI SE HA MOVIDO */}
         {(panOffset.x !== 0 || panOffset.y !== 0) && (
           <button
             type="button"
             onClick={() => setPanOffset({ x: 0, y: 0 })}
             aria-label="Centrar lienzo"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
             title="Centrar lienzo"
           >
             <RotateCcw className="size-3.5" aria-hidden="true" />
@@ -252,7 +291,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           type="button"
           onClick={() => handleStepZoom(-10)}
           aria-label="Reducir zoom"
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title="Alejar (Zoom out)"
         >
           <Minus className="size-3.5" aria-hidden="true" />
@@ -267,7 +306,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           value={numericZoom}
           aria-label="Nivel de zoom del lienzo"
           onChange={(e) => onZoomLevelChange?.(Number(e.target.value))}
-          className="w-20 sm:w-28 accent-primary h-1 bg-slate-700 rounded-lg cursor-pointer"
+          className="h-1 w-20 cursor-pointer rounded-lg bg-slate-700 accent-primary sm:w-28"
           title={`Zoom: ${numericZoom}%`}
         />
 
@@ -276,7 +315,7 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           type="button"
           onClick={() => handleStepZoom(10)}
           aria-label="Aumentar zoom"
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80"
           title="Acercar (Zoom in)"
         >
           <Plus className="size-3.5" aria-hidden="true" />
@@ -292,17 +331,17 @@ export const VideoStage: React.FC<VideoStageProps> = ({
           type="button"
           onClick={handleResetFit}
           aria-label="Ajustar al lienzo"
-          className={`flex min-h-11 items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
+          className={`flex min-h-11 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/80 ${
             isFit
-              ? 'bg-primary/30 text-brand-cyan border border-primary/40'
-              : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+              ? 'border-brand-cyan/30 bg-primary/30 text-brand-cyan'
+              : 'border-transparent bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
           }`}
           title="Ajustar al tamaño de pantalla"
         >
           <Maximize2 className="size-3" aria-hidden="true" />
           <span>Ajustar</span>
         </button>
-      </div>
+      </StudioStageToolbar>
     </div>
   );
 };

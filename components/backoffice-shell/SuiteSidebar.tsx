@@ -56,7 +56,9 @@ export const SuiteSidebar: React.FC<SuiteSidebarProps> = ({
       <aside
         className={`${isHidden ? 'hidden' : isMobileOpen ? 'fixed inset-y-0 left-0 z-40 flex w-[min(84vw,20rem)] min-w-0 flex-col' : 'hidden'} ${
           !isMobileOpen && !isHidden ? sidebarWidthClass : ''
-        } shrink-0 overflow-hidden border-r border-slate-800 bg-slate-900 text-white lg:static lg:flex lg:flex-col`}
+        } shrink-0 overflow-hidden border-r border-slate-800 bg-slate-900 text-white ${
+          isHidden ? '' : 'lg:static lg:flex lg:flex-col'
+        }`}
         aria-label="Suite sidebar"
       >
         {/* Identidad de la Suite */}
