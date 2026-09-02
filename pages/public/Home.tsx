@@ -415,9 +415,9 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           name="description"
           content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'}
         />
-        <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es/'} />
+        <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'} />
         <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/" />
         <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/" />
         
         {/* Open Graph / Facebook */}
@@ -425,7 +425,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         <meta property="og:title" content={isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'} />
         <meta property="og:description" content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'} />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
-        <meta property="og:url" content={isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es/'} />
+        <meta property="og:url" content={isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'} />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
