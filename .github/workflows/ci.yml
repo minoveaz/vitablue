@@ -69,12 +69,14 @@ jobs:
               - 'index.html'
               - 'index.css'
               - 'components/**'
-              - 'e2e/accessibility.audit.spec.ts'
+              - 'e2e/accessibility.public.spec.ts'
               - 'e2e/public.runtime.audit.spec.ts'
-              - 'e2e/public.flows.spec.ts'
-              - 'e2e/visual.critical.spec.ts'
-              - 'e2e/mobile.navigation.spec.ts'
-              - 'e2e/responsive.diagnostic.spec.ts'
+              - 'e2e/smoke.public.spec.ts'
+              - 'e2e/functional.blog.spec.ts'
+              - 'e2e/functional.wizard.spec.ts'
+              - 'e2e/visual.public.spec.ts'
+              - 'e2e/functional.mobile-public.spec.ts'
+              - 'e2e/responsive.public.spec.ts'
             seo_surface:
               - 'e2e/seo.audit.spec.ts'
               # Temporary: the global SEO audit has known baseline failures.
@@ -146,7 +148,7 @@ jobs:
           if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────
-  # JOB 2: Playwright E2E — Responsive & SEO Audit
+  # JOB 2: Playwright E2E — Public suites, responsive and SEO audit
   # Depende del build (necesita el dist pre-renderizado)
   # ────────────────────────────────────────────────────────────────────
   playwright:
@@ -167,11 +169,11 @@ jobs:
       matrix:
         include:
           - project: desktop
-            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/smoke.public.spec.ts e2e/public.runtime.audit.spec.ts e2e/functional.blog.spec.ts e2e/functional.wizard.spec.ts e2e/accessibility.public.spec.ts e2e/visual.public.spec.ts
           - project: mobile
-            tests: e2e/mobile.navigation.spec.ts
+            tests: e2e/functional.mobile-public.spec.ts
           - project: mobile-compact
-            tests: e2e/responsive.diagnostic.spec.ts
+            tests: e2e/responsive.public.spec.ts e2e/functional.mobile-public.spec.ts e2e/visual.public.spec.ts
 
     steps:
       - name: Checkout Source Code
