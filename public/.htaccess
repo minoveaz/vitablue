@@ -64,8 +64,8 @@
   RewriteRule ^backoffice/document-intelligence$ /backoffice/tools/document-intelligence/ [R=301,L,NE]
 
   # Alias de productos sin trailing slash
-  RewriteRule ^estudiantes$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
-  RewriteRule ^cotizador\.html$ /wizard/ [R=301,L,NE]
+  RewriteRule ^estudiantes/?$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
+  RewriteRule ^cotizador\.html/?$ /wizard/ [R=301,L,NE]
 
   # Redirecciones legacy de países y ciudades (con o sin barra final).
   RewriteRule ^seguro-medico-visado-espana/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
@@ -84,24 +84,24 @@
   RewriteRule ^seguro-medico-estudiantes/malaga/?$ /productos/seguros-salud/seguro-medico-estudiantes/malaga/ [R=301,L,NE]
 
   # Redirecciones permanentes de URLs legacy hacia sus canónicas.
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus\.html$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana\.html$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/sanitas-mas-salud$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-medico-estudiantes-extranjeros-espana\.html$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
-  RewriteRule ^productos/international-students\.html$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
-  RewriteRule ^seguros-salud$ /productos/seguros-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-de-salud\.html$ /productos/seguros-salud/ [R=301,L,NE]
-  RewriteRule ^seguro-expatriados$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-medico-expatriados\.html$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
-  RewriteRule ^seguro-nomadas$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-nomadas-digitales\.html$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
-  RewriteRule ^productos/sanitas-mas-salud\.html$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/sanitas-mascotas\.html$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
-  RewriteRule ^productos/asistencia-familiar-iplus\.html$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
-  RewriteRule ^privacidad\.html$ /privacidad/ [R=301,L,NE]
-  RewriteRule ^politica-cookies\.html$ /politica-cookies/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html/?$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus\.html/?$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana\.html/?$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/sanitas-mas-salud/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-medico-estudiantes-extranjeros-espana\.html/?$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
+  RewriteRule ^productos/international-students\.html/?$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
+  RewriteRule ^seguros-salud/?$ /productos/seguros-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-de-salud\.html/?$ /productos/seguros-salud/ [R=301,L,NE]
+  RewriteRule ^seguro-expatriados/?$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-medico-expatriados\.html/?$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
+  RewriteRule ^seguro-nomadas/?$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-nomadas-digitales\.html/?$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
+  RewriteRule ^productos/sanitas-mas-salud\.html/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/sanitas-mascotas\.html/?$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
+  RewriteRule ^productos/asistencia-familiar-iplus\.html/?$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
+  RewriteRule ^privacidad\.html/?$ /privacidad/ [R=301,L,NE]
+  RewriteRule ^politica-cookies\.html/?$ /politica-cookies/ [R=301,L,NE]
   
   RewriteRule ^index\.html$ / [R=301,L,NE]
 
