@@ -148,7 +148,7 @@ jobs:
           if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────
-  # JOB 2: Playwright E2E — Responsive & SEO Audit
+  # JOB 2: Playwright E2E — Public suites, responsive and SEO audit
   # Depende del build (necesita el dist pre-renderizado)
   # ────────────────────────────────────────────────────────────────────
   playwright:
