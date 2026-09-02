@@ -67,6 +67,22 @@
   RewriteRule ^estudiantes$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
   RewriteRule ^cotizador\.html$ /wizard/ [R=301,L,NE]
 
+  # Redirecciones legacy de países y ciudades (con o sin barra final).
+  RewriteRule ^seguro-medico-visado-espana/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/mexico-cdmx/?$ /productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/peru-lima/?$ /productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/argentina-buenos-aires/?$ /productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/ecuador-quito-guayaquil/?$ /productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/mexico-cdmx/?$ /productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/peru-lima/?$ /productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/argentina-buenos-aires/?$ /productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/ecuador-quito-guayaquil/?$ /productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/madrid/?$ /productos/seguros-salud/seguro-medico-estudiantes/madrid/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/barcelona/?$ /productos/seguros-salud/seguro-medico-estudiantes/barcelona/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/valencia/?$ /productos/seguros-salud/seguro-medico-estudiantes/valencia/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/malaga/?$ /productos/seguros-salud/seguro-medico-estudiantes/malaga/ [R=301,L,NE]
+
   # Redirecciones permanentes de URLs legacy hacia sus canónicas.
   RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
   RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
