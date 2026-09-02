@@ -9,16 +9,19 @@ import FloatingWhatsApp from '@/components/organisms/FloatingWhatsApp';
 
 const PublicRouteSeo: React.FC = () => {
   const { pathname } = useLocation();
-  const definition = routeRegistry.find((route) => route.path === pathname)
+  const normalizedPath = pathname === '/' ? pathname : pathname.replace(/\/$/, '');
+  const definition = routeRegistry.find((route) => (
+    route.path === pathname || route.path.replace(/\/$/, '') === normalizedPath
+  ))
     ?? routeRegistry.find((route) => route.path.includes(':') && pathname.startsWith(route.path.split('/:')[0]));
-  if (!definition?.indexable || typeof window === 'undefined') return null;
+  if (!definition?.indexable) return null;
 
   // Hostinger CDN añade trailing slash a todas las rutas (excecto "/").
   // Normalizamos canonical y alternate para que coincidan con la URL real
   // que sirve el servidor (200 OK) y Google no detecte un redirect.
   const withSlash = (p: string) => (p === '/' ? p : `${p}/`);
 
-  const origin = window.location.origin;
+  const origin = 'https://www.vitablue.es';
   const canonicalPath = withSlash(definition.canonical ?? pathname);
   const alternatePath = definition.alternate ? withSlash(definition.alternate) : undefined;
   return (

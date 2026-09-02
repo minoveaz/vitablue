@@ -45,6 +45,12 @@
   # Evita que http://vitablue.es/ aparezca como "Página con
   # redirección" por depender solo del panel de Hostinger.
   # ---------------------------------------------------------------
+  # Combine host/protocol normalization with the index redirect.
+  RewriteCond %{REQUEST_URI} ^/index\.html$ [NC]
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^index\.html$ https://www.vitablue.es/ [R=301,L,NE]
+
   RewriteCond %{HTTPS} off [OR]
   RewriteCond %{HTTP_HOST} !^www\. [NC]
   RewriteRule ^ https://www.vitablue.es%{REQUEST_URI} [R=301,L,NE]
