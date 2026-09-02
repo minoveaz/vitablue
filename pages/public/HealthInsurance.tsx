@@ -319,7 +319,7 @@ export const HealthInsurance: React.FC = () => {
   ];
   void bentoProducts;
 
-  const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud';
+  const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/';
   const title = 'Seguros de Salud en España | Compara Tarifas y Coberturas | VitaBlue';
   const description = 'Compara los mejores seguros de salud privados de España (Sanitas, Adeslas, DKV, Mapfre). Coberturas con y sin copago, seguros de salud para extranjeros y asesoría.';
 

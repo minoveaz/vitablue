@@ -16,7 +16,7 @@ import {
 import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
 
 export const ConsularValidatorPage: React.FC = () => {
-  const canonicalUrl = 'https://www.vitablue.es/validador-visado';
+  const canonicalUrl = 'https://www.vitablue.es/validador-visado/';
   const pageTitle = 'Validador de Seguro Médico para Visado de España (2026) | VitaBlue';
   const pageDescription = 'Comprueba gratis en 30 segundos si tu póliza cumple las 4 exigencias del Consulado de España y Extranjería: 0€ copagos, sin carencias, repatriación y DGSFP.';
 

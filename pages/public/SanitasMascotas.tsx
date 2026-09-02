@@ -129,7 +129,7 @@ export const SanitasMascotas: React.FC = () => {
     }
   ];
 
-  const canonicalUrl = 'https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas';
+  const canonicalUrl = 'https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/';
   const title = 'Sanitas Mascotas | Seguro Veterinario para Perros y Gatos | VitaBlue';
   const description = 'Protege a tu perro o gato con Sanitas Mascotas. Seguro médico veterinario con consultas ilimitadas, vacunas incluidas y acceso a red nacional.';
 
@@ -338,5 +338,4 @@ export const SanitasMascotas: React.FC = () => {
 };
 
 export default SanitasMascotas;
-
 
