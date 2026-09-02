@@ -361,9 +361,9 @@ export const NomadInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/digital-nomad-insurance-spain/" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

@@ -369,9 +369,9 @@ export const ExpatInsurance: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados" />
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance-expatriates-spain/" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

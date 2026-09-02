@@ -213,14 +213,14 @@ export const TravelInsurance: React.FC = () => {
       <Helmet>
         <title>Seguro de Viaje Internacional | Cobertura Médica | VitaBlue</title>
         <meta name="description" content="Compara y contrata tu seguro de viaje internacional. Cobertura de gastos médicos, repatriación, pérdida de equipaje y anulación para tus viajes vacacionales o de larga estancia." />
-        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-viaje" />
+        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-viaje/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Seguro de Viaje Internacional | Cobertura Médica | VitaBlue" />
         <meta property="og:description" content="Compara y contrata tu seguro de viaje internacional. Cobertura de gastos médicos, repatriación, pérdida de equipaje y anulación para tus viajes vacacionales o de larga estancia." />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
-        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-viaje" />
+        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-viaje/" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -338,5 +338,3 @@ export const TravelInsurance: React.FC = () => {
 };
 
 export default TravelInsurance;
-
-

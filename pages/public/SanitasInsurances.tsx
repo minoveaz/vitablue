@@ -145,7 +145,7 @@ export const SanitasInsurances: React.FC = () => {
       <Helmet>
         <title>Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue</title>
         <meta name="description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
-        <link rel="canonical" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas" />
+        <link rel="canonical" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
@@ -373,5 +373,4 @@ export const SanitasInsurances: React.FC = () => {
 };
 
 export default SanitasInsurances;
-
 

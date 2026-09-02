@@ -90,12 +90,12 @@ export const BlogPost: React.FC = () => {
       <Helmet>
         <title>{post.title}</title>
         <meta name="description" content={post.excerpt} />
-        <link rel="canonical" href={`https://www.vitablue.es${blogPath}/${post.slug}`} />
+        <link rel="canonical" href={`https://www.vitablue.es${blogPath}/${post.slug}/`} />
         {alternateSlug && (
           <link
             rel="alternate"
             hrefLang={isEnglish ? 'es' : 'en'}
-            href={`https://www.vitablue.es${isEnglish ? '/blog' : '/en/blog'}/${alternateSlug}`}
+            href={`https://www.vitablue.es${isEnglish ? '/blog' : '/en/blog'}/${alternateSlug}/`}
           />
         )}
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
@@ -159,4 +159,3 @@ export const BlogPost: React.FC = () => {
 };
 
 export default BlogPost;
-
