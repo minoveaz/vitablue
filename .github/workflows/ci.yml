@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       public_frontend: ${{ steps.filter.outputs.public_frontend }}
+      seo_surface: ${{ steps.filter.outputs.seo_surface }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -55,10 +56,21 @@ jobs:
               - 'App.tsx'
               - 'index.html'
               - 'index.css'
+              - 'components/**'
+              - 'e2e/accessibility.audit.spec.ts'
+              - 'e2e/public.runtime.audit.spec.ts'
+              - 'e2e/public.flows.spec.ts'
+              - 'e2e/visual.critical.spec.ts'
+              - 'e2e/mobile.navigation.spec.ts'
+              - 'e2e/responsive.diagnostic.spec.ts'
+            seo_surface:
+              - 'App.tsx'
+              - 'index.html'
               - 'public/**'
-              - 'e2e/**'
-              # Public route/component changes should be added here explicitly.
-              # Backoffice changes must not trigger public E2E or SEO jobs.
+              - 'config/routes.ts'
+              - 'pages/public/**'
+              - 'utils/blogData.ts'
+              - 'e2e/seo.audit.spec.ts'
 
   # ────────────────────────────────────────────────────────────────────
   # JOB 1: Build estático pre-renderizado (SSG)
@@ -205,7 +217,7 @@ jobs:
     needs:
       - build
       - changes
-    if: needs.changes.outputs.public_frontend == 'true'
+    if: needs.changes.outputs.seo_surface == 'true'
 
     steps:
       - name: Checkout Source Code
