@@ -30,11 +30,11 @@ const canonical = (
   path: withTrailingSlash(path),
   kind: 'canonical',
   ...options,
-  canonical: withTrailingSlash(options.canonical),
+  canonical: withTrailingSlash(options.canonical ?? path),
   alternate: options.alternate ? withTrailingSlash(options.alternate) : undefined,
 });
 
-const withTrailingSlash = (path?: string): string | undefined => {
+const withTrailingSlash = (path: string): string => {
   if (!path || path === '/' || path.endsWith('/')) return path;
   return `${path}/`;
 };
