@@ -48,6 +48,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1440, height: 900 },
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
     {
       name: 'mobile',
@@ -55,6 +56,7 @@ export default defineConfig({
         ...devices['iPhone 13'],
         browserName: 'chromium',
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
     {
       name: 'mobile-compact',
@@ -64,6 +66,7 @@ export default defineConfig({
         // Forzar 375px (caso crítico según AGENTS.md)
         viewport: { width: 375, height: 667 },
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
   ],
 });

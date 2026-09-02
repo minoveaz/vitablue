@@ -11,6 +11,7 @@ export interface PublicRoute {
 
 const routeName = (path: string) => path === '/' ? 'home-es' : path.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'home';
 const canonicalPath = (path: string) => path === '/' || path.endsWith('/') ? path : `${path}/`;
+const isPublicPath = (path: string) => !/^\/(?:backoffice|marketing-studio|login|styleguide)(?:\/|$)/i.test(path);
 
 const canonicalPublicRoutes: PublicRoute[] = canonicalRoutes.map((route) => ({
   name: routeName(route.path),
@@ -26,6 +27,7 @@ const blogArticleRoutes: PublicRoute[] = blogPosts.map((post) => {
 });
 
 export const publicRoutes: PublicRoute[] = [...canonicalPublicRoutes, ...blogArticleRoutes]
+  .filter((route) => isPublicPath(route.path))
   .filter((route, index, routes) => routes.findIndex((candidate) => candidate.path === route.path) === index);
 
 export const indexablePublicRoutes = publicRoutes.filter((route) => route.indexable);
