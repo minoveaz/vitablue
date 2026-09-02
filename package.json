@@ -17,6 +17,7 @@
     "validate-routes": "node scripts/validate_routes.cjs",
     "validate-routes:strict": "node scripts/validate_routes.cjs --strict",
     "validate-sitemap": "node scripts/validate_sitemap.cjs",
+    "validate-static-seo": "node scripts/validate_static_seo.cjs",
     "generate-sitemap": "node scripts/generate_sitemap.cjs --write",
     "generate-sitemap:check": "node scripts/generate_sitemap.cjs",
     "lint": "eslint .",

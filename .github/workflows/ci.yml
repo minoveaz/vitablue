@@ -112,6 +112,9 @@ jobs:
           # Puppeteer en CI usa Chromium del sistema, no el local de macOS
           PUPPETEER_EXECUTABLE_PATH: ''
 
+      - name: Validate generated SEO
+        run: npm run validate-static-seo
+
       - name: Save dist to Cache
         uses: actions/cache/save@v4
         with:
