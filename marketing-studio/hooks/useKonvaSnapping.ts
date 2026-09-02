@@ -52,12 +52,28 @@ export function calculateSnapping(
   const targetBottom = targetY + halfH;
   const targetCenterY = targetY;
 
-  // 1. Lineas de referencia vertical (Canvas center, left, right)
+  // 1. Lineas de referencia vertical (Canvas center, left, right y límites de slides)
   const verticalTargets: { val: number; type: string }[] = [
     { val: 0, type: 'canvas-edge' },
     { val: canvasWidth / 2, type: 'canvas-center' },
     { val: canvasWidth, type: 'canvas-edge' },
   ];
+
+  // Si es un carrusel panorámico, añadir bordes y centros de cada diapositiva
+  if (canvasWidth > canvasHeight && canvasWidth >= 2160) {
+    const estimatedSlides = Math.round(canvasWidth / (canvasHeight > 1500 ? 1080 : canvasHeight === 1080 ? 1080 : 1080));
+    if (estimatedSlides >= 2 && estimatedSlides <= 10) {
+      const slideW = canvasWidth / estimatedSlides;
+      for (let s = 1; s <= estimatedSlides; s++) {
+        const slideEdge = s * slideW;
+        const slideCenter = slideEdge - slideW / 2;
+        if (s < estimatedSlides) {
+          verticalTargets.push({ val: slideEdge, type: 'slide-divider' });
+        }
+        verticalTargets.push({ val: slideCenter, type: 'slide-center' });
+      }
+    }
+  }
 
   // 2. Lineas de referencia horizontal (Canvas center, top, bottom)
   const horizontalTargets: { val: number; type: string }[] = [

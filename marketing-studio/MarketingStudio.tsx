@@ -95,9 +95,11 @@ const colorTokens = [
 const formatDimensions = (dimensions: { width: number; height: number }) => `${dimensions.width} × ${dimensions.height} px`;
 
 const MarketingStudio: React.FC = () => {
-  const { role } = useAuth();
-  const canEdit = role === 'admin' || role === 'editor';
-  const canDelete = role === 'admin';
+  const { user } = useAuth();
+  // LoopDev permissions are enforced by Supabase RLS. Keep authenticated
+  // controls available so permissioned users are not blocked by legacy roles.
+  const canEdit = Boolean(user);
+  const canDelete = Boolean(user);
   const { pathname } = useLocation();
   const { campaignId } = useParams<{ campaignId?: string }>();
   

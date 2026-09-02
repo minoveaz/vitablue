@@ -1,23 +1,150 @@
 import { MotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
 import type { LayerLayoutConstraints, LayoutProjectMetadata } from '../../packages/video-studio/src/domain/layoutConstraints';
+import type { CarouselBackgroundComposition } from './carouselBackgroundComposition';
+export { CAROUSEL_BACKGROUND_COLOR_VARIANTS } from './carouselBackgroundComposition';
+export type {
+  CarouselBackgroundColorVariant,
+  CarouselBackgroundColorVariantDefinition,
+  CarouselBackgroundComposition,
+  CarouselBackgroundCompositionInput,
+  CarouselBackgroundContinuity,
+  CarouselBackgroundLayer,
+  CarouselBackgroundLayerMetadata,
+  CarouselBackgroundMask,
+  CarouselBackgroundSafeZone,
+  CarouselBackgroundShadow,
+  CarouselBackgroundShapeType,
+  CarouselBackgroundTrajectory,
+  CarouselBackgroundTrajectoryType,
+} from './carouselBackgroundComposition';
 
 export interface ImageFormatPreset {
   id: string;
   name: string;
-  category: 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter' | 'youtube' | 'email_marketing' | 'documents' | 'sheets' | 'web_marketing' | 'custom';
+  category: 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter' | 'youtube' | 'email_marketing' | 'documents' | 'sheets' | 'web_marketing' | 'carousel' | 'custom';
   width: number;
   height: number;
   aspectRatio: string;
   description: string;
   iconName: string;
   recommendedFor: string;
+  isCarousel?: boolean;
+  defaultSlideCount?: number;
+  slideWidth?: number;
+  slideHeight?: number;
+  carouselPlatform?: CarouselPlatform;
+}
+
+export type CarouselPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'facebook' | 'twitter';
+
+export type CarouselSlideRole = 'hook' | 'content' | 'comparison' | 'proof' | 'cta';
+
+/** Supported semantic aspect ratios for social carousel variants. */
+export type CarouselAspectRatio = '1:1' | '4:5' | '9:16' | '16:9';
+export const CAROUSEL_ASPECT_RATIOS: readonly CarouselAspectRatio[] = ['1:1', '4:5', '9:16', '16:9'];
+
+/** Native slide dimensions used by the composition and export engines. */
+export const CAROUSEL_ASPECT_RATIO_DIMENSIONS: Readonly<
+  Record<CarouselAspectRatio, { width: number; height: number }>
+> = {
+  '1:1': { width: 1080, height: 1080 },
+  '4:5': { width: 1080, height: 1350 },
+  '9:16': { width: 1080, height: 1920 },
+  // 608px keeps the common 1080px social raster integer-aligned.
+  '16:9': { width: 1080, height: 608 },
+};
+
+export type CarouselVariantKind = 'layout' | 'color' | 'copy' | 'cta' | 'image';
+
+export interface CarouselCreativeVariant {
+  id: string;
+  kind: CarouselVariantKind;
+  label: string;
+  description: string;
+  layoutId?: string;
+  styleVariant?: ImageStyleVariantId;
+  copyPreset?: 'educational' | 'direct' | 'proof';
+  ctaText?: string;
+  imageTreatment?: ImageLayer['filter'];
+}
+
+export type CarouselLayoutSlot =
+  | 'eyebrow'
+  | 'title'
+  | 'body'
+  | 'badge'
+  | 'media'
+  | 'metric'
+  | 'cta'
+  | 'decorative';
+
+export interface CarouselElementSlot {
+  id: string;
+  type: CarouselLayoutSlot;
+  required?: boolean;
+  continuity?: 'local' | 'start' | 'middle' | 'end' | 'any';
+  maxLines?: number;
+}
+
+export interface CarouselSlideLayout {
+  id: string;
+  role: CarouselSlideRole;
+  label: string;
+  slots: CarouselElementSlot[];
+}
+
+export interface CarouselLayout {
+  id: string;
+  name: string;
+  description: string;
+  category: 'educational' | 'conversion' | 'comparison' | 'editorial';
+  minSlides: number;
+  maxSlides: number;
+  recommendedSlides: number[];
+  slides: CarouselSlideLayout[];
+  supportedPlatforms: CarouselPlatform[];
+}
+
+export type ImagePreviewMode = 'normal' | 'focus' | 'guides' | 'overview';
+
+export interface CarouselGeometry {
+  slideCount: number;
+  slideWidth: number;
+  slideHeight: number;
+  panoramaWidth: number;
+  panoramaHeight: number;
+}
+
+export interface CarouselSlideMetadata {
+  index: number;
+  title: string;
+  role: CarouselSlideRole;
+  notes?: string;
+}
+
+export interface CarouselConfig {
+  enabled: boolean;
+  platform: CarouselPlatform;
+  slideCount: number;
+  slideWidth: number;
+  slideHeight: number;
+  /** Layout catalog entry used to compose the carousel (optional for legacy projects). */
+  layoutId?: string;
+  currentSlideIndex: number;
+  slides: CarouselSlideMetadata[];
+  showSlideDividers: boolean;
+  showSlideNumbers: boolean;
+  autoSnapToSlides: boolean;
 }
 
 export type ImagePlatformGuideId =
   | 'meta-feed'
   | 'meta-story'
+  | 'instagram-carousel'
   | 'tiktok'
+  | 'tiktok-photo'
   | 'linkedin'
+  | 'linkedin-document'
   | 'x'
   | 'facebook-cover'
   | 'youtube'
@@ -39,13 +166,33 @@ export interface CanvasGuideSettings {
   customHorizontalGuides: number[];
 }
 
-export type ImageStyleVariantId = 'ocean' | 'gold' | 'mint' | 'midnight';
+export type ImageStyleVariantId = 'ocean' | 'gold' | 'mint' | 'midnight' | 'white';
 
 export interface ImageTextFit {
   mode: 'auto' | 'fixed';
   minFontSize: number;
   maxFontSize: number;
   maxLines: number;
+}
+
+/** Normalized crop framing for image layers. Position is the source focal point (0-100). */
+export interface ImageCropBounds {
+  /** Crop rectangle edges as percentages of the layer frame (0-100). */
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+export interface ImageCrop {
+  x: number;
+  y: number;
+  zoom: number;
+  /**
+   * Optional non-destructive crop rectangle. It is optional for backwards
+   * compatibility with projects that only stored a focal point and zoom.
+   */
+  bounds?: ImageCropBounds;
 }
 
 export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
@@ -82,6 +229,88 @@ export const IMAGE_FORMAT_PRESETS: ImageFormatPreset[] = [
     description: 'Formato clásico para Instagram, Facebook y carruseles',
     iconName: 'Square',
     recommendedFor: 'Feed tradicional y carruseles de producto',
+  },
+
+  // 2. CARRUSELES MULTIPLATAFORMA (PANORÁMICOS / SEAMLESS)
+  {
+    id: 'instagram-carousel-portrait',
+    name: 'Carrusel Instagram / Meta (4:5)',
+    category: 'carousel',
+    width: 5400,
+    height: 1350,
+    aspectRatio: '4:1',
+    description: 'Carrusel panorámico continuo de 5 slides (1080x1350 c/u). Máximo alcance y retención',
+    iconName: 'Layers',
+    recommendedFor: 'Guías paso a paso, carruseles continuos y anuncios en carrusel',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1350,
+    carouselPlatform: 'instagram',
+  },
+  {
+    id: 'tiktok-carousel-photo',
+    name: 'Carrusel TikTok Photo Mode (9:16)',
+    category: 'carousel',
+    width: 5400,
+    height: 1920,
+    aspectRatio: '9:16 (Multi)',
+    description: 'Modo Foto vertical interactivo de 5 slides (1080x1920 c/u) con swipe fullscreen',
+    iconName: 'Smartphone',
+    recommendedFor: 'Contenido viral educativo, storyboards y Photo Mode en TikTok',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1920,
+    carouselPlatform: 'tiktok',
+  },
+  {
+    id: 'linkedin-carousel-doc',
+    name: 'Carrusel de LinkedIn (PDF Doc)',
+    category: 'carousel',
+    width: 5400,
+    height: 1350,
+    aspectRatio: '4:5 (Multi)',
+    description: 'Documento interactivo deslizable para LinkedIn. Exportación optimizada en PDF',
+    iconName: 'Linkedin',
+    recommendedFor: 'Contenido B2B, infografías profesionales y resúmenes ejecutivos',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1350,
+    carouselPlatform: 'linkedin',
+  },
+  {
+    id: 'instagram-carousel-square',
+    name: 'Carrusel Cuadrado (1:1)',
+    category: 'carousel',
+    width: 5400,
+    height: 1080,
+    aspectRatio: '5:1',
+    description: 'Carrusel continuo clásico de 5 slides cuadrados (1080x1080 c/u) para Instagram y FB',
+    iconName: 'Square',
+    recommendedFor: 'Catálogo de productos, comparativas y galerías cuadradas',
+    isCarousel: true,
+    defaultSlideCount: 5,
+    slideWidth: 1080,
+    slideHeight: 1080,
+    carouselPlatform: 'instagram',
+  },
+  {
+    id: 'twitter-carousel-pack',
+    name: 'Pack Multi-Foto X / Twitter (4 Slides)',
+    category: 'carousel',
+    width: 4320,
+    height: 1080,
+    aspectRatio: '4:1',
+    description: 'Pack de 4 fotos contiguas (1080x1080 c/u) optimizadas para publicaciones en X',
+    iconName: 'Twitter',
+    recommendedFor: 'Hilos visuales resumidos en 4 imágenes',
+    isCarousel: true,
+    defaultSlideCount: 4,
+    slideWidth: 1080,
+    slideHeight: 1080,
+    carouselPlatform: 'twitter',
   },
   {
     id: 'linkedin-post',
@@ -329,6 +558,10 @@ export interface ImageLayer {
   type: 'block' | 'text' | 'image' | 'badge' | 'shape';
   blockType?: ImageBlockType;
   title: string;
+  /**
+   * Component properties. Text-bearing values are persisted as sanitized
+   * Tiptap HTML; legacy plain/markdown strings are migrated on load.
+   */
   props: Record<string, unknown>;
   position: { x: number; y: number }; // Percentage (0-100) or canvas pixels
   zIndex: number;
@@ -374,6 +607,8 @@ export interface ImageLayer {
   styleVariant?: ImageStyleVariantId;
   /** Format-independent layout rules persisted with the layer. */
   constraints?: LayerLayoutConstraints;
+  /** Persistent, non-destructive image crop framing. */
+  crop?: ImageCrop;
 }
 
 /** Stable contracts used by the editor engine and persistence adapters. */
@@ -414,6 +649,8 @@ export interface CanvasBackground {
 export interface ImageProject {
   id: string;
   title: string;
+  /** Remote Creative Project lifecycle state. */
+  creativeStatus?: 'draft' | 'ready' | 'archived';
   preset: ImageFormatPreset;
   background: CanvasBackground;
   layers: ImageLayer[];
@@ -423,6 +660,12 @@ export interface ImageProject {
   layout?: LayoutProjectMetadata;
   carouselPages?: number;
   currentSlide?: number;
+  carouselConfig?: CarouselConfig;
+  /** Optional generated lower-layer composition; absent on legacy projects. */
+  carouselBackground?: CarouselBackgroundComposition;
+  /** Server concurrency metadata; omitted by legacy/local projects. */
+  currentVersionNumber?: number;
+  autosaveRevision?: number;
   createdAt: string;
   updatedAt: string;
 }

@@ -11,10 +11,18 @@ interface ReplacementRule {
 // Diccionario de términos frecuentes, marcas y terminología de visados/seguros
 const SPELLING_DICTIONARY: Record<string, string> = {
   // Términos de Extranjería y Visados
+  tramite: 'trámite',
+  tramites: 'trámites',
+  trámite: 'trámite',
+  trámites: 'trámites',
   extranjeria: 'Extranjería',
   extranjería: 'Extranjería',
   consulado: 'Consulado',
   consulados: 'Consulados',
+  consular: 'consular',
+  consulares: 'consulares',
+  visado: 'visado',
+  visados: 'visados',
   poliza: 'póliza',
   polizas: 'pólizas',
   denegacion: 'denegación',
@@ -30,6 +38,8 @@ const SPELLING_DICTIONARY: Record<string, string> = {
   estadia: 'estadía',
   residencia: 'residencia',
   empadronamiento: 'empadronamiento',
+  requisito: 'requisito',
+  requisitos: 'requisitos',
 
   // Términos Médicos y Coberturas
   medica: 'médica',

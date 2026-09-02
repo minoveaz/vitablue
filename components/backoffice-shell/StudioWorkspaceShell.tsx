@@ -17,7 +17,9 @@ export interface StudioWorkspaceShellProps {
   drawerTitle?: string;
   drawerContent?: React.ReactNode;
   toolbar?: React.ReactNode;
+  contextualToolbar?: React.ReactNode;
   aside?: React.ReactNode;
+  asideVisible?: boolean;
   overlay?: React.ReactNode;
   children: React.ReactNode;
 }
@@ -30,7 +32,9 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
   drawerTitle,
   drawerContent,
   toolbar,
+  contextualToolbar,
   aside,
+  asideVisible = true,
   overlay,
   children,
 }) => {
@@ -149,6 +153,9 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
               {toolbar}
             </div>
           )}
+          {contextualToolbar && (
+            contextualToolbar
+          )}
 
           <div className="relative flex min-h-0 flex-1 overflow-hidden">
             <section className="min-w-0 flex-1 h-full overflow-hidden flex flex-col" aria-label="Lienzo de diseño">
@@ -158,8 +165,11 @@ export const StudioWorkspaceShell: React.FC<StudioWorkspaceShellProps> = ({
             {/* D. ASIDE (INSPECTOR DE PROPIEDADES A LA DERECHA) */}
             {aside && (
               <aside
-                className="w-80 lg:w-96 shrink-0 border-l border-slate-800 bg-slate-900 overflow-hidden flex flex-col shadow-2xl z-20 animate-fadeIn"
+                className={`shrink-0 border-l border-slate-800 bg-slate-900 overflow-hidden flex flex-col shadow-2xl z-20 transition-[width,opacity] duration-200 ease-out ${
+                  asideVisible ? 'w-80 lg:w-96 opacity-100' : 'w-0 opacity-0 pointer-events-none border-l-0'
+                }`}
                 aria-label="Panel de inspección"
+                aria-hidden={!asideVisible}
               >
                 {aside}
               </aside>

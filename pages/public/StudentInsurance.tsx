@@ -364,11 +364,11 @@ export const StudentInsurance: React.FC = () => {
   if (isLegacy1) {
     title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
     description = 'Seguro médico diseñado para cumplir requisitos habituales de visado de estudiante en España. Sin copagos ni carencias (según condiciones). Certificado oficial en minutos.';
-    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes';
+    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/';
   } else if (isLegacy2) {
     title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
     description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento independiente por VitaBlue.';
-    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students';
+    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/';
   }
 
   const schemaMarkup = {

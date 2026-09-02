@@ -26,17 +26,28 @@ export interface RouteDefinition {
 const canonical = (
   path: string,
   options: Omit<RouteDefinition, 'path' | 'kind'>,
-): RouteDefinition => ({ path, kind: 'canonical', ...options });
+): RouteDefinition => ({
+  path: withTrailingSlash(path),
+  kind: 'canonical',
+  ...options,
+  canonical: withTrailingSlash(options.canonical ?? path),
+  alternate: options.alternate ? withTrailingSlash(options.alternate) : undefined,
+});
+
+const withTrailingSlash = (path: string): string => {
+  if (!path || path === '/' || path.endsWith('/')) return path;
+  return `${path}/`;
+};
 
 const legacy = (path: string, redirectTo: string): RouteDefinition => ({
   path,
   kind: 'legacy',
   locale: 'neutral',
-  canonical: redirectTo,
+  canonical: withTrailingSlash(redirectTo),
   indexable: false,
   prerender: false,
   sitemap: false,
-  redirectTo,
+  redirectTo: withTrailingSlash(redirectTo),
 });
 
 /** Public canonical routes currently represented in the app. */

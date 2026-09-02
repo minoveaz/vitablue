@@ -7,9 +7,34 @@ import { ImageEditorToolbar } from './components/image-editor/ImageEditorToolbar
 import { ImageStudioAssetSidebar } from './components/image-editor/ImageStudioAssetSidebar';
 import { ImageStudioInspector } from './components/image-editor/ImageStudioInspector';
 import { ImageStage } from './components/image-editor/ImageStage';
+import { CarouselSlideStrip } from './components/image-editor/CarouselSlideStrip';
 import { ImageStudioHub } from './components/image-editor/ImageStudioHub';
-import { getStoredImageProjects } from './utils/imageProjectStorage';
+import { CarouselMobileSimulator } from './components/image-editor/CarouselMobileSimulator';
+import { InlineEditorProvider } from './components/image-editor/InlineEditorProvider';
+import { InlineEditingProvider } from './components/image-editor/InlineEditingProvider';
+import { InlineTextControls } from './components/image-editor/InlineEditableText';
+import { ContextualToolbar } from './components/image-editor/ContextualToolbar';
+import { MultiSelectionContextualToolbar } from './components/image-editor/MultiSelectionContextualToolbar';
+import { ImageContextualToolbar } from './components/image-editor/ImageContextualToolbar';
+import { exportCarouselSlices } from './utils/carouselExporter';
+import {
+  getCreativeProject,
+  saveCreativeProject,
+  listCreativeProjects,
+  archiveCreativeProject,
+  CreativeStudioScopeError,
+  uploadCreativeImage,
+  uploadCreativeExport,
+  listCreativeAssets,
+  removeCreativeAsset,
+  createCreativeThumbnailBlob,
+  uploadCreativeThumbnail,
+  isCreativeProjectId,
+} from './utils/creativeStudioRemote';
 import { saveImageVideoHandoff } from './utils/imageVideoBridge';
+import { getCarouselGeometry, isCarouselProject } from './utils/imageDesignSystem';
+import type { CarouselAspectRatio, CarouselCreativeVariant, ImageCrop, ImageProject } from './types/imageStudio';
+import { DEFAULT_IMAGE_CROP, normalizeImageCrop } from './utils/imageCrop';
 import {
   LayoutTemplate,
   Type,
@@ -22,6 +47,7 @@ import {
   FolderHeart,
   Grid3X3,
   Video,
+  Waves,
 } from 'lucide-react';
 
 export const ImageStudio: React.FC = () => {
@@ -31,16 +57,124 @@ export const ImageStudio: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [activeToolId, setActiveToolId] = useState<string | null>('text');
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isCarouselSimulatorOpen, setIsCarouselSimulatorOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [persistenceReady, setPersistenceReady] = useState(false);
+  const [persistenceError, setPersistenceError] = useState<string | null>(null);
+  const [carouselComparisonBefore, setCarouselComparisonBefore] = useState<ImageProject | null>(null);
+  const [remoteProject, setRemoteProject] = useState<ImageProject | undefined>(undefined);
 
-  // Load project by assetId from localStorage if present
-  const initialProject = React.useMemo(() => {
-    if (!assetId) return undefined;
-    const stored = getStoredImageProjects();
-    return stored.find((p) => p.id === assetId);
-  }, [assetId]);
+  useEffect(() => {
+    if (!assetId || !isCreativeProjectId(assetId)) {
+      setRemoteProject(undefined);
+      setPersistenceReady(true);
+      if (assetId) setSearchParams({}, { replace: true });
+      return;
+    }
+    let active = true;
+    setRemoteProject(undefined);
+    setPersistenceReady(false);
+    setPersistenceError(null);
+    void getCreativeProject(assetId)
+      .then((found) => {
+        if (!active) return;
+        if (found) {
+          setRemoteProject(found);
+          setPersistenceReady(true);
+        } else {
+          setPersistenceError('No se encontró esta creatividad en LoopDev.');
+        }
+      })
+      .catch((error) => {
+        if (!active) return;
+        setPersistenceError(error instanceof CreativeStudioScopeError
+          ? error.message
+          : import.meta.env.DEV && error instanceof Error
+            ? `No se pudo conectar con LoopDev (${error.name}).`
+            : 'No se pudo conectar con LoopDev.');
+      });
+    return () => {
+      active = false;
+    };
+  }, [assetId, setSearchParams]);
 
-  const editor = useImageProjectEditor(initialProject);
+  const persistRemoteProject = React.useCallback(
+    (project: ImageProject, expectedUpdatedAt?: string, clientMutationId?: string) =>
+      saveCreativeProject(project, { expectedUpdatedAt, clientMutationId }),
+    [],
+  );
+  const persistRemoteExport = React.useCallback(
+    async (blob: Blob, format: string) => {
+      if (!remoteProject) return;
+      await uploadCreativeExport(remoteProject.id, blob, format);
+      if (format !== 'svg') {
+        const thumbnail = await createCreativeThumbnailBlob(blob);
+        await uploadCreativeThumbnail(remoteProject.id, thumbnail);
+      }
+    },
+    [remoteProject],
+  );
+  const editor = useImageProjectEditor(remoteProject, {
+    persistenceReady,
+    persistProject: persistRemoteProject,
+    reloadProject: getCreativeProject,
+    onExported: (blob, format) => persistRemoteExport(blob, format),
+  });
+  const uploadImage = React.useCallback(
+    (file: File) => uploadCreativeImage(file, remoteProject?.id),
+    [remoteProject?.id],
+  );
+  const listImages = React.useCallback(() => listCreativeAssets(), []);
+  const listProjects = React.useCallback(() => listCreativeProjects(), []);
+  const deleteImage = React.useCallback((asset: Parameters<typeof removeCreativeAsset>[0]) => removeCreativeAsset(asset), []);
+  const duplicateProject = React.useCallback((project: ImageProject) => saveCreativeProject({
+    ...project,
+    id: crypto.randomUUID(),
+    title: `${project.title} (Copia)`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }, { createNew: true }).then(() => undefined), []);
+  const archiveProject = React.useCallback(
+    (project: ImageProject) => archiveCreativeProject(project.id, project.updatedAt),
+    [],
+  );
+  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
+  const [cropEditingLayerId, setCropEditingLayerId] = useState<string | null>(null);
+  const [cropDraft, setCropDraft] = useState<ImageCrop>(DEFAULT_IMAGE_CROP);
+  const selectedLayer = editor.project.layers.find((layer) => layer.id === editor.selectedLayerId);
+  const selectedImageLayer =
+    selectedLayer &&
+    (selectedLayer.type === 'image' ||
+      Boolean(selectedLayer.props.imageUrl) ||
+      Boolean(selectedLayer.src))
+      ? selectedLayer
+      : null;
+  const carouselGeometry = React.useMemo(
+    () =>
+      getCarouselGeometry(
+        editor.project.preset,
+        editor.project.carouselConfig?.slideCount ?? editor.project.preset.defaultSlideCount,
+        editor.project.carouselConfig?.enabled,
+      ),
+    [
+      editor.project.preset,
+      editor.project.carouselConfig?.slideCount,
+      editor.project.carouselConfig?.enabled,
+    ],
+  );
+  const activeSlideIndex = Math.max(
+    0,
+    Math.min(
+      carouselGeometry.slideCount - 1,
+      editor.project.currentSlide ?? editor.project.carouselConfig?.currentSlideIndex ?? 0,
+    ),
+  );
+  const activeInlineLayerId =
+    editingLayerId &&
+    selectedLayer?.id === editingLayerId &&
+    (selectedLayer.type === 'text' || selectedLayer.blockType === 'CustomText')
+      ? selectedLayer.id
+      : null;
 
   const [isCanvasSelected, setIsCanvasSelected] = useState(false);
   const showToast = React.useCallback((msg: string) => {
@@ -52,8 +186,22 @@ export const ImageStudio: React.FC = () => {
   useEffect(() => {
     if (editor.selectedLayerId) {
       setIsInspectorOpen(true);
+    } else {
+      setIsInspectorOpen(false);
     }
   }, [editor.selectedLayerId]);
+
+  useEffect(() => {
+    if (editingLayerId && editor.selectedLayerId !== editingLayerId) {
+      setEditingLayerId(null);
+    }
+  }, [editingLayerId, editor.selectedLayerId]);
+
+  useEffect(() => {
+    if (cropEditingLayerId && editor.selectedLayerId !== cropEditingLayerId) {
+      setCropEditingLayerId(null);
+    }
+  }, [cropEditingLayerId, editor.selectedLayerId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -151,6 +299,12 @@ export const ImageStudio: React.FC = () => {
   }, [editor, showToast]);
 
   const handleSelectLayer = (id: string, isShift?: boolean) => {
+    if (editingLayerId && editingLayerId !== id) {
+      setEditingLayerId(null);
+    }
+    if (cropEditingLayerId && cropEditingLayerId !== id) {
+      setCropEditingLayerId(null);
+    }
     if (isShift) {
       editor.toggleLayerSelection(id);
     } else {
@@ -159,18 +313,67 @@ export const ImageStudio: React.FC = () => {
     setIsCanvasSelected(false);
   };
 
+  const handleRequestEdit = React.useCallback(
+    (layerId: string) => {
+      if (editor.selectedLayerId !== layerId) {
+        editor.selectLayer(layerId);
+      }
+      setEditingLayerId(layerId);
+    },
+    [editor]
+  );
+
   const handleSelectCanvas = () => {
+    setEditingLayerId(null);
+    setCropEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(true);
-    setIsInspectorOpen(true);
+    setIsInspectorOpen(false);
   };
 
   const handleDeselectAll = () => {
+    setEditingLayerId(null);
+    setCropEditingLayerId(null);
     editor.selectLayer('');
     setIsCanvasSelected(false);
   };
 
+  const handleStartCrop = React.useCallback(
+    (layerId: string) => {
+      const layer = editor.project.layers.find((item) => item.id === layerId);
+      if (!layer || layer.locked) return;
+      setEditingLayerId(null);
+      setCropEditingLayerId(layerId);
+      setCropDraft(normalizeImageCrop(layer.crop));
+    },
+    [editor.project.layers],
+  );
+
+  const handleApplyCrop = React.useCallback(() => {
+    if (!cropEditingLayerId) return;
+    editor.updateLayerCrop(cropEditingLayerId, cropDraft);
+    setCropEditingLayerId(null);
+  }, [cropDraft, cropEditingLayerId, editor]);
+
+  const handleCancelCrop = React.useCallback(() => {
+    setCropEditingLayerId(null);
+  }, []);
+
+  const handleResetCrop = React.useCallback(() => {
+    setCropDraft(DEFAULT_IMAGE_CROP);
+  }, []);
+
   const handleLoadTemplate = (template: typeof editor.project) => {
+    if (template.id !== editor.project.id) {
+      editor.loadTemplate({
+        ...template,
+        id: editor.project.id,
+        createdAt: editor.project.createdAt,
+        updatedAt: new Date().toISOString(),
+      });
+      showToast('Plantilla cargada con éxito');
+      return;
+    }
     editor.loadTemplate(template);
     showToast('Plantilla cargada con éxito');
   };
@@ -188,6 +391,26 @@ export const ImageStudio: React.FC = () => {
     showToast(`Exportando ${format.toUpperCase()}...`);
   };
 
+  const handleExportCarousel = async (format: 'zip' | 'pdf' | 'full') => {
+    if (!canvasRef.current) return;
+    try {
+      showToast(format === 'pdf' ? 'Compilando documento PDF...' : format === 'zip' ? 'Cortando diapositivas y generando ZIP...' : 'Descargando tira continua...');
+      const result = await exportCarouselSlices(canvasRef.current, editor.project, format);
+      const exportBlob = format === 'pdf'
+        ? result.pdfBlob
+        : format === 'zip'
+          ? result.zipBlob
+          : result.panoramaBlob;
+      if (exportBlob) {
+        await uploadCreativeExport(editor.project.id, exportBlob, format === 'full' ? 'panorama' : format);
+      }
+      showToast('¡Descarga completada!');
+    } catch (err) {
+      console.error('Error exporting carousel:', err);
+      showToast('Error al exportar el carrusel');
+    }
+  };
+
   const handleCopyToClipboard = async () => {
     const success = await editor.copyToClipboard(canvasRef.current);
     if (success) {
@@ -201,6 +424,18 @@ export const ImageStudio: React.FC = () => {
     editor.exportImage(canvasRef.current, 'png');
     showToast('Guardando en DAM...');
   };
+
+  const handleApplyCarouselVariant = React.useCallback((variant: CarouselCreativeVariant) => {
+    setCarouselComparisonBefore(editor.project);
+    editor.applyCarouselVariant(variant);
+    showToast(`Variante aplicada: ${variant.label}`);
+  }, [editor, showToast]);
+
+  const handleAdaptCarouselAspectRatio = React.useCallback((aspectRatio: CarouselAspectRatio) => {
+    setCarouselComparisonBefore(null);
+    editor.adaptCarouselAspectRatio(aspectRatio);
+    showToast(`Formato adaptado a ${aspectRatio}`);
+  }, [editor, showToast]);
 
   // VISTA 1: HUB / DAM GALLERY DE ASSETS DE IMAGEN
   if (!assetId) {
@@ -220,6 +455,39 @@ export const ImageStudio: React.FC = () => {
     );
   }
 
+  if (persistenceError) {
+    return (
+      <BackofficeShell
+        title="Image Studio"
+        eyebrow="3. Creative Studio"
+        breadcrumbs={['Marketing Studio', '3. Creative Studio', 'Image Studio (Canva)']}
+        mode="overview"
+      >
+        <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-3xl border border-rose-200 bg-rose-50 p-8 text-center text-sm font-semibold text-rose-700">
+          <p>{persistenceError}</p>
+          <button type="button" onClick={() => setSearchParams({})} className="rounded-xl bg-primary px-4 py-2 text-xs font-black text-white">
+            Volver a mis diseños
+          </button>
+        </div>
+      </BackofficeShell>
+    );
+  }
+
+  if (!persistenceReady || !remoteProject) {
+    return (
+      <BackofficeShell
+        title="Image Studio"
+        eyebrow="3. Creative Studio"
+        breadcrumbs={['Marketing Studio', '3. Creative Studio', 'Image Studio (Canva)']}
+        mode="overview"
+      >
+        <div className="flex min-h-64 items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-sm font-semibold text-slate-500">
+          Cargando tu diseño…
+        </div>
+      </BackofficeShell>
+    );
+  }
+
   const studioTools: StudioToolItem[] = [
     // 🌟 Posición 1: Biblioteca Personal Unificada
     { id: 'my-designs', label: 'Mis Diseños', icon: <FolderHeart className="size-4" /> },
@@ -229,6 +497,7 @@ export const ImageStudio: React.FC = () => {
     { id: 'elements', label: 'Elementos', icon: <Shapes className="size-4" /> },
     { id: 'media', label: 'Medios', icon: <ImageIcon className="size-4" /> },
     { id: 'layers', label: 'Capas', icon: <Layers className="size-4" />, badge: editor.project.layers.length },
+    { id: 'backgrounds', label: 'Fondos', icon: <Waves className="size-4" /> },
     { id: 'layout', label: 'Diseño', icon: <Grid3X3 className="size-4" /> },
 
     // 🔵 Zona 2: Identidad y Marca (6)
@@ -245,7 +514,13 @@ export const ImageStudio: React.FC = () => {
 
   // VISTA 2: EDITOR DE LIENZO DE ASSET INDIVIDUAL (STUDIO WORKSPACE SHELL ESTILO CANVA)
   return (
-    <StudioWorkspaceShell
+    <InlineEditingProvider
+      editingLayerId={editingLayerId}
+      onRequestEdit={handleRequestEdit}
+      onExitEditing={() => setEditingLayerId(null)}
+    >
+      <InlineEditorProvider activeLayerId={activeInlineLayerId}>
+      <StudioWorkspaceShell
       suiteTitle="Image & Graphic Studio"
       tools={studioTools}
       activeToolId={activeToolId}
@@ -269,6 +544,7 @@ export const ImageStudio: React.FC = () => {
           onToggleAllLock={editor.toggleAllLayersLock}
           onToggleAllVisibility={editor.toggleAllLayersVisibility}
           onMoveZIndex={editor.moveLayerZIndex}
+          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onReorderLayers={editor.reorderLayers}
           onRenameLayer={editor.renameLayer}
           onDuplicateLayer={editor.duplicateLayer}
@@ -279,7 +555,6 @@ export const ImageStudio: React.FC = () => {
           onFitText={editor.fitSelectedText}
           onApplyVariant={editor.applyStyleVariant}
           onAlignSelectedLayers={editor.alignSelectedLayers}
-          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onGroupSelectedLayers={editor.groupSelectedLayers}
           onUngroupLayer={editor.ungroupLayer}
           onUpdateLayerProps={editor.updateLayerProps}
@@ -294,6 +569,13 @@ export const ImageStudio: React.FC = () => {
             showToast(`Vídeo preparado: ${settings.durationInSeconds}s`);
             window.location.href = '/backoffice/marketing-studio/generador-contenido?from=image-studio&videoProject=' + encodeURIComponent(videoProject.id);
           }}
+          onRegenerateBackground={editor.regenerateCarouselBackground}
+          onUploadImage={uploadImage}
+          onListImages={listImages}
+          onDeleteImage={deleteImage}
+          onListProjects={listProjects}
+          onDuplicateProject={duplicateProject}
+          onArchiveProject={archiveProject}
         />
       }
       toolbar={
@@ -303,17 +585,30 @@ export const ImageStudio: React.FC = () => {
           canRedo={editor.canRedo}
           isExporting={editor.isExporting}
           showSafeZones={editor.showSafeZones}
+          previewMode={editor.previewMode}
           isInspectorOpen={isInspectorOpen}
           lastSavedAt={editor.lastSavedAt}
+          saveState={editor.saveState}
+          onRetrySave={editor.retrySave}
           onBackToHub={() => setSearchParams({})}
           onToggleInspector={() => setIsInspectorOpen((prev) => !prev)}
-          onToggleSafeZones={() => editor.setShowSafeZones(!editor.showSafeZones)}
+          onToggleSafeZones={() => {
+            const next = !editor.showSafeZones;
+            editor.setShowSafeZones(next);
+            editor.setPreviewMode(next ? 'guides' : 'normal');
+          }}
+          onSetPreviewMode={(mode) => {
+            editor.setPreviewMode(mode);
+            editor.setShowSafeZones(mode === 'guides');
+          }}
+          onOpenCarouselSimulator={() => setIsCarouselSimulatorOpen(true)}
           onUndo={editor.undo}
           onRedo={editor.redo}
           onUpdateTitle={editor.updateTitle}
           onSetPreset={editor.setPreset}
           onCopyToClipboard={handleCopyToClipboard}
           onExport={handleExport}
+          onExportCarousel={handleExportCarousel}
           onSaveToDam={handleSaveToDam}
           onSendToVideoStudio={() => {
             saveImageVideoHandoff(editor.project);
@@ -321,8 +616,57 @@ export const ImageStudio: React.FC = () => {
           }}
         />
       }
+      contextualToolbar={
+        <ContextualToolbar
+          context={
+            editor.selectedLayerIds.length > 1
+              ? { kind: 'shape', layerId: editor.selectedLayerIds[0] ?? '' }
+              : activeInlineLayerId
+              ? { kind: 'text', layerId: activeInlineLayerId }
+              : selectedImageLayer
+                ? { kind: 'image', layerId: selectedImageLayer.id, slideIndex: activeSlideIndex }
+                : null
+          }
+          onDismiss={() => {
+            setEditingLayerId(null);
+            handleDeselectAll();
+          }}
+        >
+          {editor.selectedLayerIds.length > 1 ? (
+            <MultiSelectionContextualToolbar
+              count={editor.selectedLayerIds.length}
+              onAlign={editor.alignSelectedLayers}
+              onDistribute={editor.distributeSelectedLayers}
+              onGroup={editor.groupSelectedLayers}
+            />
+          ) : activeInlineLayerId ? (
+            <InlineTextControls compact selectedLayerId={activeInlineLayerId} />
+          ) : selectedImageLayer ? (
+            <ImageContextualToolbar
+              layer={selectedImageLayer}
+              isCarousel={isCarouselProject(editor.project.preset, editor.project.carouselConfig?.enabled)}
+              activeSlideIndex={activeSlideIndex}
+              carouselGeometry={carouselGeometry}
+              cropEditing={cropEditingLayerId === selectedImageLayer.id}
+              cropZoom={cropDraft.zoom}
+              onCrop={handleStartCrop}
+              onCropZoomChange={(zoom) => setCropDraft((current) => normalizeImageCrop({ ...current, zoom }))}
+              onApplyCrop={handleApplyCrop}
+              onCancelCrop={handleCancelCrop}
+              onResetCrop={handleResetCrop}
+              onRotate={(layerId, rotation) => editor.updateLayerRotation(layerId, rotation)}
+              onToggleFlipHorizontal={editor.toggleFlipHorizontal}
+              onToggleFlipVertical={editor.toggleFlipVertical}
+              onFitToActiveSlide={editor.fitLayerToActiveSlide}
+              onReplaceLayerContent={editor.replaceLayerContent}
+              onUploadImage={uploadImage}
+              onResetAdjustments={editor.resetLayerAdjustments}
+            />
+          ) : null}
+        </ContextualToolbar>
+      }
+      asideVisible={isInspectorOpen}
       aside={
-        isInspectorOpen ? (
           <ImageStudioInspector
             project={editor.project}
             selectedLayer={editor.project.layers.find((l) => l.id === editor.selectedLayerId) ?? null}
@@ -340,6 +684,9 @@ export const ImageStudio: React.FC = () => {
             onUpdateLayerClipShape={editor.updateLayerClipShape}
             onToggleFlipHorizontal={editor.toggleFlipHorizontal}
             onToggleFlipVertical={editor.toggleFlipVertical}
+            onFitToActiveSlide={editor.fitLayerToActiveSlide}
+            onResetAdjustments={editor.resetLayerAdjustments}
+            activeSlideIndex={activeSlideIndex}
             onUpdateLayerOpacity={editor.updateLayerOpacity}
             onUpdateLayerShadowPreset={editor.updateLayerShadowPreset}
             onUpdateLayerBorder={editor.updateLayerBorder}
@@ -354,7 +701,6 @@ export const ImageStudio: React.FC = () => {
             onUpdateBackground={editor.updateBackground}
             onClose={() => setIsInspectorOpen(false)}
           />
-        ) : undefined
       }
     >
       <div className="flex h-full w-full flex-col overflow-hidden relative">
@@ -366,8 +712,13 @@ export const ImageStudio: React.FC = () => {
           isCanvasSelected={isCanvasSelected}
           zoom={editor.zoom}
           showSafeZones={editor.showSafeZones}
+          previewMode={editor.previewMode}
+          onSetCurrentSlide={editor.setCurrentSlide}
           canvasRef={canvasRef}
           onSelectLayer={handleSelectLayer}
+          editingLayerId={editingLayerId}
+          onExitEditing={() => setEditingLayerId(null)}
+          onRequestEdit={handleRequestEdit}
           onSelectMultipleLayers={editor.selectMultipleLayers}
           onGroupSelectedLayers={editor.groupSelectedLayers}
           onDeleteSelectedLayers={editor.deleteSelectedLayers}
@@ -383,6 +734,7 @@ export const ImageStudio: React.FC = () => {
           onToggleVisibility={editor.toggleLayerVisibility}
           onMoveZIndex={editor.moveLayerZIndex}
           onAlignSelectedLayers={editor.alignSelectedLayers}
+          onDistributeSelectedLayers={editor.distributeSelectedLayers}
           onSelectCanvas={handleSelectCanvas}
           onDeselectAll={handleDeselectAll}
           onUpdatePosition={editor.updateLayerPosition}
@@ -391,6 +743,9 @@ export const ImageStudio: React.FC = () => {
           onUpdateHeight={editor.updateLayerHeight}
           onUpdateRotation={editor.updateLayerRotation}
           onUpdateLayerProps={editor.updateLayerProps}
+          cropEditingLayerId={cropEditingLayerId}
+          cropDraft={cropDraft}
+          onCropChange={setCropDraft}
           onCommitPositionChange={editor.commitPositionChange}
           onFitToCanvas={editor.fitLayerToCanvas}
           onUngroupLayer={editor.ungroupLayer}
@@ -398,6 +753,24 @@ export const ImageStudio: React.FC = () => {
           onDuplicateLayer={editor.duplicateLayer}
           onRemoveLayer={editor.removeLayer}
           onSetZoom={editor.setZoom}
+        />
+        <CarouselSlideStrip
+          project={editor.project}
+          activeSlideIndex={activeSlideIndex}
+          onSelectSlide={editor.setCurrentSlide}
+          onReorderSlides={editor.reorderCarouselSlides}
+          onDuplicateSlide={editor.duplicateCarouselSlide}
+          onChangeLayout={editor.updateCarouselLayout}
+        />
+
+        {/* CAROUSEL MOBILE INTERACTIVE SIMULATOR MODAL */}
+        <CarouselMobileSimulator
+          isOpen={isCarouselSimulatorOpen}
+          onClose={() => setIsCarouselSimulatorOpen(false)}
+          project={editor.project}
+          comparisonBefore={carouselComparisonBefore}
+          onApplyVariant={handleApplyCarouselVariant}
+          onAdaptAspectRatio={handleAdaptCarouselAspectRatio}
         />
 
         {/* TOAST NOTIFICATION */}
@@ -407,7 +780,9 @@ export const ImageStudio: React.FC = () => {
           </div>
         )}
       </div>
-    </StudioWorkspaceShell>
+      </StudioWorkspaceShell>
+      </InlineEditorProvider>
+    </InlineEditingProvider>
   );
 };
 

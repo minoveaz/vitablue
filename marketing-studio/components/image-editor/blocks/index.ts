@@ -10,3 +10,4 @@ export * from './WebIllustrationBlock';
 export * from './HighlightCoverBlocks';
 export * from './MarketingBlocks';
 export * from './BlockRenderer';
+export * from '../../../utils/blockGeometry';

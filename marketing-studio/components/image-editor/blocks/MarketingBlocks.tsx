@@ -13,6 +13,7 @@ import {
 import { ImageBlockType, ImageLayer } from '../../../types/imageStudio';
 import { getBlockCatalogItem } from '../../../data/blockCatalog';
 import { InlineEditableText } from '../InlineEditableText';
+import { htmlToPlainText, isTiptapHtml } from '../../../utils/tiptapHtml';
 
 type BlockProps = Record<string, unknown>;
 
@@ -40,7 +41,11 @@ const DEFAULT_FAQ_ITEMS = [
   { question: '¿Puedo recibir ayuda antes de decidir?', answer: 'Sí, un asesor puede resolver tus dudas sin compromiso.' },
 ];
 
-const text = (props: BlockProps, key: string, fallback = '') => String(props[key] ?? fallback);
+const text = (props: BlockProps, key: string, fallback = '') => {
+  const value = String(props[key] ?? fallback);
+  return isTiptapHtml(value) ? htmlToPlainText(value) : value;
+};
+const richText = (props: BlockProps, key: string, fallback = '') => String(props[key] ?? fallback);
 
 const list = (value: unknown, fallback: string[] = []): string[] => {
   if (Array.isArray(value)) {
@@ -388,9 +393,10 @@ const MarketingBlockPart: React.FC<{
 }> = ({ props, layer, onUpdateLayerProps }) => {
   const parentType = String(props.parentBlockType ?? '');
   const part = String(props.part ?? '');
-  const value = text(props, 'text');
+  const value = richText(props, 'text');
   const editableValue = (
     <InlineEditableText
+      layerId={layer?.id}
       text={value}
       onSave={(nextValue) => layer && onUpdateLayerProps?.(layer.id, { text: nextValue })}
       as="span"

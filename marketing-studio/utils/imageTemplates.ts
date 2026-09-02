@@ -1,5 +1,10 @@
 import { ImageLayer, ImageProject, IMAGE_FORMAT_PRESETS } from '../types/imageStudio';
+import type { CarouselConfig } from '../types/imageStudio';
 import { defaultMotionBrandTokens } from '../../packages/video-studio/src/motion-kit';
+import {
+  createCarouselBackgroundComposition,
+  generateCarouselBackgroundLayers,
+} from './carouselBackgroundComposition';
 
 export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
   // 🎓 1. DISEÑO OFICIAL POST BLOG (INSTAGRAM 4:5)
@@ -585,10 +590,116 @@ export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
           label: 'Contacto WhatsApp',
           showLabel: false,
           ringColor: '#94D2BD',
-          glowColor: 'rgba(148, 210, 189, 0.55)',
-          strokeColor: '#FFFFFF',
           accentColor: '#94D2BD',
           isFullCover: true,
+        },
+      },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'template-consular-certificate-guide-carousel',
+    title: 'Carrusel: Paso a Paso Certificado Consular (Instagram 4:5)',
+    preset: IMAGE_FORMAT_PRESETS[3], // instagram-carousel-portrait (5400x1350)
+    background: {
+      type: 'mesh',
+      gradient: 'linear-gradient(90deg, #001219 0%, #002d38 25%, #005F73 50%, #002d38 75%, #001219 100%)',
+      color: '#001219',
+    },
+    brandTokens: defaultMotionBrandTokens,
+    layers: [
+      {
+        id: 'layer-carousel-s1-hero',
+        type: 'block',
+        blockType: 'InsuranceProductHero',
+        title: 'Slide 1: Hook Portada',
+        position: { x: 10, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 640,
+        props: {
+          badges: ['PASO A PASO EXTRANJERÍA', 'GUÍA 2026'],
+          title: 'Cómo Conseguir tu Certificado Consular',
+          description: 'El documento exacto que te pide el consulado para aprobar tu visado a España.',
+          primaryAction: 'Desliza para ver la guía 👉',
+          highlights: ['100% Válido en Consulados', 'Emisión Inmediata en PDF'],
+        },
+      },
+      {
+        id: 'layer-carousel-s2-requirements',
+        type: 'block',
+        blockType: 'InsuranceCoverageGrid',
+        title: 'Slide 2: Requisitos Clave',
+        position: { x: 30, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 520,
+        props: {
+          eyebrow: 'PASO 1: VERIFICA CLÁUSULAS',
+          title: 'Las 3 Cláusulas Obligatorias',
+          items: [
+            { title: 'Sin Copagos', description: '0€ adicionales por consulta o prueba.' },
+            { title: 'Sin Carencias', description: 'Activo desde el primer día de viaje.' },
+            { title: 'Repatriación', description: 'Cobertura ilimitada de restos y sanitaria.' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s3-comparison',
+        type: 'block',
+        blockType: 'InsurancePlanComparison',
+        title: 'Slide 3: Aseguradoras',
+        position: { x: 50, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 920,
+        height: 680,
+        props: {
+          eyebrow: 'PASO 2: ELIGE ASEGURADORA',
+          title: 'Aseguradoras Homologadas',
+          description: 'Certificados emitidos en español y formato oficial.',
+          plans: [
+            { name: 'Sanitas', subtitle: 'Estudiantes & Visados', description: 'Certificado directo en 24h sin carencias.', priceText: 'Recomendado', isFeatured: true },
+            { name: 'Adeslas', subtitle: 'Nómadas & Residencia', description: 'Amplia red médica en toda España.', priceText: 'Popular' },
+            { name: 'DKV', subtitle: 'Familias', description: 'Cobertura dental incluida.', priceText: 'Consultar' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s4-trust',
+        type: 'block',
+        blockType: 'InsuranceTrustBar',
+        title: 'Slide 4: Validación y Descarga',
+        position: { x: 70, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 320,
+        props: {
+          items: [
+            { title: 'Firma Digital Oficial', description: 'Código seguro de verificación (CSV).' },
+            { title: 'Bilingüe ES/EN', description: 'Aceptado en consulados de todo el mundo.' },
+            { title: 'Garantía de Devolución', description: '100% reembolso si deniegan el visado.' },
+          ],
+        },
+      },
+      {
+        id: 'layer-carousel-s5-cta',
+        type: 'block',
+        blockType: 'InsuranceAdvisorCta',
+        title: 'Slide 5: CTA Comparador',
+        position: { x: 90, y: 50 },
+        zIndex: 10,
+        scale: 1,
+        width: 900,
+        height: 500,
+        props: {
+          title: '¿Tramitando tu visado a España?',
+          description: 'Compara las mejores opciones y obtén tu certificado listo para entregar.',
+          ctaText: 'Calcular mi Seguro con Certificado',
         },
       },
     ],
@@ -603,12 +714,14 @@ export const INITIAL_IMAGE_TEMPLATES: ImageProject[] = [
  * compositions here (rather than deriving them in the drawer) means every
  * catalog item has its own editable layers, preset and background.
  */
-const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9') => {
+const templatePreset = (aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1' | '9:16 (Multi)') => {
   const presetId = {
     '1:1': 'instagram-square',
     '4:5': 'instagram-portrait',
     '9:16': 'story-vertical',
     '16:9': 'landscape-banner',
+    '4:1': 'instagram-carousel-portrait',
+    '9:16 (Multi)': 'tiktok-carousel-photo',
   }[aspectRatio];
   return IMAGE_FORMAT_PRESETS.find((preset) => preset.id === presetId) ?? IMAGE_FORMAT_PRESETS[0];
 };
@@ -778,7 +891,7 @@ const companyBlockLayer = (
 const createCompanyProject = (
   id: string,
   title: string,
-  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9',
+  aspectRatio: '1:1' | '4:5' | '9:16' | '16:9' | '4:1',
   background: string,
   layers: ImageLayer[],
 ): ImageProject => ({
@@ -792,7 +905,525 @@ const createCompanyProject = (
   updatedAt: new Date().toISOString(),
 });
 
-/** Eight independent VitaBlue insurance campaign compositions. */
+const REFERENCE_CAROUSEL_SLIDES: CarouselConfig['slides'] = [
+  { index: 0, title: 'Portada / Hook', role: 'hook' },
+  { index: 1, title: 'Contexto', role: 'content' },
+  { index: 2, title: 'Comparativa', role: 'comparison' },
+  { index: 3, title: 'Prueba / Beneficio', role: 'proof' },
+  { index: 4, title: 'Cierre / CTA', role: 'cta' },
+];
+
+const REFERENCE_SLIDE_WIDTH = 1080;
+const REFERENCE_SLIDE_HEIGHT = 1350;
+const REFERENCE_PANORAMA_WIDTH = REFERENCE_SLIDE_WIDTH * 5;
+
+type ReferencePalette = {
+  background: string;
+  foreground: string;
+  muted: string;
+  primary: string;
+  mint: string;
+  gold: string;
+  surface: string;
+  surfaceStrong: string;
+};
+
+const REFERENCE_PALETTES: Record<'white' | 'midnight' | 'ocean', ReferencePalette> = {
+  white: {
+    background: '#FFFFFF',
+    foreground: '#001219',
+    muted: '#4A5568',
+    primary: '#005F73',
+    mint: '#94D2BD',
+    gold: '#EE9B00',
+    surface: '#F4FAF8',
+    surfaceStrong: '#E7F8F2',
+  },
+  midnight: {
+    background: '#001219',
+    foreground: '#FFFFFF',
+    muted: '#D5E5E2',
+    primary: '#005F73',
+    mint: '#94D2BD',
+    gold: '#EE9B00',
+    surface: '#F4FAF8',
+    surfaceStrong: '#123B46',
+  },
+  ocean: {
+    background: '#005F73',
+    foreground: '#FFFFFF',
+    muted: '#DDF3EC',
+    primary: '#001219',
+    mint: '#94D2BD',
+    gold: '#EE9B00',
+    surface: '#F4FAF8',
+    surfaceStrong: '#0B5262',
+  },
+};
+
+const referenceSlideLayer = (
+  projectId: string,
+  slideIndex: number,
+  key: string,
+  title: string,
+  type: ImageLayer['type'],
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  props: Record<string, unknown> = {},
+  style: Partial<ImageLayer> = {},
+): ImageLayer => ({
+  id: `${projectId}-slide-${slideIndex + 1}-${key}`,
+  type,
+  blockType: type === 'block'
+    ? (props.blockType as ImageLayer['blockType'])
+    : type === 'text'
+    ? 'CustomText'
+    : undefined,
+  title,
+  position: {
+    x: Math.round(((slideIndex * REFERENCE_SLIDE_WIDTH + position.x) / REFERENCE_PANORAMA_WIDTH) * 100 * 100000) / 100000,
+    y: Math.round((position.y / REFERENCE_SLIDE_HEIGHT) * 100 * 100000) / 100000,
+  },
+  zIndex: style.zIndex ?? 2,
+  scale: style.scale ?? 1,
+  width: size.width,
+  height: size.height,
+  props: { slideIndex, ...props },
+  visible: true,
+  styleVariant: style.styleVariant,
+  ...style,
+});
+
+const referenceShape = (
+  projectId: string,
+  slideIndex: number,
+  key: string,
+  title: string,
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  props: Record<string, unknown>,
+  style: Partial<ImageLayer> = {},
+) =>
+  referenceSlideLayer(projectId, slideIndex, key, title, 'block', position, size, {
+    blockType: 'GeometricShape',
+    shapeType: 'rounded_rect',
+    ...props,
+  }, style);
+
+const referenceText = (
+  projectId: string,
+  slideIndex: number,
+  key: string,
+  title: string,
+  text: string,
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  palette: ReferencePalette,
+  style: Partial<ImageLayer> = {},
+  props: Record<string, unknown> = {},
+) =>
+  referenceSlideLayer(projectId, slideIndex, key, title, 'text', position, size, {
+    blockType: 'CustomText',
+    text,
+    tag: 'p',
+    textFit: { mode: 'auto', minFontSize: 12, maxFontSize: style.fontSize ?? 32, maxLines: 3 },
+    ...props,
+  }, {
+    fontFamily: 'Poppins, sans-serif',
+    fontSize: 24,
+    fontWeight: '600',
+    fill: palette.foreground,
+    align: 'left',
+    lineHeight: 1.2,
+    zIndex: 8,
+    ...style,
+  });
+
+const referencePart = (
+  projectId: string,
+  slideIndex: number,
+  key: string,
+  title: string,
+  part: string,
+  text: string,
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  parentBlockType: ImageLayer['blockType'],
+  style: Partial<ImageLayer> = {},
+) =>
+  referenceSlideLayer(projectId, slideIndex, key, title, 'block', position, size, {
+    blockType: 'MarketingBlockPart',
+    parentBlockType,
+    part,
+    text,
+  }, {
+    zIndex: 10,
+    ...style,
+  });
+
+const referenceIllustration = (
+  projectId: string,
+  slideIndex: number,
+  key: string,
+  title: string,
+  illustrationId: string,
+  position: { x: number; y: number },
+  size: { width: number; height: number },
+  palette: ReferencePalette,
+  style: Partial<ImageLayer> = {},
+) =>
+  referenceSlideLayer(projectId, slideIndex, key, title, 'block', position, size, {
+    blockType: 'WebIllustration',
+    illustrationId,
+    colorPrimary: palette.primary,
+    colorPastel: palette.mint,
+    colorSecondary: palette.background,
+    colorAccent: palette.gold,
+    colorNeutral: palette.foreground,
+  }, {
+    zIndex: 6,
+    ...style,
+  });
+
+const createReferenceCarouselLayers = (
+  projectId: string,
+  colorVariant: 'white' | 'midnight' | 'ocean',
+): ImageLayer[] => {
+  const palette = REFERENCE_PALETTES[colorVariant];
+  const dark = colorVariant !== 'white';
+  const parentBlockType: ImageLayer['blockType'] = 'InsuranceProductHero';
+  const geometry = {
+    slideCount: 5,
+    slideWidth: REFERENCE_SLIDE_WIDTH,
+    slideHeight: REFERENCE_SLIDE_HEIGHT,
+    panoramaWidth: REFERENCE_PANORAMA_WIDTH,
+    panoramaHeight: REFERENCE_SLIDE_HEIGHT,
+  };
+  const layers: ImageLayer[] = generateCarouselBackgroundLayers({
+    projectId,
+    geometry,
+    composition: createCarouselBackgroundComposition(colorVariant, {
+      id: `${projectId}-composition`,
+      height: 0.3,
+      intensity: 0.78,
+      continuity: 'seamless',
+      shape: 'wave',
+      mask: 'safe-zone',
+    }),
+  });
+  const add = (...next: ImageLayer[]) => layers.push(...next);
+
+  for (let slideIndex = 0; slideIndex < 5; slideIndex += 1) {
+    add(
+      referenceShape(projectId, slideIndex, 'editorial-rule', 'Regla editorial', { x: 118, y: 1180 }, { width: 220, height: 10 }, {
+        shapeType: 'separator-wave',
+        fill: 'transparent',
+        stroke: palette.mint,
+        strokeWidth: 5,
+      }, { opacity: 0.85, zIndex: 2 }),
+      referenceText(projectId, slideIndex, 'slide-count', 'Número de slide', `${String(slideIndex + 1).padStart(2, '0')} / 05`, { x: 100, y: 84 }, { width: 170, height: 38 }, palette, {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: 16,
+        fontWeight: '800',
+        fill: dark ? palette.mint : palette.primary,
+        letterSpacing: 2,
+        zIndex: 9,
+      }),
+    );
+  }
+
+  // 01 · Hook: editorial cover with an illustration and a clear promise.
+  add(
+    referenceSlideLayer(projectId, 0, 'logo', 'Logo VitaBlue', 'block', { x: 190, y: 180 }, { width: 230, height: 64 }, {
+      blockType: 'BrandLogo',
+      variant: dark ? 'white' : 'default',
+      showText: true,
+    }, { zIndex: 12 }),
+    referenceText(projectId, 0, 'eyebrow', 'Eyebrow editable', 'GUÍA VITABLUE', { x: 300, y: 300 }, { width: 420, height: 42 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 18,
+      fontWeight: '800',
+      fill: palette.gold,
+      letterSpacing: 2,
+    }),
+    referenceText(projectId, 0, 'title', 'Titular de portada', 'Tu seguro, más fácil de entender', { x: 390, y: 390 }, { width: 590, height: 225 }, palette, {
+      fontSize: 58,
+      fontWeight: '800',
+      lineHeight: 1.08,
+    }, { tag: 'h1', textFit: { mode: 'auto', minFontSize: 34, maxFontSize: 58, maxLines: 3 } }),
+    referenceText(projectId, 0, 'body', 'Descripción de portada', 'Una guía visual para comparar coberturas con confianza.', { x: 350, y: 680 }, { width: 500, height: 100 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 24,
+      fontWeight: '500',
+      fill: palette.muted,
+    }),
+    referenceIllustration(projectId, 0, 'illustration', 'Ilustración de estudiante', 'student', { x: 805, y: 625 }, { width: 430, height: 430 }, palette, {
+      clipShape: 'circle',
+      borderWidth: 14,
+      borderColor: palette.mint,
+      shadowPreset: 'soft',
+      zIndex: 5,
+    }),
+    referencePart(projectId, 0, 'cta', 'CTA portada', 'cta', 'Desliza para conocerla', { x: 300, y: 930 }, { width: 370, height: 76 }, parentBlockType, {
+      shadowPreset: 'glow_gold',
+      borderRadius: 20,
+    }),
+    referenceText(projectId, 0, 'continuity', 'Continuidad de portada', 'Información clara  ·  Acompañamiento humano', { x: 430, y: 1110 }, { width: 640, height: 52 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 16,
+      fontWeight: '700',
+      fill: palette.muted,
+    }),
+  );
+
+  // 02 · Context: three cards orbit a phone-style policy preview.
+  add(
+    referenceText(projectId, 1, 'title', 'Titular de contexto', 'Empieza por lo importante', { x: 400, y: 255 }, { width: 600, height: 120 }, palette, {
+      fontSize: 48,
+      fontWeight: '800',
+    }, { tag: 'h2', textFit: { mode: 'auto', minFontSize: 30, maxFontSize: 48, maxLines: 2 } }),
+    referenceText(projectId, 1, 'body', 'Texto de contexto', 'La letra pequeña se entiende mejor cuando la ves por partes.', { x: 370, y: 410 }, { width: 510, height: 94 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 21,
+      fontWeight: '500',
+      fill: palette.muted,
+    }),
+    referenceShape(projectId, 1, 'phone-frame', 'Mockup de póliza', { x: 840, y: 645 }, { width: 330, height: 610 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.foreground,
+    }, { clipShape: 'phone_mockup', borderWidth: 5, borderColor: palette.mint, shadowPreset: 'deep', zIndex: 4 }),
+    referenceShape(projectId, 1, 'phone-screen', 'Pantalla de póliza', { x: 840, y: 670 }, { width: 276, height: 492 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.surfaceStrong,
+    }, { zIndex: 5 }),
+    referenceText(projectId, 1, 'phone-label', 'Etiqueta del mockup', 'MI PÓLIZA', { x: 840, y: 505 }, { width: 250, height: 34 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 14,
+      fontWeight: '800',
+      fill: palette.mint,
+      align: 'center',
+      zIndex: 8,
+    }),
+    referenceText(projectId, 1, 'phone-metric', 'Métrica del mockup', '100%\\nCLARO', { x: 840, y: 700 }, { width: 220, height: 120 }, palette, {
+      fontSize: 36,
+      fontWeight: '800',
+      fill: dark ? palette.foreground : palette.primary,
+      align: 'center',
+      zIndex: 8,
+    }, { textFit: { mode: 'auto', minFontSize: 24, maxFontSize: 36, maxLines: 2 } }),
+    ...[
+      ['coverage', 'Cobertura clara', 'Qué incluye cada opción.'],
+      ['conditions', 'Sin sorpresas', 'Condiciones visibles antes de decidir.'],
+      ['support', 'Apoyo humano', 'Resolvemos tus dudas.'],
+    ].flatMap(([key, title, body], index) => {
+      const y = 620 + index * 175;
+      return [
+        referenceShape(projectId, 1, `${key}-card`, `Tarjeta ${title}`, { x: 340, y }, { width: 420, height: 122 }, {
+          shapeType: 'rounded_rect',
+          fill: palette.surface,
+          stroke: palette.mint,
+          strokeWidth: 2,
+        }, { borderRadius: 22, shadowPreset: 'soft', zIndex: 3 }),
+        referencePart(projectId, 1, `${key}-item`, `Contenido ${title}`, 'item', `${title} · ${body}`, { x: 340, y }, { width: 380, height: 92 }, 'InsuranceCoverageGrid', {
+          zIndex: 7,
+        }),
+      ];
+    }),
+  );
+
+  // 03 · Comparison: a strong split card makes the decision tangible.
+  add(
+    referenceText(projectId, 2, 'title', 'Titular de comparativa', 'Compara tus alternativas', { x: 430, y: 260 }, { width: 650, height: 120 }, palette, {
+      fontSize: 48,
+      fontWeight: '800',
+    }, { tag: 'h2', textFit: { mode: 'auto', minFontSize: 30, maxFontSize: 48, maxLines: 2 } }),
+    referenceText(projectId, 2, 'body', 'Descripción de comparativa', 'Elige con datos, no con suposiciones.', { x: 375, y: 410 }, { width: 520, height: 76 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 21,
+      fontWeight: '500',
+      fill: palette.muted,
+    }),
+    referenceShape(projectId, 2, 'plan-left', 'Plan esencial', { x: 335, y: 760 }, { width: 380, height: 470 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.surface,
+      stroke: palette.mint,
+      strokeWidth: 2,
+    }, { borderRadius: 28, shadowPreset: 'soft', zIndex: 3 }),
+    referenceShape(projectId, 2, 'plan-right', 'Plan completo', { x: 755, y: 730 }, { width: 380, height: 530 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.primary,
+      stroke: palette.gold,
+      strokeWidth: 5,
+    }, { borderRadius: 28, shadowPreset: 'glow_gold', zIndex: 3 }),
+    referencePart(projectId, 2, 'plan-left-content', 'Contenido plan esencial', 'plan', 'ESENCIAL\\nLo necesario\\nProtección para empezar', { x: 335, y: 760 }, { width: 320, height: 390 }, 'InsurancePlanComparison', { zIndex: 8 }),
+    referencePart(projectId, 2, 'plan-right-content', 'Contenido plan completo', 'plan', 'COMPLETO\\nMás elegido\\nCobertura amplia', { x: 755, y: 730 }, { width: 320, height: 450 }, 'InsuranceProductHero', {
+      zIndex: 8,
+    }),
+    referencePart(projectId, 2, 'featured-badge', 'Badge plan recomendado', 'badge', 'MÁS ELEGIDO', { x: 755, y: 500 }, { width: 210, height: 46 }, 'InsurancePlanComparison', {
+      shadowPreset: 'glow_gold',
+      zIndex: 10,
+    }),
+    referenceText(projectId, 2, 'connector', 'Conector de comparativa', '→ elige con calma', { x: 540, y: 1210 }, { width: 310, height: 46 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 16,
+      fontWeight: '800',
+      fill: palette.gold,
+      align: 'center',
+    }),
+  );
+
+  // 04 · Proof: metric, quote and the visual seal of trust.
+  add(
+    referenceText(projectId, 3, 'title', 'Titular de confianza', 'Decidir acompañado cambia todo', { x: 465, y: 260 }, { width: 700, height: 120 }, palette, {
+      fontSize: 48,
+      fontWeight: '800',
+    }, { tag: 'h2', textFit: { mode: 'auto', minFontSize: 30, maxFontSize: 48, maxLines: 2 } }),
+    referenceShape(projectId, 3, 'metric-card', 'Métrica 24 horas', { x: 280, y: 650 }, { width: 360, height: 300 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.primary,
+    }, { borderRadius: 32, shadowPreset: 'glow_teal', zIndex: 3 }),
+    referenceText(projectId, 3, 'metric-value', 'Valor métrico editable', '24 h', { x: 280, y: 620 }, { width: 260, height: 110 }, palette, {
+      fontSize: 68,
+      fontWeight: '800',
+      fill: palette.mint,
+      align: 'center',
+      zIndex: 8,
+    }, { tag: 'h2', textFit: { mode: 'auto', minFontSize: 40, maxFontSize: 68, maxLines: 1 } }),
+    referenceText(projectId, 3, 'metric-label', 'Etiqueta métrica', 'para recibir tu documentación', { x: 280, y: 760 }, { width: 270, height: 72 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 16,
+      fontWeight: '700',
+      fill: palette.foreground,
+      align: 'center',
+      zIndex: 8,
+    }),
+    referenceShape(projectId, 3, 'quote-card', 'Tarjeta testimonial', { x: 785, y: 650 }, { width: 470, height: 340 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.surface,
+      stroke: palette.mint,
+      strokeWidth: 2,
+    }, { borderRadius: 32, shadowPreset: 'soft', zIndex: 3 }),
+    referenceText(projectId, 3, 'quote', 'Cita editable', '“Me explicaron todo con mucha claridad.”', { x: 785, y: 650 }, { width: 370, height: 145 }, palette, {
+      fontSize: 27,
+      fontWeight: '700',
+      lineHeight: 1.18,
+      zIndex: 8,
+    }),
+    referencePart(projectId, 3, 'quote-author', 'Autor del testimonio', 'meta', 'María · Cliente VitaBlue', { x: 785, y: 830 }, { width: 330, height: 42 }, 'InsuranceTestimonialGrid', {
+      zIndex: 8,
+    }),
+    referenceIllustration(projectId, 3, 'trust-illustration', 'Ilustración de confianza', 'accompaniment', { x: 180, y: 1050 }, { width: 180, height: 180 }, palette, {
+      clipShape: 'circle',
+      zIndex: 6,
+    }),
+    referencePart(projectId, 3, 'trust-badge', 'Sello de confianza', 'badge', 'OPCIONES REVISADAS', { x: 470, y: 1100 }, { width: 260, height: 52 }, 'InsuranceTrustBar', {
+      zIndex: 9,
+    }),
+  );
+
+  // 05 · CTA: a calm, high-contrast ending with one obvious action.
+  add(
+    referenceSlideLayer(projectId, 4, 'logo', 'Logo VitaBlue final', 'block', { x: 190, y: 190 }, { width: 230, height: 64 }, {
+      blockType: 'BrandLogo',
+      variant: 'white',
+      showText: true,
+    }, { zIndex: 12 }),
+    referenceText(projectId, 4, 'title', 'Titular final', '¿Listo para comparar?', { x: 540, y: 405 }, { width: 760, height: 130 }, palette, {
+      fontSize: 54,
+      fontWeight: '800',
+      align: 'center',
+    }, { tag: 'h2', textFit: { mode: 'auto', minFontSize: 34, maxFontSize: 54, maxLines: 2 } }),
+    referenceText(projectId, 4, 'body', 'Descripción final', 'Guarda esta guía y empieza con una asesora cuando quieras.', { x: 540, y: 600 }, { width: 660, height: 92 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 22,
+      fontWeight: '500',
+      fill: palette.muted,
+      align: 'center',
+    }),
+    referenceShape(projectId, 4, 'cta-surface', 'Superficie de CTA', { x: 540, y: 810 }, { width: 690, height: 190 }, {
+      shapeType: 'rounded_rect',
+      fill: palette.surfaceStrong,
+      stroke: palette.gold,
+      strokeWidth: 3,
+    }, { borderRadius: 36, shadowPreset: 'glow_gold', zIndex: 3 }),
+    referencePart(projectId, 4, 'cta-action', 'CTA final editable', 'cta', 'Ver mis opciones', { x: 540, y: 810 }, { width: 370, height: 76 }, 'InsuranceAdvisorCta', {
+      shadowPreset: 'glow_gold',
+      zIndex: 10,
+    }),
+    referenceText(projectId, 4, 'footer', 'Cierre de marca', 'vitablue.es  ·  Decisiones más claras', { x: 540, y: 1110 }, { width: 600, height: 46 }, palette, {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 16,
+      fontWeight: '700',
+      fill: palette.muted,
+      align: 'center',
+    }),
+  );
+
+  return layers.map((layer) => ({
+    ...layer,
+    styleVariant: colorVariant,
+    props: { ...layer.props, variant: colorVariant },
+  }));
+};
+
+const createReferenceCarouselProject = (
+  colorVariant: 'white' | 'midnight' | 'ocean',
+): ImageProject => {
+  const projectId = `vitablue-reference-carousel-${colorVariant}`;
+  const base = createCompanyProject(
+    `reference-carousel-${colorVariant}`,
+    `Referencia VitaBlue · Fondo ${colorVariant === 'white' ? 'blanco' : colorVariant === 'midnight' ? 'midnight blue' : 'ocean teal'}`,
+    '4:1',
+    colorVariant === 'white' ? '#FFFFFF' : colorVariant === 'midnight' ? '#001219' : '#005F73',
+    createReferenceCarouselLayers(projectId, colorVariant),
+  );
+
+  return {
+    ...base,
+    id: projectId,
+    background: {
+      type: 'solid',
+      color: colorVariant === 'white' ? '#FFFFFF' : colorVariant === 'midnight' ? '#001219' : '#005F73',
+    },
+    layers: base.layers.map((layer) => ({
+      ...layer,
+      styleVariant: colorVariant,
+      props: { ...layer.props, variant: colorVariant },
+    })),
+    carouselBackground: createCarouselBackgroundComposition(colorVariant, {
+      id: `${projectId}-composition`,
+      height: 0.3,
+      intensity: 0.78,
+      continuity: 'seamless',
+      shape: 'wave',
+      mask: 'safe-zone',
+    }),
+    carouselPages: 5,
+    currentSlide: 0,
+    carouselConfig: {
+      enabled: true,
+      platform: 'instagram',
+      slideCount: 5,
+      slideWidth: 1080,
+      slideHeight: 1350,
+      layoutId: 'educational-five-step',
+      currentSlideIndex: 0,
+      slides: REFERENCE_CAROUSEL_SLIDES,
+      showSlideDividers: true,
+      showSlideNumbers: true,
+      autoSnapToSlides: true,
+    },
+  };
+};
+
+/** Reference VitaBlue carousel in the three approved background treatments. */
+export const VITABLUE_REFERENCE_CAROUSEL_TEMPLATES: ImageProject[] = [
+  createReferenceCarouselProject('white'),
+  createReferenceCarouselProject('midnight'),
+  createReferenceCarouselProject('ocean'),
+];
+
+/** Independent VitaBlue insurance campaign compositions. */
 export const EMPRESA_IMAGE_TEMPLATES: ImageProject[] = [
   createCompanyProject('health-campaign', 'Campaña de seguro médico', '4:5', 'radial-gradient(circle at 30% 15%, rgba(0, 95, 115, 0.9), #001219 78%)', [
     companyBlockLayer('vitablue-health-campaign', 'hero', 'Hero seguro médico', 'InsuranceProductHero', { x: 50, y: 45 }, { badges: ['Seguro médico', 'Desde el primer día'], title: 'Tu salud, siempre acompañada', description: 'Comparamos coberturas médicas para que elijas con tranquilidad.', primaryAction: 'Calcular mi seguro', secondaryAction: 'Hablar con una asesora', highlights: ['Red médica amplia', 'Atención cercana'] }, 940, 700, 2),
@@ -826,6 +1457,21 @@ export const EMPRESA_IMAGE_TEMPLATES: ImageProject[] = [
     companyBlockLayer('vitablue-campaign-cover', 'hero', 'Portada de campaña', 'InsuranceProductHero', { x: 38, y: 50 }, { badges: ['CAMPAÑA VITABLUE', 'SEGUROS 2026'], title: 'Tu próxima decisión, más clara', description: 'Compara seguros y cuenta con una asesora cuando lo necesites.', primaryAction: 'Empezar ahora', secondaryAction: 'Conocer VitaBlue', highlights: ['Opciones comparables', 'Atención personalizada'] }, 900, 620, 2),
     companyBlockLayer('vitablue-campaign-cover', 'providers', 'Proveedores de campaña', 'InsuranceProviderBar', { x: 82, y: 51 }, { eyebrow: 'NUESTRAS OPCIONES', providers: ['Sanitas', 'Adeslas', 'DKV'] }, 500, 300, 3),
   ]),
+  createCompanyProject('seamless-educational-carousel', 'Carrusel Oficial: Guía 5 Pasos Visado', '4:1', 'linear-gradient(90deg, #001219 0%, #005F73 50%, #001219 100%)', [
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide1', 'Slide 1: Hook Portada', 'InsuranceProductHero', { x: 10, y: 50 }, { badges: ['GUÍA OFICIAL 2026'], title: 'Requisitos de Seguro para Visados', description: 'Todo lo que Extranjería exige para aprobar tu expediente.', primaryAction: 'Desliza para ver los 5 pasos 👉' }, 900, 600, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide2', 'Slide 2: Coberturas Clave', 'InsuranceCoverageGrid', { x: 30, y: 50 }, { eyebrow: 'PASO 1 & 2', title: 'Sin Copagos y Sin Carencias', items: [{ title: '0€ Copago', description: 'Acceso ilimitado sin pagos extra.' }, { title: 'Día 1', description: 'Válido desde la llegada a España.' }] }, 900, 500, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide3', 'Slide 3: Comparativa', 'InsurancePlanComparison', { x: 50, y: 50 }, { eyebrow: 'PASO 3', title: 'Opciones de Aseguradoras', description: 'Aprobadas por Consulados y Extranjería.', plans: [{ name: 'Sanitas', subtitle: 'Estudiantes', description: 'Certificado directo visado.' }, { name: 'Adeslas', subtitle: 'Nómadas', description: 'Cobertura completa.' }] }, 900, 550, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide4', 'Slide 4: Confianza y Repatriación', 'InsuranceTrustBar', { x: 70, y: 50 }, { items: [{ title: 'Repatriación 100%', description: 'Incluida obligatoria.' }, { title: '30.000€ Mínimo', description: 'Cumple normativa Schengen.' }] }, 900, 300, 2),
+    companyBlockLayer('vitablue-seamless-educational-carousel', 'slide5', 'Slide 5: CTA Final', 'InsuranceAdvisorCta', { x: 90, y: 50 }, { title: '¿Dudas con tu visado?', description: 'Calcula tu precio o habla con una asesora experta.', ctaText: 'Calcular Seguro en 1 Minuto' }, 900, 480, 2),
+  ]),
+  createCompanyProject('consular-certificate-guide-carousel', 'Carrusel: Paso a Paso Certificado Consular', '4:1', 'linear-gradient(90deg, #001219 0%, #002d38 25%, #005F73 50%, #002d38 75%, #001219 100%)', [
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide1', 'Slide 1: Hook Portada', 'InsuranceProductHero', { x: 10, y: 50 }, { badges: ['PASO A PASO EXTRANJERÍA', 'GUÍA 2026'], title: 'Cómo Conseguir tu Certificado Consular', description: 'El documento exacto que te pide el consulado para aprobar tu visado a España.', primaryAction: 'Desliza para ver la guía 👉', highlights: ['100% Válido en Consulados', 'Emisión Inmediata en PDF'] }, 900, 640, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide2', 'Slide 2: Requisitos Clave', 'InsuranceCoverageGrid', { x: 30, y: 50 }, { eyebrow: 'PASO 1: VERIFICA CLÁUSULAS', title: 'Las 3 Cláusulas Obligatorias', items: [{ title: 'Sin Copagos', description: '0€ adicionales por consulta o prueba.' }, { title: 'Sin Carencias', description: 'Activo desde el primer día de viaje.' }, { title: 'Repatriación', description: 'Cobertura ilimitada de restos y sanitaria.' }] }, 900, 520, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide3', 'Slide 3: Aseguradoras', 'InsurancePlanComparison', { x: 50, y: 50 }, { eyebrow: 'PASO 2: ELIGE ASEGURADORA', title: 'Aseguradoras Homologadas', description: 'Certificados emitidos en español y formato oficial.', plans: [{ name: 'Sanitas', subtitle: 'Estudiantes & Visados', description: 'Certificado directo en 24h sin carencias.', priceText: 'Recomendado', isFeatured: true }, { name: 'Adeslas', subtitle: 'Nómadas & Residencia', description: 'Amplia red médica en toda España.', priceText: 'Popular' }, { name: 'DKV', subtitle: 'Familias', description: 'Cobertura dental incluida.', priceText: 'Consultar' }] }, 920, 680, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide4', 'Slide 4: Validación y Descarga', 'InsuranceTrustBar', { x: 70, y: 50 }, { items: [{ title: 'Firma Digital Oficial', description: 'Código seguro de verificación (CSV).' }, { title: 'Bilingüe ES/EN', description: 'Aceptado en consulados de todo el mundo.' }, { title: 'Garantía de Devolución', description: '100% reembolso si deniegan el visado.' }] }, 900, 320, 2),
+    companyBlockLayer('vitablue-consular-certificate-guide-carousel', 'slide5', 'Slide 5: CTA Comparador', 'InsuranceAdvisorCta', { x: 90, y: 50 }, { title: '¿Tramitando tu visado a España?', description: 'Compara las mejores opciones y obtén tu certificado listo para entregar.', ctaText: 'Calcular mi Seguro con Certificado' }, 900, 500, 2),
+  ]),
+  ...VITABLUE_REFERENCE_CAROUSEL_TEMPLATES,
 ];
 
 // English alias for consumers that use the block catalog naming convention.

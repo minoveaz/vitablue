@@ -1,4 +1,5 @@
 export type TemplateScope = 'system' | 'organization';
+export type TemplateColorVariant = 'white' | 'midnight' | 'ocean';
 
 export interface TemplateCatalogItem {
   id: string;
@@ -8,6 +9,9 @@ export interface TemplateCatalogItem {
   scope: TemplateScope;
   category: string;
   aspectRatio: string;
+  colorVariant?: TemplateColorVariant;
+  layoutId?: string;
+  slideCount?: number;
 }
 
 export const TEMPLATE_SCOPE_OPTIONS = [
@@ -30,7 +34,11 @@ export const TEMPLATE_CATALOG: TemplateCatalogItem[] = [
   { id: 'coverage-comparison', projectId: 'vitablue-coverage-comparison', name: 'Comparativa de coberturas', scope: 'organization', category: 'Comparación', aspectRatio: '1:1' },
   { id: 'saving-ad', projectId: 'vitablue-saving-ad', name: 'Anuncio de ahorro', scope: 'organization', category: 'Captación', aspectRatio: '1:1' },
   { id: 'advisor-story', projectId: 'vitablue-advisor-story', name: 'Story de asesoría', scope: 'organization', category: 'Stories', aspectRatio: '9:16' },
-  { id: 'trust-post', projectId: 'vitablue-trust-post', name: 'Post de confianza VitaBlue', scope: 'organization', category: 'Confianza', aspectRatio: '1:1' },
   { id: 'providers-carousel', projectId: 'vitablue-providers-carousel', name: 'Carrusel de aseguradoras', scope: 'organization', category: 'Seguros', aspectRatio: '1:1' },
   { id: 'campaign-cover', projectId: 'vitablue-campaign-cover', name: 'Portada de campaña', scope: 'organization', category: 'Campañas', aspectRatio: '16:9' },
+  { id: 'seamless-educational-carousel', projectId: 'vitablue-seamless-educational-carousel', name: 'Carrusel Panorámico: Guía 5 Pasos', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1' },
+  { id: 'consular-certificate-guide-carousel', projectId: 'vitablue-consular-certificate-guide-carousel', name: 'Carrusel: Certificado Consular Paso a Paso', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1' },
+  { id: 'vitablue-reference-carousel-white', projectId: 'vitablue-reference-carousel-white', name: 'Referencia VitaBlue · Fondo blanco', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1', colorVariant: 'white', layoutId: 'educational-five-step', slideCount: 5 },
+  { id: 'vitablue-reference-carousel-midnight', projectId: 'vitablue-reference-carousel-midnight', name: 'Referencia VitaBlue · Midnight blue', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1', colorVariant: 'midnight', layoutId: 'educational-five-step', slideCount: 5 },
+  { id: 'vitablue-reference-carousel-ocean', projectId: 'vitablue-reference-carousel-ocean', name: 'Referencia VitaBlue · Ocean teal', scope: 'organization', category: 'Carruseles', aspectRatio: '4:1', colorVariant: 'ocean', layoutId: 'educational-five-step', slideCount: 5 },
 ];

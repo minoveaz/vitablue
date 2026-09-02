@@ -15,6 +15,7 @@ export const HookAlertBadgeBlock: React.FC<BlockPropsHandler> = ({ layerId, prop
       <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
     </span>
     <InlineEditableText
+      layerId={layerId}
       text={String(props.badge ?? 'ASESORA ASIGNADA · EN DIRECTO')}
       onSave={(newVal) => onUpdateProps?.(layerId, { badge: newVal })}
     />
@@ -37,12 +38,14 @@ export const AdvisorAvatarBadgeBlock: React.FC<BlockPropsHandler> = ({ layerId, 
     </div>
     <div className="mt-1.5 space-y-0.5">
       <InlineEditableText
+        layerId={layerId}
         text={String(props.name ?? 'Sofía')}
         onSave={(newVal) => onUpdateProps?.(layerId, { name: newVal })}
         className="font-display text-xl font-black text-white tracking-tight leading-tight block"
         as="h3"
       />
       <InlineEditableText
+        layerId={layerId}
         text={String(props.role ?? 'Asesora Especialista en Visados')}
         onSave={(newVal) => onUpdateProps?.(layerId, { role: newVal })}
         className="text-xs font-bold text-[#94D2BD] block"
@@ -57,6 +60,7 @@ export const AdvisorQuoteBoxBlock: React.FC<BlockPropsHandler> = ({ layerId, pro
     <p className="text-xs font-medium italic text-slate-200 leading-relaxed">
       "
       <InlineEditableText
+        layerId={layerId}
         text={String(props.message ?? 'Te acompañamos en todo el proceso')}
         onSave={(newVal) => onUpdateProps?.(layerId, { message: newVal })}
         as="span"
@@ -98,6 +102,7 @@ export const WhatsAppCtaButtonBlock: React.FC<BlockPropsHandler> = ({ layerId, p
         <span className="shrink-0 pointer-events-none font-black text-base leading-none">✓</span>
       )}
       <InlineEditableText
+        layerId={layerId}
         text={ctaText}
         onSave={(newVal) => onUpdateProps?.(layerId, { ctaText: newVal, whatsAppText: newVal, text: newVal, buttonText: newVal })}
       />

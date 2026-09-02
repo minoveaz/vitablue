@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Plus,
   Search,
   Image as ImageIcon,
   Copy,
-  Trash2,
+  Archive,
   Sparkles,
   Calendar,
   X,
@@ -13,14 +13,18 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ImageProject, IMAGE_FORMAT_PRESETS } from '../../types/imageStudio';
-import { INITIAL_IMAGE_TEMPLATES } from '../../utils/imageTemplates';
+import { MARKETING_TEMPLATE_PROJECT_BY_ID } from '../../utils/imageTemplates';
+import { TEMPLATE_CATALOG } from '../../data/templateCatalog';
 import {
-  getStoredImageProjects,
-  saveStoredImageProject,
-  deleteStoredImageProject,
-  duplicateStoredImageProject,
-  createBlankImageProject,
+  createBlankImageProjectDraft,
+  getUserSavedImageProjectsAsync,
 } from '../../utils/imageProjectStorage';
+import {
+  archiveCreativeProject,
+  listCreativeProjects,
+  saveCreativeProject,
+  migrateLegacyCreativeProject,
+} from '../../utils/creativeStudioRemote';
 import { ImageLayerBlockRenderer } from './blocks/BlockRenderer';
 import ConfirmModal from '@/components/molecules/ConfirmModal';
 
@@ -89,25 +93,61 @@ const CanvasThumbnailPreview: React.FC<{ project: ImageProject }> = ({ project }
 };
 
 export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject }) => {
-  const [projects, setProjects] = useState<ImageProject[]>(() => getStoredImageProjects());
+  const [projects, setProjects] = useState<ImageProject[]>([]);
+  const [isHydrating, setIsHydrating] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFormatFilter, setSelectedFormatFilter] = useState<string>('all');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<'all' | 'draft' | 'ready' | 'archived'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalTab, setCreateModalTab] = useState<'blank' | 'template'>('blank');
   const [modalCategoryTab, setModalCategoryTab] = useState<string>('all');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('instagram-portrait');
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [pendingDelete, setPendingDelete] = useState<ImageProject | null>(null);
+  const [hubError, setHubError] = useState<string | null>(null);
+  const [legacyProjects, setLegacyProjects] = useState<ImageProject[]>([]);
+  const [selectedLegacyIds, setSelectedLegacyIds] = useState<string[]>([]);
+  const [isMigrating, setIsMigrating] = useState(false);
 
-  const refreshProjects = () => {
-    setProjects(getStoredImageProjects());
-  };
+  const refreshProjects = useCallback(async () => {
+    const hydratedProjects = await listCreativeProjects();
+    setProjects(hydratedProjects);
+    setIsHydrating(false);
+    setHubError(null);
+  }, []);
 
-  const handleDuplicate = (id: string, e: React.MouseEvent) => {
+  useEffect(() => {
+    let active = true;
+    void refreshProjects().catch((error) => {
+      if (active) {
+        setHubError(error instanceof Error
+          ? import.meta.env.DEV
+            ? `${error.message} [${error.name}]`
+            : error.message
+          : 'No se pudo conectar con LoopDev.');
+        setIsHydrating(false);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [refreshProjects]);
+
+  const handleDuplicate = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const dup = duplicateStoredImageProject(id);
-    if (dup) {
-      refreshProjects();
+    try {
+      const target = projects.find((project) => project.id === id);
+      if (!target) return;
+      await saveCreativeProject({
+        ...target,
+        id: crypto.randomUUID(),
+        title: `${target.title} (Copia)`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }, { createNew: true });
+      await refreshProjects();
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo duplicar la creatividad.');
     }
   };
 
@@ -116,31 +156,88 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
     setPendingDelete(project);
   };
 
-  const performDeleteProject = (project: ImageProject) => {
-    deleteStoredImageProject(project.id);
-    refreshProjects();
-    setPendingDelete(null);
+  const performArchiveProject = async (project: ImageProject) => {
+    try {
+      await archiveCreativeProject(project.id, project.updatedAt);
+      await refreshProjects();
+      setPendingDelete(null);
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo archivar la creatividad.');
+    }
   };
 
-  const handleCreateBlank = () => {
-    const project = createBlankImageProject(selectedPresetId, newProjectTitle.trim() || undefined);
-    refreshProjects();
-    setIsCreateModalOpen(false);
-    onOpenProject(project.id);
+  const handleReactivate = async (project: ImageProject, event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      await saveCreativeProject(
+        { ...project, creativeStatus: 'draft' },
+        { expectedUpdatedAt: project.updatedAt, changeSummary: 'Reactivado' },
+      );
+      await refreshProjects();
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo reactivar el diseño.');
+    }
   };
 
-  const handleCreateFromTemplate = (template: ImageProject) => {
-    const newProj: ImageProject = {
-      ...template,
-      id: `project-${Date.now()}`,
-      title: `${template.title} (Nuevo)`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    saveStoredImageProject(newProj);
-    refreshProjects();
-    setIsCreateModalOpen(false);
-    onOpenProject(newProj.id);
+  const handleCreateBlank = async () => {
+    try {
+      const project = await saveCreativeProject(
+        createBlankImageProjectDraft(
+          selectedPresetId,
+          newProjectTitle.trim() || undefined,
+        ),
+        { createNew: true },
+      );
+      await refreshProjects();
+      setIsCreateModalOpen(false);
+      onOpenProject(project.id);
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo crear la creatividad.');
+    }
+  };
+
+  const handleCreateFromTemplate = async (template: ImageProject) => {
+    try {
+      const newProj = await saveCreativeProject({
+        ...template,
+        id: crypto.randomUUID(),
+        title: newProjectTitle.trim() || `${template.title} (Nuevo)`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }, { createNew: true });
+      await refreshProjects();
+      setIsCreateModalOpen(false);
+      onOpenProject(newProj.id);
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudo crear la creatividad.');
+    }
+  };
+
+  const inspectLegacyProjects = async () => {
+    const localProjects = await getUserSavedImageProjectsAsync();
+    const candidates = localProjects.filter(
+      (project) => !projects.some((remote) => remote.id === project.id),
+    );
+    setLegacyProjects(candidates);
+    setSelectedLegacyIds(candidates.map((project) => project.id));
+  };
+
+  const migrateSelectedProjects = async () => {
+    const selected = legacyProjects.filter((project) => selectedLegacyIds.includes(project.id));
+    if (!selected.length) return;
+    setIsMigrating(true);
+    try {
+      for (const project of selected) {
+        await migrateLegacyCreativeProject(project);
+      }
+      await refreshProjects();
+      setLegacyProjects([]);
+      setSelectedLegacyIds([]);
+    } catch (error) {
+      setHubError(error instanceof Error ? error.message : 'No se pudieron migrar los diseños seleccionados.');
+    } finally {
+      setIsMigrating(false);
+    }
   };
 
   // Filtrado de proyectos
@@ -155,7 +252,11 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
       proj.preset.id === selectedFormatFilter ||
       proj.preset.aspectRatio === selectedFormatFilter;
 
-    return matchesSearch && matchesFormat;
+    const projectStatus = proj.creativeStatus ?? 'draft';
+    const matchesStatus = selectedStatusFilter === 'all'
+      ? projectStatus !== 'archived'
+      : projectStatus === selectedStatusFilter;
+    return matchesSearch && matchesFormat && matchesStatus;
   });
 
   return (
@@ -174,17 +275,51 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setNewProjectTitle('');
-            setIsCreateModalOpen(true);
-          }}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black text-white transition-colors hover:bg-primary-dark shadow-sm"
-        >
-          <Plus size={15} /> Nuevo diseño
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => void inspectLegacyProjects()} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:border-primary hover:text-primary">
+            Importar diseños del navegador
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setNewProjectTitle('');
+              setIsCreateModalOpen(true);
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black text-white transition-colors hover:bg-primary-dark shadow-sm"
+          >
+            <Plus size={15} /> Nuevo diseño
+          </button>
+        </div>
       </header>
+
+      {hubError && (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">
+          <span>{hubError}</span>
+          <button type="button" onClick={() => void refreshProjects()} className="rounded-lg bg-white px-3 py-1.5 font-black text-rose-700">Reintentar</button>
+        </div>
+      )}
+
+      {legacyProjects.length > 0 && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-black text-slate-900">Diseños locales encontrados</h3>
+              <p className="text-xs text-slate-600">Selecciona los que quieres copiar al Storage remoto. No se borrará el original.</p>
+            </div>
+            <button type="button" disabled={isMigrating} onClick={() => void migrateSelectedProjects()} className="rounded-xl bg-accent px-3 py-2 text-xs font-black text-primary-dark disabled:opacity-50">
+              {isMigrating ? 'Migrando…' : 'Migrar seleccionados'}
+            </button>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {legacyProjects.map((project) => (
+              <label key={project.id} className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-slate-700">
+                <input type="checkbox" checked={selectedLegacyIds.includes(project.id)} onChange={(event) => setSelectedLegacyIds((ids) => event.target.checked ? [...ids, project.id] : ids.filter((id) => id !== project.id))} />
+                <span className="truncate">{project.title}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 2. BARRA DE BÚSQUEDA Y FILTROS POR FORMATO */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -207,11 +342,18 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
             </button>
           )}
         </div>
+        <select value={selectedStatusFilter} onChange={(event) => setSelectedStatusFilter(event.target.value as typeof selectedStatusFilter)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600">
+          <option value="all">Todos los estados</option>
+          <option value="draft">Borradores</option>
+          <option value="ready">Listos</option>
+          <option value="archived">Archivados</option>
+        </select>
 
         {/* PILLS DE FORMATO */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
           {[
             { id: 'all', label: 'Todos los formatos' },
+            { id: 'carousel', label: '🎠 Carruseles (Multi)' },
             { id: '4:5', label: '4:5 (Post)' },
             { id: '1:1', label: '1:1 (Cuadrado)' },
             { id: '9:16', label: '9:16 (Story/Reel)' },
@@ -234,7 +376,11 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
       </div>
 
       {/* 3. LISTADO DE DISEÑOS EN GRID (ESTILO CAMPAÑAS ACTIVAS) */}
-      {filteredProjects.length === 0 ? (
+      {isHydrating ? (
+        <div className="flex min-h-56 items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-sm font-semibold text-slate-500 shadow-sm">
+          Cargando tus diseños…
+        </div>
+      ) : filteredProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-16 text-center shadow-sm">
           <ImageIcon className="mb-4 h-12 w-12 text-slate-300" />
           <h3 className="text-xl font-bold text-slate-900">No se encontraron diseños</h3>
@@ -323,14 +469,25 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       <Copy size={13} />
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={(e) => handleDelete(project, e)}
-                      title="Eliminar diseño"
-                      className="rounded-xl border border-rose-100 p-2 text-rose-500 transition-colors hover:bg-rose-50"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {project.creativeStatus !== 'archived' ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleDelete(project, e)}
+                        title="Archivar diseño"
+                        className="rounded-xl border border-amber-100 p-2 text-amber-600 transition-colors hover:bg-amber-50"
+                      >
+                        <Archive size={13} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => void handleReactivate(project, e)}
+                        title="Reactivar diseño"
+                        className="rounded-xl border border-slate-200 p-2 text-slate-500 transition-colors hover:bg-slate-100"
+                      >
+                        ↩
+                      </button>
+                    )}
                   </div>
                 </div>
               </article>
@@ -428,6 +585,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 no-scrollbar">
                       {[
                         { id: 'all', label: 'Todos' },
+                        { id: 'carousel', label: '🎠 Carruseles' },
                         { id: 'instagram', label: '📸 Instagram' },
                         { id: 'tiktok', label: '🎵 TikTok' },
                         { id: 'linkedin', label: '💼 LinkedIn' },
@@ -547,7 +705,10 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
             {createModalTab === 'template' && (
               <div className="flex-1 flex flex-col min-h-0 justify-between">
                 <div className="flex-1 min-h-0 overflow-y-auto pr-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {INITIAL_IMAGE_TEMPLATES.map((tmpl) => (
+                  {TEMPLATE_CATALOG.map((catalogItem) => {
+                    const tmpl = MARKETING_TEMPLATE_PROJECT_BY_ID.get(catalogItem.projectId);
+                    if (!tmpl) return null;
+                    return (
                     <div
                       key={tmpl.id}
                       onClick={() => handleCreateFromTemplate(tmpl)}
@@ -558,7 +719,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                       <div className="mt-3">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-[10px] font-black uppercase text-primary">
-                            {tmpl.preset.name}
+                            {catalogItem.category}
                           </span>
                           <span className="text-[10px] font-mono text-slate-400 font-bold">
                             {tmpl.preset.aspectRatio}
@@ -569,6 +730,7 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                         </h4>
                         <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
                           {tmpl.layers.length} capas listas para personalizar
+                          {catalogItem.colorVariant ? ` · Fondo ${catalogItem.colorVariant}` : ''}
                         </p>
                       </div>
 
@@ -580,7 +742,8 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
                         <span>Usar esta plantilla</span>
                       </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -588,20 +751,20 @@ export const ImageStudioHub: React.FC<ImageStudioHubProps> = ({ onOpenProject })
         </div>
       )}
 
-      {/* MODAL DE CONFIRMACIÓN PARA ELIMINAR DISEÑO */}
+      {/* MODAL DE CONFIRMACIÓN PARA ARCHIVAR DISEÑO */}
       <ConfirmModal
         open={Boolean(pendingDelete)}
         variant="danger"
-        title="Eliminar diseño"
+        title="Archivar diseño"
         description={
           pendingDelete
-            ? `¿Seguro que deseas eliminar el diseño "${pendingDelete.title}"? Esta acción no se puede deshacer.`
+            ? `¿Archivar el diseño "${pendingDelete.title}"? Podrás reactivarlo después desde el filtro de archivados.`
             : undefined
         }
-        confirmLabel="Eliminar diseño"
+        confirmLabel="Archivar diseño"
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
-          if (pendingDelete) performDeleteProject(pendingDelete);
+          if (pendingDelete) performArchiveProject(pendingDelete);
         }}
       />
     </div>

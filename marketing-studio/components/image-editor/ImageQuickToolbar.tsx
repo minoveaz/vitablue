@@ -11,8 +11,13 @@ import {
   Lock,
   Unlock,
   FlipHorizontal,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
 } from 'lucide-react';
 import { ImageLayer } from '../../types/imageStudio';
+import { useActiveInlineEditor } from './InlineEditorContext';
 
 interface ImageQuickToolbarProps {
   layer: ImageLayer;
@@ -47,9 +52,45 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
 }) => {
   const isMultiple = selectedCount > 1;
   const canUngroup = ['MotionAdvisorCard', 'MotionProviderGrid', 'MotionTrustBadge', 'MotionComparisonCard', 'CustomGroup'].includes(layer.blockType ?? '');
+  const activeInlineEditor = useActiveInlineEditor();
+  const textControls = [
+    {
+      id: 'bold',
+      label: 'Negrita',
+      icon: Bold,
+      isActive: activeInlineEditor?.editor.isActive('bold') ?? false,
+      run: (editor: NonNullable<typeof activeInlineEditor>['editor']) => editor.chain().focus().toggleBold().run(),
+    },
+    {
+      id: 'italic',
+      label: 'Cursiva',
+      icon: Italic,
+      isActive: activeInlineEditor?.editor.isActive('italic') ?? false,
+      run: (editor: NonNullable<typeof activeInlineEditor>['editor']) => editor.chain().focus().toggleItalic().run(),
+    },
+    {
+      id: 'underline',
+      label: 'Subrayado',
+      icon: Underline,
+      isActive: activeInlineEditor?.editor.isActive('underline') ?? false,
+      run: (editor: NonNullable<typeof activeInlineEditor>['editor']) => editor.chain().focus().toggleUnderline().run(),
+    },
+    {
+      id: 'strike',
+      label: 'Tachado',
+      icon: Strikethrough,
+      isActive: activeInlineEditor?.editor.isActive('strike') ?? false,
+      run: (editor: NonNullable<typeof activeInlineEditor>['editor']) => editor.chain().focus().toggleStrike().run(),
+    },
+  ] as const;
+  const activeTextColor = activeInlineEditor?.editor.getAttributes('textStyle').color;
+  const colorInputValue =
+    typeof activeTextColor === 'string' && /^#[0-9a-f]{6}$/i.test(activeTextColor)
+      ? activeTextColor
+      : '#ffffff';
 
   return (
-    <div className="flex items-center gap-1 rounded-2xl border border-slate-800 bg-slate-950/95 px-2 py-1.5 shadow-2xl backdrop-blur-xl select-none z-40 animate-fadeIn text-xs text-white">
+    <div data-inline-editor-toolbar className="flex flex-wrap items-center gap-1 rounded-2xl border border-slate-800 bg-slate-950/95 px-2 py-1.5 shadow-2xl backdrop-blur-xl select-none z-40 animate-fadeIn text-xs text-white">
       {/* IDENTIFICADOR / TÍTULO */}
       <span className="text-[11px] font-bold text-slate-200 px-1.5 border-r border-slate-800 max-w-[160px] truncate">
         {isMultiple ? `${selectedCount} Elementos` : layer.title}
@@ -135,13 +176,63 @@ export const ImageQuickToolbar: React.FC<ImageQuickToolbarProps> = ({
               type="button"
               onClick={() => onToggleLock(layer.id)}
               className={`flex size-6 items-center justify-center rounded-lg transition-colors ${
-                layer.locked ? 'text-amber-400 hover:bg-amber-950' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                layer.locked ? 'text-amber-300 hover:bg-amber-950' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
               }`}
               title={layer.locked ? 'Desbloquear capa' : 'Bloquear capa (⌥⇧L)'}
             >
               {layer.locked ? <Unlock className="size-3.5" /> : <Lock className="size-3.5" />}
             </button>
           )}
+        </>
+      )}
+
+      {activeInlineEditor && (
+        <>
+          <div className="h-4 w-px bg-slate-800 mx-0.5" />
+          <div className="flex items-center gap-0.5" aria-label="Formato de texto">
+            {textControls.map(({ id, label, icon: Icon, isActive, run }) => (
+              <button
+                key={id}
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  run(activeInlineEditor.editor);
+                  activeInlineEditor.save();
+                }}
+                className={`flex size-6 items-center justify-center rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-primary/40 text-brand-cyan ring-1 ring-brand-cyan/40'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                }`}
+                title={label}
+                aria-label={label}
+                aria-pressed={isActive}
+              >
+                <Icon className="size-3.5" />
+              </button>
+            ))}
+            <label
+              className="relative flex size-6 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"
+              title="Color del texto seleccionado"
+              aria-label="Color del texto seleccionado"
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              <span
+                className="size-3.5 rounded-full border border-white/40"
+                style={{ backgroundColor: colorInputValue }}
+              />
+              <input
+                type="color"
+                value={colorInputValue}
+                onChange={(event) => {
+                  activeInlineEditor.editor.chain().focus().setColor(event.target.value).run();
+                  activeInlineEditor.save();
+                }}
+                className="absolute inset-0 size-full cursor-pointer opacity-0"
+                aria-label="Elegir color del texto seleccionado"
+              />
+            </label>
+          </div>
         </>
       )}
 

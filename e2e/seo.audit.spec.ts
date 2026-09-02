@@ -32,7 +32,7 @@ interface SeoRoute {
   path: string;
   /** Fragmento de texto que DEBE estar en el HTML pre-renderizado (SSG check) */
   prerenderedKeyword: string;
-  /** URL canónica esperada (sin trailing slash, sin dominio) */
+  /** URL canónica esperada, sin dominio */
   expectedCanonical: string;
 }
 
@@ -94,7 +94,7 @@ const prerenderedKeywords: Record<string, string> = {
 const indexableRoutes: SeoRoute[] = indexablePublicRoutes.map((route) => ({
   name: route.name,
   path: route.path,
-  prerenderedKeyword: prerenderedKeywords[route.path] ?? (route.path === '/' || route.path === '/en' ? 'VitaBlue' : route.path.split('/').pop()?.split('-')[0] || 'VitaBlue'),
+  prerenderedKeyword: prerenderedKeywords[route.path.replace(/\/$/, '')] ?? (route.path === '/' || route.path === '/en/' ? 'VitaBlue' : route.path.split('/').filter(Boolean).pop()?.split('-')[0] || 'VitaBlue'),
   expectedCanonical: route.expectedCanonical,
 }));
 

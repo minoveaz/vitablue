@@ -18,6 +18,11 @@ import { TextPresetItem } from '../../data/textPresets';
 import { ImageLayer } from '../../types/imageStudio';
 import { ImageStudioAiCopyDrawer } from './drawers/ImageStudioAiCopyDrawer';
 import { ImageStudioVideoBridgeDrawer, VideoPreparationSettings } from './drawers/ImageStudioVideoBridgeDrawer';
+import { ImageStudioBackgroundDrawer } from './drawers/ImageStudioBackgroundDrawer';
+import type { CarouselBackgroundCompositionInput } from '../../types/carouselBackgroundComposition';
+import type { RuntimeCreativeAsset } from '../../utils/creativeStudioRemote';
+
+type RemoteImageMedia = RuntimeCreativeAsset;
 
 export interface ImageStudioAssetDrawerContentProps {
   activeTab: string | null;
@@ -68,6 +73,13 @@ export interface ImageStudioAssetDrawerContentProps {
     border: { borderWidth?: number; borderColor?: string; borderRadius?: number }
   ) => void;
   onPrepareVideo?: (settings: VideoPreparationSettings) => void;
+  onRegenerateBackground?: (composition: CarouselBackgroundCompositionInput) => void;
+  onUploadImage?: (file: File) => Promise<RemoteImageMedia>;
+  onListImages?: () => Promise<RemoteImageMedia[]>;
+  onDeleteImage?: (asset: RemoteImageMedia) => Promise<void>;
+  onListProjects?: () => Promise<ImageProject[]>;
+  onDuplicateProject?: (project: ImageProject) => Promise<void>;
+  onArchiveProject?: (project: ImageProject) => Promise<void>;
 }
 
 export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerContentProps> = ({
@@ -108,6 +120,13 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
   onUpdateLayerShadowPreset,
   onUpdateLayerBorder,
   onPrepareVideo,
+  onRegenerateBackground,
+  onUploadImage,
+  onListImages,
+  onDeleteImage,
+  onListProjects,
+  onDuplicateProject,
+  onArchiveProject,
 }) => {
   return (
     <div className="space-y-4 select-none">
@@ -116,6 +135,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
         <div className="-m-4 h-[calc(100vh-140px)]">
           <ImageStudioMyDesignsDrawer
             onLoadProject={onLoadTemplate}
+            onListProjects={onListProjects}
+            onDuplicateProject={onDuplicateProject}
+            onArchiveProject={onArchiveProject}
             onInsertSavedLayer={(layer) => {
               if (onInsertSavedLayer) {
                 onInsertSavedLayer(layer);
@@ -162,6 +184,14 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
           onRemoveLayer={onRemoveLayer}
           onDeleteSelectedLayers={onDeleteSelectedLayers}
         />
+      )}
+      {activeTab === 'backgrounds' && onRegenerateBackground && (
+        <div className="-m-4 h-[calc(100vh-140px)] overflow-y-auto p-4">
+          <ImageStudioBackgroundDrawer
+            project={project}
+            onRegenerateBackground={onRegenerateBackground}
+          />
+        </div>
       )}
       {activeTab === 'layout' && onUpdateGuideSettings && onAutoLayout && onFitText && onApplyVariant && (
         <ImageStudioLayoutDrawer
@@ -213,6 +243,9 @@ export const ImageStudioAssetDrawerContent: React.FC<ImageStudioAssetDrawerConte
                 '#001219'
               );
             }}
+            onUploadImage={onUploadImage}
+            onListImages={onListImages}
+            onDeleteImage={onDeleteImage}
           />
         </div>
       )}

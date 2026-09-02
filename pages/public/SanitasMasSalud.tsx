@@ -147,7 +147,7 @@ export const SanitasMasSalud: React.FC = () => {
   ];
 
 
-  const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud';
+  const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/';
   const title = 'Sanitas Más Salud | Seguro Médico Completo | VitaBlue';
   const description = 'Detalles, coberturas y modalidades de Sanitas Más Salud. Seguro médico de cuadro completo con hospitalización, 50.000 médicos y Blua digital gratis.';
 

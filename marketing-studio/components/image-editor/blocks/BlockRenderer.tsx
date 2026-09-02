@@ -37,6 +37,9 @@ import { InstagramHighlightBadge } from './HighlightCoverBlocks';
 import { InlineEditableText } from '../InlineEditableText';
 import { parseFormattedText, TextHighlightRule } from '../../../utils/textFormatter';
 import { MarketingBlockRenderer } from './MarketingBlocks';
+import { getBlockDefaultWidth } from '../../../utils/blockGeometry';
+import { htmlToPlainText, isTiptapHtml } from '../../../utils/tiptapHtml';
+import { getCropImageStyle } from '../../../utils/imageCrop';
 
 const BlockRenderFallback: React.FC<{ title?: string }> = ({ title }) => (
   <div
@@ -55,81 +58,15 @@ export interface ImageLayerBlockRendererProps {
   onUpdateLayerProps?: (layerId: string, patch: Record<string, unknown>) => void;
 }
 
-export const getBlockDefaultWidth = (blockType?: string, customWidth?: number, blockProps?: Record<string, unknown>): string => {
-  if (customWidth) return `${customWidth}px`;
-  switch (blockType) {
-    case 'CustomGroup':
-      return blockProps?.width ? `${Number(blockProps.width)}px` : '420px';
-    case 'MarketingBlockPart':
-      return blockProps?.width ? `${Number(blockProps.width)}px` : 'auto';
-    case 'MotionAdvisorCard':
-      return '380px';
-    case 'GlassCardSurface':
-      return blockProps?.width ? `${blockProps.width}px` : '420px';
-    case 'GeometricShape':
-      return blockProps?.width ? `${blockProps.width}px` : '180px';
-    case 'WebIllustration':
-      return blockProps?.width ? `${blockProps.width}px` : '280px';
-    case 'MotionTrustBadge':
-      return '420px';
-    case 'MotionComparisonCard':
-    case 'MotionProviderGrid':
-      return '420px';
-    case 'MarketingBrandHero':
-    case 'MarketingFeatureGrid':
-    case 'InsuranceProductHero':
-    case 'InsuranceCoverageGrid':
-    case 'InsuranceTestimonialGrid':
-    case 'InsurancePlanComparison':
-    case 'InsuranceTrustBar':
-    case 'InsuranceProviderBar':
-    case 'InsuranceTransparency':
-    case 'InsuranceFaq':
-    case 'InsuranceAdvisorCta':
-      return '760px';
-    case 'MarketingSectionIntro':
-      return '620px';
-    case 'MarketingPromoCard':
-    case 'InsuranceProductCard':
-    case 'MarketingTestimonial':
-      return '420px';
-    case 'HookAlertBadge':
-    case 'TrustHighlightPill':
-    case 'TrustVerifiedPill':
-      return 'auto';
-    case 'AdvisorAvatarBadge':
-      return '340px';
-    case 'AdvisorQuoteBox':
-      return '340px';
-    case 'WhatsAppCtaButton':
-      return '340px';
-    case 'ProviderGridHeader':
-      return '380px';
-    case 'ProviderBadge':
-      return '185px';
-    case 'TrustShieldIcon':
-      return 'auto';
-    case 'TrustBadgeTitle':
-      return '380px';
-    case 'TrustBadgeSubtitle':
-      return '380px';
-    case 'ComparisonHeader':
-      return '380px';
-    case 'ComparisonWrongBox':
-    case 'ComparisonCorrectBox':
-      return '380px';
-    case 'CustomText':
-      return blockProps?.tag === 'badge' ? 'auto' : '420px';
-    default:
-      return '420px';
-  }
-};
-
 export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = ({
   layer,
   brandTokens,
   onUpdateLayerProps,
 }) => {
+  const displayText = (value: unknown, fallback = '') => {
+    const text = String(value ?? fallback);
+    return isTiptapHtml(text) ? htmlToPlainText(text) : text;
+  };
   const blockProps = {
     ...(layer.blockType ? getBlockCatalogItem(layer.blockType)?.defaultProps : {}),
     ...((layer.props ?? {}) as Record<string, unknown>),
@@ -193,12 +130,12 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionAdvisorCard':
       return (
         <MotionAdvisorCard
-          name={String(blockProps.name ?? 'Sofía')}
-          role={String(blockProps.role ?? 'Asesora')}
-          badge={String(blockProps.badge ?? 'EN DIRECTO')}
-          message={String(blockProps.message ?? '')}
+          name={displayText(blockProps.name, 'Sofía')}
+          role={displayText(blockProps.role, 'Asesora')}
+          badge={displayText(blockProps.badge, 'EN DIRECTO')}
+          message={displayText(blockProps.message)}
           avatarUrl={blockProps.avatarUrl ? String(blockProps.avatarUrl) : undefined}
-          whatsAppText={String(blockProps.whatsAppText ?? 'WhatsApp')}
+          whatsAppText={displayText(blockProps.whatsAppText, 'WhatsApp')}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -208,10 +145,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionTrustBadge':
       return (
         <MotionTrustBadge
-          title={String(blockProps.title ?? 'PÓLIZA 100% VÁLIDA PARA VISADO')}
-          subtitle={String(blockProps.subtitle ?? 'Sin Copagos · Cobertura Completa')}
-          highlight={String(blockProps.highlight ?? 'GARANTÍA CONSULAR')}
-          verifiedLabel={String(blockProps.verifiedLabel ?? 'VERIFICADO')}
+          title={displayText(blockProps.title, 'PÓLIZA 100% VÁLIDA PARA VISADO')}
+          subtitle={displayText(blockProps.subtitle, 'Sin Copagos · Cobertura Completa')}
+          highlight={displayText(blockProps.highlight, 'GARANTÍA CONSULAR')}
+          verifiedLabel={displayText(blockProps.verifiedLabel, 'VERIFICADO')}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -221,8 +158,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionProviderGrid':
       return (
         <MotionProviderGrid
-          title={String(blockProps.title ?? 'Aseguradoras Líderes')}
-          subtitle={blockProps.subtitle ? String(blockProps.subtitle) : undefined}
+          title={displayText(blockProps.title, 'Aseguradoras Líderes')}
+          subtitle={blockProps.subtitle ? displayText(blockProps.subtitle) : undefined}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -232,11 +169,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
     case 'MotionComparisonCard':
       return (
         <MotionComparisonCard
-          title={String(blockProps.title ?? '')}
-          wrongOptionTitle={String(blockProps.wrongOptionTitle ?? '')}
-          wrongOptionDesc={String(blockProps.wrongOptionDesc ?? '')}
-          correctOptionTitle={String(blockProps.correctOptionTitle ?? '')}
-          correctOptionDesc={String(blockProps.correctOptionDesc ?? '')}
+          title={displayText(blockProps.title)}
+          wrongOptionTitle={displayText(blockProps.wrongOptionTitle)}
+          wrongOptionDesc={displayText(blockProps.wrongOptionDesc)}
+          correctOptionTitle={displayText(blockProps.correctOptionTitle)}
+          correctOptionDesc={displayText(blockProps.correctOptionDesc)}
           tokens={effectiveBrandTokens}
           className="!max-w-none !w-full !h-full"
           style={{ maxWidth: 'none', width: '100%', height: '100%' }}
@@ -316,7 +253,8 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const imageUrl = String(blockProps.imageUrl ?? layer.src ?? '');
         const objectFit = (blockProps.objectFit as 'cover' | 'contain' | 'fill') ?? 'cover';
         const focalPoint = blockProps.focalPoint as { x?: number; y?: number } | undefined;
-        const clipShape = layer.clipShape ?? 'rounded-2xl';
+        const clipShape = layer.clipShape ?? 'none';
+        const cropImageStyle = layer.crop ? getCropImageStyle(layer.crop) : {};
 
         let clipStyle: React.CSSProperties = {};
         if (clipShape === 'circle') {
@@ -345,8 +283,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               alt={String(blockProps.alt ?? layer.title ?? 'Image')}
               className="w-full h-full pointer-events-none"
               style={{
-                objectFit,
-                objectPosition: `${focalPoint?.x ?? 50}% ${focalPoint?.y ?? 50}%`,
+                objectFit: layer.crop ? 'cover' : objectFit,
+                objectPosition: layer.crop
+                  ? cropImageStyle.objectPosition
+                  : `${focalPoint?.x ?? 50}% ${focalPoint?.y ?? 50}%`,
+                ...(layer.crop ? cropImageStyle : {}),
               }}
               loading="lazy"
             />
@@ -358,6 +299,12 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
       if (layer.type === 'text' || layer.blockType === 'CustomText') {
         const textTag = (blockProps.tag as 'h1' | 'h2' | 'h3' | 'p' | 'span') ?? 'p';
         const isBadge = blockProps.tag === 'badge';
+        const rawText = String(blockProps.text ?? layer.title ?? 'Texto');
+        const legacyTextPreview = parseFormattedText(
+          rawText,
+          (blockProps.highlightWords as TextHighlightRule[]) ?? [],
+          String(layer.fill ?? blockProps.color ?? '#FFFFFF')
+        );
 
         if (isBadge) {
           const badgeVariant = String(blockProps.badgeVariant ?? 'pill');
@@ -381,8 +328,10 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               }}
             >
               <InlineEditableText
+                layerId={layer.id}
                 text={String(blockProps.text ?? layer.title ?? 'Badge')}
                 onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
+                onUpdateLayerProps={(patch) => onUpdateLayerProps?.(layer.id, patch)}
                 as="span"
               />
             </div>
@@ -396,10 +345,11 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
         const baseFontSize = layer.fontSize ?? (blockProps.fontSize as number) ?? 24;
         const textFit = blockProps.textFit as { mode?: 'auto' | 'fixed'; maxLines?: number } | undefined;
         const maxLines = Math.max(1, textFit?.maxLines ?? 3);
+        const isFixedTextFit = textFit?.mode === 'fixed';
 
         return (
           <div
-            className={`w-full h-full flex flex-col justify-center select-none ${
+            className={`w-full h-full flex flex-col justify-center select-text ${
               hasBoxEffect ? 'p-3 rounded-2xl shadow-xl' : ''
             }`}
             style={{
@@ -408,28 +358,28 @@ export const ImageLayerBlockRenderer: React.FC<ImageLayerBlockRendererProps> = (
               fontSize: `min(${baseFontSize}px, 12cqw)`,
               fontWeight: layer.fontWeight ?? (blockProps.fontWeight as any) ?? '700',
               color: hasStrokeEffect ? 'transparent' : (layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'),
+              fontStyle: (layer.fontStyle ?? blockProps.fontStyle) as React.CSSProperties['fontStyle'],
+              textDecoration: (blockProps.textDecoration as React.CSSProperties['textDecoration']) ?? undefined,
               backgroundColor: hasBoxEffect ? (layer.boxColor ?? '#EE9B00') : undefined,
               textAlign: layer.align ?? (blockProps.textAlign as any) ?? 'center',
               letterSpacing: layer.letterSpacing ? `${layer.letterSpacing}px` : 'normal',
               lineHeight: layer.lineHeight ?? 1.25,
               overflowWrap: 'anywhere',
-              overflow: 'hidden',
+              overflow: isFixedTextFit ? 'hidden' : 'visible',
               textShadow: hasGlowEffect ? '0 0 20px rgba(148, 210, 189, 0.9), 0 0 40px rgba(0, 95, 115, 0.8)' : undefined,
               WebkitTextStroke: hasStrokeEffect ? `2px ${layer.fill ?? (blockProps.color as string) ?? '#FFFFFF'}` : undefined,
             }}
           >
             <InlineEditableText
-              text={String(blockProps.text ?? layer.title ?? 'Texto')}
+              layerId={layer.id}
+              text={rawText}
               onSave={(newVal) => onUpdateLayerProps?.(layer.id, { text: newVal })}
-              className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line'}`}
+              onUpdateLayerProps={(patch) => onUpdateLayerProps?.(layer.id, patch)}
+              className={`w-full ${isNoWrap ? 'block whitespace-nowrap' : isFixedTextFit ? 'line-clamp-[var(--text-fit-lines)] whitespace-pre-line' : 'whitespace-pre-line'}`}
               style={{ '--text-fit-lines': maxLines } as React.CSSProperties}
               as={textTag}
             >
-              {parseFormattedText(
-                String(blockProps.text ?? layer.title ?? 'Texto'),
-                (blockProps.highlightWords as TextHighlightRule[]) ?? [],
-                String(layer.fill ?? blockProps.color ?? '#FFFFFF')
-              )}
+              {isTiptapHtml(rawText) ? undefined : legacyTextPreview}
             </InlineEditableText>
           </div>
         );
