@@ -40,6 +40,27 @@ function cleanHtmlFolders(dir) {
 
 cleanHtmlFolders(distDir);
 
+// Ensure prerendered indexable pages expose their canonical URL in static HTML.
+function injectCanonicalTags() {
+  const sitemapPath = path.join(distDir, 'sitemap.xml');
+  if (!fs.existsSync(sitemapPath)) return;
+  const sitemap = fs.readFileSync(sitemapPath, 'utf8');
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  urls.forEach((url) => {
+    const pathname = new URL(url).pathname;
+    const filePath = pathname === '/'
+      ? path.join(distDir, 'index.html')
+      : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
+    if (!fs.existsSync(filePath)) return;
+    let content = fs.readFileSync(filePath, 'utf8');
+    if (content.includes('rel="canonical"')) return;
+    content = content.replace('</head>', `    <link rel="canonical" href="${url}" />\n</head>`);
+    fs.writeFileSync(filePath, content, 'utf8');
+  });
+}
+
+injectCanonicalTags();
+
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 
 function optimizeHtmlHeadTagsRecursive(dir) {

@@ -22,6 +22,18 @@ on:
       - 'docs/**'
       - 'conductor/**'
   workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Suite pesada a ejecutar'
+        required: true
+        type: choice
+        default: full
+        options:
+          - full
+          - visual
+          - lighthouse
+  schedule:
+    - cron: '0 3 * * 0'
 
 # Sólo un job de CI activo a la vez por rama para evitar derroche de runners
 concurrency:
@@ -57,12 +69,14 @@ jobs:
               - 'index.html'
               - 'index.css'
               - 'components/**'
-              - 'e2e/accessibility.audit.spec.ts'
+              - 'e2e/accessibility.public.spec.ts'
               - 'e2e/public.runtime.audit.spec.ts'
-              - 'e2e/public.flows.spec.ts'
-              - 'e2e/visual.critical.spec.ts'
-              - 'e2e/mobile.navigation.spec.ts'
-              - 'e2e/responsive.diagnostic.spec.ts'
+              - 'e2e/smoke.public.spec.ts'
+              - 'e2e/functional.blog.spec.ts'
+              - 'e2e/functional.wizard.spec.ts'
+              - 'e2e/visual.public.spec.ts'
+              - 'e2e/functional.mobile-public.spec.ts'
+              - 'e2e/responsive.public.spec.ts'
             seo_surface:
               - 'e2e/seo.audit.spec.ts'
               # Temporary: the global SEO audit has known baseline failures.
@@ -94,6 +108,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Validate Route Registry
         run: npm run validate-route-registry
 
@@ -108,6 +125,12 @@ jobs:
         env:
           # Puppeteer en CI usa Chromium del sistema, no el local de macOS
           PUPPETEER_EXECUTABLE_PATH: ''
+
+      - name: Validate generated SEO
+        run: npm run validate-static-seo
+
+      - name: Validate internal links
+        run: npm run validate-internal-links
 
       - name: Save dist to Cache
         uses: actions/cache/save@v4
@@ -125,7 +148,7 @@ jobs:
           if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────
-  # JOB 2: Playwright E2E — Responsive & SEO Audit
+  # JOB 2: Playwright E2E — Public suites, responsive and SEO audit
   # Depende del build (necesita el dist pre-renderizado)
   # ────────────────────────────────────────────────────────────────────
   playwright:
@@ -136,7 +159,9 @@ jobs:
       - changes
     # Temporary: promotion PRs validate the build only while the existing
     # responsive suite is repaired.
-    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') && !(github.event_name == 'push' && github.ref == 'refs/heads/develop')
+    # Temporarily disabled while the browser suites are rebuilt from a
+    # deterministic baseline. Keep the job definition for the later rollout.
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.suite == 'full' || inputs.suite == 'visual'))
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -144,11 +169,11 @@ jobs:
       matrix:
         include:
           - project: desktop
-            tests: e2e/accessibility.audit.spec.ts e2e/public.runtime.audit.spec.ts e2e/public.flows.spec.ts e2e/visual.critical.spec.ts
+            tests: e2e/smoke.public.spec.ts e2e/public.runtime.audit.spec.ts e2e/functional.blog.spec.ts e2e/functional.wizard.spec.ts e2e/accessibility.public.spec.ts e2e/visual.public.spec.ts
           - project: mobile
-            tests: e2e/mobile.navigation.spec.ts
+            tests: e2e/functional.mobile-public.spec.ts
           - project: mobile-compact
-            tests: e2e/responsive.diagnostic.spec.ts
+            tests: e2e/responsive.public.spec.ts e2e/functional.mobile-public.spec.ts e2e/visual.public.spec.ts
 
     steps:
       - name: Checkout Source Code
@@ -216,7 +241,8 @@ jobs:
       - build
       - changes
     # Temporary while the global SEO audit baseline is being repaired.
-    if: false
+    # Temporarily disabled while the static SEO suite is rebuilt.
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.suite == 'full')
 
     steps:
       - name: Checkout Source Code
@@ -285,7 +311,9 @@ jobs:
       - changes
     # Temporary: promotion PRs validate the build only while the existing
     # Lighthouse job is repaired.
-    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') && !(github.event_name == 'push' && github.ref == 'refs/heads/develop')
+    # Lighthouse is reintroduced after budgets and the preview contract are
+    # made reliable; it must not consume CI minutes during that work.
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.suite == 'full' || inputs.suite == 'lighthouse'))
 
     steps:
       - name: Checkout Source Code

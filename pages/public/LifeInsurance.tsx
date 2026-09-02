@@ -212,14 +212,14 @@ export const LifeInsurance: React.FC = () => {
       <Helmet>
         <title>Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue</title>
         <meta name="description" content="Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas." />
-        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-vida" />
+        <link rel="canonical" href="https://www.vitablue.es/productos/seguro-vida/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue" />
         <meta property="og:description" content="Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas." />
         <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
-        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-vida" />
+        <meta property="og:url" content="https://www.vitablue.es/productos/seguro-vida/" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -334,5 +334,3 @@ export const LifeInsurance: React.FC = () => {
 };
 
 export default LifeInsurance;
-
-

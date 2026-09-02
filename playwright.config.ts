@@ -44,26 +44,32 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop',
+      testMatch: ['**/smoke.public.spec.ts', '**/functional.blog.spec.ts', '**/functional.wizard.spec.ts', '**/accessibility.public.spec.ts', '**/visual.public.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1440, height: 900 },
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
     {
       name: 'mobile',
+      testMatch: ['**/functional.mobile-public.spec.ts'],
       use: {
         ...devices['iPhone 13'],
         browserName: 'chromium',
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
     {
       name: 'mobile-compact',
+      testMatch: ['**/responsive.public.spec.ts', '**/functional.mobile-public.spec.ts', '**/visual.public.spec.ts'],
       use: {
         ...devices['iPhone SE'],
         browserName: 'chromium',
         // Forzar 375px (caso crítico según AGENTS.md)
         viewport: { width: 375, height: 667 },
       },
+      testIgnore: ['**/video-studio.visual.spec.ts'],
     },
   ],
 });

@@ -1,7 +1,7 @@
 /**
- * e2e/mobile.navigation.spec.ts — VitaBlue v2
+ * e2e/functional.mobile-public.spec.ts — VitaBlue v2
  *
- * Fase 1.2 — Tests de Navegación e Interacción Móvil
+ * Functional mobile checks for public pages
  *
  * Valida que los elementos de navegación interactivos funcionen correctamente
  * en dispositivos móviles:
