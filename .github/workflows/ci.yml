@@ -22,6 +22,18 @@ on:
       - 'docs/**'
       - 'conductor/**'
   workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Suite pesada a ejecutar'
+        required: true
+        type: choice
+        default: full
+        options:
+          - full
+          - visual
+          - lighthouse
+  schedule:
+    - cron: '0 3 * * 0'
 
 # Sólo un job de CI activo a la vez por rama para evitar derroche de runners
 concurrency:
@@ -147,7 +159,7 @@ jobs:
     # responsive suite is repaired.
     # Temporarily disabled while the browser suites are rebuilt from a
     # deterministic baseline. Keep the job definition for the later rollout.
-    if: false
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.suite == 'full' || inputs.suite == 'visual'))
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -228,7 +240,7 @@ jobs:
       - changes
     # Temporary while the global SEO audit baseline is being repaired.
     # Temporarily disabled while the static SEO suite is rebuilt.
-    if: false
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.suite == 'full')
 
     steps:
       - name: Checkout Source Code
@@ -299,7 +311,7 @@ jobs:
     # Lighthouse job is repaired.
     # Lighthouse is reintroduced after budgets and the preview contract are
     # made reliable; it must not consume CI minutes during that work.
-    if: false
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.suite == 'full' || inputs.suite == 'lighthouse'))
 
     steps:
       - name: Checkout Source Code
