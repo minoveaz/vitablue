@@ -115,6 +115,9 @@ jobs:
       - name: Validate generated SEO
         run: npm run validate-static-seo
 
+      - name: Validate internal links
+        run: npm run validate-internal-links
+
       - name: Save dist to Cache
         uses: actions/cache/save@v4
         with:
