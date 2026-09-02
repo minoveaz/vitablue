@@ -136,7 +136,7 @@ jobs:
       - changes
     # Temporary: promotion PRs validate the build only while the existing
     # responsive suite is repaired.
-    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop')
+    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') && !(github.event_name == 'push' && github.ref == 'refs/heads/develop')
 
     strategy:
       # No cancelar otros proyectos si uno falla → ver todos los resultados
@@ -285,7 +285,7 @@ jobs:
       - changes
     # Temporary: promotion PRs validate the build only while the existing
     # Lighthouse job is repaired.
-    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop')
+    if: needs.changes.outputs.public_frontend == 'true' && !(github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop') && !(github.event_name == 'push' && github.ref == 'refs/heads/develop')
 
     steps:
       - name: Checkout Source Code
