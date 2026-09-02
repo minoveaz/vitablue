@@ -1,15 +1,8 @@
 import { test, expect } from '@playwright/test';
-
-const publicResponsiveRoutes = [
-  { name: 'home', path: '/' },
-  { name: 'blog', path: '/blog/' },
-  { name: 'contacto', path: '/contacto/' },
-  { name: 'producto estudiantes', path: '/productos/seguros-salud/seguro-medico-estudiantes/' },
-  { name: 'ciudad estudiantes', path: '/productos/seguros-salud/seguro-medico-estudiantes/madrid/' },
-];
+import { indexablePublicRoutes } from './fixtures/publicRoutes';
 
 test.describe('Public responsive checks', () => {
-  for (const route of publicResponsiveRoutes) {
+  for (const route of indexablePublicRoutes) {
     test(`${route.name} no desborda horizontalmente`, async ({ page }) => {
       await page.goto(route.path, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('body')).toBeVisible();
