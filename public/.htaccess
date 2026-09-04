@@ -75,6 +75,7 @@
 
   # Redirecciones legacy de países y ciudades (con o sin barra final).
   # Este bloque mantiene una única fuente para estas rutas legacy.
+  # Las rutas antiguas se redirigen siempre a URLs canónicas con barra final.
   RewriteRule ^seguro-medico-visado-espana/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
   RewriteRule ^seguro-medico-visado-espana/mexico-cdmx/?$ /productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
   RewriteRule ^seguro-medico-visado-espana/peru-lima/?$ /productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
