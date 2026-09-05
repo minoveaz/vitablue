@@ -17,10 +17,15 @@ import { WhatsAppIcon } from '../../components/atoms/WhatsAppIcon';
 import { useWizard } from '../../context/WizardContext';
 import { sanitasConsultProducts, sanitasFeaturedProducts } from '@/domain/products/sanitasCatalog';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 export const SanitasInsurances: React.FC = () => {
   const navigate = useNavigate();
   const { setProfile, resetWizard } = useWizard();
+  const sanitasWhatsAppUrl = buildContextualWhatsAppUrl({
+    pathname: '/productos/seguros-salud/seguros-sanitas',
+    tag: 'LANDING-SANITAS',
+  });
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -197,7 +202,7 @@ export const SanitasInsurances: React.FC = () => {
                 <Button size="lg" variant="accent" onClick={handleStartQuoting} rightIcon={<ArrowRight size={18} />}>
                   Calcular mi tarifa online
                 </Button>
-                <a href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20los%20seguros%20de%20Sanitas." className="inline-flex items-center justify-center" target="_blank" rel="noopener noreferrer">
+                <a href={sanitasWhatsAppUrl} className="inline-flex items-center justify-center" target="_blank" rel="noopener noreferrer">
                   <Button
                     size="lg"
                     variant="primary"
@@ -303,7 +308,7 @@ export const SanitasInsurances: React.FC = () => {
                 Al pulsar en <strong>Consultar por WhatsApp</strong>, nuestro equipo calculará tu prima oficial en menos de 2 minutos. Te resolveremos dudas de carencias, cuestionario de salud y realizaremos el alta digital de forma totalmente gratuita y sin spam comercial.
               </p>
             </div>
-            <a href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20para%20los%20seguros%20especiales%20de%20Sanitas." target="_blank" rel="noopener noreferrer" className="w-full md:w-auto shrink-0">
+            <a href={sanitasWhatsAppUrl} target="_blank" rel="noopener noreferrer" className="w-full md:w-auto shrink-0">
               <Button variant="accent" className="w-full md:w-auto font-bold shadow-md shadow-accent/10 whitespace-nowrap">
                 Hablar con un asesor ahora
               </Button>
@@ -366,7 +371,7 @@ export const SanitasInsurances: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asesoría personalizada?"
         description="Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20los%20seguros%20de%20Sanitas."
+        whatsappUrl={sanitasWhatsAppUrl}
       />
     </div>
   );

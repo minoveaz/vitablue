@@ -2,6 +2,7 @@ import React from 'react';
 import { lifePlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   ShieldCheck, Clock, Award, Shield, Stethoscope
 } from 'lucide-react';
@@ -327,7 +328,7 @@ export const LifeInsurance: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asesoría personalizada para tu seguro de vida?"
         description="Te ayudamos a comparar las primas de las distintas compañías de forma neutral para proteger a tu familia de la manera más económica. Te asesoramos de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20de%20Vida."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguro-vida', tag: 'LANDING-VIDA' })}
       />
     </div>
   );

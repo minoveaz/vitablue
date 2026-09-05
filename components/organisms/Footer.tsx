@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Mail, Phone, Shield } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import { getSocialProfiles, socialProfilesUpdatedEvent, SocialProfiles } from '@/utils/socialProfiles';
+import { getFooterWhatsAppUrl } from '@/utils/whatsappLinks';
 
 // Social Icon SVGs
 const FacebookIcon: React.FC = () => (
@@ -60,6 +61,8 @@ export const Footer: React.FC = () => {
     window.addEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
     return () => window.removeEventListener(socialProfilesUpdatedEvent, handleProfilesUpdate);
   }, []);
+
+  const footerWhatsAppUrl = getFooterWhatsAppUrl(isEnglish ? 'en' : 'es', location.pathname);
 
   return (
     <footer className="bg-primary-dark text-white border-t border-slate-900 pt-16 pb-8">
@@ -239,13 +242,13 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a 
-                  href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+                  href={footerWhatsAppUrl}
                   target="_blank" 
                   rel="noopener noreferrer" 
                     className="hover:text-whatsapp transition-colors duration-150 flex items-center gap-1.5"
                 >
                   <span className="size-2 rounded-full bg-whatsapp animate-pulse" />
-                  Asesor WhatsApp Online
+                  {isEnglish ? 'WhatsApp Live Advisor' : 'Asesor WhatsApp Online'}
                 </a>
               </li>
             </ul>

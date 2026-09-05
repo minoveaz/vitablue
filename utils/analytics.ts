@@ -372,12 +372,20 @@ export const initGlobalConversionTracking = (): (() => void) => {
 
     // Check for WhatsApp links
     if (href.includes('wa.me') || href.includes('api.whatsapp.com') || href.includes('whatsapp.com/send')) {
+      let extractedTag: string | undefined;
       // If the link does not have an attribution tag, dynamically append it before leaving
       try {
         const url = new URL(href);
         const currentText = url.searchParams.get('text') || '';
+
+        // Extract prefixed context tag e.g. "[LANDING-MASCOTAS]"
+        const tagMatch = currentText.match(/^\[([^\]]+)\]/);
+        if (tagMatch) {
+          extractedTag = tagMatch[1];
+        }
+
         if (currentText && !currentText.includes('[Ref:')) {
-          const tag = generateAttributionTag();
+          const tag = generateAttributionTag(extractedTag);
           url.searchParams.set('text', `${currentText.trim()}\n\n${tag}`);
           anchor.href = url.toString();
         }
@@ -388,6 +396,8 @@ export const initGlobalConversionTracking = (): (() => void) => {
       trackContactConversion('whatsapp', {
         link_url: anchor.href,
         link_text: anchor.innerText?.trim() || anchor.getAttribute('aria-label') || 'WhatsApp Link',
+        campaign_tag: extractedTag,
+        whatsapp_tag: extractedTag,
       });
       return;
     }

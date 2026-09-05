@@ -2,6 +2,7 @@ import React from 'react';
 import { sanitasMascotasPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   ShieldCheck, Clock, Award, Dog
 } from 'lucide-react';
@@ -270,7 +271,7 @@ export const SanitasMascotas: React.FC = () => {
         title="Sanitas Mascotas desde 9,90€/mes"
         description="Cuidado integral veterinario para tu perro o gato sin exclusión por raza. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
         primaryAction={{ label: 'Calcular Póliza Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Asesor WhatsApp', href: 'https://wa.me/34694583452?text=Hola!%20[GADS/WEB-MASCOTAS]%20Vengo%20de%20la%20p%C3%A1gina%20de%20Sanitas%20Mascotas%20de%20VitaBlue.%20Quiero%20informaci%C3%B3n%20sobre%20el%20seguro%20veterinario.' }}
+        secondaryAction={{ label: 'Asesor WhatsApp', href: getProductWhatsAppUrl('mascotas') }}
         highlights={['Limpieza dental anual gratis', 'Urgencias 24h']}
       >
         <QuoteEstimator
@@ -369,7 +370,7 @@ export const SanitasMascotas: React.FC = () => {
       <AdvisorHelpSection
         title="¿Tienes dudas sobre los límites de edad?"
         description="Puedes contratar Sanitas Mascotas para perros y gatos desde los 3 meses hasta los 9 años de edad. Te asesoramos sin compromiso sobre cualquier cobertura veterinaria de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20[GADS/WEB-MASCOTAS]%20Vengo%20de%20la%20p%C3%A1gina%20de%20Sanitas%20Mascotas%20de%20VitaBlue.%20Tengo%20dudas%20sobre%20las%20coberturas%20veterinarias."
+        whatsappUrl={getProductWhatsAppUrl('mascotas')}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   ShieldCheck, Clock, Award, Shield
 } from 'lucide-react';
@@ -386,7 +387,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asesoría personalizada para tu unidad familiar?"
         description="Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguro-para-decesos/asistencia-familiar', tag: 'LANDING-DECESOS' })}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import { ArrowRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import Button from '@/components/atoms/Button';
-import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
+import { getBlogWhatsAppUrl, buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 interface BlogAdvisorCtaProps {
   isEnglish: boolean;
@@ -14,20 +14,13 @@ interface BlogAdvisorCtaProps {
 }
 
 const BlogAdvisorCta: React.FC<BlogAdvisorCtaProps> = ({ isEnglish, title = '', description = '', postTitle = '', variant = 'bottom' }) => {
-  const baseMsg = isEnglish
-    ? `Hello! I come from the guide ${postTitle}. I need some advice.`
-    : `Hola! Vengo de la guía de ${postTitle}. Necesito asesoramiento para mi seguro.`;
-
-  const href = buildAttributedWhatsAppUrl('34694583452', baseMsg, 'BLOG');
+  const href = getBlogWhatsAppUrl(postTitle, isEnglish);
 
   if (variant === 'list') {
-    const listHref = buildAttributedWhatsAppUrl(
-      '34694583452',
-      isEnglish
-        ? 'Hello! I come from the blog list. I need some advice.'
-        : 'Hola! Vengo del blog de VitaBlue. Necesito asesoramiento sobre seguros de salud.',
-      'BLOG-LIST'
-    );
+    const listHref = buildContextualWhatsAppUrl({
+      pathname: isEnglish ? '/en/blog' : '/blog',
+      locale: isEnglish ? 'en' : 'es',
+    });
     return <section className="px-4 sm:px-6 lg:px-8 pb-16"><div className="mx-auto w-full max-w-4xl bg-gradient-to-br from-primary to-primary-dark rounded-[40px] p-8 sm:p-12 text-center text-white space-y-6 shadow-lg"><h2 className="text-h2 font-display font-black leading-tight">¿Tienes dudas sobre los requisitos de tu seguro?</h2><p className="text-body-lg text-slate-100 max-w-xl mx-auto leading-relaxed">Nuestros asesores expertos en visados y extranjería revisarán tu caso sin coste alguno y te recomendarán la póliza homologada exacta que necesitas.</p><a href={listHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-whatsapp-dark hover:bg-whatsapp text-white font-bold rounded-xl text-sm px-6 py-3.5"><WhatsAppIcon size={18} className="fill-white" />Preguntar por WhatsApp</a></div></section>;
   }
 

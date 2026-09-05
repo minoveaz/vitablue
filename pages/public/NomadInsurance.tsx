@@ -19,6 +19,7 @@ import ProductHero from '../../components/organisms/ProductHero';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { nomadTranslations } from '../../utils/translations';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   TravelIllustration,
   PreventionIllustration,
@@ -466,7 +467,7 @@ export const NomadInsurance: React.FC = () => {
       <AdvisorHelpSection
         title={isEnglish ? 'Doubts with coverage outside Spain?' : '¿Dudas con la cobertura fuera de España?'}
         description={isEnglish ? 'Ask our advisors over WhatsApp directly and free of charge. You will get fast answers on how the medical network works in your travel destinations without any commitment.' : 'Pregunta a nuestros asesores por WhatsApp de forma directa y gratuita. Obtendrás respuestas rápidas sobre cómo funciona la red médica en tus destinos de viaje sin ningún compromiso.'}
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20N%C3%B3madas%20Digitales."
+        whatsappUrl={getProductWhatsAppUrl('nomadas', isEnglish)}
       />
     </div>
   );

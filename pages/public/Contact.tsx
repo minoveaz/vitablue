@@ -10,6 +10,7 @@ import Checkbox from '../../components/atoms/Checkbox';
 import Button from '../../components/atoms/Button';
 import { trackContactConversion } from '@/utils/analytics';
 import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 
 const Contact: React.FC = () => {
@@ -53,6 +54,11 @@ const Contact: React.FC = () => {
     emailSubject: 'Solicitud de contacto VitaBlue', 
     contactPath: '/contacto',
   };
+
+  const contactWhatsAppUrl = buildContextualWhatsAppUrl({
+    pathname: content.contactPath,
+    locale: isEnglish ? 'en' : 'es',
+  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -135,7 +141,7 @@ const Contact: React.FC = () => {
                 description="+34 694 58 34 52" 
               />
               <ContactChannelCard 
-                href="https://wa.me/34694583452" 
+                href={contactWhatsAppUrl} 
                 icon={<WhatsAppIcon size={24} />} 
                 title={content.whatsappLabel} 
                 description={content.whatsapp} 

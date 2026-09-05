@@ -1,17 +1,16 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
-import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
+import { getFloatingWhatsAppUrl } from '@/utils/whatsappLinks';
 
 export const FloatingWhatsApp: React.FC = () => {
-  const handleClick = () => {
-    const url = buildAttributedWhatsAppUrl(
-      '34694583452',
-      'Hola! Vengo de la web de VitaBlue. Necesito asesoramiento sobre seguros de salud.',
-      'WIDGET-FLOAT'
-    );
-    window.open(url, '_blank');
-  };
+  const location = useLocation();
+  const isEnglish = location.pathname.startsWith('/en');
 
+  const handleClick = () => {
+    const url = getFloatingWhatsAppUrl(location.pathname, isEnglish ? 'en' : 'es');
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="whatsapp-float-widget fixed bottom-6 right-6 z-[190] flex items-center gap-3 group">
@@ -25,14 +24,14 @@ export const FloatingWhatsApp: React.FC = () => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
         </span>
-        ¿Dudas? Chat en vivo
+        {isEnglish ? 'Need help? Live chat' : '¿Dudas? Chat en vivo'}
       </div>
 
       {/* Floating Action Button */}
       <button
         onClick={handleClick}
         className="size-[60px] rounded-full bg-whatsapp text-white flex items-center justify-center shadow-lg shadow-whatsapp/30 hover:scale-110 hover:shadow-xl hover:shadow-whatsapp/40 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/20 active:scale-[0.95]"
-        aria-label="Contactar por WhatsApp"
+        aria-label={isEnglish ? 'Contact via WhatsApp' : 'Contactar por WhatsApp'}
       >
         <WhatsAppIcon size={28} />
       </button>

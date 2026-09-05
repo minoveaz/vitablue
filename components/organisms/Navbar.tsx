@@ -4,6 +4,7 @@ import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen, Shiel
 import Logo from '@/components/atoms/Logo';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { navbarTranslations } from '@/utils/translations';
+import { getNavbarWhatsAppUrl } from '@/utils/whatsappLinks';
 
 // Custom Premium SVG Illustrations (VitaBlue Style)
 const LegacySaludGeneralIcon: React.FC = () => (
@@ -164,6 +165,7 @@ export const Navbar: React.FC = () => {
   const isEnglish = location.pathname.startsWith('/en');
   const lang = isEnglish ? 'en' : 'es';
   const t = navbarTranslations[lang];
+  const navbarWhatsAppUrl = getNavbarWhatsAppUrl(isEnglish ? 'en' : 'es', location.pathname);
 
   const getLanguageTogglePath = () => {
     const path = location.pathname;
@@ -430,7 +432,7 @@ export const Navbar: React.FC = () => {
           {/* Desktop & Tablet CTA Call Button */}
           <div className="hidden sm:flex items-center gap-4 z-[110]">
             <a 
-              href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+              href={navbarWhatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               data-event="whatsapp"
@@ -658,7 +660,7 @@ export const Navbar: React.FC = () => {
 
             <div className="flex flex-col gap-3">
               <a 
-                href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+                href={navbarWhatsAppUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-event="whatsapp"

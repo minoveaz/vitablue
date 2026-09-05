@@ -18,6 +18,7 @@ import TrustCardGrid from '@/components/molecules/TrustCardGrid';
 import TestimonialGrid from '@/components/organisms/TestimonialGrid';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 import { 
   CoverageIllustration, 
@@ -717,9 +718,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
 
             {/* Card 4: CTA Card */}
             <a 
-              href={isEnglish 
-                ? 'https://wa.me/34694583452?text=Hello!%20I%20come%20from%20the%20VitaBlue%20website.%20I%20need%20some%20advice%20on%20health%20insurance.'
-                : 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20seguros%20de%20salud%20para%20mi%20caso.'}
+              href={buildContextualWhatsAppUrl({ pathname: isEnglish ? '/en' : '/', locale: isEnglish ? 'en' : 'es' })}
               target="_blank"
               rel="noopener noreferrer"
               data-event="whatsapp"

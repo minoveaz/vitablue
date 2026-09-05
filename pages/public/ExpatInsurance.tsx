@@ -19,6 +19,7 @@ import ProductHero from '../../components/organisms/ProductHero';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { expatTranslations } from '../../utils/translations';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   TravelIllustration,
   PreventionIllustration,
@@ -477,7 +478,7 @@ export const ExpatInsurance: React.FC = () => {
       <AdvisorHelpSection
         title={isEnglish ? 'Doubts with Immigration procedures?' : '¿Dudas con los trámites de Extranjería?'}
         description={isEnglish ? 'Speak directly and free of charge with our advisors. We will clear up your doubts regarding pre-existing conditions, carencias, and policy registrations without any commitment.' : 'Habla con nuestros asesores de forma directa y gratuita. Resolveremos tus dudas sobre preexistencias, carencias y alta de pólizas sin ningún compromiso.'}
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Expatriados."
+        whatsappUrl={getProductWhatsAppUrl('expatriados', isEnglish)}
       />
     </div>
   );

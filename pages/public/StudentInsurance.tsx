@@ -21,6 +21,7 @@ import CoverageGrid from '../../components/organisms/CoverageGrid';
 import PlanComparisonSection from '../../components/organisms/PlanComparisonSection';
 import ProductHero from '../../components/organisms/ProductHero';
 import { studentTranslations } from '../../utils/translations';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   StudentIllustration,
   TravelIllustration,
@@ -470,7 +471,7 @@ export const StudentInsurance: React.FC = () => {
       {/* Breadcrumbs Bar */}
       <ProductBreadcrumbBar items={[{ label: isEnglish ? 'Health Insurance' : 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: isEnglish ? 'Student Insurance' : 'Seguro de Estudiantes', href: isEnglish ? '/en/health-insurance-student-visa-spain' : '/productos/seguros-salud/seguro-medico-estudiantes' }]} />
 
-      <ProductHero badges={[{ label: t.heroTag, icon: <GraduationCap className="h-4 w-4" /> }, { label: isEnglish ? '100% Visa Approved' : '100% Homologado', tone: 'accent' }]} title={t.heroTitle} description={t.heroSubtitle} primaryAction={{ label: t.ctaButton, onClick: handleStartQuoting }} secondaryAction={{ label: t.callAdvisor, href: 'https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Estudiantes%20Extranjeros.' }} highlights={[isEnglish ? 'Official Certificate in 24h' : 'Certificado oficial en 24h', isEnglish ? 'Repatriation included' : 'Repatriación incluida']}>
+      <ProductHero badges={[{ label: t.heroTag, icon: <GraduationCap className="h-4 w-4" /> }, { label: isEnglish ? '100% Visa Approved' : '100% Homologado', tone: 'accent' }]} title={t.heroTitle} description={t.heroSubtitle} primaryAction={{ label: t.ctaButton, onClick: handleStartQuoting }} secondaryAction={{ label: t.callAdvisor, href: getProductWhatsAppUrl('estudiantes', isEnglish) }} highlights={[isEnglish ? 'Official Certificate in 24h' : 'Certificado oficial en 24h', isEnglish ? 'Repatriation included' : 'Repatriación incluida']}>
         <QuoteEstimator title={isEnglish ? 'Student Price Estimator' : 'Tarificador de Estudiante'} description={isEnglish ? 'Calculate your monthly quote with zero copays.' : 'Calcula tu cuota mensual sin copagos de forma inmediata.'} initialAge={22} maxAge={35} options={[{ id: 'undergrad', label: isEnglish ? 'University' : 'Grado/Uni' }, { id: 'master', label: isEnglish ? 'Master/PhD' : 'Máster/Doc' }, { id: 'language', label: isEnglish ? 'Language' : 'Idiomas' }]} initialOption="undergrad" calculatePrice={() => 'Personalizado'} personalizedPriceLabel={isEnglish ? 'Personalized price' : 'Precio personalizado'} priceLabel={isEnglish ? 'Estimated Quote:' : 'Cuota Estimada:'} submitLabel={isEnglish ? 'Start Online Application' : 'Iniciar Contratación Online'} onSubmit={handleStartQuoting} />
       </ProductHero>
 
@@ -640,7 +641,7 @@ export const StudentInsurance: React.FC = () => {
       <AdvisorHelpSection
         title={isEnglish ? 'Need help with consulate procedures?' : '¿Necesitas ayuda con los trámites del consulado?'}
         description={isEnglish ? 'Our senior advisors perfectly know the specific requirements of each Spanish consulate and immigration office. They will guide you step by step free of charge.' : 'Nuestros asesores senior conocen perfectamente los requisitos específicos de cada consulado español y delegación de extranjería. Te guiarán paso a paso de manera gratuita.'}
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Estudiantes%20Extranjeros."
+        whatsappUrl={getProductWhatsAppUrl('estudiantes', isEnglish)}
       />
     </div>
   );

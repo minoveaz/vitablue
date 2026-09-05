@@ -8,6 +8,7 @@ import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
 import TestimonialGrid from '../../components/organisms/TestimonialGrid';
 import FaqSection from '../../components/organisms/FaqSection';
 import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 const AboutUs: React.FC = () => {
   const isEnglish = window.location.pathname.startsWith('/en');
@@ -34,7 +35,7 @@ const AboutUs: React.FC = () => {
     advisor: {
       title: 'Talk to a real expert today',
       description: 'Whether you need a visa-compliant insurance, a family policy or just have a quick question, our team in Spain is ready to help.',
-      whatsappUrl: 'https://wa.me/34694583452',
+      whatsappUrl: buildContextualWhatsAppUrl({ pathname: '/en/about-us', locale: 'en' }),
     },
     testimonials: {
       eyebrow: 'Success Stories',
@@ -77,7 +78,7 @@ const AboutUs: React.FC = () => {
     advisor: {
       title: 'Habla con un experto real hoy',
       description: 'Ya sea que necesites un seguro para visado, una póliza familiar o simplemente tengas una duda rápida, nuestro equipo en España está listo para ayudarte.',
-      whatsappUrl: 'https://wa.me/34694583452',
+      whatsappUrl: buildContextualWhatsAppUrl({ pathname: '/sobre-nosotros', locale: 'es' }),
     },
     testimonials: {
       eyebrow: 'Casos de Éxito',

@@ -2,6 +2,7 @@ import React from 'react';
 import { travelPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   Clock, Award, Globe
 } from 'lucide-react';
@@ -331,7 +332,7 @@ export const TravelInsurance: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asistencia en la contratación?"
         description="Te ayudamos a contratar tu póliza de viaje o a tramitar coberturas de grupo para estancias de larga duración. Te asesoramos sin compromiso de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20de%20Viaje."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguro-viaje', tag: 'LANDING-VIAJE' })}
       />
     </div>
   );

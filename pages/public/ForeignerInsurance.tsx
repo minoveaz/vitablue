@@ -11,6 +11,7 @@ import { Button } from '../../components/atoms/Button';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { StudentIllustration, ProfileIllustration, TravelIllustration } from '../../components/illustrations';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 export const ForeignerInsurance: React.FC = () => {
   const navigate = useNavigate();
@@ -316,7 +317,7 @@ export const ForeignerInsurance: React.FC = () => {
       <AdvisorHelpSection
         title="¿No estás seguro de qué visado te corresponde?"
         description="Nuestros asesores senior en extranjería te atenderán directamente por WhatsApp o llamada gratuita para guiarte en los requisitos específicos del consulado de tu país de origen."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguros-salud/seguro-salud-extranjeros', tag: 'LANDING-EXTRANJEROS' })}
       />
     </div>
   );
