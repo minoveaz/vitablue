@@ -61,6 +61,139 @@ function injectCanonicalTags() {
 
 injectCanonicalTags();
 
+// Ensure blog articles expose exact metadata and structured data in static HTML
+function injectBlogMetadataAndSchemas() {
+  const { blogPosts } = require('./utils/blogData.ts');
+  const stripHtml = (html) => html.replace(/<[^>]*>?/gm, '');
+
+  blogPosts.forEach((post) => {
+    const isEnglish = post.lang === 'en';
+    const blogPath = isEnglish ? '/en/blog' : '/blog';
+    const filePath = path.join(distDir, (isEnglish ? 'en/blog' : 'blog'), post.slug, 'index.html');
+    if (!fs.existsSync(filePath)) return;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    // 1. Update Title
+    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${post.title}</title>`);
+
+    // 2. Update Meta Description
+    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${post.excerpt}"`);
+
+    // 3. Update OG and Twitter
+    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${post.title}"`);
+    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${post.excerpt}"`);
+    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${post.title}"`);
+    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${post.excerpt}"`);
+
+    // 4. Construct Schemas
+    const resolvedImageUrl = post.featuredImage.startsWith('http')
+      ? post.featuredImage
+      : `https://www.vitablue.es${post.featuredImage}`;
+
+    const jsonLdArticle = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt,
+      image: resolvedImageUrl,
+      datePublished: post.date,
+      dateModified: post.date,
+      inLanguage: isEnglish ? 'en-US' : 'es-ES',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://www.vitablue.es${blogPath}/${post.slug}/`,
+      },
+      author: {
+        '@type': 'Person',
+        name: post.author.name,
+        jobTitle: post.author.role,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'VitaBlue',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://www.vitablue.es/favicon.svg',
+        },
+      },
+    };
+
+    const jsonLdBreadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'VitaBlue',
+          item: isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Blog',
+          item: `https://www.vitablue.es${blogPath}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: post.title,
+          item: `https://www.vitablue.es${blogPath}/${post.slug}/`,
+        },
+      ],
+    };
+
+    const faqSectionIndex = post.sections.findIndex(
+      (s) => s.type === 'heading-2' && s.text && s.text.includes('FAQ')
+    );
+    const faqListSection =
+      faqSectionIndex !== -1 && post.sections[faqSectionIndex + 1]?.type === 'list'
+        ? post.sections[faqSectionIndex + 1]
+        : null;
+
+    const faqEntities = faqListSection?.items
+      ?.map((item) => {
+        const match = item.match(/<strong>(.*?)<\/strong>[:\s]*(.*)/s);
+        if (match) {
+          return {
+            '@type': 'Question',
+            name: stripHtml(match[1]).trim(),
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: stripHtml(match[2]).trim(),
+            },
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    const jsonLdFaq =
+      faqEntities && faqEntities.length > 0
+        ? {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqEntities,
+          }
+        : null;
+
+    const schemas = [jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq].filter(Boolean);
+    const schemaTags = schemas
+      .map((s) => `    <script type="application/ld+json">${JSON.stringify(s)}</script>`)
+      .join('\n');
+
+    if (!content.includes('"@type":"BlogPosting"')) {
+      content = content.replace('</head>', `${schemaTags}\n</head>`);
+    }
+
+    fs.writeFileSync(filePath, content, 'utf8');
+  });
+  console.log(`✅ Metadatos SEO y esquemas JSON-LD inyectados en ${blogPosts.length} artículos del blog.`);
+}
+
+injectBlogMetadataAndSchemas();
+
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 
 function optimizeHtmlHeadTagsRecursive(dir) {

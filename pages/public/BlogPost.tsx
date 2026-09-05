@@ -24,14 +24,7 @@ export const BlogPost: React.FC = () => {
     : `https://www.vitablue.es${post.featuredImage}`;
 
 
-  useEffect(() => {
-    [['og:title', post.title], ['og:description', post.excerpt], ['og:image', resolvedImageUrl]].forEach(([property, content]) => {
-      let tag = document.head.querySelector(`meta[property="${property}"]`);
-      if (!tag) { tag = document.createElement('meta'); tag.setAttribute('property', property); document.head.appendChild(tag); }
-      tag.setAttribute('content', content);
-    });
-  }, [post, resolvedImageUrl]);
-  const jsonLdArticle = {
+  const jsonLdArticle = useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
@@ -39,11 +32,10 @@ export const BlogPost: React.FC = () => {
     image: resolvedImageUrl,
     datePublished: post.date,
     dateModified: post.date,
-
     inLanguage: isEnglish ? 'en-US' : 'es-ES',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.vitablue.es${blogPath}/${post.slug}`,
+      '@id': `https://www.vitablue.es${blogPath}/${post.slug}/`,
     },
     author: {
       '@type': 'Person',
@@ -58,9 +50,9 @@ export const BlogPost: React.FC = () => {
         url: 'https://www.vitablue.es/favicon.svg',
       },
     },
-  };
+  }), [post, blogPath, isEnglish, resolvedImageUrl]);
 
-  const jsonLdBreadcrumb = {
+  const jsonLdBreadcrumb = useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -73,17 +65,94 @@ export const BlogPost: React.FC = () => {
       {
         '@type': 'ListItem',
         position: 2,
-        name: isEnglish ? 'Blog' : 'Blog',
-        item: `https://www.vitablue.es${blogPath}`,
+        name: 'Blog',
+        item: `https://www.vitablue.es${blogPath}/`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: post.title,
-        item: `https://www.vitablue.es${blogPath}/${post.slug}`,
+        item: `https://www.vitablue.es${blogPath}/${post.slug}/`,
       },
     ],
-  };
+  }), [post.title, post.slug, blogPath, isEnglish]);
+
+  const jsonLdFaq = useMemo(() => {
+    const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, '');
+    const faqSectionIndex = post.sections.findIndex(
+      (s) => s.type === 'heading-2' && s.text && s.text.includes('FAQ')
+    );
+    const faqListSection =
+      faqSectionIndex !== -1 && post.sections[faqSectionIndex + 1]?.type === 'list'
+        ? post.sections[faqSectionIndex + 1]
+        : null;
+
+    const faqEntities = faqListSection?.items
+      ?.map((item) => {
+        const match = item.match(/<strong>(.*?)<\/strong>[:\s]*(.*)/s);
+        if (match) {
+          return {
+            '@type': 'Question',
+            name: stripHtml(match[1]).trim(),
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: stripHtml(match[2]).trim(),
+            },
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    return faqEntities && faqEntities.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqEntities,
+        }
+      : null;
+  }, [post.sections]);
+
+  useEffect(() => {
+    document.title = post.title;
+
+    const metaDesc = document.head.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', post.excerpt);
+    }
+
+    [
+      ['og:title', post.title],
+      ['og:description', post.excerpt],
+      ['og:image', resolvedImageUrl],
+      ['twitter:title', post.title],
+      ['twitter:description', post.excerpt],
+    ].forEach(([property, content]) => {
+      let tag = document.head.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(property.startsWith('twitter:') ? 'name' : 'property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    const existingSchemas = document.head.querySelectorAll('script[data-schema-post="true"]');
+    existingSchemas.forEach((s) => s.remove());
+
+    [jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq].filter(Boolean).forEach((schemaData) => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-schema-post', 'true');
+      script.text = JSON.stringify(schemaData);
+      document.head.appendChild(script);
+    });
+
+    return () => {
+      const postSchemas = document.head.querySelectorAll('script[data-schema-post="true"]');
+      postSchemas.forEach((s) => s.remove());
+    };
+  }, [post, resolvedImageUrl, jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq]);
 
   return (
     <div className="w-full flex flex-col bg-background-light">
@@ -100,6 +169,9 @@ export const BlogPost: React.FC = () => {
         )}
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
+        {jsonLdFaq && (
+          <script type="application/ld+json">{JSON.stringify(jsonLdFaq)}</script>
+        )}
       </Helmet>
       <div className="bg-white border-b border-slate-100 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 text-xs font-bold text-text-secondary">

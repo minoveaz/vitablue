@@ -1185,7 +1185,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'student-visa-spain-health-insurance-requirements',
     alternateSlug: 'requisitos-seguro-medico-visado-estudiante-espana',
-    title: 'Health Insurance Requirements for Spain Student Visa (2026 Guide)',
+    title: 'Student Visa Spain Health Insurance from €35/mo | 100% Approved VitaBlue',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
     readTime: '7 min read',
@@ -1197,7 +1197,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Moving to Spain for study? Discover the mandatory health insurance requirements to ensure your student visa application gets approved smoothly.',
+    excerpt: 'Official health insurance requirements for Spanish student visas in 2026. Certified ASISA & Sanitas policies with 0€ copays, full hospitalization & instant 24h certificate.',
     featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1207,7 +1207,11 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'To avoid rejection for "lack of adequate sanitary coverage," you must contract health insurance that strictly meets the specific standards of Spanish public healthcare. Travel insurance or policies from your home country are not accepted. In VitaBlue, all our student policies with <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">ASISA and Sanitas</a> are pre-configured to 100% satisfy consular standards.'
+        text: 'To avoid rejection for "lack of adequate sanitary coverage," you must contract health insurance that strictly meets the specific standards of Spanish public healthcare. Travel insurance or policies from your home country are not accepted. In VitaBlue, all our student policies with <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">ASISA and Sanitas</a> are pre-configured to 100% satisfy consular standards.'
+      },
+      {
+        type: 'callout',
+        text: '🛡️ <strong>100% Consular Approval Guarantee</strong>: VitaBlue guarantees a 100% full money-back refund of your insurance premium if your visa application is denied by the Spanish consulate or BLS center.'
       },
       {
         type: 'heading-2',
@@ -1548,7 +1552,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'student-visa-spain-health-insurance-prices',
     alternateSlug: 'precios-seguro-medico-visado-estudiante-espana',
-    title: 'Student Visa Health Insurance Prices in Spain: 2026 Official Cost Guide',
+    title: 'Student Visa Health Insurance Spain: Real 2026 Prices (From €35/mo)',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
     readTime: '7 min read',
@@ -1560,7 +1564,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'How much does consular-approved health insurance cost in Spain for international students? Real price breakdown: Asisa from 35€/mo, Sanitas from 45€/mo, Adeslas from 49€/mo with zero copays and immediate official PDF certificate.',
+    excerpt: 'Compare real 2026 costs for Spanish student visa health insurance: ASISA from €35/mo, Sanitas from €45/mo, Adeslas from €49/mo. 100% visa approval guarantee with zero copay.',
     featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
