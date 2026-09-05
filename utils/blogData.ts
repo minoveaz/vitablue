@@ -2265,7 +2265,174 @@ export const blogPosts: BlogPostData[] = [
         text: 'Ready to secure your Spanish student visa certificate? Compare quotes or contact our bilingual advisors directly on WhatsApp to finalize your policy today.'
       }
     ]
+  },
+  {
+    slug: 'rechazo-visado-espana-devolucion-seguro-medico',
+    title: '¿Qué Pasa si Rechazan tu Visado? Seguros Médicos con Devolución Garantizada (2026)',
+    category: 'visados',
+    categoryLabel: 'Visados y Residencia',
+    readTime: '7 min de lectura',
+    date: '6 Septiembre 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: '¿Temes perder tu dinero si el consulado deniega tu visado de estudiante o residencia? Descubre cómo funciona la cláusula de devolución garantizada al 100% en ASISA y Sanitas, requisitos exactos y cómo tramitar el reembolso sin penalizaciones.',
+    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'La contratación del seguro médico es uno de los pasos más delicados en la solicitud de cualquier <strong>visado para España</strong> (estudiante, residencia no lucrativa, nómada digital o visado de trabajo). La normativa exige que la póliza esté contratada y pagada <strong>antes de presentarse en el consulado</strong>, y que cuente con vigencia para toda la duración de la estancia planificada.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Esto genera la duda y el temor más comprensible entre los solicitantes extranjeros: <em>"¿Qué sucede con los 400 € a 700 € que acabo de pagar si el consulado me rechaza o inadmite la solicitud de visado?"</em>'
+      },
+      {
+        type: 'paragraph',
+        text: 'La respuesta en <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> es categórica: <strong>No pierdes tu dinero</strong>. Todas las pólizas que emitimos para trámites consulares (especialmente <strong>ASISA Health Students</strong> y <strong>Sanitas International Students</strong>) incorporan una <strong>cláusula contractual de garantía de devolución del 100% de la prima no consumida</strong> si el visado no es concedido.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Requisitos Imprescindibles para Solicitar el Reembolso'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para que la aseguradora proceda a la anulación de la póliza y al ingreso del importe en tu cuenta o tarjeta bancaria, las entidades aseguradoras (conforme a las condiciones contractuales de ASISA y Sanitas) exigen el cumplimiento de dos condiciones fundamentales:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>1. Que la póliza no haya entrado en vigor</strong>: La solicitud de anulación debe realizarse antes de la fecha fijada como inicio de cobertura del seguro. Por esta razón, en VitaBlue recomendamos siempre fijar la fecha de inicio coincidiendo con el despegue de tu vuelo o el inicio del curso lectivo, nunca antes de la resolución consular estimada.',
+          '<strong>2. Aportar la resolución oficial de denegación</strong>: Es obligatorio presentar la carta o documento oficial emitido por el Consulado General de España o la Oficina de Extranjería que certifique la inadmisión, denegación o desistimiento formal del visado o autorización de residencia.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Importante sobre la fecha de entrada en vigor</strong>: Si tu cita consular se pospone o la resolución tarda más tiempo del previsto, <strong>puedes solicitar un cambio de fecha de inicio de tu seguro sin coste alguno</strong> antes de que entre en vigor. De este modo preservas intacto tu derecho a cobertura y tu garantía de reembolso.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Procedimiento Paso a Paso: Cómo Solicitar tu Devolución con VitaBlue'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si contratas tu seguro a través de VitaBlue, no tendrás que lidiar en solitario con la burocracia de las grandes aseguradoras. Nuestro equipo de gestión se encarga de todo el proceso administrativo:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Paso 1: Notifícanos la resolución</strong>: Envíale a tu asesor asignado de VitaBlue (por email o WhatsApp) una copia en PDF o fotografía legible de la resolución consular de denegación.',
+          '<strong>Paso 2: Validación del expediente</strong>: En menos de 24 horas laborables, nuestro departamento técnico valida el documento y radica la solicitud formal de anulación y extorno ante la aseguradora (ASISA o Sanitas).',
+          '<strong>Paso 3: Transferencia del reembolso</strong>: La entidad aseguradora abona el 100% del importe. En <strong>ASISA Health Students</strong>, el reembolso se emite directamente a la misma tarjeta bancaria de crédito o débito con la que efectuaste el pago. En pólizas domiciliadas por banco, se realiza por transferencia a tu cuenta.'
+        ]
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Garantía 100% Cero Riesgo',
+        ctaTitle: 'Contrata tu seguro para el visado con total tranquilidad',
+        ctaDescription: 'Calcula tu prima oficial de ASISA o Sanitas. Certificado consular legalizado en 24h, sin copagos ni carencias, y reembolso 100% blindado si tu visado no se aprueba.',
+        ctaButtonText: 'Calcular mi seguro con garantía de devolución',
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+      },
+      {
+        type: 'heading-2',
+        text: 'Comparativa de Políticas de Devolución por Aseguradora'
+      },
+      {
+        type: 'paragraph',
+        text: 'A continuación te mostramos con total transparencia cómo gestionan las principales compañías de salud los casos de rechazo consular:'
+      },
+      {
+        type: 'table',
+        tableHeader: [
+          'Aseguradora',
+          'Porcentaje de Devolución',
+          'Plazo de Solicitud',
+          'Forma de Abono',
+          'Modificación de Fechas'
+        ],
+        tableRows: [
+          [
+            'ASISA (Health Students)',
+            '100% de la prima única',
+            'Antes del inicio de vigencia de la póliza',
+            'Directo a la tarjeta de pago original (sin comisiones)',
+            'Permitida gratis antes de la fecha de entrada en vigor'
+          ],
+          [
+            'Sanitas (International Students)',
+            '100% del importe',
+            'Con carta oficial de inadmisión/denegación consular',
+            'Transferencia bancaria o tarjeta según método de pago',
+            'Permitida previa solicitud formal con antelación'
+          ],
+          [
+            'Adeslas (Estudiantes / Extranjeros)',
+            '100% según condicionado visado',
+            'Antes de la fecha de efecto del seguro',
+            'Abono en cuenta bancaria asociada',
+            'Gestión administrativa sujeta a aprobación provincial'
+          ],
+          [
+            'Seguros de viaje internacionales no españoles',
+            'Frecuentemente 0% o con altas penalizaciones por cancelación (15%-30%)',
+            'Plazos muy restrictivos',
+            'Cheque o bono de crédito no canjeable',
+            'Habitualmente cobran recargo por cambio de fechas'
+          ]
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: '¿Por Qué Elegir ASISA Health Students a Través de VitaBlue?'
+      },
+      {
+        type: 'paragraph',
+        text: 'En VitaBlue gestionamos prioritariamente <strong>ASISA Health Students</strong> para estudiantes extranjeros porque ofrece la política más transparente, económica y ágil del mercado español:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Tarifa más asequible del mercado</strong>: Desde solo <strong>~38 € al mes</strong>, reduciendo drásticamente el capital inmovilizado mientras esperas la respuesta consular.',
+          '<strong>Sin penalizaciones ni gastos de gestión</strong>: ASISA no aplica cargos ocultos de cancelación si presentas la denegación consular oficial.',
+          '<strong>No renovación forzosa</strong>: La póliza tiene una duración cerrada (de 2 a 12 meses) que no se renueva automáticamente, protegiendo tus finanzas cuando finalices tu curso.',
+          '<strong>Asesoría humana y personalizada</strong>: En caso de requerimiento consular, nuestros expertos revisan la carta para ver si es subsanable antes de solicitar la anulación definitiva.'
+        ]
+      },
+      {
+        type: 'cta-validator',
+        ctaBadge: 'Auditoría Previa Consular',
+        ctaTitle: '¿Te da miedo que el consulado rechace tu seguro médico?',
+        ctaDescription: 'Valida los requisitos de tu póliza en nuestro validador consular en 30 segundos. Detectamos si tiene copagos o carencias para que presentes un expediente 100% aprobado.',
+        ctaButtonText: 'Verificar cumplimiento de mi seguro gratis',
+        ctaLink: '/validador-visado'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Devolución del Seguro (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Qué ocurre si el consulado retrasa la resolución de mi visado?</strong>: Puedes escribirnos antes de la fecha de inicio para postergar la entrada en vigor de tu póliza tantas semanas como sea necesario sin ningún coste adicional.',
+          '<strong>¿Cuánto tarda en llegar el dinero devuelto a mi cuenta o tarjeta?</strong>: Una vez radicada la carta consular ante la aseguradora, el abono bancario suele verse reflejado en tu tarjeta o cuenta en un plazo habitual de <strong>5 a 10 días hábiles</strong>, dependiendo de tu entidad financiera internacional.',
+          '<strong>¿Qué pasa si desisto de viajar voluntariamente sin denegación del consulado?</strong>: Conforme a la Ley de Contrato de Seguro de España y normativa de contratación a distancia, dispones de un plazo de desistimiento legal de <strong>14 días naturales</strong> desde la contratación para anular tu póliza con derecho a devolución de la prima no consumida.',
+          '<strong>¿Me cobran algún gasto de cancelación?</strong>: No. En VitaBlue la gestión de solicitud de anulación y reembolso por denegación consular es un servicio <strong>100% gratuito</strong> para todos nuestros asegurados.',
+          '<strong>¿Necesito viajar a España para tramitar la devolución?</strong>: En absoluto. Todo el procedimiento se gestiona de forma digital y remota a través de correo electrónico y canales oficiales de VitaBlue.'
+        ]
+      },
+      {
+        type: 'paragraph',
+        text: 'Si tienes cualquier consulta sobre tu trámite o necesitas tramitar tu póliza con certificado de emisión en 24h y garantía de devolución, contáctanos por WhatsApp o utiliza nuestro comparador oficial.'
+      }
+    ]
   }
 ];
+
 
 
