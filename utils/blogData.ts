@@ -1976,7 +1976,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'heading-2',
-        text: '1. ASISA Health Students: La opción número 1 recomendada en VitaBlue'
+        text: 'ASISA Health Students: La opción número 1 recomendada en VitaBlue'
       },
       {
         type: 'paragraph',
@@ -1995,7 +1995,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'heading-2',
-        text: '2. Sanitas International Students: Especialización digital y servicio en inglés'
+        text: 'Sanitas International Students: Especialización digital y servicio en inglés'
       },
       {
         type: 'paragraph',
@@ -2012,7 +2012,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'heading-2',
-        text: '3. Adeslas para Extranjeros y Estudiantes: Fuerte presencia territorial'
+        text: 'Adeslas para Extranjeros y Estudiantes: Fuerte presencia territorial'
       },
       {
         type: 'paragraph',
