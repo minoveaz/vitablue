@@ -46,7 +46,7 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 
 #### 1.3 Lead Magnet & Captura de Contactos (Pilar 4)
 - [x] **Acción 9 ([Issue #138](https://github.com/minoveaz/vitablue/issues/138)):** Estandarizar helper de parámetros contextualizados de WhatsApp por landing, artículo e idioma (`[BLOG-ESTUDIANTE-EN]`, `[MASCOTAS]`).
-- [x] **Acción 4 ([Issue #133](https://github.com/minoveaz/vitablue/issues/133)):** Diseñar e implementar componente Lead Magnet 'Checklist Consular (PDF)' con captura y trigger directo hacia WhatsApp. Motor modular de generación de PDFs corporativos.
+- [x] **Acción 4 ([Issue #133](https://github.com/minoveaz/vitablue/issues/133)):** Diseñar e implementar motor modular de PDFs (`scripts/pdf-engine/`), checklists consulares oficiales en PDF (ES y EN en blanco VitaBlue), componente bilingüe `LeadMagnetBanner` con descarga directa y despliegue global en Blog, Landing de Estudiantes (ES/EN), Validador Consular y páginas por país/consulado.
 
 #### 1.4 Calendario Editorial de Septiembre ("Mes del Consulado")
 - [ ] **Acción 5 ([Issue #134](https://github.com/minoveaz/vitablue/issues/134)):** Redactar y publicar guía: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* (ES).
