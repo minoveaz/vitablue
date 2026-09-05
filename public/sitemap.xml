@@ -441,6 +441,18 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/spain-visa-rejection-health-insurance-refund-guarantee/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/spain-visa-rejection-health-insurance-refund-guarantee/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/spain-visa-rejection-health-insurance-refund-guarantee/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
     <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
