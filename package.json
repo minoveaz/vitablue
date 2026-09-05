@@ -8,6 +8,7 @@
     "build": "vite build && node post_build_cleanup.cjs",
     "preview": "vite preview",
     "dev:render-worker": "cd packages/video-studio && tsx src/render-worker.ts",
+    "generate:pdf": "node scripts/generate_pdf.cjs",
     "sync-blog": "node scripts/sync_blog.cjs",
     "audit:front": "node scripts/audit_front.cjs",
     "audit:components": "node scripts/audit_component_usage.cjs",

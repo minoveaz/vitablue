@@ -8,6 +8,7 @@ import ArticleToc from '@/components/molecules/ArticleToc';
 import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
 import BlogAdvisorCta from '@/components/molecules/BlogAdvisorCta';
 import BlogConsularValidatorCallout from '@/components/molecules/BlogConsularValidatorCallout';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 
 const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
 export const BlogPost: React.FC = () => {
@@ -190,6 +191,12 @@ export const BlogPost: React.FC = () => {
               <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover" />
             </div>
             <BlogSectionRenderer sections={post.sections} />
+            {(post.category === 'visados' || post.slug.includes('estudiante') || post.slug.includes('student') || post.slug.includes('visa')) && (
+              <LeadMagnetBanner
+                isEnglish={isEnglish}
+                sourceContext={post.slug}
+              />
+            )}
             <BlogAdvisorCta
               isEnglish={isEnglish}
               title={
@@ -207,7 +214,15 @@ export const BlogPost: React.FC = () => {
           </article>
           <aside className="space-y-8 sticky top-28 hidden lg:block">
             <ArticleToc items={tocItems} isEnglish={isEnglish} />
-            <BlogConsularValidatorCallout variant="sidebar" isEnglish={isEnglish} />
+            {(post.category === 'visados' || post.slug.includes('estudiante') || post.slug.includes('student') || post.slug.includes('visa')) ? (
+              <LeadMagnetBanner
+                variant="sidebar"
+                isEnglish={isEnglish}
+                sourceContext={`sidebar-${post.slug}`}
+              />
+            ) : (
+              <BlogConsularValidatorCallout variant="sidebar" isEnglish={isEnglish} />
+            )}
             <BlogAdvisorCta
               variant="sidebar"
               isEnglish={isEnglish}

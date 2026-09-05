@@ -30,7 +30,7 @@ export interface EnhancedUserData {
 }
 
 export interface ConversionParams {
-  contact_method?: 'form' | 'whatsapp' | 'call' | 'email' | 'wizard';
+  contact_method?: 'form' | 'whatsapp' | 'call' | 'email' | 'wizard' | 'download';
   profile?: string;
   category?: string;
   source_page?: string;
