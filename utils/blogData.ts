@@ -974,6 +974,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'que-es-el-copago-seguro-salud',
+    alternateSlug: 'what-is-copay-health-insurance-spain-guide',
     title: '¿Qué es el Copago en un Seguro de Salud? (Guía de Ahorro)',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
@@ -1051,6 +1052,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'periodos-de-carencia-seguro-medico',
+    alternateSlug: 'waiting-periods-health-insurance-spain-guide',
     title: '¿Qué son los Periodos de Carencia en un Seguro Médico?',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
@@ -2597,6 +2599,180 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'paragraph',
         text: 'Have questions about your student or residency visa insurance? Contact our bilingual team directly via WhatsApp or compare policies instantly with our free online calculator.'
+      }
+    ]
+  },
+  {
+    slug: 'what-is-copay-health-insurance-spain-guide',
+    alternateSlug: 'que-es-el-copago-seguro-salud',
+    title: 'What is Copay in Spanish Health Insurance? (Expat & Visa Guide 2026)',
+    category: 'salud',
+    categoryLabel: 'Insurance Guide',
+    readTime: '6 min read',
+    date: '25 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Understand how copays work in Spain, when choosing a policy with copays saves you money, and why Spanish consulates strictly require 0€ copay policies for all visas.',
+    featuredImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'When searching for private medical insurance in Spain as an expat, student, or foreign resident, you will immediately encounter the terms <strong>"con copago" (with copay)</strong> and <strong>"sin copago" (without copay / zero copay)</strong>. Understanding the exact difference between these two policy formats is crucial to avoid surprise medical bills and ensure your visa approval.'
+      },
+      {
+        type: 'paragraph',
+        text: 'In Spain, a <strong>copay (copago)</strong> is a small fixed fee that the insured member pays each time they access a healthcare service (such as a GP consultation, specialist visit, blood test, X-ray, or emergency room attendance). In exchange for this fee, the insurer charges a <strong>substantially lower monthly premium</strong> compared to a flat-rate zero-copay plan.'
+      },
+      {
+        type: 'heading-2',
+        text: 'How Do Healthcare Copays Work in Daily Practice?'
+      },
+      {
+        type: 'paragraph',
+        text: 'When you visit an HLA, Sanitas, or Adeslas clinic with a copay policy, you pay nothing at the hospital reception desk. You simply present your digital insurance card on your smartphone. At the end of the billing cycle, the insurance provider tallies all clinical services utilized and charges the total copays directly to your bank account or credit card.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Medical Service Provided', 'Average Copay in Spain (Sanitas / ASISA)', 'Zero-Copay Policy Cost'],
+        tableRows: [
+          ['General Practitioner (GP) / Family Doctor', '€2 - €5', '€0 (Included 100%)'],
+          ['Medical Specialist (Cardiology, Dermatology)', '€5 - €12', '€0 (Included 100%)'],
+          ['Basic Diagnostic Tests (Blood work, X-rays)', '€4 - €8', '€0 (Included 100%)'],
+          ['Advanced Imaging (MRI, CT scans, Endoscopy)', '€15 - €30', '€0 (Included 100%)'],
+          ['Hospital Emergency Room Visit', '€10 - €24', '€0 (Included 100%)'],
+          ['Surgical Hospitalization & Intensive Care', '€0 (Included)', '€0 (Included 100%)']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'The Annual Copay Safety Cap (Límite Máximo Anual)'
+      },
+      {
+        type: 'paragraph',
+        text: 'One of the biggest concerns for expats is what happens if an unexpected chronic illness strikes, requiring dozens of specialist consultations. Premium insurers in Spain incorporate an <strong>Annual Copay Cap</strong> (typically between €300 and €450 per insured person per calendar year).'
+      },
+      {
+        type: 'paragraph',
+        text: 'Once your accumulated copays reach that threshold, all subsequent visits and treatments for the remainder of the policy year become completely free of copays, protecting you from financial uncertainty.'
+      },
+      {
+        type: 'callout',
+        text: '⚠️ <strong>Strict Spanish Visa Prohibition</strong>: If you are applying for a <a href="/en/blog/student-visa-spain-health-insurance-requirements" class="text-primary hover:underline font-bold">Student Visa</a>, a <a href="/en/blog/digital-nomad-health-insurance-spain-requirements" class="text-primary hover:underline font-bold">Digital Nomad Visa</a>, or a <a href="/en/blog/health-insurance-spain-non-lucrative-visa-requirements" class="text-primary hover:underline font-bold">Non-Lucrative Visa</a>, Spanish immigration law <strong>strictly prohibits insurance with copays</strong>. Your certificate must state <em>"Sin Copagos"</em>.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: '100% Visa Approved',
+        ctaTitle: 'Need a Certified Zero-Copay Health Policy for Spain?',
+        ctaDescription: 'Calculate approved expat insurance from ASISA and Sanitas in 30 seconds. Includes 0€ copays, full hospitalization, and instant consular certificate delivery.',
+        ctaButtonText: 'Calculate Zero-Copay Policy Online',
+        ctaLink: '/en/health-insurance-student-visa-spain'
+      },
+      {
+        type: 'heading-2',
+        text: 'Frequently Asked Questions About Copays in Spain (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Are prescriptions at the pharmacy covered by copay insurance?</strong>: Private health insurers in Spain cover in-hospital medication 100%. Outpatient prescriptions purchased at retail pharmacies are paid by the patient, though you receive discounted doctor consultations.',
+          '<strong>Can I switch from a copay plan to a zero-copay plan later?</strong>: Yes. You can upgrade your plan during the annual contract renewal period without repeating medical underwriting.',
+          '<strong>Do travel insurances have copays?</strong>: Most travel insurance policies impose "deductibles" (excess) between €50 and €150 per incident, which is why Spanish consulates reject them. Always choose full Spanish private health cover.'
+        ]
+      }
+    ]
+  },
+  {
+    slug: 'waiting-periods-health-insurance-spain-guide',
+    alternateSlug: 'periodos-de-carencia-seguro-medico',
+    title: 'Waiting Periods in Spanish Health Insurance: How to Waive Them (2026)',
+    category: 'salud',
+    categoryLabel: 'Insurance Guide',
+    readTime: '6 min read',
+    date: '25 August 2026',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'What are waiting periods (carencias) in Spain, which services require wait times, and how to eliminate them if you switch insurers or need a visa-compliant policy.',
+    featuredImage: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'When signing up for private medical insurance in Spain, many newcomers assume they can immediately undergo major surgeries or complex diagnostic tests. However, standard Spanish health insurance contracts include clauses known as <strong>periodos de carencia (waiting periods)</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'A waiting period is the mandatory timeframe (measured in months) that must elapse between the effective start date of your policy and the date on which you can access specific high-cost or planned medical procedures.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Standard Waiting Periods Across Major Spanish Insurers'
+      },
+      {
+        type: 'paragraph',
+        text: 'While each insurance company establishes its own terms, market standards among providers like ASISA, Sanitas, and Adeslas typically look as follows:'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Medical Service', 'Standard Waiting Period', 'VitaBlue Visa Plans (ASISA / Sanitas)'],
+        tableRows: [
+          ['General Medicine & Doctor Consultations', '0 Days (Immediate from Day 1)', '0 Days (Immediate)'],
+          ['Basic Laboratory Tests & Routine X-rays', '0 Days (Immediate from Day 1)', '0 Days (Immediate)'],
+          ['High-Tech Diagnostics (MRI, CT scans, Ultrasounds)', '3 to 6 Months', '0 Days (Waived for Visa plans)'],
+          ['Surgical Interventions & Hospital Stays', '6 to 8 Months', '0 Days (Waived for Visa plans)'],
+          ['Childbirth, Delivery & Cesarean Section', '8 Months', '8 Months (Standard across industry)'],
+          ['Vital Emergency Care & Accidents', '0 Days (Immediate by Law)', '0 Days (Immediate)']
+        ]
+      },
+      {
+        type: 'callout',
+        text: '🚑 <strong>Emergency Exception</strong>: By Spanish Law, all waiting periods are <strong>automatically nullified in the event of an acute medical emergency or accidental life-threatening injury</strong>. The insurer is legally obligated to provide full hospital care immediately.'
+      },
+      {
+        type: 'heading-2',
+        text: 'How to Eliminate Waiting Periods When Switching Insurers'
+      },
+      {
+        type: 'paragraph',
+        text: 'If you already have private healthcare in Spain with at least one continuous year of active seniority, you can request a <strong>total waiver of waiting periods (eliminación de carencias)</strong> when transferring to ASISA or Sanitas.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Proof of Seniority</strong>: Provide a copy of your current policy conditions and the most recent bank payment receipt.',
+          '<strong>Zero Waiting Gap</strong>: You gain immediate access to high-resolution scans and planned hospital treatments without having to wait 6 months again.',
+          '<strong>Industry Exceptions</strong>: Maternity delivery and in vitro fertilization (IVF) are usually excluded from waiting period waivers.'
+        ]
+      },
+      {
+        type: 'cta-validator',
+        ctaBadge: 'Consular Compliance Check',
+        ctaTitle: 'Applying for a Spanish Visa? Make Sure You Have Zero Waiting Periods',
+        ctaDescription: 'Spanish consulates require insurance with immediate full hospital admission coverage. Use our free tool to audit your policy certificate before submitting to BLS or Extranjería.',
+        ctaButtonText: 'Validate My Certificate Online',
+        ctaLink: '/en/validador-visado'
+      },
+      {
+        type: 'heading-2',
+        text: 'Frequently Asked Questions (FAQ)'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Does my student visa policy have waiting periods?</strong>: No. Student visa policies issued via VitaBlue (such as ASISA Health Students and Sanitas International Students) have <strong>zero waiting periods</strong> for consultations, diagnostics, and hospitalization to guarantee 100% consular acceptance.',
+          '<strong>Can pregnant expats eliminate waiting periods for delivery?</strong>: If you are already pregnant before signing a new individual policy without previous Spanish insurance seniority, childbirth in a private hospital will not be covered due to the 8-month rule. Check our guide on <a href="/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain" class="text-primary hover:underline font-bold">pregnancy waiting periods in Spain</a>.',
+          '<strong>Do waiting periods apply to dental treatments?</strong>: Basic dental care (cleaning, emergency extractions) has zero waiting periods. Complex orthodontics or implants may carry 6-month wait times depending on the dental add-on.'
+        ]
       }
     ]
   }

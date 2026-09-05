@@ -333,12 +333,18 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/what-is-copay-health-insurance-spain-guide/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/" />
     <lastmod>2026-08-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/waiting-periods-health-insurance-spain-guide/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/" />
     <lastmod>2026-07-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
@@ -454,6 +460,24 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/rechazo-visado-espana-devolucion-seguro-medico/" />
     <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/what-is-copay-health-insurance-spain-guide/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/what-is-copay-health-insurance-spain-guide/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/que-es-el-copago-seguro-salud/" />
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/waiting-periods-health-insurance-spain-guide/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/waiting-periods-health-insurance-spain-guide/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/periodos-de-carencia-seguro-medico/" />
+    <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
