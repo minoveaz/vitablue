@@ -1988,12 +1988,12 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>La mejor relación calidad-precio del mercado</strong>: Con primas que parten desde aproximadamente <strong>38 € al mes</strong>, supone un ahorro de entre 150 € y 200 € anuales frente a otras alternativas sin recortar ninguna cobertura sanitaria.',
-          '<strong>Emisión ultrarrápida del certificado consular (en 24h)</strong>: Al tramitar tu póliza a través de VitaBlue, emitimos el certificado oficial en español legalizado con firma electrónica de ASISA en menos de 24 horas hábiles, listo para adjuntar en tu cita consular o plataforma de Extranjería (Mercurio).',
-          '<strong>100% Sin Copagos y 100% Sin Carencias</strong>: Cumple con el 100% de los criterios consulares: asistencia primaria, especialistas, urgencias hospitalarias ilimitadas, intervenciones quirúrgicas y ambulancia desde el primer segundo.',
+          '<strong>La mejor relación calidad-precio del mercado</strong>: Con primas que parten desde aproximadamente <strong>38 € al mes</strong>, supone un ahorro de entre 150 € y 200 € anuales frente a otras alternativas sin recortar ninguna cobertura sanitaria. Puedes consultar nuestra comparativa de <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">precios reales de seguros para visado de estudiante</a>.',
+          '<strong>Emisión ultrarrápida del certificado consular (en 24h)</strong>: Al tramitar tu póliza a través de VitaBlue, emitimos el certificado oficial en español legalizado con firma electrónica de ASISA en menos de 24 horas hábiles, listo para adjuntar en tu cita consular o plataforma de Extranjería (Mercurio). Revisa nuestra guía sobre el <a href="/blog/certificado-seguro-medico-visado-estudiante-consulado" class="text-primary hover:underline font-bold">certificado médico consular</a>.',
+          '<strong>100% Sin Copagos y 100% Sin Carencias</strong>: Cumple con el 100% de los criterios consulares: asistencia primaria, especialistas, urgencias hospitalarias ilimitadas, intervenciones quirúrgicas y ambulancia desde el primer segundo. Conoce todos los detalles en nuestra guía de <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">requisitos del seguro para visado de estudiante</a>.',
           '<strong>Pago sencillo con tarjeta internacional (sin cuenta bancaria española)</strong>: Puedes abonar la prima única con cualquier tarjeta de crédito o débito de tu país de origen, sin necesidad de disponer de un IBAN español ni tramitar transferencias internacionales lentas.',
           '<strong>Duración modulable a tu medida (2 a 12 meses)</strong>: A diferencia de pólizas que obligan a contratar años completos, ASISA te permite ajustar la vigencia a los meses reales de tu estancia formativa. Además, <strong>no cuenta con renovación automática</strong>, por lo que nunca te cobrarán anualidades posteriores una vez regreses a tu país de origen.',
-          '<strong>Garantía de devolución por denegación</strong>: Si por causas ajenas a ti el consulado deniega tu visado antes de la fecha de inicio, ASISA te reembolsa el 100% del importe abonado en la misma tarjeta presentando la resolución consular oficial.'
+          '<strong>Garantía de devolución por denegación</strong>: Si por causas ajenas a ti el consulado deniega tu visado antes de la fecha de inicio, ASISA te reembolsa el 100% del importe abonado en la misma tarjeta presentando la resolución consular oficial. Consulta cómo funciona la <a href="/blog/rechazo-visado-espana-devolucion-seguro-medico" class="text-primary hover:underline font-bold">garantía de devolución por rechazo de visado</a>.'
         ]
       },
       {
@@ -2202,11 +2202,11 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Unbeatable Price (~€38/month)</strong>: Saves students between €150 and €200 across a 10-month academic year compared to other major insurers, without any compromise in clinical coverage.',
-          '<strong>Certified Official Spanish Certificate (24h Delivery)</strong>: Spanish Consulates require a legal certificate written in Spanish, signed by the insurer, certifying zero copayments, zero waiting periods, and full hospitalization. VitaBlue delivers this PDF certificate within 24 hours of enrollment.',
+          '<strong>Unbeatable Price (~€38/month)</strong>: Saves students between €150 and €200 across a 10-month academic year compared to other major insurers, without any compromise in clinical coverage. See our full breakdown of <a href="/en/blog/student-visa-spain-health-insurance-prices" class="text-primary hover:underline font-bold">real student visa health insurance prices</a>.',
+          '<strong>Certified Official Spanish Certificate (24h Delivery)</strong>: Spanish Consulates require a legal certificate written in Spanish, signed by the insurer, certifying zero copayments, zero waiting periods, and full hospitalization. VitaBlue delivers this PDF certificate within 24 hours of enrollment. Read our guide on the <a href="/en/blog/consular-health-insurance-certificate-spain-visa" class="text-primary hover:underline font-bold">official consular certificate requirements</a>.',
           '<strong>Direct Payment with International Cards</strong>: You do not need a Spanish bank account (IBAN) or a Tax ID (NIE). You can pay the single upfront premium with any Visa, Mastercard, or debit card from your home country.',
           '<strong>No Unwanted Automatic Renewals</strong>: The contract lasts exactly between 2 and 12 months as chosen by you. It terminates automatically upon expiration, preventing unwanted annual renewals after you finish your studies and return home.',
-          '<strong>Money-Back Guarantee on Visa Refusal</strong>: In the rare event that your student visa is denied by the consulate before the policy start date, ASISA issues a 100% refund directly back to the card used for payment upon submission of the official refusal letter.'
+          '<strong>Money-Back Guarantee on Visa Refusal</strong>: In the rare event that your student visa is denied by the consulate before the policy start date, ASISA issues a 100% refund directly back to the card used for payment upon submission of the official refusal letter. Discover how our <a href="/en/blog/spain-visa-rejection-health-insurance-refund-guarantee" class="text-primary hover:underline font-bold">Spain visa rejection refund guarantee</a> works.'
         ]
       },
       {
@@ -2401,9 +2401,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Tarifa más asequible del mercado</strong>: Desde solo <strong>~38 € al mes</strong>, reduciendo drásticamente el capital inmovilizado mientras esperas la respuesta consular.',
+          '<strong>Tarifa más asequible del mercado</strong>: Desde solo <strong>~38 € al mes</strong>, reduciendo drásticamente el capital inmovilizado mientras esperas la respuesta consular. Descubre por qué lidera el mercado en nuestra <a href="/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana" class="text-primary hover:underline font-bold">comparativa de seguros para visado de estudiante</a>.',
           '<strong>Sin penalizaciones ni gastos de gestión</strong>: ASISA no aplica cargos ocultos de cancelación si presentas la denegación consular oficial.',
           '<strong>No renovación forzosa</strong>: La póliza tiene una duración cerrada (de 2 a 12 meses) que no se renueva automáticamente, protegiendo tus finanzas cuando finalices tu curso.',
+          '<strong>Cumplimiento normativo total</strong>: Emite certificado en 24h sin copagos ni carencias cumpliendo el 100% de los <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">requisitos consulares para visado</a>.',
           '<strong>Asesoría humana y personalizada</strong>: En caso de requerimiento consular, nuestros expertos revisan la carta para ver si es subsanable antes de solicitar la anulación definitiva.'
         ]
       },
@@ -2568,9 +2569,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Lowest capital committed (~€38/month)</strong>: Why tie up €700+ in insurance when you can secure 100% compliant Spanish coverage starting at ~€38/month?',
+          '<strong>Lowest capital committed (~€38/month)</strong>: Why tie up €700+ in insurance when you can secure 100% compliant Spanish coverage starting at ~€38/month? Read our full <a href="/en/blog/asisa-student-insurance-spain-visa-validity" class="text-primary hover:underline font-bold">ASISA student visa insurance comparison</a>.',
           '<strong>No cancellation or processing penalties</strong>: ASISA does not deduct any hidden administrative fees when a consular rejection letter is submitted.',
           '<strong>No forced annual renewals</strong>: Contracts last strictly between 2 and 12 months with no automatic renewal traps.',
+          '<strong>100% Immigration Compliance</strong>: Guarantees zero copays and zero waiting periods meeting every <a href="/en/blog/student-visa-spain-health-insurance-requirements" class="text-primary hover:underline font-bold">Spanish student visa requirement</a>.',
           '<strong>Dedicated English-speaking guidance</strong>: If the consulate issues a temporary document request (requerimiento), our advisors review it first to see if it can be resolved before cancelling.'
         ]
       },
