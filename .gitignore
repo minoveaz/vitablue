@@ -29,6 +29,12 @@ test-results/
 .unlighthouse/
 .temp/
 
+# credentials & service accounts
+.credentials/
+*-gserviceaccount*.json
+vitablue-marketing-*.json
+gsc-*.json
+
 # misc
 *.local
 
