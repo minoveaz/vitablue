@@ -216,7 +216,7 @@ const AppLayout: React.FC = () => {
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html" element={<SanitasMasSalud />} />
-            <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html" element={<SanitasMascotas />} />
+            <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html" element={<Navigate to="/productos/seguro-mascotas/sanitas-mascotas/" replace />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html" element={<AsistenciaFamiliar />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/" replace />} />
 
@@ -247,7 +247,7 @@ const AppLayout: React.FC = () => {
             <Route path="/seguro-nomadas" element={<NomadInsurance />} />
             <Route path="/productos/seguro-nomadas-digitales.html" element={<NomadInsurance />} />
             <Route path="/productos/sanitas-mas-salud.html" element={<SanitasMasSalud />} />
-            <Route path="/productos/sanitas-mascotas.html" element={<SanitasMascotas />} />
+            <Route path="/productos/sanitas-mascotas.html" element={<Navigate to="/productos/seguro-mascotas/sanitas-mascotas/" replace />} />
             <Route path="/productos/asistencia-familiar-iplus.html" element={<AsistenciaFamiliar />} />
             <Route path="/politica-privacidad" element={<Privacy />} />
             <Route path="/politica-cookies" element={<CookiesPolicy />} />

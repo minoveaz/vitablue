@@ -194,6 +194,118 @@ function injectBlogMetadataAndSchemas() {
 
 injectBlogMetadataAndSchemas();
 
+function injectLandingMetadataAndSchemas() {
+  const mascotasFile = path.join(distDir, 'productos/seguro-mascotas/sanitas-mascotas/index.html');
+  if (fs.existsSync(mascotasFile)) {
+    let content = fs.readFileSync(mascotasFile, 'utf8');
+    const title = 'Sanitas Mascotas desde 9,90€/mes | Seguro Perros y Gatos VitaBlue';
+    const description = 'Seguro veterinario oficial Sanitas Mascotas desde 9,90€/mes. Consultas y vacuna de la rabia gratis, urgencias 24h, sin exclusión por raza y contratación online.';
+
+    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${description}"`);
+    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${title}"`);
+    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${description}"`);
+    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${title}"`);
+    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${description}"`);
+
+    const faqs = [
+      {
+        q: '¿Qué límites de edad existen para asegurar a mi perro o gato?',
+        a: 'Puedes dar de alta a tu perro o gato a partir de los 3 meses de edad y hasta que cumpla los 9 años. Una vez asegurado, la póliza se renueva anualmente de forma vitalicia sin exclusiones.'
+      },
+      {
+        q: '¿Existen recargos en la cuota según la raza de la mascota?',
+        a: 'No. Una de las grandes ventajas de Sanitas Mascotas es que la prima mensual es fija y uniforme. No se aplican recargos adicionales ni variaciones por la raza o tamaño de tu mascota.'
+      },
+      {
+        q: '¿Cómo funciona la modalidad de Reembolso?',
+        a: 'En la modalidad "Mascotas Reembolso", tienes la libertad de llevar a tu perro o gato a cualquier clínica veterinaria de España. Abonas la factura y nos la envías digitalmente a través de la app; Sanitas te reembolsará el 80% de los gastos elegibles en un plazo máximo de 10 días.'
+      },
+      {
+        q: '¿Qué cubre la garantía de fallecimiento por accidente?',
+        a: 'En caso de que la mascota fallezca debido a un accidente fortuito, la póliza indemniza al propietario con un capital de hasta 1.000€ (según condiciones de póliza) para mitigar los gastos sobrevenidos.'
+      }
+    ];
+
+    const schemaMarkup = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "InsuranceAgency",
+          "@id": "https://www.vitablue.es/#organization",
+          "name": "VitaBlue",
+          "url": "https://www.vitablue.es/",
+          "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+          "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online."
+        },
+        {
+          "@type": "FinancialProduct",
+          "@id": "https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/#producto",
+          "name": "Sanitas Salud Mascotas",
+          "description": "Sanitas Mascotas: seguro veterinario con consultas y vacuna de la rabia gratuitas, y reembolso de hasta 2.500 €/año.",
+          "brand": {
+            "@type": "Brand",
+            "name": "Sanitas"
+          },
+          "provider": {
+            "@id": "https://www.vitablue.es/#organization"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "9.90",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Inicio",
+              "item": "https://www.vitablue.es"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Productos",
+              "item": "https://www.vitablue.es/productos/seguros-salud/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Sanitas Mascotas",
+              "item": "https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/"
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/#faq",
+          "mainEntity": faqs.map((faq) => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.a
+            }
+          }))
+        }
+      ]
+    };
+
+    if (!content.includes('"@type":"FAQPage"')) {
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(schemaMarkup)}</script>\n</head>`);
+    }
+
+    fs.writeFileSync(mascotasFile, content, 'utf8');
+    console.log('✅ Metadatos SEO y FAQPage schema inyectados en landing Sanitas Mascotas.');
+  }
+}
+
+injectLandingMetadataAndSchemas();
+
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 
 function optimizeHtmlHeadTagsRecursive(dir) {

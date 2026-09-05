@@ -738,7 +738,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'requisitos-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-requirements',
 
-    title: 'Requisitos del Seguro Médico para Visado de Estudiante en España (Guía 2026)',
+    title: 'Seguro Médico Visado Estudiante España desde 35€/mes | Requisitos 2026',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '6 min de lectura',
@@ -750,7 +750,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Vas a estudiar en España? Descubre los requisitos obligatorios que debe cumplir tu seguro médico para que el consulado o Extranjería apruebe tu visado de estudiante sin contratiempos.',
+    excerpt: 'Requisitos oficiales de seguro médico para visado de estudiante en España 2026: pólizas Asisa y Sanitas sin copagos desde 35€/mes, repatriación y certificado oficial en 24h.',
     featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -759,7 +759,11 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. La póliza líder del mercado homologada para este trámite es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>, diseñada en estricta conformidad con las directrices consulares españolas.'
+        text: 'Para que tu solicitud no sea denegada por "falta de cobertura sanitaria adecuada", es obligatorio contratar un seguro que cumpla con los estándares específicos de la sanidad pública española. No sirve cualquier póliza de viaje ni los seguros de tu país de origen. En VitaBlue trabajamos con pólizas homologadas como <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">ASISA y Sanitas International Students</a>, diseñadas en estricta conformidad con las directrices consulares españolas.'
+      },
+      {
+        type: 'callout',
+        text: '🛡️ <strong>Garantía de Devolución 100%</strong>: Todas nuestras pólizas para estudiantes cuentan con compromiso de reembolso íntegro del 100% de la prima pagada si tu solicitud es denegada por el consulado de España o centro BLS.'
       },
       {
         type: 'heading-2',
@@ -810,21 +814,23 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Cuando contratas tu póliza de estudiantes a través de VitaBlue, puedes realizar el proceso utilizando nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>. Tras completar el alta, la aseguradora (Sanitas) emite el certificado oficial de cobertura en formato PDF de forma inmediata. Este documento está redactado tanto en español como en inglés, contiene la firma electrónica autorizada de la entidad y los sellos reglamentarios para ser presentado de manera directa ante el consulado español o a través de la plataforma MERCURIO de Extranjería.'
+        text: 'Cuando contratas tu póliza de estudiantes a través de VitaBlue, puedes realizar el proceso utilizando nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>. Tras completar el alta, la aseguradora (Sanitas o ASISA) emite el certificado oficial de cobertura en formato PDF de forma inmediata. Este documento está redactado tanto en español como en inglés, contiene la firma electrónica autorizada de la entidad y los sellos reglamentarios para ser presentado de manera directa ante el consulado español o a través de la plataforma MERCURIO de Extranjería.'
       },
       {
         type: 'paragraph',
-        text: 'Además, en cumplimiento con el principio de honestidad exigido en la contratación de seguros (consulte nuestra guía de <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas</a>), si tu visado es denegado por causas oficiales ajenas a tu control, Sanitas te garantiza el reembolso del 100% de la prima pagada presentando la carta formal de denegación antes del inicio de vigencia de la póliza.'
+        text: 'Además, en cumplimiento con el principio de honestidad exigido en la contratación de seguros (consulte nuestra guía de <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas</a>), si tu visado es denegado por causas oficiales ajenas a tu control, te garantizamos el reembolso del 100% de la prima pagada presentando la carta formal de denegación antes del inicio de vigencia de la póliza.'
       },
       {
-        type: 'heading-3',
-        text: 'Preguntas Frecuentes (FAQ)'
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre el Seguro para Visado de Estudiante (FAQ)'
       },
       {
         type: 'list',
         items: [
+          '<strong>¿El seguro incluye garantía de devolución por denegación de visado?</strong>: Sí, al contratar tu póliza de estudiante a través de VitaBlue cuentas con garantía de reembolso del 100% de la prima si tu visado es denegado por el consulado español o centro BLS.',
+          '<strong>¿Se puede pagar mensualmente o exigen pago anual?</strong>: Para la solicitud inicial en el consulado en tu país de origen, la gran mayoría exige el justificante del pago anual completo. Para prórrogas de estancia dentro de España, Extranjería suele admitir cobro mensual domiciliado.',
           '<strong>¿Qué duración debe tener el seguro médico?</strong>: Debe cubrir toda la estancia escolar declarada. Si el curso es de 9 o 10 meses, la póliza debe emitirse por ese periodo exacto o de manera anual.',
-          '<strong>¿Sirve el seguro de salud público de mi país si soy de la UE?</strong>: Sí, si eres ciudadano de la Unión Europea puedes presentar la Tarjeta Sanitaria Europea (TSE). Sin embargo, si deseas contratar servicios complementarios privados rápidos, es recomendable un plan específico.',
+          '<strong>¿Sirve el seguro de salud público de mi país si soy de la UE?</strong>: Sí, si eres ciudadano de la Unión Europea puedes presentar la Tarjeta Sanitaria Europea (TSE). Sin embargo, si deseas contratar servicios complementarios privados rápidos con acceso inmediato a especialistas, es recomendable un plan específico.',
           '<strong>¿Puedo contratar un seguro con copago si quiero ahorrar dinero?</strong>: No. Los consulados revisan específicamente la cláusula "sin copago" en el certificado oficial. Si detectan que tienes que abonar dinero por las visitas, rechazarán tu expediente de inmediato.'
         ]
       }
@@ -833,7 +839,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'seguro-medico-residencia-no-lucrativa-espana',
     alternateSlug: 'health-insurance-spain-non-lucrative-visa-requirements',
-    title: 'Seguro Médico para Residencia No Lucrativa en España: Qué exige Extranjería',
+    title: 'Seguro Médico Residencia No Lucrativa España 2026 | 100% Aprobado VitaBlue',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '5 min de lectura',
@@ -845,16 +851,20 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'La visa de Residencia No Lucrativa (RNL) es una de las opciones más populares para retirarse o vivir en España. Te explicamos los criterios técnicos del seguro médico para evitar denegaciones.',
+    excerpt: 'Requisitos oficiales del seguro médico para la Residencia No Lucrativa en España. Pólizas sin copagos ni carencias desde 45€/mes con garantía 100% de aprobación consular.',
     featuredImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
         type: 'paragraph',
-        text: 'La autorización de Residencia No Lucrativa (establecida en el Real Decreto 557/2011 de la legislación española) está dirigida a ciudadanos no comunitarios que desean vivir en España sin realizar actividades laborales o lucrativas. Al no cotizar en el sistema de la Seguridad Social española, la ley de extranjería impone la obligación de demostrar que dispones de recursos económicos y que cuentas con un seguro público o un <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">seguro médico para expatriados en España</a> concertado con una aseguradora autorizada.'
+        text: 'La autorización de Residencia No Lucrativa (establecida en el Real Decreto 557/2011 de la legislación española) está dirigida a ciudadanos no comunitarios que desean vivir en España sin realizar actividades laborales o lucrativas. Al no cotizar en el sistema de la Seguridad Social española, la ley de extranjería impone la obligación de demostrar que dispones de recursos económicos y que cuentas con un seguro público o un <a href="/productos/seguros-salud/seguro-expatriados/" class="text-primary hover:underline font-bold">seguro médico para expatriados en España</a> concertado con una aseguradora autorizada.'
       },
       {
         type: 'paragraph',
         text: 'El objetivo de esta norma es evitar que los residentes extranjeros supongan una carga financiera para los recursos de la sanidad pública española. Por ello, el seguro médico privado requerido debe ofrecer una cobertura de salud análoga en coberturas y prestaciones a las que brinda el Sistema Nacional de Salud.'
+      },
+      {
+        type: 'callout',
+        text: '🛡️ <strong>Garantía de Devolución 100%</strong>: Si el consulado español deniega tu visado de residencia no lucrativa por cualquier motivo administrativo ajeno, te devolvemos el 100% del importe de la prima antes del inicio de vigencia de la póliza.'
       },
       {
         type: 'heading-2',
@@ -875,7 +885,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '💡 <strong>Recomendación Premium</strong>: Para este trámite, el producto de referencia del mercado es el seguro <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> sin copago en su versión de pago anual único. Este plan incluye medicina interna, hospitalización e intervenciones de forma ilimitada.'
+        text: '💡 <strong>Recomendación Premium</strong>: Para este trámite, el producto de referencia del mercado es el seguro <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> sin copago en su versión de pago anual único. Este plan incluye medicina interna, hospitalización e intervenciones de forma ilimitada.'
       },
       {
         type: 'heading-2',
@@ -883,15 +893,17 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'A diferencia de los visados de estudiantes, donde la repatriación sanitaria y de restos es obligatoria por ley nacional, en la Residencia No Lucrativa existe cierta discrecionalidad según el consulado específico. Por ejemplo, el consulado de España en Londres o Nueva York suele exigir que la póliza incluya el traslado de restos, mientras que en otros consulados de Latinoamérica a veces no se menciona explícitamente. No obstante, para evitar retrasos administrativos o requerimientos de subsanación de errores, es altamente aconsejable contratar una póliza que la incorpore de serie. Si deseas información sobre coberturas de decesos, puedes revisar nuestro apartado de <a href="/productos/seguro-para-decesos/asistencia-familiar" class="text-primary hover:underline font-bold">asistencia familiar y decesos</a>.'
+        text: 'A diferencia de los visados de estudiantes, donde la repatriación sanitaria y de restos es obligatoria por ley nacional, en la Residencia No Lucrativa existe cierta discrecionalidad según el consulado específico. Por ejemplo, el consulado de España en Londres o Nueva York suele exigir que la póliza incluya el traslado de restos, mientras que en otros consulados de Latinoamérica a veces no se menciona explícitamente. No obstante, para evitar retrasos administrativos o requerimientos de subsanación de errores, es altamente aconsejable contratar una póliza que la incorpore de serie. Si deseas información sobre coberturas de decesos, puedes revisar nuestro apartado de <a href="/productos/seguro-para-decesos/asistencia-familiar/" class="text-primary hover:underline font-bold">asistencia familiar y decesos</a>.'
       },
       {
-        type: 'heading-3',
-        text: 'Preguntas Frecuentes (FAQ)'
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Residencia No Lucrativa (FAQ)'
       },
       {
         type: 'list',
         items: [
+          '<strong>¿Qué ocurre si el consulado deniega mi visado no lucrativo?</strong>: En VitaBlue garantizamos la devolución íntegra del 100% de la prima si tu solicitud de residencia no lucrativa es rechazada oficialmente por el consulado de España o delegación de extranjería.',
+          '<strong>¿Hasta qué edad se puede contratar el seguro para la visa no lucrativa?</strong>: Disponemos de pólizas homologadas sin copagos para solicitantes de hasta 75 años o más, cumpliendo el 100% de las exigencias consulares.',
           '<strong>¿Qué pasa si tengo una enfermedad preexistente?</strong>: Deberás declararla en el cuestionario de salud. Es fundamental ser honesto en este paso legal para evitar que la compañía anule la póliza en el futuro (puedes informarte sobre esto en nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>).',
           '<strong>¿Aceptan seguros de salud con copago bajo?</strong>: No. Aunque el copago sea simbólico (de 2€ o 3€), la póliza será rechazada. El certificado debe indicar explícitamente que la cobertura es del 100% sin aportaciones del asegurado.'
         ]
