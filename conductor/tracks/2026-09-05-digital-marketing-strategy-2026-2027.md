@@ -7,9 +7,24 @@
 
 ---
 
-## 📌 Contexto & Diagnóstico
+## 📌 Contexto & Diagnóstico en Vivo (GSC API Oficial)
 
-El sitio registra **22.000 impresiones trimestrales en Google Search Console** con una posición media de **39,9** y un **CTR del 0,2%**. Las ventas orgánicas iniciales registradas en **Nigeria 🇳🇬 y Sudáfrica 🇿🇦** confirman la tracción internacional en visados de estudiantes. Este track ejecuta la hoja de ruta técnica y de contenidos para acelerar la conversión y abrir canales desvinculados del algoritmo de Google.
+Conexión completada con la API oficial de Google Search Console (`sc-domain:vitablue.es`) con permisos de `siteOwner`. Datos auditados en vivo (últimos 90 días):
+- **Impresiones totales:** 25.001
+- **Clics totales:** 68
+- **CTR medio:** 0,27%
+- **Posición media:** 38,8
+
+### Hallazgos Críticos de la Auditoría Inicial:
+1. **Fuga de impresiones en URL Legacy:** `https://www.vitablue.es/productos/seguro-medico-estudiantes-extranjeros-espana.html` acumula **6.124 impresiones** (la mayor de toda la web) en posición 46.8 y solo 3 clics. Requiere blindaje de redirección 301 para transferir autoridad a la canónica moderna.
+2. **Tracción Orgánica Internacional en Inglés (Al borde de Página 1):**
+   - `/en/blog/student-visa-spain-health-insurance-prices` (Posición **10.2**, 221 impresiones).
+   - `/en/blog/student-visa-spain-health-insurance-requirements/` (Posición **15.7**, 1.362 impresiones, 11 clics).
+   - Validación con URL Inspection API: `Index status: PASS`, `Submitted and indexed`.
+3. **Tracción de Seguro de Mascotas y Visados (Español):**
+   - `/productos/sanitas-mascotas.html` (Posición **16.7**, 890 impresiones).
+   - `/blog/seguro-medico-residencia-no-lucrativa-espana/` (Posición **33.5**, 693 impresiones).
+   - `/blog/requisitos-seguro-medico-visado-estudiante-espana/` (Posición **19.3**, 502 impresiones).
 
 ---
 
@@ -17,11 +32,16 @@ El sitio registra **22.000 impresiones trimestrales en Google Search Console** c
 
 ### Fase 1: Cimientos y Quick Wins Técnicos (Septiembre 2026)
 
-#### 1.1 Optimización On-Page y Rich Snippets (CTR Boost)
-- [ ] Auditar las páginas y artículos con mayor volumen de impresiones y CTR < 0,5% en GSC.
+#### 1.1 Conexión de Datos & Diagnóstico Inicial
+- [x] Configurar e integrar API oficial de Google Search Console con Service Account (`vitablue-gsc-agent@...`) con rol de `siteOwner`.
+- [x] Crear herramienta CLI nativa `scripts/gsc_audit.cjs` con comandos npm (`gsc:summary`, `gsc:opportunities`, `gsc:pages`, `gsc:queries`, `gsc:inspect`).
+- [x] Auditar las páginas con mayor volumen de impresiones y CTR < 1,5% en GSC (`npm run gsc:opportunities`).
+
+#### 1.2 Optimización On-Page y Rich Snippets (CTR Boost)
+- [ ] **Acción 1 (Issue GitHub):** Blindar la redirección 301 de la URL legacy `/productos/seguro-medico-estudiantes-extranjeros-espana.html` hacia la canónica moderna para concentrar ranking.
+- [ ] **Acción 2 (Issue GitHub):** Optimizar On-Page (títulos persuasivos, precios, meta descriptions) y añadir JSON-LD `FAQPage` + `Breadcrumbs` en las guías de estudiantes en inglés (Top 10-15).
+- [ ] **Acción 3 (Issue GitHub):** Inyectar FAQ Schema y optimizar CTAs en landings y guías en español (Mascotas, No Lucrativa y Visado de Estudiante).
 - [ ] Reescribir `<title>` y `<meta description>` en landings prioritarias (`StudentInsurance.tsx`, `ForeignerInsurance.tsx`, `ConsularValidatorPage.tsx`) con propuesta de valor transaccional (*precio desde 38€, homologado 100%, devolución garantizada*).
-- [ ] Implementar marcado estructurado JSON-LD `FAQPage` en las páginas de producto y en el visor de artículos (`BlogPost.tsx`).
-- [ ] Implementar `BreadcrumbList` Schema en las rutas del blog y productos.
 - [ ] Validar que el build prerenderizado (`npm run build`) inyecte correctamente estos esquemas sin errores en Search Console Rich Results Test.
 
 #### 1.2 Lead Magnet & Captura de Contactos (Pilar 4)
