@@ -14,6 +14,7 @@ import {
   TravelIllustration,
 } from '@/components/illustrations';
 import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 
 export const ConsularValidatorPage: React.FC = () => {
   const canonicalUrl = 'https://www.vitablue.es/validador-visado/';
@@ -220,6 +221,13 @@ export const ConsularValidatorPage: React.FC = () => {
         columns={2}
       />
 
+      {/* Official Checklist Lead Magnet */}
+      <section className="px-4 sm:px-6 md:px-8 max-w-5xl mx-auto w-full">
+        <LeadMagnetBanner
+          isEnglish={false}
+          sourceContext="validador-visado"
+        />
+      </section>
 
       {/* Official VitaBlue FAQs Section */}
       <FaqSection

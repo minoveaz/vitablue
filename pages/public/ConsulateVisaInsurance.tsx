@@ -35,6 +35,7 @@ import {
   HealthIllustration,
   MedicalAttentionIllustration,
 } from '@/components/illustrations';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 
 export const ConsulateVisaInsurance: React.FC = () => {
   const { slug: paramSlug } = useParams<{ slug: string }>();
@@ -540,6 +541,14 @@ export const ConsulateVisaInsurance: React.FC = () => {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </section>
+
+      {/* Official Student Visa Checklist Lead Magnet */}
+      <section className="px-4 sm:px-6 md:px-8 max-w-5xl mx-auto w-full">
+        <LeadMagnetBanner
+          isEnglish={false}
+          sourceContext={`consulate-${consulate.slug}`}
+        />
       </section>
 
       {/* FAQs Section */}

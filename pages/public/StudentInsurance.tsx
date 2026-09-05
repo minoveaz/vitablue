@@ -22,6 +22,7 @@ import PlanComparisonSection from '../../components/organisms/PlanComparisonSect
 import ProductHero from '../../components/organisms/ProductHero';
 import { studentTranslations } from '../../utils/translations';
 import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 import {
   StudentIllustration,
   TravelIllustration,
@@ -635,6 +636,14 @@ export const StudentInsurance: React.FC = () => {
         title={isEnglish ? 'The experience of those who already trust us' : 'La experiencia de quienes ya confían en nosotros'}
         items={testimonials}
       />
+
+      {/* Official Student Visa Checklist Lead Magnet */}
+      <section className="px-4 sm:px-6 md:px-8 max-w-5xl mx-auto w-full">
+        <LeadMagnetBanner
+          isEnglish={isEnglish}
+          sourceContext={isEnglish ? 'student-landing-en' : 'student-landing-es'}
+        />
+      </section>
 
       <FaqSection eyebrow={isEnglish ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'} title={isEnglish ? 'Clear doubts about Student Insurance' : 'Resolver dudas sobre el Seguro de Estudiante'} items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
 
