@@ -50,10 +50,10 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 
 #### 1.4 Calendario Editorial de Septiembre ("Mes del Consulado")
 - [x] **Acción 5 ([Issue #134](https://github.com/minoveaz/vitablue/issues/134)):** Consolidar y optimizar guía: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* en el artículo canónico con FAQ Schema y comparativa de motivos de rechazo (ES).
-- [ ] **Acción 6 ([Issue #135](https://github.com/minoveaz/vitablue/issues/135)):** Redactar y publicar comparativa: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
+- [x] **Acción 6 ([Issue #135](https://github.com/minoveaz/vitablue/issues/135)):** Redactar y publicar comparativa: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
 - [ ] **Acción 7 ([Issue #136](https://github.com/minoveaz/vitablue/issues/136)):** Redactar y publicar artículo: *"¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada"* (ES).
 - [ ] **Acción 8 ([Issue #137](https://github.com/minoveaz/vitablue/issues/137)):** Redactar y publicar guía en inglés: *"ASISA student insurance Spain — is it valid for student visa?"* (EN).
-- [ ] Ejecutar `npm run sync-blog` y validar generación estática en `dist/` y `sitemap.xml`.
+- [x] Ejecutar `npm run sync-blog` y validar generación estática en `dist/` y `sitemap.xml`.
 
 #### 1.5 Canales de Adquisición Desacoplados (Comunidades y Redes)
 - [ ] Configurar perfil de WhatsApp Business con catálogo de seguros para estudiantes y visados, respuestas rápidas y etiquetas por país/estado.
