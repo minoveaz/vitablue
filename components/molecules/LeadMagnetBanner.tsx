@@ -1,6 +1,5 @@
 import React from 'react';
-import { Download, MessageCircle, ShieldCheck, FileCheck } from 'lucide-react';
-import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
+import { Download, ShieldCheck, FileCheck } from 'lucide-react';
 import { trackConversion } from '@/utils/analytics';
 
 interface LeadMagnetBannerProps {
@@ -23,17 +22,6 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
     ? 'spain-student-visa-health-insurance-checklist.pdf'
     : 'checklist-visado-estudiante-espana.pdf';
 
-  const waTag = isEnglish ? 'CHECKLIST-ESTUDIANTE-EN' : 'CHECKLIST-ESTUDIANTE';
-  const waCustomText = isEnglish
-    ? 'Hello, I downloaded the student visa requirements checklist and I would like to get a quote for a compliant health insurance policy.'
-    : 'Hola, descargué la checklist de requisitos para el visado de estudiante y me gustaría cotizar un seguro médico aprobado por extranjería.';
-
-  const waUrl = buildContextualWhatsAppUrl({
-    tag: waTag,
-    message: waCustomText,
-    locale: isEnglish ? 'en' : 'es',
-  });
-
   const handleDownloadClick = () => {
     trackConversion('lead_magnet_download', {
       contact_method: 'download',
@@ -41,16 +29,6 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
       profile: 'student',
       source_page: typeof window !== 'undefined' ? window.location.pathname : '',
       campaign_tag: `lead_magnet_pdf_${sourceContext}`,
-    });
-  };
-
-  const handleWhatsAppClick = () => {
-    trackConversion('lead_magnet_whatsapp', {
-      contact_method: 'whatsapp',
-      category: 'lead_magnet',
-      profile: 'student',
-      source_page: typeof window !== 'undefined' ? window.location.pathname : '',
-      campaign_tag: `lead_magnet_wa_${sourceContext}`,
     });
   };
 
@@ -78,26 +56,15 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
           </p>
         </div>
 
-        <div className="space-y-2 pt-1">
+        <div className="pt-1">
           <a
             href={pdfUrl}
             download={pdfFilename}
             onClick={handleDownloadClick}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-primary-dark font-bold text-xs shadow-sm hover:brightness-105 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent text-primary-dark font-extrabold text-xs shadow-sm hover:brightness-105 transition-all text-center"
           >
             <Download className="w-4 h-4" />
             {isEnglish ? 'Download Free PDF' : 'Descargar PDF Gratis'}
-          </a>
-
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleWhatsAppClick}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-soft hover:bg-slate-100 text-whatsapp font-bold text-xs border border-slate-200 transition-all"
-          >
-            <MessageCircle className="w-4 h-4 text-whatsapp" />
-            {isEnglish ? 'Review Case on WhatsApp' : 'Revisar dudas por WhatsApp'}
           </a>
         </div>
       </div>
@@ -141,26 +108,15 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto shrink-0">
+        <div className="w-full md:w-auto shrink-0">
           <a
             href={pdfUrl}
             download={pdfFilename}
             onClick={handleDownloadClick}
-            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-accent hover:brightness-105 text-primary-dark font-extrabold text-xs sm:text-sm shadow-md transition-all text-center"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-accent hover:brightness-105 text-primary-dark font-extrabold text-xs sm:text-sm shadow-md transition-all text-center"
           >
             <Download className="w-4 h-4" />
             <span>{isEnglish ? 'Download Checklist (PDF)' : 'Descargar Checklist (PDF)'}</span>
-          </a>
-
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleWhatsAppClick}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-whatsapp font-bold text-xs border border-slate-200 transition-all text-center"
-          >
-            <MessageCircle className="w-4 h-4 text-whatsapp" />
-            <span>{isEnglish ? 'Ask Questions on WhatsApp' : 'Preguntar dudas por WhatsApp'}</span>
           </a>
         </div>
       </div>
