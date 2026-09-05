@@ -19,6 +19,9 @@ describe('LeadMagnetBanner component', () => {
 
     expect(html).toContain('data-testid="lead-magnet-banner"');
     expect(html).toContain('Official Consular Resource • 2026/2027');
+    expect(html).toContain('Definitive Checklist: Health Insurance for Spain Student Visa');
+    expect(html).toContain('Download Checklist (PDF)');
+    expect(html).toContain('/downloads/spain-student-visa-health-insurance-checklist.pdf');
     expect(html).toContain('wa.me');
     expect(html).toContain('CHECKLIST-ESTUDIANTE-EN');
   });

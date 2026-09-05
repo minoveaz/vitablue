@@ -13,12 +13,18 @@ const path = require('path');
 const { chromium } = require('@playwright/test');
 const { renderBaseLayout } = require('./pdf-engine/baseTemplate.cjs');
 const { getStudentVisaChecklistHtml } = require('./pdf-engine/templates/studentVisaChecklist.cjs');
+const { getStudentVisaChecklistEnHtml } = require('./pdf-engine/templates/studentVisaChecklistEn.cjs');
 
 const TEMPLATES = {
   'student-visa-checklist': {
     title: 'Checklist Oficial Requisitos Médicos Visado Estudiante España - VitaBlue',
     defaultOutput: 'public/downloads/checklist-visado-estudiante-espana.pdf',
     render: getStudentVisaChecklistHtml,
+  },
+  'student-visa-checklist-en': {
+    title: 'Definitive Checklist: Health Insurance for Spain Student Visa - VitaBlue',
+    defaultOutput: 'public/downloads/spain-student-visa-health-insurance-checklist.pdf',
+    render: getStudentVisaChecklistEnHtml,
   },
 };
 

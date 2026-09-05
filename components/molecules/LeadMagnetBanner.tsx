@@ -16,8 +16,12 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
   className = '',
   sourceContext = 'blog-post',
 }) => {
-  const pdfUrl = '/downloads/checklist-visado-estudiante-espana.pdf';
-  const pdfFilename = 'checklist-visado-estudiante-espana.pdf';
+  const pdfUrl = isEnglish
+    ? '/downloads/spain-student-visa-health-insurance-checklist.pdf'
+    : '/downloads/checklist-visado-estudiante-espana.pdf';
+  const pdfFilename = isEnglish
+    ? 'spain-student-visa-health-insurance-checklist.pdf'
+    : 'checklist-visado-estudiante-espana.pdf';
 
   const waTag = isEnglish ? 'CHECKLIST-ESTUDIANTE-EN' : 'CHECKLIST-ESTUDIANTE';
   const waCustomText = isEnglish
@@ -114,13 +118,13 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
 
           <h3 className="text-lg sm:text-xl font-display font-extrabold text-text-main leading-tight">
             {isEnglish
-              ? 'Checklist Definitiva: Requisitos Médicos Oficiales para Visado de Estudiante'
+              ? 'Definitive Checklist: Health Insurance for Spain Student Visa'
               : 'Checklist Definitiva: Requisitos Médicos Oficiales para Visado de Estudiante'}
           </h3>
 
           <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
             {isEnglish
-              ? 'Review the 5 non-negotiable points of Immigration Law (no copays, no waiting periods, 100% full coverage, and repatriation) and the 3 most common refusal mistakes.'
+              ? 'Review the 5 non-negotiable points of Spanish Immigration Law (zero copays, zero waiting periods, 100% full coverage, and repatriation) and the 3 most common refusal mistakes.'
               : 'Verifica los 5 puntos no negociables del Reglamento de Extranjería (sin copagos, sin carencias, 100% cobertura y repatriación) y los 3 errores más comunes que causan denegación.'}
           </p>
 
@@ -145,7 +149,7 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
             className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-accent hover:brightness-105 text-primary-dark font-extrabold text-xs sm:text-sm shadow-md transition-all text-center"
           >
             <Download className="w-4 h-4" />
-            <span>{isEnglish ? 'Descargar Checklist (PDF)' : 'Descargar Checklist (PDF)'}</span>
+            <span>{isEnglish ? 'Download Checklist (PDF)' : 'Descargar Checklist (PDF)'}</span>
           </a>
 
           <a
@@ -156,7 +160,7 @@ export const LeadMagnetBanner: React.FC<LeadMagnetBannerProps> = ({
             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-whatsapp font-bold text-xs border border-slate-200 transition-all text-center"
           >
             <MessageCircle className="w-4 h-4 text-whatsapp" />
-            <span>{isEnglish ? 'Preguntar dudas por WhatsApp' : 'Preguntar dudas por WhatsApp'}</span>
+            <span>{isEnglish ? 'Ask Questions on WhatsApp' : 'Preguntar dudas por WhatsApp'}</span>
           </a>
         </div>
       </div>
