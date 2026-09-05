@@ -49,7 +49,7 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 - [x] **Acción 4 ([Issue #133](https://github.com/minoveaz/vitablue/issues/133)):** Diseñar e implementar motor modular de PDFs (`scripts/pdf-engine/`), checklists consulares oficiales en PDF (ES y EN en blanco VitaBlue), componente bilingüe `LeadMagnetBanner` con descarga directa y despliegue global en Blog, Landing de Estudiantes (ES/EN), Validador Consular y páginas por país/consulado.
 
 #### 1.4 Calendario Editorial de Septiembre ("Mes del Consulado")
-- [ ] **Acción 5 ([Issue #134](https://github.com/minoveaz/vitablue/issues/134)):** Redactar y publicar guía: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* (ES).
+- [x] **Acción 5 ([Issue #134](https://github.com/minoveaz/vitablue/issues/134)):** Consolidar y optimizar guía: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* en el artículo canónico con FAQ Schema y comparativa de motivos de rechazo (ES).
 - [ ] **Acción 6 ([Issue #135](https://github.com/minoveaz/vitablue/issues/135)):** Redactar y publicar comparativa: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
 - [ ] **Acción 7 ([Issue #136](https://github.com/minoveaz/vitablue/issues/136)):** Redactar y publicar artículo: *"¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada"* (ES).
 - [ ] **Acción 8 ([Issue #137](https://github.com/minoveaz/vitablue/issues/137)):** Redactar y publicar guía en inglés: *"ASISA student insurance Spain — is it valid for student visa?"* (EN).
