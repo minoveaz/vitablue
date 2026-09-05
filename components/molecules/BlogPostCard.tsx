@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { BlogPostData } from '@/utils/blogData';
 
 const BlogPostCard: React.FC<{ post: BlogPostData }> = ({ post }) => {
-  const postUrl = post.lang === 'en' ? `/en/blog/${post.slug}` : `/blog/${post.slug}`;
+  const postUrl = post.lang === 'en' ? `/en/blog/${post.slug}/` : `/blog/${post.slug}/`;
   const readMoreText = post.lang === 'en' ? 'Read more' : 'Leer más';
 
   return (

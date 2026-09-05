@@ -30,8 +30,8 @@ export const BlogGridInteractiveCard: React.FC<BlogGridInteractiveCardProps> = (
 
   const primaryBtnText = isEnglish ? "Quote Expat Insurance" : "Cotizar seguro en 30s";
   const secondaryBtnText = isEnglish ? "Consular Validator" : "Validador Consular";
-  const primaryLink = isEnglish ? "/en/wizard" : "/wizard";
-  const secondaryLink = isEnglish ? "/en/validador-visado" : "/validador-visado";
+  const primaryLink = "/wizard/";
+  const secondaryLink = "/validador-visado/";
 
   return (
     <div className="flex flex-col bg-gradient-to-br from-primary-dark via-primary to-primary-dark text-white rounded-[32px] p-6 sm:p-8 shadow-xl border border-primary/30 relative overflow-hidden justify-between group">

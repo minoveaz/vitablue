@@ -10,7 +10,7 @@ interface BlogFeaturedHeroProps {
 }
 
 export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post, isEnglish }) => {
-  const postUrl = isEnglish ? `/en/blog/${post.slug}` : `/blog/${post.slug}`;
+  const postUrl = isEnglish ? `/en/blog/${post.slug}/` : `/blog/${post.slug}/`;
   const badgeText = isEnglish ? "Editor's Pick · 2026 Recommended" : "Lectura Recomendada · Guía 2026";
   const buttonText = isEnglish ? "Read full guide" : "Leer guía completa";
 

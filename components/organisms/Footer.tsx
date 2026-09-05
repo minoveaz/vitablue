@@ -168,7 +168,7 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <Link to={isEnglish ? "/en/blog" : "/blog"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/blog/" : "/blog/"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'Blog & Guides' : 'Blog y Guías'}
                 </Link>
               </li>

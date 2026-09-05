@@ -95,7 +95,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Planeas un embarazo y quieres calcular tu seguro médico?',
         ctaDescription: 'Calcula tu presupuesto de seguro de salud con cobertura de maternidad completa. Si ya vienes de otra aseguradora, te ayudamos a eliminar todas las carencias sin coste.',
         ctaButtonText: 'Calcular seguro de maternidad',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -141,9 +141,9 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>¿Qué pasa con los copagos durante el parto?</strong>: Si contratas una póliza en modalidad sin copagos (como <em>Asisa Salud</em> o <em>Sanitas Más Salud</em>), todo el parto, la anestesia epidural, el quirófano y los días de estancia hospitalaria están incluidos al 100% sin ningún gasto añadido. Revisa nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>¿Qué pasa con los copagos durante el parto?</strong>: Si contratas una póliza en modalidad sin copagos (como <em>Asisa Salud</em> o <em>Sanitas Más Salud</em>), todo el parto, la anestesia epidural, el quirófano y los días de estancia hospitalaria están incluidos al 100% sin ningún gasto añadido. Revisa nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
           '<strong>¿Con cuánta antelación debo contratar el seguro antes de buscar el embarazo?</strong>: Lo ideal es contratar la póliza entre 2 y 3 meses antes de empezar a buscar el embarazo para asegurar que el parto se produzca con holgura tras superar los 8 meses de carencia.',
-          '<strong>¿Puedo consultar más información sobre las carencias generales?</strong>: Puedes revisar nuestro artículo especializado sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro de salud</a>.'
+          '<strong>¿Puedo consultar más información sobre las carencias generales?</strong>: Puedes revisar nuestro artículo especializado sobre <a href="/blog/periodos-de-carencia-seguro-medico/" class="text-primary hover:underline font-bold">periodos de carencia en el seguro de salud</a>.'
         ]
       }
     ]
@@ -215,7 +215,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Buscas seguro médico para ti o para tus padres mayores?',
         ctaDescription: 'Calcula en 30 segundos las opciones de seguro disponibles para mayores de 65 años con las mejores aseguradoras de España.',
         ctaButtonText: 'Calcular precio seguro senior',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -243,7 +243,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Para patologías más complejas, la compañía puede aplicar una exclusión de cobertura específica sobre dicha dolencia manteniendo el resto del cuerpo 100% asegurado. Conoce todos los detalles en nuestro artículo sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+        text: 'Para patologías más complejas, la compañía puede aplicar una exclusión de cobertura específica sobre dicha dolencia manteniendo el resto del cuerpo 100% asegurado. Conoce todos los detalles en nuestro artículo sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
       },
       {
         type: 'heading-2',
@@ -252,7 +252,7 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>¿Puedo contratar el seguro para un familiar extranjero mayor de 65 años que viene a residir a España?</strong>: Sí. Para trámites de residencia no lucrativa o reagrupación familiar, disponemos de pólizas anuales sin copagos aceptadas por Extranjería. Consulta nuestra guía sobre <a href="/blog/seguro-medico-residencia-no-lucrativa-espana" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
+          '<strong>¿Puedo contratar el seguro para un familiar extranjero mayor de 65 años que viene a residir a España?</strong>: Sí. Para trámites de residencia no lucrativa o reagrupación familiar, disponemos de pólizas anuales sin copagos aceptadas por Extranjería. Consulta nuestra guía sobre <a href="/blog/seguro-medico-residencia-no-lucrativa-espana/" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
           '<strong>¿Se pueden eliminar los periodos de carencia si ya vengo de otro seguro?</strong>: Sí. Si el asegurado ya disponía de seguro de salud en otra compañía durante al menos 12 meses, Asisa y Sanitas eliminan las carencias en la nueva póliza aportando el certificado de antigüedad.',
           '<strong>¿Incluye asistencia médica en viajes al extranjero?</strong>: Sí. Todas las pólizas completas incorporan cobertura de urgencias médicas en el extranjero de hasta 12.000€ o 15.000€ por viaje.'
         ]
@@ -309,7 +309,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Quieres calcular el precio de Asisa y compararlo con otras aseguradoras?',
         ctaDescription: 'Calcula tu presupuesto oficial de Asisa en 30 segundos. Compara coberturas con Sanitas y Adeslas con asesoramiento 100% gratuito y sin llamadas comerciales.',
         ctaButtonText: 'Calcular seguro Asisa online',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -333,7 +333,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Sanitas, integrada en el grupo multinacional Bupa, destaca en la digitalización de servicios a través de su plataforma BluaU y en pólizas para estudiantes extranjeros como <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>. No obstante, sus primas mensuales suelen situarse entre un 15% y un 30% por encima de las tarifas de Asisa.'
+        text: 'Sanitas, integrada en el grupo multinacional Bupa, destaca en la digitalización de servicios a través de su plataforma BluaU y en pólizas para estudiantes extranjeros como <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">Sanitas International Students</a>. No obstante, sus primas mensuales suelen situarse entre un 15% y un 30% por encima de las tarifas de Asisa.'
       },
       {
         type: 'heading-3',
@@ -370,11 +370,11 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Al comparar precios entre aseguradoras, es fundamental contrastar si el presupuesto ofrecido corresponde a una modalidad <em>con copago</em> o <em>sin copago</em>. Para conocer los importes habituales de cada visita médica, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.'
+        text: 'Al comparar precios entre aseguradoras, es fundamental contrastar si el presupuesto ofrecido corresponde a una modalidad <em>con copago</em> o <em>sin copago</em>. Para conocer los importes habituales de cada visita médica, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.'
       },
       {
         type: 'paragraph',
-        text: 'Asimismo, si ya cuentas con un seguro de salud en otra compañía y decides cambiarte a Asisa, puedes solicitar la eliminación de los periodos de carencia aportando tu antigüedad. Revisa todos los detalles en nuestro artículo sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro médico</a>.'
+        text: 'Asimismo, si ya cuentas con un seguro de salud en otra compañía y decides cambiarte a Asisa, puedes solicitar la eliminación de los periodos de carencia aportando tu antigüedad. Revisa todos los detalles en nuestro artículo sobre <a href="/blog/periodos-de-carencia-seguro-medico/" class="text-primary hover:underline font-bold">periodos de carencia en el seguro médico</a>.'
       },
       {
         type: 'heading-2',
@@ -385,7 +385,7 @@ export const blogPosts: BlogPostData[] = [
         items: [
           '<strong>¿Qué ventajas tiene contratar Asisa a través de VitaBlue?</strong>: En VitaBlue gestionamos tu alta de forma rápida y gratuita, aplicamos las promociones vigentes de Asisa y te acompañamos como asesor independiente durante toda la vida de tu póliza.',
           '<strong>¿Asisa incluye cobertura dental?</strong>: Sí. Asisa dispone de una amplia red de Clínicas Asisa Dental propias que incluyen revisiones, limpiezas de boca, radiografías y extracciones sin coste.',
-          '<strong>¿Puedo contratar el seguro si tengo alguna enfermedad previa?</strong>: Sí, declarándola con honestidad en el cuestionario de salud. Te invitamos a leer nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>.'
+          '<strong>¿Puedo contratar el seguro si tengo alguna enfermedad previa?</strong>: Sí, declarándola con honestidad en el cuestionario de salud. Te invitamos a leer nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>.'
         ]
       }
     ]
@@ -417,7 +417,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Sin embargo, tanto si tramitas la solicitud a través del consulado español en tu país como si la presentas directamente desde España ante la <strong>UGE (Unidad de Grandes Empresas y Colectivos Estratégicos)</strong>, uno de los requisitos documentales más estrictos es acreditar la disposición de un <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">seguro médico privado para nómadas digitales en España</a> que cumpla con los estándares de cobertura total de la sanidad española.'
+        text: 'Sin embargo, tanto si tramitas la solicitud a través del consulado español en tu país como si la presentas directamente desde España ante la <strong>UGE (Unidad de Grandes Empresas y Colectivos Estratégicos)</strong>, uno de los requisitos documentales más estrictos es acreditar la disposición de un <a href="/productos/seguros-salud/seguro-nomadas-digitales/" class="text-primary hover:underline font-bold">seguro médico privado para nómadas digitales en España</a> que cumpla con los estándares de cobertura total de la sanidad española.'
       },
       {
         type: 'heading-2',
@@ -431,7 +431,7 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>Entidad autorizada para operar en España</strong>: La aseguradora debe estar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) de España (como Sanitas). Los seguros internacionales basados en otros países o con sede offshore no suelen ser admitidos si no tienen sucursal autorizada en España.',
-          '<strong>Totalmente Sin Copagos ni Franquicias</strong>: No se aceptan pólizas donde el asegurado deba abonar dinero por acudir a consultas médicas o realizarse pruebas. Para entender la importancia de este criterio, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Totalmente Sin Copagos ni Franquicias</strong>: No se aceptan pólizas donde el asegurado deba abonar dinero por acudir a consultas médicas o realizarse pruebas. Para entender la importancia de este criterio, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
           '<strong>Sin Periodos de Carencia</strong>: La cobertura debe ser inmediata desde el día 1 en hospitalizaciones, pruebas diagnósticas y cirugías.',
           '<strong>Cobertura integral equivalente a la sanidad pública</strong>: Debe cubrir medicina general, especialistas, analíticas, resonancias, hospitalización quirúrgica y urgencias las 24 horas.',
           '<strong>Repatriación sanitaria y de restos</strong>: Cobertura obligatoria de traslado sanitario o de restos mortales al país de origen.'
@@ -454,7 +454,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Vas a solicitar tu Visa de Nómada Digital en España?',
         ctaDescription: 'Calcula en 30 segundos el precio de tu seguro oficial de Sanitas homologado para la UGE con cobertura en España y asistencia en viajes internacionales.',
         ctaButtonText: 'Cotizar seguro para nómadas digitales',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -474,7 +474,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '💡 <strong>La Solución Ideal</strong>: Para los nómadas digitales en España, la póliza recomendada es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> o <a href="/productos/seguros-salud/seguro-nomadas-digitales" class="text-primary hover:underline font-bold">Sanitas International</a>, que combina un cuadro médico completo de primer nivel en España con cobertura de urgencias en viajes internacionales.'
+        text: '💡 <strong>La Solución Ideal</strong>: Para los nómadas digitales en España, la póliza recomendada es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> o <a href="/productos/seguros-salud/seguro-nomadas-digitales/" class="text-primary hover:underline font-bold">Sanitas International</a>, que combina un cuadro médico completo de primer nivel en España con cobertura de urgencias en viajes internacionales.'
       },
       {
         type: 'heading-2',
@@ -486,7 +486,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Si vas a tramitar la solicitud de residencia de 3 años ante la UGE desde dentro de España, la aseguradora te permite abonar la póliza de forma mensual o anual según tus preferencias fiscales. Si deseas saber cómo influyen las condiciones médicas en el precio, puedes leer sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+        text: 'Si vas a tramitar la solicitud de residencia de 3 años ante la UGE desde dentro de España, la aseguradora te permite abonar la póliza de forma mensual o anual según tus preferencias fiscales. Si deseas saber cómo influyen las condiciones médicas en el precio, puedes leer sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
       },
       {
         type: 'heading-2',
@@ -555,7 +555,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Necesitas tu certificado oficial para una cita próxima?',
         ctaDescription: 'Calcula tu póliza de Sanitas International Students y obtén tu certificado oficial con firma electrónica y sellos consulares en menos de 24h laborables.',
         ctaButtonText: 'Tramitar mi certificado oficial',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -568,7 +568,7 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Paso 1: Cotización rápida</strong>: Introduce tu edad y fecha prevista de llegada a España en nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>.',
+          '<strong>Paso 1: Cotización rápida</strong>: Introduce tu edad y fecha prevista de llegada a España en nuestro <a href="/wizard/" class="text-primary hover:underline font-bold">cotizador de seguros online</a>.',
           '<strong>Paso 2: Datos del pasaporte y cuestionario médico</strong>: Rellena los datos de tu pasaporte y completa el breve cuestionario de salud oficial de Sanitas.',
           '<strong>Paso 3: Validación y pago seguro</strong>: Tramita la prima oficial garantizada mediante tarjeta bancaria o transferencia.',
           '<strong>Paso 4: Recepción del Certificado PDF</strong>: En menos de 24 horas laborables recibirás en tu correo electrónico el certificado oficial en formato PDF de alta resolución, firmado digitalmente por los apoderados legales de Sanitas.'
@@ -592,7 +592,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Al contratar tu seguro <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> con VitaBlue cuentas con dos protecciones contractuales esenciales:'
+        text: 'Al contratar tu seguro <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">Sanitas International Students</a> con VitaBlue cuentas con dos protecciones contractuales esenciales:'
       },
       {
         type: 'list',
@@ -609,7 +609,7 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>¿El certificado viene en español y en inglés?</strong>: Sí. El certificado oficial de Sanitas se emite en formato bilingüe (español e inglés en el mismo documento) para que sea válido tanto en consulados de habla hispana como en embajadas internacionales.',
-          '<strong>¿Puedo consultar los precios antes de tramitar el certificado?</strong>: Sí. Puedes revisar todas las tarifas desglosadas por edades en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">guía de precios del seguro de estudiante 2026</a>.',
+          '<strong>¿Puedo consultar los precios antes de tramitar el certificado?</strong>: Sí. Puedes revisar todas las tarifas desglosadas por edades en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">guía de precios del seguro de estudiante 2026</a>.',
           '<strong>¿Tengo que traducir el certificado ante notario?</strong>: No. Al estar emitido legalmente en España por una compañía española y redactado en castellano, tiene plena validez jurídica directa sin necesidad de apostilla de La Haya ni traducción jurada.'
         ]
       }
@@ -642,7 +642,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'El seguro de salud no es un simple trámite administrativo opcional; es un requisito legal ineludible estipulado en el <em>Real Decreto 557/2011</em> de la normativa de extranjería española. Para que el consulado o la oficina de Extranjería apruebe tu expediente, la póliza debe ser emitida por una compañía autorizada en España, no tener copagos, carecer de periodos de carencia e incluir repatriación ilimitada. La póliza de referencia que cumple el 100% de estas directrices es <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a>.'
+        text: 'El seguro de salud no es un simple trámite administrativo opcional; es un requisito legal ineludible estipulado en el <em>Real Decreto 557/2011</em> de la normativa de extranjería española. Para que el consulado o la oficina de Extranjería apruebe tu expediente, la póliza debe ser emitida por una compañía autorizada en España, no tener copagos, carecer de periodos de carencia e incluir repatriación ilimitada. La póliza de referencia que cumple el 100% de estas directrices es <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">Sanitas International Students</a>.'
       },
       {
         type: 'heading-2',
@@ -668,7 +668,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Quieres conocer el precio exacto para tu edad y estancia?',
         ctaDescription: 'Calcula tu presupuesto oficial de Sanitas International Students en 30 segundos. Sin registrar tu teléfono, sin spam comercial y con certificado consular en 24h.',
         ctaButtonText: 'Calcular mi precio de seguro',
-        ctaLink: '/wizard'
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -699,7 +699,7 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>Operan por reembolso con topes muy bajos</strong>: Solo cubren gastos de urgencia hasta 30.000€ o 50.000€, mientras que Extranjería exige cobertura completa equivalente a la sanidad pública española sin límite de gasto.',
-          '<strong>Aplican franquicias y copagos encubiertos</strong>: Para entender cómo funcionan estos cobros y por qué los consulados los prohíben, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
+          '<strong>Aplican franquicias y copagos encubiertos</strong>: Para entender cómo funcionan estos cobros y por qué los consulados los prohíben, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en seguros de salud</a>.',
           '<strong>Excluyen revisiones rutinarias y enfermedades comunes</strong>: No te permiten acudir a consultas de medicina general, ginecología, dermatología o traumatología si no se trata de un accidente puntual de viaje.'
         ]
       },
@@ -713,7 +713,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Una de las mayores preocupaciones al pagar una póliza anual antes de tener el visado aprobado es el riesgo de perder el dinero si el consulado rechaza la solicitud. Con <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Sanitas International Students</a> contratado a través de VitaBlue, cuentas con una <strong>cláusula contractual de garantía de reembolso del 100%</strong>.'
+        text: 'Una de las mayores preocupaciones al pagar una póliza anual antes de tener el visado aprobado es el riesgo de perder el dinero si el consulado rechaza la solicitud. Con <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">Sanitas International Students</a> contratado a través de VitaBlue, cuentas con una <strong>cláusula contractual de garantía de reembolso del 100%</strong>.'
       },
       {
         type: 'paragraph',
@@ -776,8 +776,8 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>1. Totalmente Sin Copagos (Cero franquicia)</strong>: El estudiante no debe pagar ninguna cuantía adicional al acudir a consultas de medicina general, especialistas, pruebas diagnósticas o urgencias hospitalarias. El certificado debe indicar literalmente <em>"Sin copago"</em> o <em>"Copago: 0 €"</em>. Para entender el impacto legal de esta condición, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en el seguro de salud</a>.',
-          '<strong>2. Sin Periodos de Carencia (Cobertura inmediata desde el día 1)</strong>: Todos los servicios médicos, hospitalarios y quirúrgicos deben estar activos desde el primer día de vigencia de la póliza. Las pólizas estándar del mercado que aplican 6 u 8 meses de espera para hospitalización no son aceptadas. Revisa los detalles en nuestra guía sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">carencias médicas</a>.',
+          '<strong>1. Totalmente Sin Copagos (Cero franquicia)</strong>: El estudiante no debe pagar ninguna cuantía adicional al acudir a consultas de medicina general, especialistas, pruebas diagnósticas o urgencias hospitalarias. El certificado debe indicar literalmente <em>"Sin copago"</em> o <em>"Copago: 0 €"</em>. Para entender el impacto legal de esta condición, consulta nuestra guía sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en el seguro de salud</a>.',
+          '<strong>2. Sin Periodos de Carencia (Cobertura inmediata desde el día 1)</strong>: Todos los servicios médicos, hospitalarios y quirúrgicos deben estar activos desde el primer día de vigencia de la póliza. Las pólizas estándar del mercado que aplican 6 u 8 meses de espera para hospitalización no son aceptadas. Revisa los detalles en nuestra guía sobre <a href="/blog/periodos-de-carencia-seguro-medico/" class="text-primary hover:underline font-bold">carencias médicas</a>.',
           '<strong>3. Cobertura médica completa equivalente al Sistema Nacional de Salud (SNS)</strong>: Debe proporcionar un nivel de asistencia idéntico a la sanidad pública española: medicina primaria, especialidades, pruebas de diagnóstico avanzadas, tratamientos complejos, cirugías e internamiento hospitalario al 100% sin topes económicos restrictivos.',
           '<strong>4. Repatriación Sanitaria y Funeraria Ilimitada</strong>: Es un requisito imperativo exigido por todos los consulados y embajadas. Cubre el traslado médico de urgencia y la repatriación del cuerpo o restos mortales hasta el país de origen sin límite a la baja.',
           '<strong>5. Entidad aseguradora autorizada en España por la DGSFP</strong>: La aseguradora debe estar legalmente registrada ante la Dirección General de Seguros y Fondos de Pensiones de España (como ASISA, Sanitas o Adeslas). <strong>Los seguros de viaje internacionales, asistencias al viajero o seguros locales de tu país de origen NO son válidos.</strong>'
@@ -804,7 +804,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Tienes dudas sobre si tu seguro cumple los requisitos consulares?',
         ctaDescription: 'Audita gratis en 30 segundos si tu póliza tiene 0€ copagos, carencias eliminadas, repatriación oficial y entidad DGSFP con nuestro validador.',
         ctaButtonText: 'Auditar mi seguro para el visado',
-        ctaLink: '/validador-visado',
+        ctaLink: '/validador-visado/',
         ctaBadge: 'Validador Consular Gratuito'
       },
       {
@@ -813,11 +813,11 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Al contratar tu seguro de estudiante con VitaBlue mediante nuestro <a href="/wizard" class="text-primary hover:underline font-bold">cotizador de seguros online</a>, la aseguradora emite el Certificado Oficial de Cobertura en PDF en menos de 24 horas laborables. El documento está redactado en español (y disponible en formato bilingüe español/inglés), incluye la firma electrónica autorizada de la compañía y el Código Seguro de Verificación (CSV) para validación directa por parte del funcionario consular o en la plataforma telemática MERCURIO de Extranjería.'
+        text: 'Al contratar tu seguro de estudiante con VitaBlue mediante nuestro <a href="/wizard/" class="text-primary hover:underline font-bold">cotizador de seguros online</a>, la aseguradora emite el Certificado Oficial de Cobertura en PDF en menos de 24 horas laborables. El documento está redactado en español (y disponible en formato bilingüe español/inglés), incluye la firma electrónica autorizada de la compañía y el Código Seguro de Verificación (CSV) para validación directa por parte del funcionario consular o en la plataforma telemática MERCURIO de Extranjería.'
       },
       {
         type: 'paragraph',
-        text: 'Asimismo, en cumplimiento del deber de transparencia y declaración de salud (puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>), si por cualquier causa ajena el consulado deniega tu visado, te garantizamos el reembolso íntegro del 100% del importe abonado.'
+        text: 'Asimismo, en cumplimiento del deber de transparencia y declaración de salud (puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>), si por cualquier causa ajena el consulado deniega tu visado, te garantizamos el reembolso íntegro del 100% del importe abonado.'
       },
       {
         type: 'heading-2',
@@ -831,7 +831,7 @@ export const blogPosts: BlogPostData[] = [
           '<strong>¿Se puede pagar el seguro mes a mes o el consulado exige pago anual?</strong>: Para la cita inicial en el consulado de origen es obligatorio presentar el justificante bancario de pago de la anualidad completa. El pago mensual solo se admite en ciertas prórrogas de TIE dentro de España.',
           '<strong>¿El certificado del seguro debe estar traducido o apostillado?</strong>: No. Al emitirse directamente en España en castellano por una aseguradora española legalmente registrada, tiene plena validez jurídica directa sin necesidad de apostilla de La Haya ni traducción jurada.',
           '<strong>¿Qué ocurre si el consulado me deniega el visado de estudiante?</strong>: Con VitaBlue cuentas con Garantía de Devolución del 100%. Presentando la resolución oficial de denegación consular, la aseguradora te reembolsa íntegramente la prima pagada sin penalizaciones ni comisiones ocultas.',
-          '<strong>¿Puedo consultar los precios antes de contratar?</strong>: Sí. Puedes revisar las tarifas oficiales desglosadas por tramos de edad en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">guía de precios de seguro de estudiante</a> o cotizar en 1 minuto en nuestro comparador.'
+          '<strong>¿Puedo consultar los precios antes de contratar?</strong>: Sí. Puedes revisar las tarifas oficiales desglosadas por tramos de edad en nuestra <a href="/blog/precios-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">guía de precios de seguro de estudiante</a> o cotizar en 1 minuto en nuestro comparador.'
         ]
       }
     ]
@@ -878,8 +878,8 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>Entidad autorizada para operar en España</strong>: La aseguradora que emite el seguro debe estar registrada en la Dirección General de Seguros y Fondos de Pensiones (DGSFP) española (como Sanitas o Adeslas). Los seguros de viaje o pólizas extranjeras no registradas en España no son aceptadas.',
-          '<strong>Modalidad sin copagos ni franquicias</strong>: Se exige que no tengas que pagar nada al acudir a visitas médicas. Para saber cómo funciona la facturación y los límites de estas modalidades, lee sobre <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en los seguros médicos</a>.',
-          '<strong>Ausencia de periodos de carencia</strong>: Todo debe estar cubierto desde el día de tu llegada. Revisa nuestro artículo explicativo sobre los <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">periodos de carencia en el seguro médico en España</a>.',
+          '<strong>Modalidad sin copagos ni franquicias</strong>: Se exige que no tengas que pagar nada al acudir a visitas médicas. Para saber cómo funciona la facturación y los límites de estas modalidades, lee sobre <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en los seguros médicos</a>.',
+          '<strong>Ausencia de periodos de carencia</strong>: Todo debe estar cubierto desde el día de tu llegada. Revisa nuestro artículo explicativo sobre los <a href="/blog/periodos-de-carencia-seguro-medico/" class="text-primary hover:underline font-bold">periodos de carencia en el seguro médico en España</a>.',
           '<strong>Forma de pago de prima anual única</strong>: Es un requisito crítico. La gran mayoría de consulados deniegan el visado si el seguro se abona de manera fraccionada (mensual o trimestral); exigen el justificante de pago bancario que demuestre que la póliza está pagada por adelantado para todo el año de vigencia.'
         ]
       },
@@ -904,7 +904,7 @@ export const blogPosts: BlogPostData[] = [
         items: [
           '<strong>¿Qué ocurre si el consulado deniega mi visado no lucrativo?</strong>: En VitaBlue garantizamos la devolución íntegra del 100% de la prima si tu solicitud de residencia no lucrativa es rechazada oficialmente por el consulado de España o delegación de extranjería.',
           '<strong>¿Hasta qué edad se puede contratar el seguro para la visa no lucrativa?</strong>: Disponemos de pólizas homologadas sin copagos para solicitantes de hasta 75 años o más, cumpliendo el 100% de las exigencias consulares.',
-          '<strong>¿Qué pasa si tengo una enfermedad preexistente?</strong>: Deberás declararla en el cuestionario de salud. Es fundamental ser honesto en este paso legal para evitar que la compañía anule la póliza en el futuro (puedes informarte sobre esto en nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>).',
+          '<strong>¿Qué pasa si tengo una enfermedad preexistente?</strong>: Deberás declararla en el cuestionario de salud. Es fundamental ser honesto en este paso legal para evitar que la compañía anule la póliza en el futuro (puedes informarte sobre esto en nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en seguros de salud</a>).',
           '<strong>¿Aceptan seguros de salud con copago bajo?</strong>: No. Aunque el copago sea simbólico (de 2€ o 3€), la póliza será rechazada. El certificado debe indicar explícitamente que la cobertura es del 100% sin aportaciones del asegurado.'
         ]
       }
@@ -929,7 +929,7 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'Inscribirse como Pareja de Hecho en España con un ciudadano español o de otro estado miembro de la Unión Europea es uno de los trámites legales de extranjería más habituales. Este registro permite al miembro extranjero solicitar la Tarjeta de Familiar de Ciudadano de la Unión (Tarjeta Comunitaria) para residir y trabajar legalmente en el país durante un periodo de 5 años. Sin embargo, para conseguir la aprobación del NIE, la oficina de extranjería exige acreditar de forma estricta la disponibilidad de un <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">seguro de salud para extranjeros en España</a>.'
+        text: 'Inscribirse como Pareja de Hecho en España con un ciudadano español o de otro estado miembro de la Unión Europea es uno de los trámites legales de extranjería más habituales. Este registro permite al miembro extranjero solicitar la Tarjeta de Familiar de Ciudadano de la Unión (Tarjeta Comunitaria) para residir y trabajar legalmente en el país durante un periodo de 5 años. Sin embargo, para conseguir la aprobación del NIE, la oficina de extranjería exige acreditar de forma estricta la disponibilidad de un <a href="/productos/seguros-salud/seguro-salud-extranjeros/" class="text-primary hover:underline font-bold">seguro de salud para extranjeros en España</a>.'
       },
       {
         type: 'paragraph',
@@ -946,9 +946,9 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Totalmente sin copagos</strong>: No se admiten pólizas donde el asegurado tenga que pagar dinero extra por ir al médico o hacerse analíticas. Obtén más información técnica sobre esto en nuestra guía de <a href="/blog/que-es-el-copago-seguro-salud" class="text-primary hover:underline font-bold">qué es el copago en seguros</a>.',
-          '<strong>Sin periodos de carencia</strong>: Debe cubrir hospitalizaciones y cirugías desde el primer día de vigencia. Puedes leer más sobre el tema en nuestro artículo sobre <a href="/blog/periodos-de-carencia-seguro-medico" class="text-primary hover:underline font-bold">los tiempos de carencia en seguros</a>.',
-          '<strong>Entidad Aseguradora autorizada</strong>: El contrato debe formalizarse con una compañía establecida en España (como Sanitas). El plan estrella recomendado para este fin es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" class="text-primary hover:underline font-bold">Sanitas Más Salud</a>.'
+          '<strong>Totalmente sin copagos</strong>: No se admiten pólizas donde el asegurado tenga que pagar dinero extra por ir al médico o hacerse analíticas. Obtén más información técnica sobre esto en nuestra guía de <a href="/blog/que-es-el-copago-seguro-salud/" class="text-primary hover:underline font-bold">qué es el copago en seguros</a>.',
+          '<strong>Sin periodos de carencia</strong>: Debe cubrir hospitalizaciones y cirugías desde el primer día de vigencia. Puedes leer más sobre el tema en nuestro artículo sobre <a href="/blog/periodos-de-carencia-seguro-medico/" class="text-primary hover:underline font-bold">los tiempos de carencia en seguros</a>.',
+          '<strong>Entidad Aseguradora autorizada</strong>: El contrato debe formalizarse con una compañía establecida en España (como Sanitas). El plan estrella recomendado para este fin es <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/" class="text-primary hover:underline font-bold">Sanitas Más Salud</a>.'
         ]
       },
       {
@@ -967,7 +967,7 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>¿Puedo usar la Seguridad Social si mi pareja cotiza?</strong>: Sí, si tu pareja comunitaria está trabajando y dada de alta en la Seguridad Social española, puedes registrarte como beneficiario de su cartilla sanitaria y presentar ese documento. Sin embargo, si trabaja por cuenta propia o el trámite se demora, la opción del seguro de salud privado es la vía más rápida y segura para evitar que se venzan los plazos de resolución.',
-          '<strong>¿Qué pasa si tengo enfermedades previas al contratar?</strong>: Deberás declararlas de forma sincera en el formulario médico de Sanitas. Si quieres saber cómo gestionan las aseguradoras estas dolencias anteriores, puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
+          '<strong>¿Qué pasa si tengo enfermedades previas al contratar?</strong>: Deberás declararlas de forma sincera en el formulario médico de Sanitas. Si quieres saber cómo gestionan las aseguradoras estas dolencias anteriores, puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
         ]
       }
     ]
@@ -1046,7 +1046,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
+        text: '⚠️ <strong>Importante para Trámites de Extranjería</strong>: Si vas a tramitar el <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">Visado de Estudiante</a>, la <a href="/productos/seguros-salud/seguro-expatriados/" class="text-primary hover:underline font-bold">Residencia No Lucrativa</a> o la tarjeta por <a href="/productos/seguros-salud/seguro-salud-extranjeros/" class="text-primary hover:underline font-bold">Pareja de Hecho</a>, las delegaciones de Extranjería de España <strong>prohíben los seguros con copago</strong>. Debes contratar obligatoriamente una póliza sin copago de cobertura completa.'
       }
     ]
   },
@@ -1117,7 +1117,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Para hacerlo efectivo, debes aportar la copia de la póliza de tu anterior seguro médico y el justificante del último recibo pagado para certificar tu antigüedad ininterrumpida. Si tienes dudas sobre cómo gestionar el cambio, puedes hablar con nuestros asesores en el catálogo de <a href="/productos/seguros-salud" class="text-primary hover:underline font-bold">seguros de salud de VitaBlue</a>.'
+        text: 'Para hacerlo efectivo, debes aportar la copia de la póliza de tu anterior seguro médico y el justificante del último recibo pagado para certificar tu antigüedad ininterrumpida. Si tienes dudas sobre cómo gestionar el cambio, puedes hablar con nuestros asesores en el catálogo de <a href="/productos/seguros-salud/" class="text-primary hover:underline font-bold">seguros de salud de VitaBlue</a>.'
       }
     ]
   },
@@ -1192,7 +1192,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '💡 <strong>Consejo del Mediador</strong>: Cada aseguradora gestiona el riesgo de manera diferente. Una dolencia excluida en una compañía puede ser aceptada por otra tras una valoración médica personalizada. No dudes en consultarlo con nuestros especialistas al configurar tu póliza en el configurador de <a href="/wizard" class="text-primary hover:underline font-bold">presupuestos de VitaBlue</a>.'
+        text: '💡 <strong>Consejo del Mediador</strong>: Cada aseguradora gestiona el riesgo de manera diferente. Una dolencia excluida en una compañía puede ser aceptada por otra tras una valoración médica personalizada. No dudes en consultarlo con nuestros especialistas al configurar tu póliza en el configurador de <a href="/wizard/" class="text-primary hover:underline font-bold">presupuestos de VitaBlue</a>.'
       }
     ]
   },
@@ -1268,7 +1268,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Not sure if your insurance meets Spanish visa requirements?',
         ctaDescription: 'Verify instantly whether your policy has $0 copay, zero waiting periods and official repatriation with our free consular diagnostic tool.',
         ctaButtonText: 'Audit My Visa Policy Free',
-        ctaLink: '/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -1313,7 +1313,7 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'The Non-Lucrative Visa is designed for non-EU citizens who wish to live in Spain without working. Since you do not contribute to the Spanish Social Security system, immigration law requires you to prove you have sufficient financial resources and a private <a href="/productos/seguros-salud/seguro-expatriados" class="text-primary hover:underline font-bold">health insurance for expats in Spain</a> contracted with an authorized insurer.'
+        text: 'The Non-Lucrative Visa is designed for non-EU citizens who wish to live in Spain without working. Since you do not contribute to the Spanish Social Security system, immigration law requires you to prove you have sufficient financial resources and a private <a href="/productos/seguros-salud/seguro-expatriados/" class="text-primary hover:underline font-bold">health insurance for expats in Spain</a> contracted with an authorized insurer.'
       },
       {
         type: 'paragraph',
@@ -1338,7 +1338,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Get Your Official Non-Lucrative Visa Insurance Certificate',
         ctaDescription: 'Compare pre-approved policies from Spain\'s leading providers with 100% consular acceptance guarantee.',
         ctaButtonText: 'Calculate Expat Insurance Online →',
-        ctaLink: '/productos/seguros-salud/seguro-expatriados'
+        ctaLink: '/productos/seguros-salud/seguro-expatriados/'
       },
       {
         type: 'heading-2',
@@ -1405,7 +1405,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Need Your Official Consular Certificate Fast?',
         ctaDescription: 'Calculate your policy with ASISA or Sanitas and receive your official digitally signed certificate ready for BLS or embassy submission in under 24 business hours.',
         ctaButtonText: 'Get My Consular Certificate →',
-        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes/'
       },
       {
         type: 'heading-2',
@@ -1418,7 +1418,7 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Step 1: Instant Online Quote</strong>: Select your visa type, age, and estimated arrival date to Spain on our <a href="/productos/seguros-salud/seguro-medico-estudiantes" class="text-primary hover:underline font-bold">online insurance portal</a>.',
+          '<strong>Step 1: Instant Online Quote</strong>: Select your visa type, age, and estimated arrival date to Spain on our <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">online insurance portal</a>.',
           '<strong>Step 2: Passport Details & Medical Questionnaire</strong>: Enter your passport details and complete the brief official health declaration.',
           '<strong>Step 3: Secure Payment</strong>: Pay the guaranteed official premium securely via credit/debit card (Visa, Mastercard, AMEX) or bank wire.',
           '<strong>Step 4: Receive PDF Certificate</strong>: In under 24 business hours, you will receive the high-resolution official PDF certificate signed by authorized legal representatives.'
@@ -1490,7 +1490,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Spanish immigration authorities will issue a <em>Requerimiento de Subsanación</em> (formal notice of defect) if your insurance policy includes copayments, deductibles, or reimbursement limits. In this official guide by <a href="/en" class="text-primary hover:underline font-bold">VitaBlue</a>, we examine the mandatory conditions your private health insurance must meet to guarantee approval.'
+        text: 'Spanish immigration authorities will issue a <em>Requerimiento de Subsanación</em> (formal notice of defect) if your insurance policy includes copayments, deductibles, or reimbursement limits. In this official guide by <a href="/en/" class="text-primary hover:underline font-bold">VitaBlue</a>, we examine the mandatory conditions your private health insurance must meet to guarantee approval.'
       },
       {
         type: 'heading-2',
@@ -1532,7 +1532,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Get Your Pre-Approved Digital Nomad Insurance in 24 Hours',
         ctaDescription: 'Calculate your personalized quote without copays and receive your official consular certificate signed and stamped for UGE or embassy submission.',
         ctaButtonText: 'Calculate Nomad Insurance Online →',
-        ctaLink: '/productos/seguros-salud/seguro-nomadas-digitales'
+        ctaLink: '/productos/seguros-salud/seguro-nomadas-digitales/'
       },
       {
         type: 'heading-2',
@@ -1626,7 +1626,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Calculate Your Student Visa Health Insurance in 30 Seconds',
         ctaDescription: 'Compare official rates from ASISA, Sanitas, and Adeslas with 0€ copays and consular acceptance guarantee.',
         ctaButtonText: 'Calculate Student Quote Online →',
-        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes/'
       },
       {
         type: 'heading-2',
@@ -1699,7 +1699,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Compare All 4 Providers Side-by-Side in Real Time',
         ctaDescription: 'Find the ideal balance of coverage, price, and hospital network for your lifestyle in Spain.',
         ctaButtonText: 'Start Multi-Brand Comparison →',
-        ctaLink: '/productos/seguros-salud'
+        ctaLink: '/productos/seguros-salud/'
       },
       {
         type: 'heading-2',
@@ -1774,7 +1774,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Need Senior Health Insurance in Spain?',
         ctaDescription: 'Our senior specialists evaluate your medical profile and match you with the best insurer accepting applicants over 65.',
         ctaButtonText: 'Consult a Senior Health Advisor →',
-        ctaLink: '/contacto'
+        ctaLink: '/contacto/'
       },
       {
         type: 'heading-2',
@@ -1843,7 +1843,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Planning a Family in Spain?',
         ctaDescription: 'Compare maternal and newborn healthcare plans with top hospitals, private delivery suites, and pediatric care.',
         ctaButtonText: 'Calculate Family Health Insurance →',
-        ctaLink: '/productos/seguros-salud'
+        ctaLink: '/productos/seguros-salud/'
       },
       {
         type: 'heading-2',
@@ -1975,7 +1975,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Quieres obtener tu certificado consular en menos de 24 horas?',
         ctaDescription: 'Cotiza y contrata directamente tu póliza ASISA Health Students o Sanitas con certificado oficial legalizado para Extranjería y garantía de devolución 100% en caso de denegación.',
         ctaButtonText: 'Comparar y cotizar póliza oficial',
-        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes/'
       },
       {
         type: 'heading-2',
@@ -1988,12 +1988,12 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>La mejor relación calidad-precio del mercado</strong>: Con primas que parten desde aproximadamente <strong>38 € al mes</strong>, supone un ahorro de entre 150 € y 200 € anuales frente a otras alternativas sin recortar ninguna cobertura sanitaria. Puedes consultar nuestra comparativa de <a href="/blog/precios-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">precios reales de seguros para visado de estudiante</a>.',
-          '<strong>Emisión ultrarrápida del certificado consular (en 24h)</strong>: Al tramitar tu póliza a través de VitaBlue, emitimos el certificado oficial en español legalizado con firma electrónica de ASISA en menos de 24 horas hábiles, listo para adjuntar en tu cita consular o plataforma de Extranjería (Mercurio). Revisa nuestra guía sobre el <a href="/blog/certificado-seguro-medico-visado-estudiante-consulado" class="text-primary hover:underline font-bold">certificado médico consular</a>.',
-          '<strong>100% Sin Copagos y 100% Sin Carencias</strong>: Cumple con el 100% de los criterios consulares: asistencia primaria, especialistas, urgencias hospitalarias ilimitadas, intervenciones quirúrgicas y ambulancia desde el primer segundo. Conoce todos los detalles en nuestra guía de <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">requisitos del seguro para visado de estudiante</a>.',
+          '<strong>La mejor relación calidad-precio del mercado</strong>: Con primas que parten desde aproximadamente <strong>38 € al mes</strong>, supone un ahorro de entre 150 € y 200 € anuales frente a otras alternativas sin recortar ninguna cobertura sanitaria. Puedes consultar nuestra comparativa de <a href="/blog/precios-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">precios reales de seguros para visado de estudiante</a>.',
+          '<strong>Emisión ultrarrápida del certificado consular (en 24h)</strong>: Al tramitar tu póliza a través de VitaBlue, emitimos el certificado oficial en español legalizado con firma electrónica de ASISA en menos de 24 horas hábiles, listo para adjuntar en tu cita consular o plataforma de Extranjería (Mercurio). Revisa nuestra guía sobre el <a href="/blog/certificado-seguro-medico-visado-estudiante-consulado/" class="text-primary hover:underline font-bold">certificado médico consular</a>.',
+          '<strong>100% Sin Copagos y 100% Sin Carencias</strong>: Cumple con el 100% de los criterios consulares: asistencia primaria, especialistas, urgencias hospitalarias ilimitadas, intervenciones quirúrgicas y ambulancia desde el primer segundo. Conoce todos los detalles en nuestra guía de <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">requisitos del seguro para visado de estudiante</a>.',
           '<strong>Pago sencillo con tarjeta internacional (sin cuenta bancaria española)</strong>: Puedes abonar la prima única con cualquier tarjeta de crédito o débito de tu país de origen, sin necesidad de disponer de un IBAN español ni tramitar transferencias internacionales lentas.',
           '<strong>Duración modulable a tu medida (2 a 12 meses)</strong>: A diferencia de pólizas que obligan a contratar años completos, ASISA te permite ajustar la vigencia a los meses reales de tu estancia formativa. Además, <strong>no cuenta con renovación automática</strong>, por lo que nunca te cobrarán anualidades posteriores una vez regreses a tu país de origen.',
-          '<strong>Garantía de devolución por denegación</strong>: Si por causas ajenas a ti el consulado deniega tu visado antes de la fecha de inicio, ASISA te reembolsa el 100% del importe abonado en la misma tarjeta presentando la resolución consular oficial. Consulta cómo funciona la <a href="/blog/rechazo-visado-espana-devolucion-seguro-medico" class="text-primary hover:underline font-bold">garantía de devolución por rechazo de visado</a>.'
+          '<strong>Garantía de devolución por denegación</strong>: Si por causas ajenas a ti el consulado deniega tu visado antes de la fecha de inicio, ASISA te reembolsa el 100% del importe abonado en la misma tarjeta presentando la resolución consular oficial. Consulta cómo funciona la <a href="/blog/rechazo-visado-espana-devolucion-seguro-medico/" class="text-primary hover:underline font-bold">garantía de devolución por rechazo de visado</a>.'
         ]
       },
       {
@@ -2051,7 +2051,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Ya tienes una propuesta y no sabes si cumple los requisitos?',
         ctaDescription: 'Pasa tu póliza o certificado por nuestro validador consular en 30 segundos. Detectamos si tiene copagos ocultos, carencias o cláusulas que provocan rechazo consular.',
         ctaButtonText: 'Auditar mi póliza en el validador',
-        ctaLink: '/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -2102,7 +2102,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: '<strong>The short answer is YES. 100% valid and certified.</strong> ASISA is one of Spain’s largest and oldest health insurance entities, officially registered under DGSFP code C-0461. Through <a href="/en" class="text-primary hover:underline font-bold">VitaBlue</a>, we issue hundreds of ASISA consular certificates every month with a 100% acceptance rate. Below is the technical breakdown of how ASISA compares to Sanitas and Adeslas.'
+        text: '<strong>The short answer is YES. 100% valid and certified.</strong> ASISA is one of Spain’s largest and oldest health insurance entities, officially registered under DGSFP code C-0461. Through <a href="/en/" class="text-primary hover:underline font-bold">VitaBlue</a>, we issue hundreds of ASISA consular certificates every month with a 100% acceptance rate. Below is the technical breakdown of how ASISA compares to Sanitas and Adeslas.'
       },
       {
         type: 'heading-2',
@@ -2189,7 +2189,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Need your Spanish Consular Certificate in under 24 hours?',
         ctaDescription: 'Get an official quote for ASISA Health Students or Sanitas with full visa compliance, zero copays, and a 100% refund guarantee in case of visa denial.',
         ctaButtonText: 'Calculate Student Health Insurance',
-        ctaLink: '/en/health-insurance-student-visa-spain'
+        ctaLink: '/en/health-insurance-student-visa-spain/'
       },
       {
         type: 'heading-2',
@@ -2202,11 +2202,11 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Unbeatable Price (~€38/month)</strong>: Saves students between €150 and €200 across a 10-month academic year compared to other major insurers, without any compromise in clinical coverage. See our full breakdown of <a href="/en/blog/student-visa-spain-health-insurance-prices" class="text-primary hover:underline font-bold">real student visa health insurance prices</a>.',
-          '<strong>Certified Official Spanish Certificate (24h Delivery)</strong>: Spanish Consulates require a legal certificate written in Spanish, signed by the insurer, certifying zero copayments, zero waiting periods, and full hospitalization. VitaBlue delivers this PDF certificate within 24 hours of enrollment. Read our guide on the <a href="/en/blog/consular-health-insurance-certificate-spain-visa" class="text-primary hover:underline font-bold">official consular certificate requirements</a>.',
+          '<strong>Unbeatable Price (~€38/month)</strong>: Saves students between €150 and €200 across a 10-month academic year compared to other major insurers, without any compromise in clinical coverage. See our full breakdown of <a href="/en/blog/student-visa-spain-health-insurance-prices/" class="text-primary hover:underline font-bold">real student visa health insurance prices</a>.',
+          '<strong>Certified Official Spanish Certificate (24h Delivery)</strong>: Spanish Consulates require a legal certificate written in Spanish, signed by the insurer, certifying zero copayments, zero waiting periods, and full hospitalization. VitaBlue delivers this PDF certificate within 24 hours of enrollment. Read our guide on the <a href="/en/blog/consular-health-insurance-certificate-spain-visa/" class="text-primary hover:underline font-bold">official consular certificate requirements</a>.',
           '<strong>Direct Payment with International Cards</strong>: You do not need a Spanish bank account (IBAN) or a Tax ID (NIE). You can pay the single upfront premium with any Visa, Mastercard, or debit card from your home country.',
           '<strong>No Unwanted Automatic Renewals</strong>: The contract lasts exactly between 2 and 12 months as chosen by you. It terminates automatically upon expiration, preventing unwanted annual renewals after you finish your studies and return home.',
-          '<strong>Money-Back Guarantee on Visa Refusal</strong>: In the rare event that your student visa is denied by the consulate before the policy start date, ASISA issues a 100% refund directly back to the card used for payment upon submission of the official refusal letter. Discover how our <a href="/en/blog/spain-visa-rejection-health-insurance-refund-guarantee" class="text-primary hover:underline font-bold">Spain visa rejection refund guarantee</a> works.'
+          '<strong>Money-Back Guarantee on Visa Refusal</strong>: In the rare event that your student visa is denied by the consulate before the policy start date, ASISA issues a 100% refund directly back to the card used for payment upon submission of the official refusal letter. Discover how our <a href="/en/blog/spain-visa-rejection-health-insurance-refund-guarantee/" class="text-primary hover:underline font-bold">Spain visa rejection refund guarantee</a> works.'
         ]
       },
       {
@@ -2246,7 +2246,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Already have an insurance quote and want to verify compliance?',
         ctaDescription: 'Test your certificate against official Extranjería rules in 30 seconds. We check for hidden copays, waiting periods, or missing repatriation clauses.',
         ctaButtonText: 'Validate My Insurance Policy Free',
-        ctaLink: '/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -2340,7 +2340,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Contrata tu seguro para el visado con total tranquilidad',
         ctaDescription: 'Calcula tu prima oficial de ASISA o Sanitas. Certificado consular legalizado en 24h, sin copagos ni carencias, y reembolso 100% blindado si tu visado no se aprueba.',
         ctaButtonText: 'Calcular mi seguro con garantía de devolución',
-        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes'
+        ctaLink: '/productos/seguros-salud/seguro-medico-estudiantes/'
       },
       {
         type: 'heading-2',
@@ -2401,10 +2401,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Tarifa más asequible del mercado</strong>: Desde solo <strong>~38 € al mes</strong>, reduciendo drásticamente el capital inmovilizado mientras esperas la respuesta consular. Descubre por qué lidera el mercado en nuestra <a href="/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana" class="text-primary hover:underline font-bold">comparativa de seguros para visado de estudiante</a>.',
+          '<strong>Tarifa más asequible del mercado</strong>: Desde solo <strong>~38 € al mes</strong>, reduciendo drásticamente el capital inmovilizado mientras esperas la respuesta consular. Descubre por qué lidera el mercado en nuestra <a href="/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/" class="text-primary hover:underline font-bold">comparativa de seguros para visado de estudiante</a>.',
           '<strong>Sin penalizaciones ni gastos de gestión</strong>: ASISA no aplica cargos ocultos de cancelación si presentas la denegación consular oficial.',
           '<strong>No renovación forzosa</strong>: La póliza tiene una duración cerrada (de 2 a 12 meses) que no se renueva automáticamente, protegiendo tus finanzas cuando finalices tu curso.',
-          '<strong>Cumplimiento normativo total</strong>: Emite certificado en 24h sin copagos ni carencias cumpliendo el 100% de los <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana" class="text-primary hover:underline font-bold">requisitos consulares para visado</a>.',
+          '<strong>Cumplimiento normativo total</strong>: Emite certificado en 24h sin copagos ni carencias cumpliendo el 100% de los <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">requisitos consulares para visado</a>.',
           '<strong>Asesoría humana y personalizada</strong>: En caso de requerimiento consular, nuestros expertos revisan la carta para ver si es subsanable antes de solicitar la anulación definitiva.'
         ]
       },
@@ -2414,7 +2414,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: '¿Te da miedo que el consulado rechace tu seguro médico?',
         ctaDescription: 'Valida los requisitos de tu póliza en nuestro validador consular en 30 segundos. Detectamos si tiene copagos o carencias para que presentes un expediente 100% aprobado.',
         ctaButtonText: 'Verificar cumplimiento de mi seguro gratis',
-        ctaLink: '/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -2465,7 +2465,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'At <a href="/en" class="text-primary hover:underline font-bold">VitaBlue</a>, our answer is simple and legally binding: <strong>You do not lose your money.</strong> All qualifying policies issued through our platform (notably <strong>ASISA Health Students</strong> and <strong>Sanitas International Students</strong>) include an official <strong>100% money-back refund guarantee</strong> if your visa is refused.'
+        text: 'At <a href="/en/" class="text-primary hover:underline font-bold">VitaBlue</a>, our answer is simple and legally binding: <strong>You do not lose your money.</strong> All qualifying policies issued through our platform (notably <strong>ASISA Health Students</strong> and <strong>Sanitas International Students</strong>) include an official <strong>100% money-back refund guarantee</strong> if your visa is refused.'
       },
       {
         type: 'heading-2',
@@ -2508,7 +2508,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Apply for your Spanish visa with total financial peace of mind',
         ctaDescription: 'Get an official quote for ASISA Health Students or Sanitas. Certified legal Spanish certificate in under 24h, zero copays, zero waiting periods, and a 100% money-back guarantee.',
         ctaButtonText: 'Calculate Student Health Insurance',
-        ctaLink: '/en/health-insurance-student-visa-spain'
+        ctaLink: '/en/health-insurance-student-visa-spain/'
       },
       {
         type: 'heading-2',
@@ -2569,10 +2569,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Lowest capital committed (~€38/month)</strong>: Why tie up €700+ in insurance when you can secure 100% compliant Spanish coverage starting at ~€38/month? Read our full <a href="/en/blog/asisa-student-insurance-spain-visa-validity" class="text-primary hover:underline font-bold">ASISA student visa insurance comparison</a>.',
+          '<strong>Lowest capital committed (~€38/month)</strong>: Why tie up €700+ in insurance when you can secure 100% compliant Spanish coverage starting at ~€38/month? Read our full <a href="/en/blog/asisa-student-insurance-spain-visa-validity/" class="text-primary hover:underline font-bold">ASISA student visa insurance comparison</a>.',
           '<strong>No cancellation or processing penalties</strong>: ASISA does not deduct any hidden administrative fees when a consular rejection letter is submitted.',
           '<strong>No forced annual renewals</strong>: Contracts last strictly between 2 and 12 months with no automatic renewal traps.',
-          '<strong>100% Immigration Compliance</strong>: Guarantees zero copays and zero waiting periods meeting every <a href="/en/blog/student-visa-spain-health-insurance-requirements" class="text-primary hover:underline font-bold">Spanish student visa requirement</a>.',
+          '<strong>100% Immigration Compliance</strong>: Guarantees zero copays and zero waiting periods meeting every <a href="/en/blog/student-visa-spain-health-insurance-requirements/" class="text-primary hover:underline font-bold">Spanish student visa requirement</a>.',
           '<strong>Dedicated English-speaking guidance</strong>: If the consulate issues a temporary document request (requerimiento), our advisors review it first to see if it can be resolved before cancelling.'
         ]
       },
@@ -2582,7 +2582,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Worried the consulate might reject your insurance certificate?',
         ctaDescription: 'Verify your certificate against official Spanish immigration rules in 30 seconds. We verify that your document has zero copays, zero waiting periods, and full hospital cover.',
         ctaButtonText: 'Validate My Insurance Policy Free',
-        ctaLink: '/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -2665,7 +2665,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'callout',
-        text: '⚠️ <strong>Strict Spanish Visa Prohibition</strong>: If you are applying for a <a href="/en/blog/student-visa-spain-health-insurance-requirements" class="text-primary hover:underline font-bold">Student Visa</a>, a <a href="/en/blog/digital-nomad-health-insurance-spain-requirements" class="text-primary hover:underline font-bold">Digital Nomad Visa</a>, or a <a href="/en/blog/health-insurance-spain-non-lucrative-visa-requirements" class="text-primary hover:underline font-bold">Non-Lucrative Visa</a>, Spanish immigration law <strong>strictly prohibits insurance with copays</strong>. Your certificate must state <em>"Sin Copagos"</em>.'
+        text: '⚠️ <strong>Strict Spanish Visa Prohibition</strong>: If you are applying for a <a href="/en/blog/student-visa-spain-health-insurance-requirements/" class="text-primary hover:underline font-bold">Student Visa</a>, a <a href="/en/blog/digital-nomad-health-insurance-spain-requirements/" class="text-primary hover:underline font-bold">Digital Nomad Visa</a>, or a <a href="/en/blog/health-insurance-spain-non-lucrative-visa-requirements/" class="text-primary hover:underline font-bold">Non-Lucrative Visa</a>, Spanish immigration law <strong>strictly prohibits insurance with copays</strong>. Your certificate must state <em>"Sin Copagos"</em>.'
       },
       {
         type: 'cta-wizard',
@@ -2673,7 +2673,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Need a Certified Zero-Copay Health Policy for Spain?',
         ctaDescription: 'Calculate approved expat insurance from ASISA and Sanitas in 30 seconds. Includes 0€ copays, full hospitalization, and instant consular certificate delivery.',
         ctaButtonText: 'Calculate Zero-Copay Policy Online',
-        ctaLink: '/en/health-insurance-student-visa-spain'
+        ctaLink: '/en/health-insurance-student-visa-spain/'
       },
       {
         type: 'heading-2',
@@ -2762,7 +2762,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Applying for a Spanish Visa? Make Sure You Have Zero Waiting Periods',
         ctaDescription: 'Spanish consulates require insurance with immediate full hospital admission coverage. Use our free tool to audit your policy certificate before submitting to BLS or Extranjería.',
         ctaButtonText: 'Validate My Certificate Online',
-        ctaLink: '/en/validador-visado'
+        ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
@@ -2772,7 +2772,7 @@ export const blogPosts: BlogPostData[] = [
         type: 'list',
         items: [
           '<strong>Does my student visa policy have waiting periods?</strong>: No. Student visa policies issued via VitaBlue (such as ASISA Health Students and Sanitas International Students) have <strong>zero waiting periods</strong> for consultations, diagnostics, and hospitalization to guarantee 100% consular acceptance.',
-          '<strong>Can pregnant expats eliminate waiting periods for delivery?</strong>: If you are already pregnant before signing a new individual policy without previous Spanish insurance seniority, childbirth in a private hospital will not be covered due to the 8-month rule. Check our guide on <a href="/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain" class="text-primary hover:underline font-bold">pregnancy waiting periods in Spain</a>.',
+          '<strong>Can pregnant expats eliminate waiting periods for delivery?</strong>: If you are already pregnant before signing a new individual policy without previous Spanish insurance seniority, childbirth in a private hospital will not be covered due to the 8-month rule. Check our guide on <a href="/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" class="text-primary hover:underline font-bold">pregnancy waiting periods in Spain</a>.',
           '<strong>Do waiting periods apply to dental treatments?</strong>: Basic dental care (cleaning, emergency extractions) has zero waiting periods. Complex orthodontics or implants may carry 6-month wait times depending on the dental add-on.'
         ]
       }

@@ -402,7 +402,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Link 3: Blog */}
-            <Link to="/blog" className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/blog/" : "/blog/"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.blog}
             </Link>
 
@@ -602,7 +602,7 @@ export const Navbar: React.FC = () => {
 
               {/* Link 3: Blog */}
               <Link
-                to="/blog"
+                to={isEnglish ? "/en/blog/" : "/blog/"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >

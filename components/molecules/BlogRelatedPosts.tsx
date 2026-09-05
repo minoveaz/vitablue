@@ -107,7 +107,7 @@ export const BlogRelatedPosts: React.FC<BlogRelatedPostsProps> = ({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {relatedPosts.map((post) => {
-          const postUrl = post.lang === 'en' ? `/en/blog/${post.slug}` : `/blog/${post.slug}`;
+          const postUrl = post.lang === 'en' ? `/en/blog/${post.slug}/` : `/blog/${post.slug}/`;
           const readMoreText = post.lang === 'en' ? 'Read guide' : 'Leer guía';
 
           return (

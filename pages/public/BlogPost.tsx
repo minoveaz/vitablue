@@ -18,7 +18,7 @@ export const BlogPost: React.FC = () => {
   if (!post) return <Navigate to="/blog" replace />;
   const isEnglish = post.lang === 'en';
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
-  const blogPath = isEnglish ? '/en/blog' : '/blog';
+  const blogPath = isEnglish ? '/en/blog/' : '/blog/';
   const alternatePost = post.alternateSlug ? blogPosts.find((item) => item.slug === post.alternateSlug) : undefined;
   const alternateSlug = alternatePost?.slug;
   const resolvedImageUrl = post.featuredImage.startsWith('http')
@@ -37,7 +37,7 @@ export const BlogPost: React.FC = () => {
     inLanguage: isEnglish ? 'en-US' : 'es-ES',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.vitablue.es${blogPath}/${post.slug}/`,
+      '@id': `https://www.vitablue.es${blogPath}${post.slug}/`,
     },
     author: {
       '@type': 'Person',
@@ -68,13 +68,13 @@ export const BlogPost: React.FC = () => {
         '@type': 'ListItem',
         position: 2,
         name: 'Blog',
-        item: `https://www.vitablue.es${blogPath}/`,
+        item: `https://www.vitablue.es${blogPath}`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: post.title,
-        item: `https://www.vitablue.es${blogPath}/${post.slug}/`,
+        item: `https://www.vitablue.es${blogPath}${post.slug}/`,
       },
     ],
   }), [post.title, post.slug, blogPath, isEnglish]);
@@ -161,7 +161,7 @@ export const BlogPost: React.FC = () => {
       <Helmet>
         <title>{post.title}</title>
         <meta name="description" content={post.excerpt} />
-        <link rel="canonical" href={`https://www.vitablue.es${blogPath}/${post.slug}/`} />
+        <link rel="canonical" href={`https://www.vitablue.es${blogPath}${post.slug}/`} />
         {alternateSlug && (
           <link
             rel="alternate"
