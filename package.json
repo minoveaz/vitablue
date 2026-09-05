@@ -36,7 +36,13 @@
     "test:e2e:seo": "playwright test e2e/seo.audit.spec.ts --project=desktop",
     "test:e2e:responsive": "playwright test e2e/responsive.diagnostic.spec.ts",
     "audit:lh": "npx unlighthouse --site http://localhost:4173",
-    "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache"
+    "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache",
+    "gsc:summary": "node scripts/gsc_audit.cjs --summary",
+    "gsc:opportunities": "node scripts/gsc_audit.cjs --opportunities",
+    "gsc:pages": "node scripts/gsc_audit.cjs --pages",
+    "gsc:queries": "node scripts/gsc_audit.cjs --queries",
+    "gsc:countries": "node scripts/gsc_audit.cjs --countries",
+    "gsc:inspect": "node scripts/gsc_audit.cjs --inspect"
   },
   "dependencies": {
     "@remotion/player": "4.0.228",
