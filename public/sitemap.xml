@@ -423,7 +423,19 @@
   </url>
   <url>
     <loc>https://www.vitablue.es/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/asisa-student-insurance-spain-visa-validity/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/" />
     <lastmod>2026-09-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/asisa-student-insurance-spain-visa-validity/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/asisa-student-insurance-spain-visa-validity/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/asisa-sanitas-adeslas-comparativa-visado-estudiante-espana/" />
+    <lastmod>2026-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.60</priority>
   </url>
