@@ -345,9 +345,7 @@ export const StudentInsurance: React.FC = () => {
   ];
 
 
-  const isLegacy1 = location.pathname.includes('seguro-medico-estudiantes-extranjeros-espana.html');
   const isLegacy2 = location.pathname.includes('international-students');
-
 
   let title = isEnglish
     ? 'Health Insurance for Student Visa Spain | VitaBlue'
@@ -356,19 +354,14 @@ export const StudentInsurance: React.FC = () => {
     ? 'Compare health insurance for student visas in Spain. Full coverage policies with zero copays, zero wait times, and repatriation included. Oficial certificate in 24h.'
     : 'Compara los seguros médicos para visado de estudiante en España. Pólizas sin copagos, sin carencias y con repatriación obligatoria. Certificados en 24h.';
   let canonicalUrl = isEnglish
-    ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain'
-    : location.pathname.includes('international-students')
-      ? 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students'
-      : 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes';
+    ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain/'
+    : isLegacy2
+      ? 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/'
+      : 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/';
 
-  if (isLegacy1) {
-    title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
-    description = 'Seguro médico diseñado para cumplir requisitos habituales de visado de estudiante en España. Sin copagos ni carencias (según condiciones). Certificado oficial en minutos.';
-    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/';
-  } else if (isLegacy2) {
+  if (isLegacy2) {
     title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
     description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento independiente por VitaBlue.';
-    canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/';
   }
 
   const schemaMarkup = {

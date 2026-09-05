@@ -127,9 +127,9 @@ export const legacyRoutes: RouteDefinition[] = [
 
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html', '/productos/seguro-mascotas/sanitas-mascotas'),
   legacy('/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html', '/productos/seguro-para-decesos/asistencia-familiar'),
-  legacy('/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
+  legacy('/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/productos/seguros-salud/sanitas-mas-salud', '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud'),
-  legacy('/productos/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
+  legacy('/productos/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/productos/international-students.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
   legacy('/seguros-salud', '/productos/seguros-salud'),
   legacy('/productos/seguro-de-salud.html', '/productos/seguros-salud'),

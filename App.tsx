@@ -218,7 +218,7 @@ const AppLayout: React.FC = () => {
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html" element={<SanitasMascotas />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html" element={<AsistenciaFamiliar />} />
-            <Route path="/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html" element={<StudentInsurance />} />
+            <Route path="/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/" replace />} />
 
             {/* Seguro de Mascotas (Silo Independiente) */}
             <Route path="/productos/seguro-mascotas/sanitas-mascotas" element={<SanitasMascotas />} />
@@ -238,7 +238,7 @@ const AppLayout: React.FC = () => {
             {/* Redirecciones y URLs de Compatibilidad (Legacy) */}
 
             <Route path="/productos/seguros-salud/sanitas-mas-salud" element={<SanitasMasSalud />} />
-            <Route path="/productos/seguro-medico-estudiantes-extranjeros-espana.html" element={<StudentInsurance />} />
+            <Route path="/productos/seguro-medico-estudiantes-extranjeros-espana.html" element={<Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/" replace />} />
             <Route path="/productos/international-students.html" element={<StudentInsurance />} />
             <Route path="/seguros-salud" element={<HealthInsurance />} />
             <Route path="/productos/seguro-de-salud.html" element={<HealthInsurance />} />
