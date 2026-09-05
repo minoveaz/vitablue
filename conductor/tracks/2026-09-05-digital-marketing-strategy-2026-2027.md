@@ -41,23 +41,21 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 - [ ] **Acción 1 ([Issue #130](https://github.com/minoveaz/vitablue/issues/130)):** Blindar la redirección 301 de la URL legacy `/productos/seguro-medico-estudiantes-extranjeros-espana.html` hacia la canónica moderna para concentrar ranking.
 - [ ] **Acción 2 ([Issue #131](https://github.com/minoveaz/vitablue/issues/131)):** Optimizar On-Page (títulos persuasivos, precios, meta descriptions) y añadir JSON-LD `FAQPage` + `Breadcrumbs` en las guías de estudiantes en inglés (Top 10-15).
 - [ ] **Acción 3 ([Issue #132](https://github.com/minoveaz/vitablue/issues/132)):** Inyectar FAQ Schema y optimizar CTAs en landings y guías en español (Mascotas, No Lucrativa y Visado de Estudiante).
-- [ ] Reescribir `<title>` y `<meta description>` en landings prioritarias (`StudentInsurance.tsx`, `ForeignerInsurance.tsx`, `ConsularValidatorPage.tsx`) con propuesta de valor transaccional (*precio desde 38€, homologado 100%, devolución garantizada*).
+- [ ] **Acción 10 ([Issue #139](https://github.com/minoveaz/vitablue/issues/139)):** Implementar Schema `InsuranceAgency` / `LocalBusiness` y `Organization` en Home y páginas corporativas para elevar E-E-A-T.
 - [ ] Validar que el build prerenderizado (`npm run build`) inyecte correctamente estos esquemas sin errores en Search Console Rich Results Test.
 
-#### 1.2 Lead Magnet & Captura de Contactos (Pilar 4)
-- [ ] Diseñar el recurso descargable: *"Checklist Definitiva: Seguro Médico para Visado de Estudiante en España (PDF)"*.
-- [ ] Añadir modal o banner de descarga de la checklist en los artículos de estudiantes y visados dentro del blog.
-- [ ] Configurar enlace directo a WhatsApp con mensaje contextualizado (`[CHECKLIST-ESTUDIANTE]`).
+#### 1.3 Lead Magnet & Captura de Contactos (Pilar 4)
+- [ ] **Acción 4 ([Issue #133](https://github.com/minoveaz/vitablue/issues/133)):** Diseñar e implementar componente Lead Magnet 'Checklist Consular (PDF)' con captura y trigger directo hacia WhatsApp.
+- [ ] **Acción 9 ([Issue #138](https://github.com/minoveaz/vitablue/issues/138)):** Estandarizar helper de parámetros contextualizados de WhatsApp por landing, artículo e idioma (`[BLOG-ESTUDIANTE-EN]`, `[MASCOTAS]`).
 
-#### 1.3 Calendario Editorial de Septiembre ("Mes del Consulado")
-- [ ] Actualizar y optimizar las guías existentes en `utils/blogData.ts` con FAQs enriquecidas y enlaces a `/validador-visado`.
-- [ ] Redactar y publicar el artículo: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* (ES).
-- [ ] Redactar y publicar el artículo: *"Best health insurance for student visa Spain 2026"* (EN).
-- [ ] Redactar y publicar el artículo: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
-- [ ] Redactar y publicar el artículo: *"¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada"* (ES).
+#### 1.4 Calendario Editorial de Septiembre ("Mes del Consulado")
+- [ ] **Acción 5 ([Issue #134](https://github.com/minoveaz/vitablue/issues/134)):** Redactar y publicar guía: *"¿Qué seguro médico pide el consulado español para el visado de estudiante?"* (ES).
+- [ ] **Acción 6 ([Issue #135](https://github.com/minoveaz/vitablue/issues/135)):** Redactar y publicar comparativa: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
+- [ ] **Acción 7 ([Issue #136](https://github.com/minoveaz/vitablue/issues/136)):** Redactar y publicar artículo: *"¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada"* (ES).
+- [ ] **Acción 8 ([Issue #137](https://github.com/minoveaz/vitablue/issues/137)):** Redactar y publicar guía en inglés: *"ASISA student insurance Spain — is it valid for student visa?"* (EN).
 - [ ] Ejecutar `npm run sync-blog` y validar generación estática en `dist/` y `sitemap.xml`.
 
-#### 1.4 Configuración de Canales de Adquisición Desacoplados
+#### 1.5 Canales de Adquisición Desacoplados (Comunidades y Redes)
 - [ ] Configurar perfil de WhatsApp Business con catálogo de seguros para estudiantes y visados, respuestas rápidas y etiquetas por país/estado.
 - [ ] Crear el canal oficial de Telegram de difusión (*@VitaBlueEspaña*).
 - [ ] Crear perfil oficial en TikTok e Instagram para distribución de vídeo corto y carruseles.
