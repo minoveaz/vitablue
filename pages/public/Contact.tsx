@@ -9,6 +9,7 @@ import FormField from '../../components/molecules/FormField';
 import Checkbox from '../../components/atoms/Checkbox';
 import Button from '../../components/atoms/Button';
 import { trackContactConversion } from '@/utils/analytics';
+import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
 
 
 const Contact: React.FC = () => {
@@ -96,11 +97,17 @@ const Contact: React.FC = () => {
         <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/contacto/" />
         <script type="application/ld+json">{JSON.stringify({ 
           '@context': 'https://schema.org', 
-          '@type': 'ContactPage', 
-          name: content.title, 
-          description: content.description, 
-          url: `https://www.vitablue.es${content.contactPath}`, 
-          mainEntity: { '@type': 'Organization', name: 'VitaBlue', email: 'info@vitablue.es', telephone: '+34694583452' } 
+          '@graph': [
+            {
+              '@type': 'ContactPage', 
+              '@id': `https://www.vitablue.es${content.contactPath}/#webpage`,
+              name: content.title, 
+              description: content.description, 
+              url: `https://www.vitablue.es${content.contactPath}/`, 
+              mainEntity: { '@id': 'https://www.vitablue.es/#organization' }
+            },
+            VITA_BLUE_ORGANIZATION_SCHEMA
+          ]
         })}</script>
       </Helmet>
 

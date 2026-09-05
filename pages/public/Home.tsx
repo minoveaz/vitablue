@@ -13,11 +13,11 @@ import ConversationalHero from '@/components/organisms/ConversationalHero';
 import InfiniteMarquee from '@/components/molecules/InfiniteMarquee';
 import FaqSection from '@/components/organisms/FaqSection';
 import Card from '@/components/molecules/Card';
-import ProductCategoryCard from '@/components/molecules/ProductCategoryCard';
+import ProductCategoryCard, { type ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
 import TrustCardGrid from '@/components/molecules/TrustCardGrid';
-import type { ProductCategoryBadgeColor } from '@/components/molecules/ProductCategoryCard';
 import TestimonialGrid from '@/components/organisms/TestimonialGrid';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
+import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
 
 import { 
   CoverageIllustration, 
@@ -370,28 +370,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "InsuranceAgency",
-        "@id": "https://www.vitablue.es/#organization",
-        "name": "VitaBlue",
-        "url": "https://www.vitablue.es/",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://www.vitablue.es/logo.png",
-          "width": 180,
-          "height": 60
-        },
-        "telephone": "+34 694 58 34 52",
-        "email": "info@vitablue.es",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Madrid",
-          "addressCountry": "ES"
-        },
-        "sameAs": [
-          "https://wa.me/34694583452"
-        ]
-      },
+      VITA_BLUE_ORGANIZATION_SCHEMA,
       {
         "@type": "FAQPage",
         "@id": "https://www.vitablue.es/#faq",

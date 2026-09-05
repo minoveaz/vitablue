@@ -41,8 +41,8 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 - [x] **Acción 1 ([Issue #130](https://github.com/minoveaz/vitablue/issues/130)):** Blindar la redirección 301 de la URL legacy `/productos/seguro-medico-estudiantes-extranjeros-espana.html` hacia la canónica moderna para concentrar ranking.
 - [x] **Acción 2 ([Issue #131](https://github.com/minoveaz/vitablue/issues/131)):** Optimizar On-Page (títulos persuasivos, precios, meta descriptions) y añadir JSON-LD `FAQPage` + `Breadcrumbs` en las guías de estudiantes en inglés (Top 10-15).
 - [x] **Acción 3 ([Issue #132](https://github.com/minoveaz/vitablue/issues/132)):** Inyectar FAQ Schema y optimizar CTAs en landings y guías en español (Mascotas, No Lucrativa y Visado de Estudiante).
-- [ ] **Acción 10 ([Issue #139](https://github.com/minoveaz/vitablue/issues/139)):** Implementar Schema `InsuranceAgency` / `LocalBusiness` y `Organization` en Home y páginas corporativas para elevar E-E-A-T.
-- [ ] Validar que el build prerenderizado (`npm run build`) inyecte correctamente estos esquemas sin errores en Search Console Rich Results Test.
+- [x] **Acción 10 ([Issue #139](https://github.com/minoveaz/vitablue/issues/139)):** Implementar Schema `InsuranceAgency` / `LocalBusiness` y `Organization` en Home y páginas corporativas para elevar E-E-A-T.
+- [x] Validar que el build prerenderizado (`npm run build`) inyecte correctamente estos esquemas sin errores en Search Console Rich Results Test.
 
 #### 1.3 Lead Magnet & Captura de Contactos (Pilar 4)
 - [ ] **Acción 4 ([Issue #133](https://github.com/minoveaz/vitablue/issues/133)):** Diseñar e implementar componente Lead Magnet 'Checklist Consular (PDF)' con captura y trigger directo hacia WhatsApp.

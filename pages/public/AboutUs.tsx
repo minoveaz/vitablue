@@ -7,6 +7,7 @@ import TrustCardGrid, { TrustCardItem } from '../../components/molecules/TrustCa
 import AdvisorHelpSection from '../../components/organisms/AdvisorHelpSection';
 import TestimonialGrid from '../../components/organisms/TestimonialGrid';
 import FaqSection from '../../components/organisms/FaqSection';
+import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
 
 const AboutUs: React.FC = () => {
   const isEnglish = window.location.pathname.startsWith('/en');
@@ -113,11 +114,17 @@ const AboutUs: React.FC = () => {
         <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/sobre-nosotros/" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
-          '@type': 'AboutPage',
-          name: content.seo.title,
-          description: content.seo.description,
-          url: `https://www.vitablue.es${content.seo.path}`,
-          about: { '@type': 'Organization', name: 'VitaBlue', url: 'https://www.vitablue.es' },
+          '@graph': [
+            {
+              '@type': 'AboutPage',
+              '@id': `https://www.vitablue.es${content.seo.path}/#webpage`,
+              name: content.seo.title,
+              description: content.seo.description,
+              url: `https://www.vitablue.es${content.seo.path}/`,
+              about: { '@id': 'https://www.vitablue.es/#organization' }
+            },
+            VITA_BLUE_ORGANIZATION_SCHEMA
+          ]
         })}</script>
       </Helmet>
 

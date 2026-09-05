@@ -342,8 +342,8 @@ export const NomadInsurance: React.FC = () => {
   };
 
   const canonicalUrl = isEnglish
-    ? 'https://www.vitablue.es/en/digital-nomad-insurance-spain'
-    : 'https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales';
+    ? 'https://www.vitablue.es/en/digital-nomad-insurance-spain/'
+    : 'https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/';
 
   const title = isEnglish
     ? 'Health Insurance for Digital Nomads and Remote Workers | VitaBlue'

@@ -53,8 +53,12 @@ function injectCanonicalTags() {
       : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
     if (!fs.existsSync(filePath)) return;
     let content = fs.readFileSync(filePath, 'utf8');
-    if (content.includes('rel="canonical"')) return;
-    content = content.replace('</head>', `    <link rel="canonical" href="${url}" />\n</head>`);
+    if (content.includes('rel="canonical"')) {
+      content = content.replace(/<link(?!\s+data-rh="true")\s+rel="canonical"/g, '<link data-rh="true" rel="canonical"');
+      fs.writeFileSync(filePath, content, 'utf8');
+      return;
+    }
+    content = content.replace('</head>', `    <link data-rh="true" rel="canonical" href="${url}" />\n</head>`);
     fs.writeFileSync(filePath, content, 'utf8');
   });
 }
@@ -305,6 +309,124 @@ function injectLandingMetadataAndSchemas() {
 }
 
 injectLandingMetadataAndSchemas();
+
+function injectCorporateSchemas() {
+  const { VITA_BLUE_ORGANIZATION_SCHEMA } = require('./utils/organizationSchema.ts');
+
+  const targets = [
+    {
+      file: path.join(distDir, 'index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          VITA_BLUE_ORGANIZATION_SCHEMA,
+          {
+            '@type': 'WebSite',
+            '@id': 'https://www.vitablue.es/#website',
+            'url': 'https://www.vitablue.es/',
+            'name': 'VitaBlue',
+            'publisher': { '@id': 'https://www.vitablue.es/#organization' },
+            'inLanguage': 'es-ES'
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          VITA_BLUE_ORGANIZATION_SCHEMA,
+          {
+            '@type': 'WebSite',
+            '@id': 'https://www.vitablue.es/en/#website',
+            'url': 'https://www.vitablue.es/en/',
+            'name': 'VitaBlue',
+            'publisher': { '@id': 'https://www.vitablue.es/#organization' },
+            'inLanguage': 'en-US'
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'sobre-nosotros/index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'AboutPage',
+            '@id': 'https://www.vitablue.es/sobre-nosotros/#webpage',
+            'name': 'Sobre Nosotros | Comparador 100% Independiente | VitaBlue',
+            'url': 'https://www.vitablue.es/sobre-nosotros/',
+            'about': { '@id': 'https://www.vitablue.es/#organization' }
+          },
+          VITA_BLUE_ORGANIZATION_SCHEMA
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/about-us/index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'AboutPage',
+            '@id': 'https://www.vitablue.es/en/about-us/#webpage',
+            'name': 'About VitaBlue | 100% Independent Insurance Comparator',
+            'url': 'https://www.vitablue.es/en/about-us/',
+            'about': { '@id': 'https://www.vitablue.es/#organization' }
+          },
+          VITA_BLUE_ORGANIZATION_SCHEMA
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'contacto/index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'ContactPage',
+            '@id': 'https://www.vitablue.es/contacto/#webpage',
+            'name': 'Contacto VitaBlue | Asesoría en seguros',
+            'url': 'https://www.vitablue.es/contacto/',
+            'mainEntity': { '@id': 'https://www.vitablue.es/#organization' }
+          },
+          VITA_BLUE_ORGANIZATION_SCHEMA
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/contact/index.html'),
+      pageSchema: {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'ContactPage',
+            '@id': 'https://www.vitablue.es/en/contact/#webpage',
+            'name': 'Contact VitaBlue | Insurance advice',
+            'url': 'https://www.vitablue.es/en/contact/',
+            'mainEntity': { '@id': 'https://www.vitablue.es/#organization' }
+          },
+          VITA_BLUE_ORGANIZATION_SCHEMA
+        ]
+      }
+    }
+  ];
+
+  targets.forEach(({ file, pageSchema }) => {
+    if (!fs.existsSync(file)) return;
+    let content = fs.readFileSync(file, 'utf8');
+    if (!content.includes('"https://www.vitablue.es/#organization"')) {
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(pageSchema)}</script>\n</head>`);
+      fs.writeFileSync(file, content, 'utf8');
+    }
+  });
+
+  console.log('✅ Esquemas InsuranceAgency y Organization inyectados en páginas corporativas.');
+}
+
+injectCorporateSchemas();
 
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 

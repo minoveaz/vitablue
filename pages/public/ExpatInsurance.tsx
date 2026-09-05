@@ -350,8 +350,8 @@ export const ExpatInsurance: React.FC = () => {
   };
 
   const canonicalUrl = isEnglish
-    ? 'https://www.vitablue.es/en/health-insurance-expatriates-spain'
-    : 'https://www.vitablue.es/productos/seguros-salud/seguro-expatriados';
+    ? 'https://www.vitablue.es/en/health-insurance-expatriates-spain/'
+    : 'https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/';
 
   const title = isEnglish
     ? 'Health Insurance for Expatriates and Residents in Spain | VitaBlue'
