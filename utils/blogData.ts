@@ -1210,7 +1210,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: 'Official health insurance requirements for Spanish student visas in 2026. Certified ASISA & Sanitas policies with 0€ copays, full hospitalization & instant 24h certificate.',
-    featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
       {
@@ -1577,7 +1577,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: 'Compare real 2026 costs for Spanish student visa health insurance: ASISA from €35/mo, Sanitas from €45/mo, Adeslas from €49/mo. 100% visa approval guarantee with zero copay.',
-    featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
       {
@@ -1873,7 +1873,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: '¿Asisa, Sanitas o Adeslas? Comparamos precios reales, tiempos de emisión del certificado consular (24h), copagos, carencias y políticas de devolución ante denegación. Descubre por qué Asisa Health Students es la opción número 1 recomendada por VitaBlue en 2026.',
-    featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
       {
@@ -2087,7 +2087,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: 'Is ASISA Health Students accepted by Spanish Consulates worldwide? Learn why ASISA (€38/mo) is 100% compliant with zero copays, zero waiting periods, 24h certificate delivery, and how it compares with Sanitas and Adeslas.',
-    featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
       {
