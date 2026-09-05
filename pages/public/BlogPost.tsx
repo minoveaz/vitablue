@@ -212,11 +212,6 @@ export const BlogPost: React.FC = () => {
               }
               postTitle={post.title}
             />
-            <BlogRelatedPosts
-              currentPost={post}
-              allPosts={blogPosts}
-              isEnglish={isEnglish}
-            />
           </article>
           <aside className="space-y-8 sticky top-28 hidden lg:block">
             <ArticleToc items={tocItems} isEnglish={isEnglish} />
@@ -245,6 +240,15 @@ export const BlogPost: React.FC = () => {
               postTitle={post.title}
             />
           </aside>
+        </div>
+
+        {/* Related articles full-width section */}
+        <div className="mx-auto w-full max-w-6xl mt-12 sm:mt-16">
+          <BlogRelatedPosts
+            currentPost={post}
+            allPosts={blogPosts}
+            isEnglish={isEnglish}
+          />
         </div>
       </section>
     </div>
