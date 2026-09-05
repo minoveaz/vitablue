@@ -9,6 +9,7 @@ import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
 import BlogAdvisorCta from '@/components/molecules/BlogAdvisorCta';
 import BlogConsularValidatorCallout from '@/components/molecules/BlogConsularValidatorCallout';
 import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
+import BlogRelatedPosts from '@/components/molecules/BlogRelatedPosts';
 
 const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
 export const BlogPost: React.FC = () => {
@@ -210,6 +211,11 @@ export const BlogPost: React.FC = () => {
                   : 'Escríbenos y te aclaramos qué póliza se adapta a tus requisitos.'
               }
               postTitle={post.title}
+            />
+            <BlogRelatedPosts
+              currentPost={post}
+              allPosts={blogPosts}
+              isEnglish={isEnglish}
             />
           </article>
           <aside className="space-y-8 sticky top-28 hidden lg:block">
