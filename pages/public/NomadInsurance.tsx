@@ -40,7 +40,7 @@ export const NomadInsurance: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('nomad');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const nomadRequirements = isEnglish ? [

@@ -37,7 +37,7 @@ export const HealthInsurance: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('individual');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [
@@ -139,7 +139,7 @@ export const HealthInsurance: React.FC = () => {
         'Repatriación médica ilimitada incluida'
       ],
       price: '38,95€/mes',
-      link: '/productos/seguros-salud/seguros-sanitas/international-students',
+      link: '/productos/seguros-salud/seguros-sanitas/international-students/',
       isSubpage: true
     },
     {
@@ -200,7 +200,7 @@ export const HealthInsurance: React.FC = () => {
         'Segunda opinión médica internacional'
       ],
       price: 'Desde 35,90€/mes',
-      link: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud',
+      link: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/',
       isSubpage: true,
       badge: 'Más vendido'
     },
@@ -280,7 +280,7 @@ export const HealthInsurance: React.FC = () => {
         'Urgencias y hospitalizaciones concertadas'
       ],
       price: 'Desde 9,90€/mes',
-      link: '/productos/seguro-mascotas/sanitas-mascotas',
+      link: '/productos/seguro-mascotas/sanitas-mascotas/',
       isSubpage: true,
       badge: 'Mascotas'
     },
@@ -296,7 +296,7 @@ export const HealthInsurance: React.FC = () => {
         'Testamento online y gestoría legal'
       ],
       price: 'Consultar',
-      link: '/productos/seguro-para-decesos/asistencia-familiar',
+      link: '/productos/seguro-para-decesos/asistencia-familiar/',
       isSubpage: true,
       badge: 'Decesos'
     },
@@ -714,7 +714,7 @@ export const HealthInsurance: React.FC = () => {
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
-                <Link to="/productos/seguros-salud/seguro-salud-extranjeros" className="w-full sm:w-auto">
+                <Link to="/productos/seguros-salud/seguro-salud-extranjeros/" className="w-full sm:w-auto">
                   <Button 
                     variant="accent" 
                     className="w-full sm:w-auto sm:px-10 font-bold group shadow-md shadow-accent/20 whitespace-nowrap"
@@ -767,7 +767,7 @@ export const HealthInsurance: React.FC = () => {
             </div>
 
             <div className="pt-4">
-              <Link to="/productos/seguros-salud/seguros-sanitas">
+              <Link to="/productos/seguros-salud/seguros-sanitas/">
                 <Button 
                   variant="primary" 
                   className="w-full sm:w-auto px-10 font-bold group shadow-md shadow-primary/20 whitespace-nowrap"

@@ -50,7 +50,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 </span>
               ) : (
                 <Link
-                  to={item.href}
+                  to={item.href.startsWith('/') && !item.href.endsWith('/') && !item.href.includes('#') && !item.href.includes('?') ? `${item.href}/` : item.href}
                   className="hover:text-primary hover:underline underline-offset-2 transition-colors duration-150 truncate max-w-[120px] sm:max-w-xs"
                 >
                   {item.label}

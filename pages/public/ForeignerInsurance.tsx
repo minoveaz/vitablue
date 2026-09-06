@@ -20,7 +20,7 @@ export const ForeignerInsurance: React.FC = () => {
   const handleStartWizard = (profileType: 'student' | 'expat' | 'nomad') => {
     resetWizard();
     setProfile(profileType);
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const profiles = [
@@ -29,7 +29,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Estudiantes Internacionales',
       subtitle: 'Visado de Estudios',
       desc: 'Seguro médico completo sin copagos, sin carencias y con repatriación sanitaria incluida al 100%. Cumple los requisitos específicos para Universidades y Escuelas de Negocios.',
-      link: '/productos/seguros-salud/seguros-sanitas/international-students',
+      link: '/productos/seguros-salud/seguros-sanitas/international-students/',
       linkText: 'Explorar Requisitos de Estudios',
       illustration: StudentIllustration,
       badgeColor: 'bg-brand-cyan/10 text-brand-cyan-dark border border-brand-cyan/20'
@@ -39,7 +39,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Expatriados y Residentes',
       subtitle: 'Residencia No Lucrativa & Golden Visa',
       desc: 'Cobertura médica ilimitada en España equivalente al sistema público de salud. Ideal para la obtención del NIE, Golden Visa, residencia no lucrativa o reagrupación familiar.',
-      link: '/productos/seguros-salud/seguro-expatriados',
+      link: '/productos/seguros-salud/seguro-expatriados/',
       linkText: 'Explorar Requisitos de Residencia',
       illustration: ProfileIllustration,
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20'
@@ -49,7 +49,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Nómadas Digitales',
       subtitle: 'Visado de Teletrabajo Internacional',
       desc: 'Seguro flexible que combina cobertura médica completa en España (sin copagos exigidos por ley) con asistencia médica de urgencia en tus viajes internacionales.',
-      link: '/productos/seguros-salud/seguro-nomadas-digitales',
+      link: '/productos/seguros-salud/seguro-nomadas-digitales/',
       linkText: 'Explorar Requisitos de Teletrabajo',
       illustration: TravelIllustration,
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25'

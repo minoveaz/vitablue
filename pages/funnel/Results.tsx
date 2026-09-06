@@ -65,7 +65,7 @@ const Results: React.FC = () => {
 
   const handleRecalculate = () => {
     resetWizard();
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const getProfileLabel = () => {
@@ -193,7 +193,7 @@ const Results: React.FC = () => {
               Completa el cotizador para calcular una comparativa real y ver solo pólizas compatibles con tu perfil.
             </p>
           </div>
-          <Link to="/wizard">
+          <Link to="/wizard/">
             <Button size="lg" className="shadow-md">
               Comenzar cotización
             </Button>
@@ -390,7 +390,7 @@ const Results: React.FC = () => {
             <button
               onClick={() => {
                 resetWizard();
-                navigate('/wizard');
+                navigate('/wizard/');
               }}
               className="text-sm font-bold text-text-secondary hover:text-primary transition-colors underline underline-offset-4"
             >

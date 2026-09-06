@@ -47,15 +47,15 @@ export const Home: React.FC = () => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     const targetUrl = isEnglish 
-      ? `/en/blog?search=${encodeURIComponent(searchQuery.trim())}`
-      : `/blog?search=${encodeURIComponent(searchQuery.trim())}`;
+      ? `/en/blog/?search=${encodeURIComponent(searchQuery.trim())}`
+      : `/blog/?search=${encodeURIComponent(searchQuery.trim())}`;
     navigate(targetUrl);
   };
 
   const handleQuickSearch = (term: string) => {
     const targetUrl = isEnglish 
-      ? `/en/blog?search=${encodeURIComponent(term)}`
-      : `/blog?search=${encodeURIComponent(term)}`;
+      ? `/en/blog/?search=${encodeURIComponent(term)}`
+      : `/blog/?search=${encodeURIComponent(term)}`;
     navigate(targetUrl);
   };
 
@@ -66,7 +66,7 @@ export const Home: React.FC = () => {
       readTime: '5 min',
       tag: 'Health',
       bgClass: 'from-primary/5 hover:to-primary/10 border-primary/15',
-      url: '/en/blog',
+      url: '/en/blog/what-is-copay-health-insurance-spain-guide/',
       content: ''
     },
     {
@@ -75,7 +75,7 @@ export const Home: React.FC = () => {
       readTime: '3 min',
       tag: 'Visas',
       bgClass: 'from-brand-cyan/5 hover:to-brand-cyan/10 border-brand-cyan/20',
-      url: '/en/blog/student-visa-spain-health-insurance-requirements',
+      url: '/en/blog/student-visa-spain-health-insurance-requirements/',
       content: ''
     },
     {
@@ -84,7 +84,7 @@ export const Home: React.FC = () => {
       readTime: '4 min',
       tag: 'Pets',
       bgClass: 'from-accent/5 hover:to-accent/10 border-accent/20',
-      url: '/productos/seguro-mascotas/sanitas-mascotas',
+      url: '/productos/seguro-mascotas/sanitas-mascotas/',
       content: ''
     }
   ] : [
@@ -94,7 +94,7 @@ export const Home: React.FC = () => {
       readTime: '5 min',
       tag: 'Salud',
       bgClass: 'from-primary/5 hover:to-primary/10 border-primary/15',
-      url: '/blog/que-es-el-copago-seguro-salud',
+      url: '/blog/que-es-el-copago-seguro-salud/',
       content: `Al contratar un seguro de salud privado, es fundamental entender dos términos que afectarán directamente a tu bolsillo y al uso del seguro: los copagos y los periodos de carencia.
 
 #### 1. ¿Qué es el Copago?
@@ -114,7 +114,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       readTime: '3 min',
       tag: 'Trámites',
       bgClass: 'from-brand-cyan/5 hover:to-brand-cyan/10 border-brand-cyan/20',
-      url: '/blog/requisitos-seguro-medico-visado-estudiante-espana',
+      url: '/blog/requisitos-seguro-medico-visado-estudiante-espana/',
       content: `Si vas a solicitar un visado de estudios, residencia no lucrativa o nómada digital para vivir en España, la Oficina de Extranjería y el Consulado te exigirán un seguro médico con unas condiciones muy estrictas.
 
 #### Requisitos Obligatorios del Seguro Consular:
@@ -130,7 +130,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       readTime: '4 min',
       tag: 'Mascotas',
       bgClass: 'from-accent/5 hover:to-accent/10 border-accent/20',
-      url: '/productos/seguro-mascotas/sanitas-mascotas',
+      url: '/productos/seguro-mascotas/sanitas-mascotas/',
       content: `La nueva legislación de Bienestar Animal en España introduce cambios importantes para los propietarios de perros y gatos, enfocándose en su protección y la tenencia responsable.
 
 #### Seguro Obligatorio de Responsabilidad Civil:
@@ -159,7 +159,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
     setProfile(mappedProfile);
     setAgeRange(mappedAge);
     setVisaRequired(data.needType === 'estudios' || data.needType === 'residencia' ? 'yes' : data.needType === 'viaje' ? 'unknown' : 'unknown');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const scrollToHowItWorks = () => {
@@ -171,7 +171,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Health Insurance',
       desc: 'Broad medical coverage for those seeking quality private care, diagnostic tests, and specialists with no waiting.',
       illustration: HealthIllustration,
-      href: '/productos/seguros-salud',
+      href: '/productos/seguros-salud/',
       badge: 'Health',
       badgeColor: 'accent',
     },
@@ -179,7 +179,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Travel Insurance',
       desc: 'Assistance abroad, international medical coverage, luggage, and repatriation for your getaways or short stays.',
       illustration: TravelIllustration,
-      href: '/productos/seguro-viaje',
+      href: '/productos/seguro-viaje/',
       badge: 'Travel',
       badgeColor: 'secondary',
     },
@@ -187,7 +187,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Family & Life Assistance',
       desc: 'Comprehensive support and management for funeral expenses, transfers, and legal procedures for the family in difficult times.',
       illustration: FamilyIllustration,
-      href: '/productos/seguro-para-decesos/asistencia-familiar',
+      href: '/productos/seguro-para-decesos/asistencia-familiar/',
       badge: 'Family',
       badgeColor: 'dark',
     },
@@ -195,7 +195,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Life Insurance',
       desc: 'Financial protection for the future of your loved ones, ensuring their stability and covering loans or mortgages.',
       illustration: LifeIllustration,
-      href: '/wizard',
+      href: '/wizard/',
       badge: 'Life',
       badgeColor: 'primary',
     },
@@ -203,7 +203,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Pet Insurance',
       desc: 'Full veterinary assistance insurance for dogs and cats, covering emergencies, consultations, and vaccines.',
       illustration: PetIllustration,
-      href: '/productos/seguro-mascotas/sanitas-mascotas',
+      href: '/productos/seguro-mascotas/sanitas-mascotas/',
       badge: 'Pets',
       badgeColor: 'secondary',
     },
@@ -212,7 +212,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de salud',
       desc: 'Cobertura médica amplia para quien busca atención privada de calidad, pruebas diagnósticas y especialistas sin esperas.',
       illustration: HealthIllustration,
-      href: '/productos/seguros-salud',
+      href: '/productos/seguros-salud/',
       badge: 'Salud',
       badgeColor: 'accent',
     },
@@ -220,7 +220,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de viaje',
       desc: 'Asistencia en el extranjero, cobertura médica internacional, equipajes y repatriación para tus escapadas o estancias cortas.',
       illustration: TravelIllustration,
-      href: '/productos/seguro-viaje',
+      href: '/productos/seguro-viaje/',
       badge: 'Viaje',
       badgeColor: 'secondary',
     },
@@ -228,7 +228,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguro para decesos',
       desc: 'Apoyo y gestión integral para los gastos funerarios, traslados y trámites jurídicos de la familia en momentos difíciles.',
       illustration: FamilyIllustration,
-      href: '/productos/seguro-para-decesos/asistencia-familiar',
+      href: '/productos/seguro-para-decesos/asistencia-familiar/',
       badge: 'Familia',
       badgeColor: 'dark',
     },
@@ -236,7 +236,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de vida',
       desc: 'Protección económica para el futuro de tus seres queridos, asegurando su estabilidad y cubriendo préstamos o hipotecas.',
       illustration: LifeIllustration,
-      href: '/wizard',
+      href: '/wizard/',
       badge: 'Vida',
       badgeColor: 'primary',
     },
@@ -244,7 +244,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       title: 'Seguros de mascotas',
       desc: 'Seguro de asistencia veterinaria completa para perros y gatos, cubriendo urgencias, consultas y vacunas.',
       illustration: PetIllustration,
-      href: '/productos/seguro-mascotas/sanitas-mascotas',
+      href: '/productos/seguro-mascotas/sanitas-mascotas/',
       badge: 'Mascotas',
       badgeColor: 'secondary',
     },

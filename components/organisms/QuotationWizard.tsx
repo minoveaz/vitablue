@@ -638,7 +638,7 @@ const ContactStep: React.FC<ContactStepProps> = ({
         </div>
         <span className="text-caption text-text-secondary leading-relaxed">
           Acepto la{' '}
-          <a href="/privacidad" className="text-primary font-semibold underline underline-offset-2">
+          <a href="/privacidad/" className="text-primary font-semibold underline underline-offset-2">
             política de privacidad
           </a>{' '}
           y el tratamiento de mis datos para recibir la comparativa.

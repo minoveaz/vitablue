@@ -38,7 +38,7 @@ export const SanitasMasSalud: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat'); // Standard resident/expat profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const coverages = [

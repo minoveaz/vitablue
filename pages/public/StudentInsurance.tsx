@@ -44,7 +44,7 @@ export const StudentInsurance: React.FC = () => {
     resetWizard();
     setProfile('student');
     setVisaRequired('yes');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const visaRequirements = isEnglish ? [

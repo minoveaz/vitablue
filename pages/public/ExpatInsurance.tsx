@@ -40,7 +40,7 @@ export const ExpatInsurance: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const visaRequirements = isEnglish ? [

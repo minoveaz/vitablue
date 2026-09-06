@@ -25,7 +25,7 @@ export const Wizard: React.FC = () => {
     });
 
     // Redirect to the comparative results screen
-    navigate('/resultados');
+    navigate('/resultados/');
   };
 
 

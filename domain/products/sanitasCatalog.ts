@@ -21,7 +21,7 @@ export const sanitasFeaturedProducts = [
         'Segunda opinión médica internacional'
       ],
       price: 'Precio personalizado',
-      link: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud',
+      link: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/',
       badge: 'Más vendido'
     },
     {
@@ -35,7 +35,7 @@ export const sanitasFeaturedProducts = [
         'Repatriación médica ilimitada incluida'
       ],
       price: 'Precio personalizado',
-      link: '/productos/seguros-salud/seguros-sanitas/international-students',
+      link: '/productos/seguros-salud/seguros-sanitas/international-students/',
       badge: 'Estudiantes'
     },
     {
@@ -49,7 +49,7 @@ export const sanitasFeaturedProducts = [
         'Urgencias y hospitalizaciones concertadas'
       ],
       price: 'Precio personalizado',
-      link: '/productos/seguro-mascotas/sanitas-mascotas',
+      link: '/productos/seguro-mascotas/sanitas-mascotas/',
       badge: 'Mascotas'
     },
     {
@@ -63,7 +63,7 @@ export const sanitasFeaturedProducts = [
         'Testamento online y gestoría legal'
       ],
       price: 'Consultar tarifa',
-      link: '/productos/seguro-para-decesos/asistencia-familiar',
+      link: '/productos/seguro-para-decesos/asistencia-familiar/',
       badge: 'Decesos'
     }
   ];

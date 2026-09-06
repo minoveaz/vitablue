@@ -30,7 +30,7 @@ export const SanitasInsurances: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('individual');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   // Products with their own dedicated page in V2

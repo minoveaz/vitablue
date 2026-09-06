@@ -30,8 +30,20 @@ for (const file of htmlFiles(distDir)) {
     const href = rawHref.trim();
     if (!href || href.startsWith('#') || ignoredProtocols.test(href)) continue;
     if (!href.startsWith('/')) continue;
-    if (!targetExists(href.split('#')[0].split('?')[0])) {
-      failures.push(`${path.relative(distDir, file)} -> ${href}`);
+
+    const urlPath = href.split('#')[0].split('?')[0];
+
+    // Check if link points to a static asset or file with extension (e.g. .pdf, .svg, .png, .xml, .html)
+    const hasFileExtension = path.extname(urlPath) !== '';
+
+    // If it's a virtual route (not a static file), it MUST end with a trailing slash
+    if (!hasFileExtension && !urlPath.endsWith('/')) {
+      failures.push(`[TRAILING SLASH MISSING] ${path.relative(distDir, file)} -> ${href} (must end with '/')`);
+      continue;
+    }
+
+    if (!targetExists(urlPath)) {
+      failures.push(`[NOT FOUND] ${path.relative(distDir, file)} -> ${href}`);
     }
   }
 }

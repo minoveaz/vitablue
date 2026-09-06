@@ -35,7 +35,7 @@ export const TravelInsurance: React.FC = () => {
     resetWizard();
     setProfile('nomad'); // Nomad/traveler profile fits travel wizard
     setVisaRequired('unknown');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [

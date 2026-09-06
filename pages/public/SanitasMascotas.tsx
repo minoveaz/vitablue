@@ -36,7 +36,7 @@ export const SanitasMascotas: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('pet'); // Pet profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [

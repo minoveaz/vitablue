@@ -34,7 +34,7 @@ export const AsistenciaFamiliar: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat'); // Standard profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [

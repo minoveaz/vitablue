@@ -41,7 +41,7 @@ export const CityDestinationVisaInsurance: React.FC = () => {
   const city = getDestinationCityBySlug(citySlug);
 
   if (!city) {
-    return <Navigate to="/productos/seguros-salud/seguro-medico-estudiantes" replace />;
+    return <Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/" replace />;
   }
 
 
@@ -219,7 +219,7 @@ export const CityDestinationVisaInsurance: React.FC = () => {
           </p>
           <div className="pt-4 flex flex-wrap justify-center gap-3">
             <Link
-              to="/wizard"
+              to="/wizard/"
               onClick={handleStartQuote}
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-8 py-4 text-base font-bold text-primary-dark shadow-xl shadow-accent/20 hover:brightness-105 transition-all"
             >
@@ -414,7 +414,7 @@ export const CityDestinationVisaInsurance: React.FC = () => {
             </p>
           </div>
           <Link
-            to="/validador-visado"
+            to="/validador-visado/"
             className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-6 py-3.5 text-sm font-bold text-primary-dark shadow-md shadow-accent/20 hover:brightness-105 transition-all text-center whitespace-nowrap"
           >
             Abrir Validador Gratis

@@ -34,7 +34,7 @@ export const LifeInsurance: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat'); // Standard profile fits general life insurance wizard
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [

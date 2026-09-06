@@ -47,7 +47,7 @@ export const CookieBanner: React.FC = () => {
               <div className="space-y-2">
                 <h3 className="text-h3 font-display font-extrabold text-text-main leading-tight">Tu privacidad importa</h3>
                 <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                  Utilizamos cookies para optimizar tu experiencia y analizar el tráfico publicitario. Puedes aceptar todas o ver detalles en la <Link to="/cookies" className="text-primary-dark font-bold underline underline-offset-4">Política de Cookies</Link>.
+                  Utilizamos cookies para optimizar tu experiencia y analizar el tráfico publicitario. Puedes aceptar todas o ver detalles en la <Link to="/cookies/" className="text-primary-dark font-bold underline underline-offset-4">Política de Cookies</Link>.
                 </p>
               </div>
 

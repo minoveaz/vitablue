@@ -15,7 +15,7 @@ const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
-  if (!post) return <Navigate to="/blog" replace />;
+  if (!post) return <Navigate to="/blog/" replace />;
   const isEnglish = post.lang === 'en';
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
   const blogPath = isEnglish ? '/en/blog/' : '/blog/';

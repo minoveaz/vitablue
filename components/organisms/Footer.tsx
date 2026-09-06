@@ -153,17 +153,17 @@ export const Footer: React.FC = () => {
             </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
-                <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/about-us/" : "/sobre-nosotros/"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'About Us' : 'Quiénes Somos'}
                 </Link>
               </li>
               <li>
-                <a href={isEnglish ? "/en#opiniones" : "/#opiniones"} className="hover:text-accent transition-colors duration-150">
+                <a href={isEnglish ? "/en/#opiniones" : "/#opiniones"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'Reviews' : 'Opiniones de Clientes'}
                 </a>
               </li>
               <li>
-                <a href={isEnglish ? "/en#faq" : "/#faq"} className="hover:text-accent transition-colors duration-150">
+                <a href={isEnglish ? "/en/#faq" : "/#faq"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'FAQ' : 'Preguntas Frecuentes'}
                 </a>
               </li>
@@ -187,27 +187,27 @@ export const Footer: React.FC = () => {
             </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
-                <Link to="/productos/seguros-salud" className="hover:text-accent transition-colors duration-150">
+                <Link to="/productos/seguros-salud/" className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'General Health Insurance' : 'Seguro de Salud General'}
                 </Link>
               </li>
               <li>
-                <Link to={isEnglish ? "/en/health-insurance-student-visa-spain" : "/productos/seguros-salud/seguros-sanitas/international-students"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/health-insurance-student-visa-spain/" : "/productos/seguros-salud/seguros-sanitas/international-students/"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'International Students' : 'Estudiantes Extranjeros'}
                 </Link>
               </li>
               <li>
-                <Link to={isEnglish ? "/en/health-insurance-expatriates-spain" : "/productos/seguros-salud/seguro-expatriados"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/health-insurance-expatriates-spain/" : "/productos/seguros-salud/seguro-expatriados/"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'Expats & Residents' : 'Expatriados y Residentes'}
                 </Link>
               </li>
               <li>
-                <Link to={isEnglish ? "/en/digital-nomad-insurance-spain" : "/productos/seguros-salud/seguro-nomadas-digitales"} className="hover:text-accent transition-colors duration-150">
+                <Link to={isEnglish ? "/en/digital-nomad-insurance-spain/" : "/productos/seguros-salud/seguro-nomadas-digitales/"} className="hover:text-accent transition-colors duration-150">
                   {isEnglish ? 'Digital Nomads' : 'Nómadas Digitales'}
                 </Link>
               </li>
               <li>
-                <Link to="/productos/seguros-salud/seguros-sanitas" className="hover:text-accent transition-colors duration-150 font-bold text-primary-light">
+                <Link to="/productos/seguros-salud/seguros-sanitas/" className="hover:text-accent transition-colors duration-150 font-bold text-primary-light">
                   {isEnglish ? 'Sanitas Insurance Catalog' : 'Catálogo Seguros Sanitas'}
                 </Link>
               </li>
@@ -221,22 +221,22 @@ export const Footer: React.FC = () => {
             </h2>
             <ul className="flex flex-col gap-2.5 text-sm font-semibold text-slate-300">
               <li>
-                <Link to="/productos/seguro-mascotas/sanitas-mascotas" className="hover:text-accent transition-colors duration-150">
+                <Link to="/productos/seguro-mascotas/sanitas-mascotas/" className="hover:text-accent transition-colors duration-150">
                   Seguro de Mascotas
                 </Link>
               </li>
               <li>
-                <Link to="/productos/seguro-para-decesos/asistencia-familiar" className="hover:text-accent transition-colors duration-150">
+                <Link to="/productos/seguro-para-decesos/asistencia-familiar/" className="hover:text-accent transition-colors duration-150">
                   Asistencia Familiar
                 </Link>
               </li>
               <li>
-                <Link to="/productos/seguro-viaje" className="hover:text-accent transition-colors duration-150">
+                <Link to="/productos/seguro-viaje/" className="hover:text-accent transition-colors duration-150">
                   Seguro de Viaje
                 </Link>
               </li>
               <li>
-                <Link to="/wizard" className="hover:text-accent transition-colors duration-150 font-bold text-accent">
+                <Link to="/wizard/" className="hover:text-accent transition-colors duration-150 font-bold text-accent">
                   Cotizador de Seguros Online
                 </Link>
               </li>
@@ -273,13 +273,13 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="pt-2 border-t border-slate-800 flex flex-col gap-1.5">
-                <Link to="/aviso-legal" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/aviso-legal/" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Aviso Legal
                 </Link>
-                <Link to="/privacidad" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/privacidad/" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Privacidad
                 </Link>
-                <Link to="/cookies" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
+                <Link to="/cookies/" className="inline-flex min-h-6 items-center hover:text-accent transition-colors text-xs text-slate-300">
                   Política de Cookies
                 </Link>
               </li>
