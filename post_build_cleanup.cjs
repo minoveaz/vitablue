@@ -497,6 +497,14 @@ function optimizeHtmlHeadTagsRecursive(dir) {
 
 function optimizeHeadTags(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
+
+  // 1. Ensure Google Fonts stylesheet remains non-blocking with media="print" onload="this.media='all'"
+  content = content.replace(
+    /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]*" media="all" onload="this\.media='all'">/g,
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" media="print" onload="this.media=\'all\'">'
+  );
+
+  // 2. Optimize CSS placement: after preconnects/viewport so network handshakes start immediately
   const stylesheetRegex = /<link rel="stylesheet"[^>]*href="\/assets\/[^>]*\.css"[^>]*>/g;
   const match = content.match(stylesheetRegex);
 
@@ -504,14 +512,19 @@ function optimizeHeadTags(filePath) {
     const stylesheetTag = match[0];
     content = content.replace(stylesheetTag, '');
     
-    // Insert immediately after <head> to prioritize CSS download over JS preloads
-    const headIndex = content.indexOf('<head>');
-    if (headIndex !== -1) {
-      const insertPos = headIndex + 6;
-      content = content.slice(0, insertPos) + '\n    ' + stylesheetTag + content.slice(insertPos);
-      fs.writeFileSync(filePath, content, 'utf8');
+    const targetTag = content.indexOf('<!-- Google Fonts:');
+    if (targetTag !== -1) {
+      content = content.slice(0, targetTag) + stylesheetTag + '\n    ' + content.slice(targetTag);
+    } else {
+      const headIndex = content.indexOf('<head>');
+      if (headIndex !== -1) {
+        const insertPos = headIndex + 6;
+        content = content.slice(0, insertPos) + '\n    ' + stylesheetTag + content.slice(insertPos);
+      }
     }
   }
+
+  fs.writeFileSync(filePath, content, 'utf8');
 }
 
 console.log('\n⚡ Optimizando orden de carga crítica de CSS en cabeceras...');
