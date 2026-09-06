@@ -619,7 +619,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'precios-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-prices',
 
-    title: 'Precios del Seguro Médico para Visado de Estudiante en España (Guía Oficial 2026)',
+    title: 'Precios Sanitas International Students y Seguro Visado España 2026',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '7 min de lectura',
@@ -631,7 +631,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Cuánto cuesta el seguro médico obligatorio para estudiar en España? Descubre las tarifas reales mensuales y anuales de pólizas homologadas sin copagos (Sanitas), factores que influyen en el coste y cómo evitar denegaciones consulares.',
+    excerpt: '¿Cuánto cuesta Sanitas International Students? Precios oficiales desde 35€/mes para el visado de estudiante en España. Póliza 100% homologada sin copagos ni carencias.',
     featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
 
@@ -839,7 +839,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'seguro-medico-residencia-no-lucrativa-espana',
     alternateSlug: 'health-insurance-spain-non-lucrative-visa-requirements',
-    title: 'Seguro Médico Residencia No Lucrativa España 2026 | 100% Aprobado VitaBlue',
+    title: 'Seguro Médico Residencia No Lucrativa España 2026: Requisitos y Precios',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '5 min de lectura',
@@ -851,7 +851,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Requisitos oficiales del seguro médico para la Residencia No Lucrativa en España. Pólizas sin copagos ni carencias desde 45€/mes con garantía 100% de aprobación consular.',
+    excerpt: 'Requisitos oficiales 2026 del seguro médico para la Residencia No Lucrativa en España. Pólizas sin copagos ni carencias desde 45€/mes aceptadas por consulados.',
     featuredImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -975,7 +975,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'que-es-el-copago-seguro-salud',
     alternateSlug: 'what-is-copay-health-insurance-spain-guide',
-    title: '¿Qué es el Copago en un Seguro de Salud? (Guía de Ahorro)',
+    title: '¿Qué es el Copago en un Seguro de Salud? Cómo Funciona y Tarifas',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '5 min de lectura',
@@ -987,9 +987,13 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Qué significa copago? Descubre cómo funciona esta modalidad de seguro de salud, en qué casos te permite ahorrar en tu cuota mensual y cuándo debes evitarla.',
+    excerpt: '¿Qué es el copago en salud y cómo funciona? Descubre las tarifas reales por consulta (2€-12€), cuándo conviene una póliza con o sin copago y cómo ahorrar.',
     featuredImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
     sections: [
+      {
+        type: 'callout',
+        text: '📌 <strong>¿Qué es el copago en salud?</strong> El copago es un importe fijo o tarifa reducida (habitualmente entre 2€ y 15€) que abona el asegurado por cada servicio médico o prueba diagnóstica utilizada. A cambio, permite rebajar significativamente la prima mensual de la póliza.'
+      },
       {
         type: 'paragraph',
         text: 'Al buscar seguros de salud privados en España, te encontrarás de forma constante con los términos **"con copago"** y **"sin copago"**. Entender la diferencia exacta entre estas dos modalidades es clave para optimizar tu gasto mensual y evitar sorpresas desagradables al recibir los cargos en tu cuenta bancaria.'
