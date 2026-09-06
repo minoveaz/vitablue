@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen, Shield, GraduationCap, Globe2, Laptop, Star, PawPrint, House } from 'lucide-react';
+import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen, Shield, GraduationCap, Globe2, Laptop, Star, PawPrint, House, Award } from 'lucide-react';
 import Logo from '@/components/atoms/Logo';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { navbarTranslations } from '@/utils/translations';
@@ -153,6 +153,7 @@ const EstudiantesIcon = () => <ProductIcon icon={GraduationCap} surface="bg-illu
 const ExpatriadosIcon = () => <ProductIcon icon={Globe2} surface="bg-illustration-surface-expat" />;
 const NomadasIcon = () => <ProductIcon icon={Laptop} surface="bg-illustration-surface-nomad" />;
 const SanitasIcon = () => <ProductIcon icon={Star} surface="bg-illustration-surface-expat" />;
+const AsisaIcon = () => <ProductIcon icon={Award} surface="bg-illustration-surface-health" />;
 const MascotasIcon = () => <ProductIcon icon={PawPrint} surface="bg-illustration-surface-pet" />;
 const FamiliarIcon = () => <ProductIcon icon={House} surface="bg-illustration-surface-family" />;
 
@@ -375,6 +376,18 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
 
+                    <Link to="/productos/seguros-salud/seguros-asisa/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                      <AsisaIcon />
+                      <div>
+                        <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
+                          {isEnglish ? 'Asisa Insurances' : 'Seguros Asisa'}
+                        </p>
+                        <span className="text-[10px] font-semibold text-text-secondary/80 mt-1 block leading-tight">
+                          {isEnglish ? 'Full range & HLA hospital network' : 'Gama oficial y red Grupo HLA'}
+                        </span>
+                      </div>
+                    </Link>
+
                     <Link to="/productos/seguro-mascotas/sanitas-mascotas/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <MascotasIcon />
                       <div>
@@ -569,6 +582,13 @@ export const Navbar: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <SanitasIcon />
                         <span>{isEnglish ? 'Sanitas Insurances' : 'Seguros Sanitas'}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-text-secondary/30" />
+                    </Link>
+                    <Link to="/productos/seguros-salud/seguros-asisa/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                      <div className="flex items-center gap-3">
+                        <AsisaIcon />
+                        <span>{isEnglish ? 'Asisa Insurances' : 'Seguros Asisa'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>

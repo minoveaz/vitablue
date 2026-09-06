@@ -355,6 +355,142 @@ function injectLandingMetadataAndSchemas() {
     fs.writeFileSync(mascotasFile, content, 'utf8');
     console.log('✅ Metadatos SEO y FAQPage schema inyectados en landing Sanitas Mascotas.');
   }
+
+  // Seguros Asisa Hub
+  const asisaFile = path.join(distDir, 'productos/seguros-salud/seguros-asisa/index.html');
+  if (fs.existsSync(asisaFile)) {
+    let content = fs.readFileSync(asisaFile, 'utf8');
+    const title = 'Gama Oficial de Seguros de Salud Asisa | Catálogo VitaBlue';
+    const description = 'Explora y compara la gama oficial de seguros de salud de Asisa: ASISA Health Students, Residents, Completa +, Esencial y Mutualistas. Precio oficial sin comisiones.';
+
+    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${description}"`);
+    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${title}"`);
+    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${description}"`);
+    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${title}"`);
+    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${description}"`);
+
+    const faqs = [
+      {
+        q: '¿Por qué contratar los seguros de Asisa a través de VitaBlue?',
+        a: 'Contratas exactamente al precio oficial de Asisa con todas las promociones vigentes de la aseguradora, sin comisiones ni sobrecostes. Además, en VitaBlue cuentas con un asesor personal colegiado que te asiste en la emisión rápida de certificados para visados en 24h, gestión de autorizaciones médicas y resolución de trámites.'
+      },
+      {
+        q: '¿Qué diferencia hay entre ASISA Completa +, Completa ++ y la modalidad sin copago?',
+        a: 'ASISA Completa es la póliza de cobertura médica y quirúrgica total. En su versión Completa + disfrutas de una prima mensual reducida con copagos muy bajos por consulta médica. En Completa ++ la cuota mensual es aún más económica a cambio de copagos intermedios. Para trámites de visado o residencia en Extranjería, se exige contratar la modalidad Sin Copagos.'
+      },
+      {
+        q: '¿Qué es el Grupo HLA y qué ventajas ofrece a los asegurados de Asisa?',
+        a: 'El Grupo Hospitalario HLA es la red de clínicas y hospitales propios de Asisa, una de las mayores redes hospitalarias de España con 18 hospitales y 36 centros multiespecialidad. Como asegurado de Asisa accedes de forma preferente y directa a estos centros sin trámites adicionales.'
+      }
+    ];
+
+    const asisaSchema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "InsuranceAgency",
+          "@id": "https://www.vitablue.es/#organization",
+          "name": "VitaBlue",
+          "url": "https://www.vitablue.es/",
+          "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+          "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias."
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.vitablue.es/" },
+            { "@type": "ListItem", "position": 2, "name": "Seguros de Salud", "item": "https://www.vitablue.es/productos/seguros-salud/" },
+            { "@type": "ListItem", "position": 3, "name": "Seguros Asisa", "item": "https://www.vitablue.es/productos/seguros-salud/seguros-asisa/" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.vitablue.es/productos/seguros-salud/seguros-asisa/#faq",
+          "mainEntity": faqs.map((faq) => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": { "@type": "Answer", "text": faq.a }
+          }))
+        }
+      ]
+    };
+
+    if (!content.includes('"@type":"FAQPage"')) {
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(asisaSchema)}</script>\n</head>`);
+    }
+
+    fs.writeFileSync(asisaFile, content, 'utf8');
+    console.log('✅ Metadatos SEO y FAQPage schema inyectados en hub Seguros Asisa.');
+  }
+
+  // Seguros Sanitas Hub
+  const sanitasFile = path.join(distDir, 'productos/seguros-salud/seguros-sanitas/index.html');
+  if (fs.existsSync(sanitasFile)) {
+    let content = fs.readFileSync(sanitasFile, 'utf8');
+    const title = 'Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue';
+    const description = 'Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas.';
+
+    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${description}"`);
+    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${title}"`);
+    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${description}"`);
+    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${title}"`);
+    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${description}"`);
+
+    const faqs = [
+      {
+        q: '¿Qué ventajas tiene contratar a través de un Asesor Especialista de Sanitas?',
+        a: 'Contratas directamente con el precio oficial de Sanitas y todas sus promociones vigentes. No pagas ningún tipo de comisión ni recargo. La gran ventaja es que obtienes soporte y asesoramiento continuo y humano de VitaBlue para autorizaciones, reembolsos o dudas de cobertura.'
+      },
+      {
+        q: '¿Las pólizas de Sanitas tienen periodos de carencia?',
+        a: 'Sí, la mayoría de seguros completos tienen carencias de entre 3 y 10 meses para coberturas complejas como hospitalizaciones o partos. No obstante, las consultas, urgencias y el seguro dental no tienen carencias. Si vienes de otra aseguradora con más de 1 año de antigüedad, Sanitas elimina la mayoría de las carencias.'
+      },
+      {
+        q: '¿Qué es Blua y cómo funciona la telemedicina en Sanitas?',
+        a: 'Blua es la plataforma de medicina digital líder de Sanitas. Permite hacer videoconsultas médicas de urgencia 24/7 y con especialistas, recibir recetas electrónicas oficiales válidas en farmacias de toda España, solicitar analíticas a domicilio y usar herramientas digitales de prevención de salud.'
+      }
+    ];
+
+    const sanitasSchema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "InsuranceAgency",
+          "@id": "https://www.vitablue.es/#organization",
+          "name": "VitaBlue",
+          "url": "https://www.vitablue.es/",
+          "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+          "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias."
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.vitablue.es/" },
+            { "@type": "ListItem", "position": 2, "name": "Seguros de Salud", "item": "https://www.vitablue.es/productos/seguros-salud/" },
+            { "@type": "ListItem", "position": 3, "name": "Seguros Sanitas", "item": "https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/#faq",
+          "mainEntity": faqs.map((faq) => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": { "@type": "Answer", "text": faq.a }
+          }))
+        }
+      ]
+    };
+
+    if (!content.includes('"@type":"FAQPage"')) {
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(sanitasSchema)}</script>\n</head>`);
+    }
+
+    fs.writeFileSync(sanitasFile, content, 'utf8');
+    console.log('✅ Metadatos SEO y FAQPage schema inyectados en hub Seguros Sanitas.');
+  }
 }
 
 injectLandingMetadataAndSchemas();
