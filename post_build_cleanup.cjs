@@ -491,6 +491,53 @@ function injectLandingMetadataAndSchemas() {
     fs.writeFileSync(sanitasFile, content, 'utf8');
     console.log('✅ Metadatos SEO y FAQPage schema inyectados en hub Seguros Sanitas.');
   }
+
+  // Asisa Product Subpages
+  const asisaProducts = [
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-asisa/asisa-health-students/index.html'),
+      title: 'ASISA Health Students | Seguro Visado de Estudiante España | VitaBlue',
+      description: 'Seguro médico oficial ASISA Health Students para visado de estudios y NIE en España. Sin copagos, sin carencias, repatriación médica incluida y certificado 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-health-students/',
+      productName: 'ASISA Health Students'
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-asisa/asisa-health-residents/index.html'),
+      title: 'ASISA Health Residents | Seguro Residencia y Nómadas Digitales | VitaBlue',
+      description: 'Seguro médico oficial ASISA Health Residents para visado de residencia no lucrativa y nómadas digitales en España. Sin copagos, repatriación incluida y certificado 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-health-residents/',
+      productName: 'ASISA Health Residents'
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-asisa/asisa-completa/index.html'),
+      title: 'ASISA Completa + | Seguro Médico Integral con Hospitalización | VitaBlue',
+      description: 'Descubre ASISA Completa + y ++: seguro de salud con hospitalización, 40.000 médicos, red hospitalaria Grupo HLA y telemedicina AsisaLIVE 24/7.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/',
+      productName: 'ASISA Completa +'
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-asisa/asisa-esencial/index.html'),
+      title: 'ASISA Esencial | Seguro Médico Sin Hospitalización | VitaBlue',
+      description: 'Seguro de salud ambulatorio ASISA Esencial y Esencial +: especialistas, pruebas diagnósticas y telemedicina sin listas de espera desde 13,90€/mes.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-esencial/',
+      productName: 'ASISA Esencial'
+    }
+  ];
+
+  asisaProducts.forEach((prod) => {
+    if (fs.existsSync(prod.file)) {
+      let content = fs.readFileSync(prod.file, 'utf8');
+      content = content.replace(/<title>[^<]*<\/title>/i, `<title>${prod.title}</title>`);
+      content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${prod.description}"`);
+      content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${prod.title}"`);
+      content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${prod.description}"`);
+      content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${prod.canonical}"`);
+      content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${prod.title}"`);
+      content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${prod.description}"`);
+      fs.writeFileSync(prod.file, content, 'utf8');
+    }
+  });
+  console.log('✅ Metadatos SEO inyectados en 4 páginas de producto Asisa.');
 }
 
 injectLandingMetadataAndSchemas();
