@@ -8,6 +8,7 @@
     "build": "vite build && node post_build_cleanup.cjs",
     "preview": "vite preview",
     "dev:render-worker": "cd packages/video-studio && tsx src/render-worker.ts",
+    "generate:pdf": "node scripts/generate_pdf.cjs",
     "sync-blog": "node scripts/sync_blog.cjs",
     "audit:front": "node scripts/audit_front.cjs",
     "audit:components": "node scripts/audit_component_usage.cjs",
@@ -36,7 +37,16 @@
     "test:e2e:seo": "playwright test e2e/seo.audit.spec.ts --project=desktop",
     "test:e2e:responsive": "playwright test e2e/responsive.diagnostic.spec.ts",
     "audit:lh": "npx unlighthouse --site http://localhost:4173",
-    "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache"
+    "audit:lh:ci": "npx unlighthouse-ci --site http://localhost:4173 --no-cache",
+    "gsc:summary": "node scripts/gsc_audit.cjs --summary",
+    "gsc:opportunities": "node scripts/gsc_audit.cjs --opportunities",
+    "gsc:pages": "node scripts/gsc_audit.cjs --pages",
+    "gsc:queries": "node scripts/gsc_audit.cjs --queries",
+    "gsc:countries": "node scripts/gsc_audit.cjs --countries",
+    "gsc:inspect": "node scripts/gsc_audit.cjs --inspect",
+    "gsc:batch-inspect": "node scripts/gsc_batch_inspect.cjs --all",
+    "gsc:sitemaps": "node scripts/gsc_sitemaps.cjs --status",
+    "gsc:sitemaps:submit": "node scripts/gsc_sitemaps.cjs --submit"
   },
   "dependencies": {
     "@remotion/player": "4.0.228",

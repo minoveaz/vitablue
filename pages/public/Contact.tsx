@@ -9,6 +9,8 @@ import FormField from '../../components/molecules/FormField';
 import Checkbox from '../../components/atoms/Checkbox';
 import Button from '../../components/atoms/Button';
 import { trackContactConversion } from '@/utils/analytics';
+import { VITA_BLUE_ORGANIZATION_SCHEMA } from '@/utils/organizationSchema';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 
 const Contact: React.FC = () => {
@@ -53,6 +55,11 @@ const Contact: React.FC = () => {
     contactPath: '/contacto',
   };
 
+  const contactWhatsAppUrl = buildContextualWhatsAppUrl({
+    pathname: content.contactPath,
+    locale: isEnglish ? 'en' : 'es',
+  });
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -96,11 +103,17 @@ const Contact: React.FC = () => {
         <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/contacto/" />
         <script type="application/ld+json">{JSON.stringify({ 
           '@context': 'https://schema.org', 
-          '@type': 'ContactPage', 
-          name: content.title, 
-          description: content.description, 
-          url: `https://www.vitablue.es${content.contactPath}`, 
-          mainEntity: { '@type': 'Organization', name: 'VitaBlue', email: 'info@vitablue.es', telephone: '+34694583452' } 
+          '@graph': [
+            {
+              '@type': 'ContactPage', 
+              '@id': `https://www.vitablue.es${content.contactPath}/#webpage`,
+              name: content.title, 
+              description: content.description, 
+              url: `https://www.vitablue.es${content.contactPath}/`, 
+              mainEntity: { '@id': 'https://www.vitablue.es/#organization' }
+            },
+            VITA_BLUE_ORGANIZATION_SCHEMA
+          ]
         })}</script>
       </Helmet>
 
@@ -128,7 +141,7 @@ const Contact: React.FC = () => {
                 description="+34 694 58 34 52" 
               />
               <ContactChannelCard 
-                href="https://wa.me/34694583452" 
+                href={contactWhatsAppUrl} 
                 icon={<WhatsAppIcon size={24} />} 
                 title={content.whatsappLabel} 
                 description={content.whatsapp} 

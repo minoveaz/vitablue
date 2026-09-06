@@ -24,10 +24,10 @@ let prerenderRoutes = prerenderBlock
 if (prerenderRoutes.length === 0 && /routes:\s*prerenderRoutes/.test(vite)) {
   const staticRegistryRoutes = [
     ...[...registry.matchAll(/(?:canonical|legacy)\('([^']+)'/g)].map((match) => match[1]),
-    ...[...registry.matchAll(/path:\s*'\/(?:cotizador\.html|wizard|resultados)'/g)].map((match) => match[0].match(/'([^']+)'/)[1]),
+    ...[...registry.matchAll(/path:\s*'\/(?:cotizador\.html|wizard\/?|resultados\/?)'/g)].map((match) => match[0].match(/'([^']+)'/)[1]),
   ];
   const blogSlugs = [...fs.readFileSync(path.join(root, 'utils', 'blogData.ts'), 'utf8').matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
-  prerenderRoutes = [...staticRegistryRoutes, ...blogSlugs.map((slug) => `${slug.startsWith('student-visa-') || slug.startsWith('health-insurance-') ? '/en' : ''}/blog/${slug}`)];
+  prerenderRoutes = [...staticRegistryRoutes, ...blogSlugs.map((slug) => `${slug.startsWith('student-visa-') || slug.startsWith('health-insurance-') ? '/en' : ''}/blog/${slug}/`)];
 }
 const sitemapRoutes = [...sitemap.matchAll(/<loc>https?:\/\/[^<]+?(\/[^<]*)<\/loc>/g)].map((match) => match[1] || '/');
 const registryRoutes = [
@@ -37,21 +37,31 @@ const registryRoutes = [
 const legacyRegistryRoutes = new Set([...registry.matchAll(/legacy\('([^']+)'/g)].map((match) => match[1]));
 const nonSeoRoutes = new Set([
   '/login',
+  '/login/',
   '/backoffice',
+  '/backoffice/',
   '/backoffice/catalogo',
+  '/backoffice/catalogo/',
   '/backoffice/document-intelligence',
+  '/backoffice/document-intelligence/',
   '/backoffice/tools',
+  '/backoffice/tools/',
   '/backoffice/tools/document-intelligence',
+  '/backoffice/tools/document-intelligence/',
   '/cotizador.html',
   '/wizard',
+  '/wizard/',
   '/resultados',
+  '/resultados/',
 ]);
 
 const unique = (routes) => [...new Set(routes)];
 const dynamicRoutes = appRoutes.filter((route) => route.includes(':'));
 const routeIsCovered = (route) => appRoutes.some((appRoute) => {
-  if (!appRoute.includes(':')) return appRoute === route;
-  const pattern = new RegExp(`^${appRoute.split('/').map((segment) => segment.startsWith(':') ? '[^/]+' : segment.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')).join('/')}\\/?$`);
+  if (!appRoute.includes(':')) {
+    return appRoute === route || `${appRoute}/` === route || appRoute === `${route}/`;
+  }
+  const pattern = new RegExp(`^${appRoute.split('/').map((segment) => segment.startsWith(':') ? '[^/]+' : segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('/')}\\/?$`);
   return pattern.test(route);
 });
 const concreteAppRoutes = appRoutes.filter((route) =>

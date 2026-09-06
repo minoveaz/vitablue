@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   ShieldCheck, Clock, Award, Shield
 } from 'lucide-react';
@@ -33,7 +34,7 @@ export const AsistenciaFamiliar: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat'); // Standard profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [
@@ -157,8 +158,8 @@ export const AsistenciaFamiliar: React.FC = () => {
   ];
 
   const canonicalUrl = 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/';
-  const title = 'Asistencia Familiar Iplus | Seguro de Decesos | VitaBlue';
-  const description = 'Protege a tu familia frente a imprevistos con Asistencia Familiar Iplus. Seguro de decesos completo con cobertura de traslado, asesoramiento legal y testamento.';
+  const title = 'Sanitas Asistencia Familiar iPlus | Seguro de Decesos y Traslado | VitaBlue';
+  const description = 'Contrata Sanitas Asistencia Familiar iPlus. Seguro de decesos integral con repatriación y traslado nacional e internacional, sepelio y asesoría jurídica familiar.';
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -205,18 +206,19 @@ export const AsistenciaFamiliar: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros",
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Asistencia Familiar iPlus"
+            "name": "Asistencia Familiar iPlus",
+            "item": canonicalUrl
           }
         ]
       },
@@ -386,7 +388,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asesoría personalizada para tu unidad familiar?"
         description="Ofrecemos tarifas colectivas y familiares adaptadas al número de asegurados y edades. Te asesoramos sin ningún coste o compromiso de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Asistencia%20Familiar%20Iplus."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguro-para-decesos/asistencia-familiar', tag: 'LANDING-DECESOS' })}
       />
     </div>
   );

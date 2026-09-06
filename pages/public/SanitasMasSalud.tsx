@@ -20,6 +20,7 @@ import PlanComparisonSection from '../../components/organisms/PlanComparisonSect
 import ProductPromotionSection from '../../components/organisms/ProductPromotionSection';
 import DigitalServicesSection from '../../components/organisms/DigitalServicesSection';
 import { Button } from '../../components/atoms/Button';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   HealthIllustration,
   MedicalAttentionIllustration,
@@ -37,7 +38,7 @@ export const SanitasMasSalud: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('expat'); // Standard resident/expat profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const coverages = [
@@ -196,18 +197,19 @@ export const SanitasMasSalud: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros de Salud",
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Sanitas Más Salud"
+            "name": "Sanitas Más Salud",
+            "item": canonicalUrl
           }
         ]
       }
@@ -456,7 +458,7 @@ export const SanitasMasSalud: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas ayuda para elegir tu modalidad de copago?"
         description="Sanitas Más Salud está disponible con copago bajo o sin copagos. Te ayudamos a calcular cuál es más rentable para tu nivel de visitas al médico de forma totalmente gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Sanitas%20M%C3%A1s%20Salud."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud', tag: 'LANDING-SANITAS-MAS-SALUD' })}
       />
     </div>
   );

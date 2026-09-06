@@ -2,6 +2,7 @@ import React from 'react';
 import { sanitasMascotasPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   ShieldCheck, Clock, Award, Dog
 } from 'lucide-react';
@@ -35,7 +36,7 @@ export const SanitasMascotas: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('pet'); // Pet profile
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [
@@ -130,8 +131,8 @@ export const SanitasMascotas: React.FC = () => {
   ];
 
   const canonicalUrl = 'https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/';
-  const title = 'Sanitas Mascotas | Seguro Veterinario para Perros y Gatos | VitaBlue';
-  const description = 'Protege a tu perro o gato con Sanitas Mascotas. Seguro médico veterinario con consultas ilimitadas, vacunas incluidas y acceso a red nacional.';
+  const title = 'Sanitas Mascotas desde 9,90€/mes | Seguro Perros y Gatos VitaBlue';
+  const description = 'Seguro veterinario oficial Sanitas Mascotas desde 9,90€/mes. Consultas y vacuna de la rabia gratis, urgencias 24h, sin exclusión por raza y contratación online.';
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -162,13 +163,19 @@ export const SanitasMascotas: React.FC = () => {
         "@type": "FinancialProduct",
         "@id": `${canonicalUrl}#producto`,
         "name": "Sanitas Salud Mascotas",
-        "description": "Sanitas Mascotas: seguro veterinario con reembolso del 80%, hasta 2.500 €/año. Libre elección de veterinario y gestión 100% digital.",
+        "description": "Sanitas Mascotas: seguro veterinario con consultas y vacuna de la rabia gratuitas, y reembolso de hasta 2.500 €/año.",
         "brand": {
           "@type": "Brand",
           "name": "Sanitas"
         },
         "provider": {
           "@id": "https://www.vitablue.es/#organization"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "9.90",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock"
         }
       },
       {
@@ -178,23 +185,55 @@ export const SanitasMascotas: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Sanitas Salud Mascotas"
+            "name": "Sanitas Mascotas",
+            "item": canonicalUrl
           }
         ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${canonicalUrl}#faq`,
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.a
+          }
+        }))
       }
     ]
   };
+
+  React.useEffect(() => {
+    document.title = title;
+    const metaDesc = document.head.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', description);
+
+    let script = document.head.querySelector('script[data-schema-page="mascotas"]') as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-schema-page', 'mascotas');
+      document.head.appendChild(script);
+    }
+    script.text = JSON.stringify(schemaMarkup);
+
+    return () => {
+      document.head.querySelector('script[data-schema-page="mascotas"]')?.remove();
+    };
+  }, [title, description, schemaMarkup]);
 
   return (
     <div className="w-full flex flex-col bg-white">
@@ -229,10 +268,10 @@ export const SanitasMascotas: React.FC = () => {
           { label: 'Seguro Veterinario Oficial', icon: <Dog className="h-4 w-4" /> },
           { label: 'Sin exclusión por raza', tone: 'accent' },
         ]}
-        title="Sanitas Mascotas"
-        description="Cuidado integral veterinario para tu perro o gato. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
+        title="Sanitas Mascotas desde 9,90€/mes"
+        description="Cuidado integral veterinario para tu perro o gato sin exclusión por raza. Consultas gratis ilimitadas, vacuna de la rabia incluida y acceso a más de 400 centros de salud animal en España."
         primaryAction={{ label: 'Calcular Póliza Online', onClick: handleStartQuoting }}
-        secondaryAction={{ label: 'Llamar Gratis', href: 'tel:+34694583452' }}
+        secondaryAction={{ label: 'Asesor WhatsApp', href: getProductWhatsAppUrl('mascotas') }}
         highlights={['Limpieza dental anual gratis', 'Urgencias 24h']}
       >
         <QuoteEstimator
@@ -331,7 +370,7 @@ export const SanitasMascotas: React.FC = () => {
       <AdvisorHelpSection
         title="¿Tienes dudas sobre los límites de edad?"
         description="Puedes contratar Sanitas Mascotas para perros y gatos desde los 3 meses hasta los 9 años de edad. Te asesoramos sin compromiso sobre cualquier cobertura veterinaria de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20Sanitas%20Mascotas."
+        whatsappUrl={getProductWhatsAppUrl('mascotas')}
       />
     </div>
   );

@@ -14,7 +14,7 @@ describe('Destination Cities Data & Hospitals Directory', () => {
     Object.values(destinationCities).forEach((city) => {
       expect(city.name).toBeTruthy();
       expect(city.heroTitle).toBeTruthy();
-      expect(city.canonicalPath).toBe(`/productos/seguros-salud/seguro-medico-estudiantes/${city.slug}`);
+      expect(city.canonicalPath).toBe(`/productos/seguros-salud/seguro-medico-estudiantes/${city.slug}/`);
       expect(city.hospitals.length).toBeGreaterThanOrEqual(3);
       expect(city.universities.length).toBeGreaterThanOrEqual(3);
       expect(city.tieOfficeInfo.address).toBeTruthy();

@@ -19,7 +19,7 @@ describe('Consulates Data Specification', () => {
     expect(colombia).toBeDefined();
     expect(colombia?.country).toBe('Colombia');
     expect(colombia?.city).toBe('Bogotá');
-    expect(colombia?.canonicalPath).toBe('/productos/seguros-salud/seguro-medico-estudiantes/colombia');
+    expect(colombia?.canonicalPath).toBe('/productos/seguros-salud/seguro-medico-estudiantes/colombia/');
 
     const chile = getConsulateBySlug('chile');
     expect(chile).toBeDefined();
