@@ -13,6 +13,7 @@ export interface QuoteEstimatorProps {
   initialAge?: number;
   minAge?: number;
   maxAge?: number;
+  ageSuffix?: string;
   modalityLabel?: string;
   options: QuoteEstimatorOption[];
   initialOption?: string;
@@ -32,6 +33,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
   initialAge = 30,
   minAge = 18,
   maxAge = 65,
+  ageSuffix = 'años',
   modalityLabel = 'Modalidad',
   options,
   initialOption,
@@ -57,7 +59,7 @@ const QuoteEstimator: React.FC<QuoteEstimatorProps> = ({
 
       <div className="space-y-4">
         <label className="block text-[10px] font-black uppercase tracking-wider text-text-secondary">
-          {ageLabel}: <span className="ml-1 text-sm font-sans font-black text-primary">{age} años</span>
+          {ageLabel}: <span className="ml-1 text-sm font-sans font-black text-primary">{age} {ageSuffix}</span>
           <input
             type="range"
             min={minAge}

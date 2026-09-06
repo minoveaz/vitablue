@@ -58,16 +58,34 @@
   - [ ] **AdvisorHelpSection**: Bloque de cierre hacia WhatsApp y teléfono.
 
 ### Fase 4: Enrutamiento, Navegación y Ecosistema Global
-- [ ] Registrar ruta `/productos/seguros-salud/seguros-asisa` en `App.tsx` y `config/routes.ts`.
-- [ ] **Navbar**: Añadir enlace "Seguros Asisa" en la columna de Especialidades junto a Sanitas.
-- [ ] **Footer**: Añadir "Catálogo Seguros Asisa" en la columna de Seguros de Salud.
-- [ ] **Landing Seguros de Salud (`HealthInsurance.tsx`)**: Incorporar sección/banner gemelo de Seguros Asisa.
-- [ ] **Sitemap & SSG**: Sincronizar en `public/sitemap.xml` y en la lista de rutas pre-renderizadas de `vite.config.ts`.
+- [x] Registrar ruta `/productos/seguros-salud/seguros-asisa` en `App.tsx` y `config/routes.ts`.
+- [x] **Navbar**: Añadir enlace "Seguros Asisa" en la columna de Especialidades junto a Sanitas.
+- [x] **Footer**: Añadir "Catálogo Seguros Asisa" en la columna de Seguros de Salud.
+- [x] **Landing Seguros de Salud (`HealthInsurance.tsx`)**: Incorporar sección/banner gemelo de Seguros Asisa.
+- [x] **Sitemap & SSG**: Sincronizar en `public/sitemap.xml` y en la lista de rutas pre-renderizadas de `vite.config.ts`.
 
-### Fase 5: Verificación, Quality Gate y Despliegue
-- [ ] `npm run typecheck` (0 errores de TypeScript).
-- [ ] `npm test` (pruebas unitarias aprobadas).
-- [ ] `npm run build` (pre-renderizado SSG completo de las 68 rutas con Puppeteer).
+### Fase 5: Páginas Detalladas de Producto Asisa (4 Pólizas Oficiales)
+- [x] `AsisaHealthStudents.tsx`: Póliza médica para visados y estancias de estudios.
+- [x] `AsisaHealthResidents.tsx`: Póliza sin copagos para residencia no lucrativa y nómadas digitales.
+- [x] `AsisaCompleta.tsx`: Asistencia completa con hospitalización médica y quirúrgica.
+- [x] `AsisaEsencial.tsx`: Póliza ambulatoria extrahospitalaria con especialistas y telemedicina.
+
+### Fase 6: Versión en Inglés & Emparejamiento Hreflang Recíproco (#180)
+- [x] Catálogo en inglés en `domain/products/asisaCatalog.ts` y tests unitarios.
+- [x] Versión bilingüe en Hub `/en/health-insurance/asisa-insurance/`.
+- [x] Versión bilingüe en `/en/health-insurance/asisa-health-students/`.
+- [x] Versión bilingüe en `/en/health-insurance/asisa-health-residents/`.
+- [x] Versión bilingüe en `/en/health-insurance/asisa-completa/`.
+- [x] Versión bilingüe en `/en/health-insurance/asisa-esencial/`.
+- [x] Emparejamiento hreflang recíproco (`es`, `en`, `x-default`) en cabeceras y `public/sitemap.xml`.
+- [x] Inyección de rutas en `config/routes.ts` y `App.tsx`.
+- [x] Pre-renderizado SSG completo con Puppeteer sin fallos.
+
+### Fase 7: Verificación, Quality Gate y Despliegue
+- [x] `npm run typecheck` (0 errores de TypeScript).
+- [x] `npm test` (255 pruebas unitarias aprobadas).
+- [x] `npm run validate` (auditorías de rutas y sitemap en verde).
+- [x] `npm run build` (pre-renderizado SSG completo de todas las rutas con Puppeteer).
 - [ ] Pull Request a `develop`, Quality Gate en verde y promoción a `main`.
 
 ---
@@ -75,5 +93,6 @@
 ## 📈 Métricas de Éxito
 - Cobertura 100% de los 9 productos oficiales identificados en `Docs asisa`.
 - Paridad estética y funcional total con el hub de Sanitas existente.
+- Cobertura bilingüe integral (ES / EN) con 100% de enlaces de conversión contextuales a WhatsApp.
 - Aumento de conversiones para perfiles de visado con presupuesto ajustado gracias a la tarifa de Asisa Students (desde 35€/mes).
 - 100% SSG pre-renderizado e indexable por motores de búsqueda.

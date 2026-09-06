@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { asisaFeaturedProducts, asisaConsultProducts } from './asisaCatalog';
+import {
+  asisaFeaturedProducts,
+  asisaConsultProducts,
+  asisaFeaturedProductsEn,
+  asisaConsultProductsEn,
+  getAsisaFeaturedProducts,
+  getAsisaConsultProducts
+} from './asisaCatalog';
 
 describe('asisaCatalog domain inventory', () => {
   it('should have 4 featured products and 5 consult products (9 total matching official docs)', () => {
@@ -41,4 +48,18 @@ describe('asisaCatalog domain inventory', () => {
       expect(p.features.length).toBeGreaterThanOrEqual(3);
     });
   });
+
+  it('should return English catalog products when requested via helpers', () => {
+    const featuredEn = getAsisaFeaturedProducts('en');
+    const consultEn = getAsisaConsultProducts('en');
+
+    expect(featuredEn).toBe(asisaFeaturedProductsEn);
+    expect(consultEn).toBe(asisaConsultProductsEn);
+    expect(featuredEn).toHaveLength(4);
+    expect(consultEn).toHaveLength(5);
+    expect(featuredEn[0].link).toContain('/en/health-insurance/');
+    expect(consultEn[0].link).toContain('Hi!%20I%27m%20visiting%20VitaBlue');
+    expect(featuredEn[0].badge).toBe('Best for Student Visa');
+  });
 });
+

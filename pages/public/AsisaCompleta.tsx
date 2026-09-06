@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ShieldCheck, Clock, Award, Smartphone } from 'lucide-react';
 import ProductProcessSection from '../../components/organisms/ProductProcessSection';
@@ -29,7 +29,10 @@ import {
 
 export const AsisaCompleta: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setProfile, resetWizard } = useWizard();
+
+  const isEnglish = location.pathname.startsWith('/en');
 
   const handleStartQuoting = () => {
     resetWizard();
@@ -37,7 +40,38 @@ export const AsisaCompleta: React.FC = () => {
     navigate('/wizard?flow=health&insurer=asisa');
   };
 
-  const coverages = [
+  const coverages = isEnglish ? [
+    {
+      title: 'Unlimited Hospitalization & Surgeries',
+      desc: 'Individual room with companion bed (excluding ICU), surgical interventions, and advanced treatments across the HLA Hospital Group network.',
+      illustration: MedicalAttentionIllustration
+    },
+    {
+      title: 'Medical Network with 40,000+ Specialists',
+      desc: 'Direct consultations without waiting lists in cardiology, traumatology, gynecology, dermatology, oncology, and general medicine.',
+      illustration: HealthIllustration
+    },
+    {
+      title: 'Advanced Diagnostic Technology',
+      desc: 'Full access to MRIs, CT scans, endoscopies, ultrasounds, and comprehensive clinical laboratory tests at benchmark medical centers.',
+      illustration: PreventionIllustration
+    },
+    {
+      title: '24/7 Emergencies & Telemedicine',
+      desc: 'Immediate outpatient and inpatient emergency medical attention in contracted clinics and on-demand video consultations via AsisaLIVE.',
+      illustration: FamilyIllustration
+    },
+    {
+      title: 'ASISA Dental Care Included',
+      desc: 'Over 50 complimentary dental services: annual dental cleanings, diagnostic x-rays, emergency consultations, and discounts on orthodontics.',
+      illustration: DentalIllustration
+    },
+    {
+      title: 'Worldwide Travel Emergency Assistance',
+      desc: 'Emergency medical assistance coverage abroad up to €14,000 per year per insured person for international trips up to 90 consecutive days.',
+      illustration: TravelIllustration
+    }
+  ] : [
     {
       title: 'Hospitalización y Cirugías Ilimitadas',
       desc: 'Habitación individual con cama de acompañante (excepto UCI), intervenciones quirúrgicas y tratamientos en la red de hospitales del Grupo HLA.',
@@ -70,7 +104,35 @@ export const AsisaCompleta: React.FC = () => {
     }
   ];
 
-  const modalitiesList = [
+  const modalitiesList = isEnglish ? [
+    {
+      name: 'ASISA Completa +',
+      subtitle: 'Reduced Copays (Most Popular)',
+      desc: 'The best balance between an affordable monthly premium and low copays (€2.50 to €5.00 per visit). Hospital stays and surgeries are 100% copay-free.',
+      priceDetail: 'From €24.90/mo + low copay',
+      tag: 'Most Popular',
+      badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20',
+      isFeatured: true
+    },
+    {
+      name: 'ASISA Completa ++',
+      subtitle: 'Maximum Monthly Savings',
+      desc: 'Ultra-low monthly premium for individuals who see doctors occasionally but require full security against major surgical or hospital events.',
+      priceDetail: 'From €19.90/mo + medium copay',
+      tag: 'Budget',
+      badgeColor: 'bg-brand-cyan/10 text-primary border border-brand-cyan/20',
+      isFeatured: false
+    },
+    {
+      name: 'ASISA Completa No Copay',
+      subtitle: 'Fixed Flat Rate',
+      desc: 'Pay a fixed monthly fee and enjoy unlimited access to doctors, clinical tests, and full hospitalization with €0 extra charges.',
+      priceDetail: 'From €39.90/mo (0€ Copay)',
+      tag: 'Total Peace of Mind',
+      badgeColor: 'bg-slate-100 text-text-main border border-slate-200',
+      isFeatured: false
+    }
+  ] : [
     {
       name: 'ASISA Completa +',
       subtitle: 'Copagos Reducidos (Más Elegido)',
@@ -100,7 +162,29 @@ export const AsisaCompleta: React.FC = () => {
     }
   ];
 
-  const testimonials = [
+  const testimonials = isEnglish ? [
+    {
+      author: 'Francisco J.',
+      meta: 'ASISA Completa + Insured (Madrid)',
+      comment: 'We have had ASISA Completa for the entire family for 3 years. We go to Hospital Universitario Moncloa and the speed and friendliness of the staff are second to none.',
+      stars: 5,
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100'
+    },
+    {
+      author: 'Elena B.',
+      meta: 'ASISA Completa ++ Insured (Seville)',
+      comment: 'I selected Completa ++ because I rarely go to the doctor, but wanted full protection for hospital emergencies. I pay very little monthly and have complete peace of mind.',
+      stars: 5,
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'
+    },
+    {
+      author: 'Marcos R.',
+      meta: 'AsisaLIVE and Specialists (Alicante)',
+      comment: 'The AsisaLIVE app works wonderfully. I have had dermatology and GP consultations in under 5 minutes right from my office.',
+      stars: 5,
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100'
+    }
+  ] : [
     {
       author: 'Francisco J.',
       meta: 'Asegurado ASISA Completa + (Madrid)',
@@ -124,7 +208,24 @@ export const AsisaCompleta: React.FC = () => {
     }
   ];
 
-  const faqs = [
+  const faqs = isEnglish ? [
+    {
+      q: 'What is the difference between ASISA Completa + and Completa ++?',
+      a: 'The key distinction lies in monthly premiums and copay amounts. In ASISA Completa + the monthly fee is slightly higher with very low copays (€2.50 to €5.00). In ASISA Completa ++ the monthly fee is discounted (from €19.90/mo) in exchange for medium copays per consultation or test.'
+    },
+    {
+      q: 'Does ASISA Completa have waiting periods (carencias)?',
+      a: 'Specialist consultations, general medicine, emergency room visits, and routine diagnostics are covered from day one. Complex services such as planned hospitalizations or surgeries typically carry a 6 to 8 month waiting period. If you switch from another insurer with over 1 year of tenure, ASISA waives most waiting periods.'
+    },
+    {
+      q: 'Which hospitals are included with this policy?',
+      a: 'You have direct access to all 18 proprietary HLA Group hospitals and 36 clinics in Spain (like HLA Moncloa in Madrid and HLA Santa Isabel in Seville) plus hundreds of contracted private clinics across Spain.'
+    },
+    {
+      q: 'Can I include the whole family in the same policy?',
+      a: 'Yes, ASISA Completa offers family multi-policy discounts starting with 3 or more insured members, with unified billing and individual digital medical cards on each phone.'
+    }
+  ] : [
     {
       q: '¿Qué diferencia hay entre ASISA Completa + y Completa ++?',
       a: 'La diferencia principal está en la prima mensual y el importe del copago. En ASISA Completa + la cuota mensual es ligeramente superior pero los copagos son mínimos (de 2,50€ a 5€). En ASISA Completa ++ la cuota mensual es muy reducida (desde 19,90€) a cambio de copagos medios por consulta médica y pruebas diagnósticas.'
@@ -138,14 +239,22 @@ export const AsisaCompleta: React.FC = () => {
       a: 'Accedes a toda la red propia de hospitales y clínicas del Grupo HLA (18 hospitales y 36 centros en España) y a cientos de hospitales concertados de primer nivel en todo el país.'
     },
     {
-      q: '¿Incluye cobertura dental?',
-      a: 'Sí, ASISA Dental viene integrada en la póliza e incluye revisiones anuales, extracciones simples, radiografías y limpiezas sin coste adicional, además de tarifas franquiciadas reducidas en tratamientos de ortodoncia e implantología.'
+      q: '¿Puedo incluir a toda mi familia en la misma póliza?',
+      a: 'Sí, ASISA Completa ofrece descuentos familiares por número de asegurados (a partir de 3 miembros) con una única gestión de pago y tarjetas digitales independientes en el móvil.'
     }
   ];
 
-  const canonicalUrl = 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/';
-  const title = 'ASISA Completa + | Seguro Médico Integral con Hospitalización | VitaBlue';
-  const description = 'Descubre ASISA Completa + y ++: seguro de salud con hospitalización, 40.000 médicos, red hospitalaria Grupo HLA y telemedicina AsisaLIVE 24/7.';
+  const canonicalUrl = isEnglish
+    ? 'https://www.vitablue.es/en/health-insurance/asisa-completa/'
+    : 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/';
+
+  const title = isEnglish
+    ? 'ASISA Completa (+ / ++) | Comprehensive Health Insurance in Spain | VitaBlue'
+    : 'ASISA Completa (+ / ++) | Seguro de Salud Completo con Hospitalización | VitaBlue';
+
+  const description = isEnglish
+    ? 'Official ASISA Completa (+ / ++) healthcare insurance in Spain. Full hospitalization, 40,000+ medical doctors, HLA hospital network, dental cover, and 24/7 video doctor.'
+    : 'Seguro médico oficial ASISA Completa (+ / ++). Hospitalización quirúrgica, más de 40.000 especialistas, red de hospitales propios Grupo HLA, dental y telemedicina 24h.';
 
   const schemaMarkup = {
     '@context': 'https://schema.org',
@@ -156,14 +265,18 @@ export const AsisaCompleta: React.FC = () => {
         name: 'VitaBlue',
         url: 'https://www.vitablue.es/',
         logo: 'https://www.vitablue.es/assets/logo-vitablue.svg',
-        description: 'Asesoría independiente autorizada de seguros médicos Asisa en España.',
+        description: isEnglish
+          ? 'Independent private health insurance comparator in Spain. Official rates and expert advice.'
+          : 'Asesoría independiente de seguros de salud en España. Precios oficiales y asesoramiento profesional sin comisiones.',
         telephone: '+34 694 58 34 52'
       },
       {
         '@type': 'FinancialProduct',
         '@id': `${canonicalUrl}#producto`,
-        name: 'ASISA Completa +',
-        description: 'Seguro médico integral con hospitalización médica y quirúrgica, cuadro médico del Grupo HLA y telemedicina AsisaLIVE.',
+        name: 'ASISA Completa',
+        description: isEnglish
+          ? 'Comprehensive private health insurance in Spain with full medical and surgical hospitalization, proprietary HLA network, and low copay tiers.'
+          : 'Póliza de seguro médico integral con hospitalización médica y quirúrgica, red hospitalaria Grupo HLA y opciones con copago reducido.',
         brand: {
           '@type': 'Brand',
           name: 'ASISA'
@@ -178,20 +291,20 @@ export const AsisaCompleta: React.FC = () => {
           {
             '@type': 'ListItem',
             position: 1,
-            name: 'Inicio',
-            item: 'https://www.vitablue.es/'
+            name: isEnglish ? 'Home' : 'Inicio',
+            item: isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'
           },
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Seguros de Salud',
-            item: 'https://www.vitablue.es/productos/seguros-salud/'
+            name: isEnglish ? 'Health Insurance' : 'Seguros de Salud',
+            item: isEnglish ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain/' : 'https://www.vitablue.es/productos/seguros-salud/'
           },
           {
             '@type': 'ListItem',
             position: 3,
-            name: 'Seguros Asisa',
-            item: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/'
+            name: isEnglish ? 'ASISA Insurance' : 'Seguros Asisa',
+            item: isEnglish ? 'https://www.vitablue.es/en/health-insurance/asisa-insurance/' : 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/'
           },
           {
             '@type': 'ListItem',
@@ -221,6 +334,11 @@ export const AsisaCompleta: React.FC = () => {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonicalUrl} />
+
+        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/" />
+        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance/asisa-completa/" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/" />
+
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -229,7 +347,11 @@ export const AsisaCompleta: React.FC = () => {
       </Helmet>
 
       <ProductBreadcrumbBar
-        items={[
+        items={isEnglish ? [
+          { label: 'Health Insurance', href: '/en/health-insurance-student-visa-spain' },
+          { label: 'ASISA Insurance', href: '/en/health-insurance/asisa-insurance' },
+          { label: 'ASISA Completa', href: canonicalUrl }
+        ] : [
           { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
           { label: 'Seguros Asisa', href: '/productos/seguros-salud/seguros-asisa' },
           { label: 'ASISA Completa', href: canonicalUrl }
@@ -237,65 +359,81 @@ export const AsisaCompleta: React.FC = () => {
       />
 
       <ProductHero
-        badges={[
-          { label: 'Cuadro Médico Integral HLA', tone: 'brand' },
-          { label: 'Hospitalización y Cirugías', tone: 'accent' },
-          { label: 'IPID AFR01S0015' }
+        badges={isEnglish ? [
+          { label: 'Full Medical & Surgical Cover', tone: 'brand', icon: <ShieldCheck className="w-3.5 h-3.5" /> },
+          { label: 'Proprietary HLA Network', tone: 'accent' },
+          { label: 'IPID AFR01S0015 / 80' }
+        ] : [
+          { label: 'Cobertura Integral con Hospitalización', tone: 'brand', icon: <ShieldCheck className="w-3.5 h-3.5" /> },
+          { label: 'Red Hospitalaria Grupo HLA', tone: 'accent' },
+          { label: 'IPID AFR01S0015 / 80' }
         ]}
-        title="ASISA Completa: Asistencia Sanitaria Integral con Hospitalización"
-        description="El seguro de salud más completo de Asisa. Acceso ilimitado a más de 40.000 profesionales médicos, 18 hospitales del Grupo HLA, telemedicina AsisaLIVE y dental incluido."
+        title={isEnglish
+          ? 'ASISA Completa: Comprehensive Private Health Insurance in Spain'
+          : 'ASISA Completa: Asistencia Sanitaria Integral con Hospitalización'}
+        description={isEnglish
+          ? 'Direct access to Spain\'s top medical specialists, diagnostic imaging, and private hospitalization. Choose between Completa + (reduced copays) and Completa ++ (maximum monthly savings).'
+          : 'Acceso directo a especialistas médicos de prestigio, pruebas diagnósticas y hospitalización médica y quirúrgica sin esperas. Elige entre Completa + (copago reducido) y Completa ++ (máximo ahorro mensual).'}
         primaryAction={{
-          label: 'Calcular mi Cuota',
+          label: isEnglish ? 'Calculate Health Quote' : 'Calcular Tarifa Completa',
           onClick: handleStartQuoting
         }}
         secondaryAction={{
-          label: 'Asesoría por WhatsApp',
-          href: buildContextualWhatsAppUrl({ pathname: canonicalUrl, tag: 'ASISA-COMPLETA' })
+          label: isEnglish ? 'Inquire via WhatsApp' : 'Consultar por WhatsApp',
+          href: buildContextualWhatsAppUrl({ pathname: canonicalUrl, tag: 'ASISA-COMPLETA', locale: isEnglish ? 'en' : 'es' })
         }}
       >
         <QuoteEstimator
-          title="Cotizador ASISA Completa"
-          description="Calcula tu tarifa estimada según edad y modalidad de copago."
+          title={isEnglish ? 'ASISA Completa Quote Estimator' : 'Cotizador ASISA Completa'}
+          description={isEnglish
+            ? 'Estimate your monthly fee by age and copay preference.'
+            : 'Calcula tu cuota mensual estimada según edad y modalidad de copago.'}
           initialAge={32}
-          minAge={18}
+          minAge={0}
           maxAge={65}
-          options={[
-            { id: 'completa-plus', label: 'Completa + (Copago Bajo)' },
-            { id: 'completa-plus-plus', label: 'Completa ++ (Económico)' },
-            { id: 'sin-copago', label: 'Sin Copago (Cuota Fija)' }
+          ageSuffix={isEnglish ? 'years' : 'años'}
+          ageLabel={isEnglish ? 'Insured Age' : 'Edad del Asegurado'}
+          modalityLabel={isEnglish ? 'Copay Tier' : 'Modalidad'}
+          priceLabel={isEnglish ? 'Estimated Fee:' : 'Cuota Estimada:'}
+          priceSuffix={isEnglish ? '€/mo' : '€/mes'}
+          submitLabel={isEnglish ? 'Start Online Application' : 'Iniciar Contratación Online'}
+          options={isEnglish ? [
+            { id: 'completa-plus', label: 'Completa +' },
+            { id: 'completa-plus-plus', label: 'Completa ++' },
+            { id: 'sin-copago', label: 'No Copay' }
+          ] : [
+            { id: 'completa-plus', label: 'Completa +' },
+            { id: 'completa-plus-plus', label: 'Completa ++' },
+            { id: 'sin-copago', label: 'Sin Copago' }
           ]}
           calculatePrice={(age, option) => {
-            if (option === 'completa-plus-plus') {
-              if (age <= 30) return '19.90';
-              if (age <= 45) return '25.50';
-              if (age <= 60) return '34.90';
-              return 'Consultar';
-            }
-            if (option === 'completa-plus') {
-              if (age <= 30) return '24.90';
-              if (age <= 45) return '31.20';
-              if (age <= 60) return '42.50';
-              return 'Consultar';
-            }
-            if (age <= 30) return '39.90';
-            if (age <= 45) return '48.90';
-            if (age <= 60) return '65.00';
-            return 'Consultar';
+            let base = 24.90;
+            if (option === 'completa-plus-plus') base = 19.90;
+            if (option === 'sin-copago') base = 39.90;
+
+            if (age > 40) base += 8;
+            if (age > 50) base += 18;
+            if (age > 60) base += 35;
+            return base.toFixed(2);
           }}
           onSubmit={handleStartQuoting}
         />
       </ProductHero>
 
       <ProductTrustBar
-        items={[
-          { icon: <ShieldCheck />, title: 'Red HLA Propia', description: 'Acceso directo y preferente a 18 hospitales de primer nivel.' },
-          { icon: <Clock />, title: 'Sin Carencias de Urgencias', description: 'Atención urgente y consultas médicas cubiertas desde el día 1.' },
-          { icon: <Award />, title: 'Dental Incluido de Serie', description: 'Limpiezas, revisiones y urgencias odontológicas sin coste extra.' }
+        items={isEnglish ? [
+          { icon: <ShieldCheck />, title: '40,000+ Specialists', description: 'Direct appointments with leading doctors without gatekeeper delays.' },
+          { icon: <Clock />, title: 'Zero Wait Times', description: 'Immediate consultations, diagnostic tests, and emergencies from day one.' },
+          { icon: <Award />, title: 'HLA Hospital Network', description: '18 proprietary hospitals and 36 multi-specialty centers across Spain.' }
+        ] : [
+          { icon: <ShieldCheck />, title: '40.000+ Especialistas', description: 'Consultas directas sin pasar por el médico de cabecera.' },
+          { icon: <Clock />, title: 'Sin Listas de Espera', description: 'Atención ágil en consultas, pruebas y urgencias médicas.' },
+          { icon: <Award />, title: 'Red Propia Grupo HLA', description: '18 hospitales propios y 36 centros multiespecialidad en España.' }
         ]}
       />
 
       <ProviderLogoBar
-        eyebrow="Aseguradora oficial"
+        eyebrow={isEnglish ? 'Official Healthcare Network' : 'Red asistencial médica oficial'}
         providers={[
           { name: 'Asisa', logoSrc: '/images/logo-asisa.png' },
           { name: 'Grupo HLA', logoSrc: '/images/logo-asisa.png' }
@@ -303,9 +441,11 @@ export const AsisaCompleta: React.FC = () => {
       />
 
       <PlanComparisonSection
-        eyebrow="Modalidades Disponibles"
-        title="Elige tu nivel de copago según la frecuencia de uso médico"
-        description="Tres modalidades con la misma calidad de cuadro médico y hospitalización."
+        eyebrow={isEnglish ? 'Copay Comparison' : 'Comparativa de Modalidades'}
+        title={isEnglish ? 'Find the balance between monthly fee and copay' : 'Encuentra el equilibrio ideal entre cuota mensual y copago'}
+        description={isEnglish
+          ? 'All modalities include full medical and surgical hospitalization across Spain.'
+          : 'Todas las modalidades incluyen la misma cobertura de hospitalización y cuadro médico completo en toda España.'}
         plans={modalitiesList.map((item) => ({
           name: item.name,
           subtitle: item.subtitle,
@@ -315,57 +455,109 @@ export const AsisaCompleta: React.FC = () => {
           isFeatured: item.isFeatured
         }))}
         onPlanAction={handleStartQuoting}
-        actionLabel="Calcular esta opción"
+        actionLabel={isEnglish ? 'Select this plan' : 'Elegir esta modalidad'}
       />
 
       <CoverageGrid
-        eyebrow="Garantías Médicas del Plan"
-        title="Todo lo que incluye ASISA Completa"
-        description="Especificaciones técnicas y coberturas médicas según los IPID oficiales AFR01S0015 y AFR01S0080."
+        eyebrow={isEnglish ? 'Comprehensive Guarantees' : 'Garantías Médicas Completas'}
+        title={isEnglish ? 'Full protection for you and your family' : 'Todo lo que necesitas para tu salud y la de tu familia'}
+        description={isEnglish
+          ? 'Complete technical specs based on official IPID documents AFR01S0015 and AFR01S0080.'
+          : 'Especificaciones técnicas oficiales según las notas informativas previas AFR01S0015 y AFR01S0080.'}
         items={coverages.map(({ title: t, desc: d, illustration: ill }) => ({ title: t, description: d, illustration: ill }))}
       />
 
       <ProductProcessSection
-        eyebrow="Proceso Digital"
-        title="Contrata tu seguro médico en 4 sencillos pasos"
-        description="Sin papeleos físicos, con soporte continuo de nuestros asesores en VitaBlue."
-        steps={[
+        eyebrow={isEnglish ? 'Quick Setup' : 'Alta Sencilla'}
+        title={isEnglish ? 'How to contract ASISA Completa in 4 steps' : 'Cómo contratar tu seguro ASISA Completa'}
+        description={isEnglish
+          ? '100% digital process with official insurer prices and personal support from VitaBlue.'
+          : 'Proceso 100% digital con tarifas oficiales de Asisa y acompañamiento de tu asesor.'}
+        steps={isEnglish ? [
           {
-            title: 'Cotiza tu seguro',
-            description: 'Indica las edades de los asegurados y elige la modalidad de copago que prefieras.'
+            title: 'Choose your modality',
+            description: 'Select Completa +, Completa ++, or No Copay based on your expected doctor visits.'
           },
           {
-            title: 'Revisa tu presupuesto',
-            description: 'Te mostramos la prima oficial de Asisa con todas las promociones y descuentos aplicados.'
+            title: 'Insured details',
+            description: 'Provide basic info for each family member to apply multi-policy group discounts.'
           },
           {
-            title: 'Cuestionario de salud online',
-            description: 'Responde un breve cuestionario digital para dar de alta la póliza sin desplazamientos.'
+            title: 'Digital medical declaration',
+            description: 'Fill out the confidential online health questionnaire securely on ASISA\'s official platform.'
           },
           {
-            title: 'Comienza a disfrutarlo',
-            description: 'Recibe tu número de póliza y tarjetas digitales en la app AsisaLIVE para acudir al médico.'
+            title: 'Policy activation',
+            description: 'Receive your contract and digital card on your phone to access specialists immediately.'
+          }
+        ] : [
+          {
+            title: 'Elige tu modalidad',
+            description: 'Selecciona Completa +, Completa ++ o Sin Copago según la frecuencia con la que acudes al médico.'
+          },
+          {
+            title: 'Datos de los asegurados',
+            description: 'Introduce los datos de los miembros a incluir para aplicar los descuentos por familia numerosa.'
+          },
+          {
+            title: 'Cuestionario de salud digital',
+            description: 'Completa la declaración médica de forma confidencial y segura a través de Asisa.'
+          },
+          {
+            title: 'Activación y tarjeta digital',
+            description: 'Recibe tu póliza y tarjeta médica digital en el móvil para acudir a las consultas desde el día 1.'
           }
         ]}
       />
 
       <TestimonialGrid
-        eyebrow="Opiniones Reales"
-        title="Familias y particulares protegidos con ASISA Completa"
+        eyebrow={isEnglish ? 'Insured Opinions' : 'Experiencias Reales'}
+        title={isEnglish ? 'Families and individuals who trust ASISA Completa' : 'Familias y particulares que ya confían en ASISA Completa'}
         items={testimonials}
       />
 
-      <AsisaTrustSection />
+      <AsisaTrustSection
+        eyebrow={isEnglish ? 'ASISA & HLA Group Guarantee' : undefined}
+        title={isEnglish ? 'Leader in Private Healthcare with Own Hospital Network' : undefined}
+        description={isEnglish ? 'ASISA is one of Spain\'s most established health insurers, backed by the Lavinia medical cooperative and HLA Group proprietary hospitals.' : undefined}
+        stats={isEnglish ? [
+          { value: '40,000+', label: 'Doctors & specialists' },
+          { value: '18', label: 'Proprietary HLA hospitals' },
+          { value: '36', label: 'Multi-specialty clinics' },
+          { value: '45+', label: 'Years of medical expertise' },
+        ] : undefined}
+        highlights={isEnglish ? [
+          {
+            title: 'Proprietary Hospital Network (HLA Group)',
+            description: 'Direct access to 18 top-tier HLA Group hospitals (Hospital Universitario Moncloa, Clínica El Ángel, HLA Santa Isabel, Vistahermosa, and more) with leading-edge medical tech.',
+          },
+          {
+            title: '24/7 AsisaLIVE Telemedicine',
+            description: 'Immediate video doctor consultations with GPs and specialists, digital e-prescriptions, and easy appointment booking via the ASISA smartphone app.',
+          },
+          {
+            title: 'Spain\'s Premier Medical Cooperative',
+            description: 'Owned by the Lavinia medical cooperative (formed by doctors), ensuring healthcare profits are reinvested directly into medical technology and patient care.',
+          },
+        ] : undefined}
+      />
 
       <DigitalServicesSection
-        eyebrow="Medicina Digital"
-        title="AsisaLIVE: tu médico en la palma de tu mano"
-        description="Ahorra tiempo y evita desplazamientos innecesarios con la plataforma de telemedicina oficial de Asisa."
-        benefits={[
-          'Videoconsultas inmediatas de medicina general 24/7',
-          'Receta médica electrónica válida en farmacias de toda España',
-          'Especialistas en pediatría, ginecología y nutrición',
-          'Gestión ágil de volantes y autorizaciones médicas'
+        eyebrow={isEnglish ? 'AsisaLIVE App' : 'Servicios Digitales'}
+        title={isEnglish ? 'Digital healthcare on your phone 24/7' : 'Tu salud en la palma de la mano con AsisaLIVE'}
+        description={isEnglish
+          ? 'Connect with general practitioners and pediatricians in under 5 minutes without appointments. Manage electronic prescriptions, medical authorizations, and virtual cards.'
+          : 'Conéctate con médicos de cabecera y pediatras en menos de 5 minutos sin cita previa. Gestiona recetas electrónicas, autorizaciones y tu tarjeta sanitaria digital.'}
+        benefits={isEnglish ? [
+          'Immediate video consultations with general doctors 24/7',
+          'Digital electronic prescriptions ready at any pharmacy',
+          'Search directory of 40,000+ medical specialists',
+          'Direct appointment scheduling at HLA Group hospitals'
+        ] : [
+          'Videoconsultas de urgencia 24/7 sin cita previa',
+          'Receta médica electrónica con validez nacional',
+          'Buscador del cuadro médico con más de 40.000 profesionales',
+          'Cita online directa en los hospitales del Grupo HLA'
         ]}
         visual={
           <div className="relative w-full max-w-[280px] aspect-[9/18] bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800">
@@ -377,18 +569,30 @@ export const AsisaCompleta: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-display font-black leading-snug">AsisaLIVE App</h4>
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">Videoconsulta</span>
-                  <p className="text-xs font-bold leading-tight">Médico de Guardia 24h</p>
-                  <p className="text-[9px] text-slate-200">Espera media: &lt; 3 minutos</p>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">
+                    {isEnglish ? 'General Medicine' : 'Medicina General'}
+                  </span>
+                  <p className="text-xs font-bold leading-tight">
+                    {isEnglish ? 'Urgent Video Consultation' : 'Videoconsulta Inmediata'}
+                  </p>
+                  <p className="text-[9px] text-slate-200">
+                    {isEnglish ? 'Average response: 3 mins' : 'Tiempo medio: 3 mins'}
+                  </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">Tarjeta Digital</span>
-                  <p className="text-xs font-bold leading-tight">Acceso a Clínicas HLA</p>
-                  <p className="text-[9px] text-slate-200">Disponible en Wallet</p>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">
+                    {isEnglish ? 'Specialists' : 'Especialistas'}
+                  </span>
+                  <p className="text-xs font-bold leading-tight">
+                    {isEnglish ? '40,000+ Doctors' : '40.000+ Facultativos'}
+                  </p>
+                  <p className="text-[9px] text-slate-200">
+                    {isEnglish ? 'Direct booking in app' : 'Cita directa en app'}
+                  </p>
                 </div>
               </div>
               <div className="text-[9px] font-bold text-center text-white/80 pb-2">
-                18 Hospitales Propios • Grupo HLA
+                {isEnglish ? 'HLA Proprietary Network' : 'Red Propia Grupo HLA'}
               </div>
             </div>
           </div>
@@ -396,24 +600,42 @@ export const AsisaCompleta: React.FC = () => {
       />
 
       <ProductPromotionSection
-        badges={[
-          <span key="1" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Promoción Oficial</span>,
-          <span key="2" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Nuevos Asegurados</span>
+        badges={isEnglish ? [
+          <span key="1" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Family Savings</span>,
+          <span key="2" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Multi-Insured Discount</span>
+        ] : [
+          <span key="1" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent text-background-dark">Ahorro Familiar</span>,
+          <span key="2" className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-white">Descuento Multi-asegurado</span>
         ]}
-        title="Asisa Dental y AsisaLIVE Gratis de Serie"
-        description="Al contratar ASISA Completa a través de VitaBlue, disfrutas del módulo dental completo y de la telemedicina AsisaLIVE incluidos sin sobrecoste en tu mensualidad."
+        title={isEnglish
+          ? 'Special Family Pricing on ASISA Completa'
+          : 'Descuentos por Inclusión de Nuevos Miembros en la Póliza'}
+        description={isEnglish
+          ? 'Insure your family and receive multi-insured discounts from 3 members upwards. Official promotions applicable with zero commission.'
+          : 'Asegura a tu familia con Asisa y benefíciate de tarifas bonificadas a partir de 3 miembros. Todas las promociones vigentes de la aseguradora aplicadas directamente.'}
       />
 
       <FaqSection
-        eyebrow="Preguntas Frecuentes"
-        title="Resolvemos tus dudas sobre ASISA Completa"
+        eyebrow={isEnglish ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'}
+        title={isEnglish ? 'Everything you need to know about ASISA Completa' : 'Todo lo que necesitas saber sobre ASISA Completa'}
         items={faqs.map((f) => ({ question: f.q, answer: f.a }))}
       />
 
       <AdvisorHelpSection
-        title="¿Dudas entre copago bajo o cuota sin copagos?"
-        description="Nuestros asesores de salud en VitaBlue analizan tu historial y el de tu familia para recomendarte la opción con mayor ahorro anual real."
-        whatsappUrl={buildContextualWhatsAppUrl({ pathname: canonicalUrl, tag: 'LANDING-ASISA-COMPLETA-HELP' })}
+        title={isEnglish
+          ? 'Still unsure which ASISA Completa tier fits you best?'
+          : '¿Dudas entre Completa +, Completa ++ o Sin Copago?'}
+        description={isEnglish
+          ? 'Our health insurance advisors at VitaBlue review your medical frequency to calculate the most cost-effective option for you.'
+          : 'Nuestros asesores colegiados en VitaBlue analizan la frecuencia con la que acudes al médico para decirte qué modalidad te sale más a cuenta.'}
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: canonicalUrl, tag: 'LANDING-ASISA-COMPLETA-HELP', locale: isEnglish ? 'en' : 'es' })}
+        advisorRole={isEnglish ? 'Senior Health Insurance Advisor' : undefined}
+        advisorBadge={isEnglish ? 'Assigned Advisor' : undefined}
+        advisorQuote={isEnglish ? '"Hi, I\'m Lucía. I\'ll help you evaluate copays vs monthly premium to choose the smartest ASISA plan for your household."' : undefined}
+        advisorSchedule={isEnglish ? 'Monday to Friday: 9:00 - 19:00 (CET)' : undefined}
+        advisorResponseTime={isEnglish ? 'Reply in < 15 mins' : undefined}
+        advisorCallText={isEnglish ? 'Call Free' : undefined}
+        advisorWhatsAppText={isEnglish ? 'Ask via WhatsApp' : undefined}
       />
     </div>
   );

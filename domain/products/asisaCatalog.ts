@@ -149,3 +149,152 @@ export const asisaConsultProducts: AsisaCatalogCard[] = [
     docCode: 'AFR01S0088'
   }
 ];
+
+export const asisaFeaturedProductsEn: AsisaCatalogCard[] = [
+  {
+    id: 'asisa-health-students',
+    title: 'ASISA Health Students',
+    tagline: 'Student Visa & NIE Health Insurance',
+    desc: 'Official certified medical policy required by Spanish consulates and Immigration (Extranjería). Zero copays, zero wait times, and unlimited repatriation.',
+    features: [
+      '100% accepted by Spanish Consulates and MERCURIO portal',
+      'Official PDF certificate issued in <24h with verified digital code (CSV)',
+      'Sanitary & mortal remains repatriation fully included'
+    ],
+    price: 'From €35.00/mo',
+    link: '/en/health-insurance/asisa-health-students/',
+    badge: 'Best for Student Visa',
+    docCode: 'AFR01S0125'
+  },
+  {
+    id: 'asisa-health-residents',
+    title: 'ASISA Health Residents',
+    tagline: 'Non-Lucrative Visa & Expat Insurance',
+    desc: 'Designed for non-EU citizens applying for legal residency in Spain. Full comprehensive coverage equivalent to the Spanish National Health System.',
+    features: [
+      'Valid for Non-Lucrative Visa, Digital Nomad, and Arraigo applications',
+      'Zero copays or deductibles on hospital stays and medical visits',
+      'Allows upfront single annual payment as required by consulates'
+    ],
+    price: 'From €45.00/mo',
+    link: '/en/health-insurance/asisa-health-residents/',
+    badge: 'Expats & NLV',
+    docCode: 'AFR01S0128'
+  },
+  {
+    id: 'asisa-completa-plus',
+    title: 'ASISA Completa +',
+    tagline: 'Comprehensive Healthcare with Reduced Copays',
+    desc: 'Unlimited direct access to general practitioners, specialists, advanced diagnostics, full hospitalization, and surgery with low copays per visit.',
+    features: [
+      'Proprietary HLA Hospital Group network and contracted clinics across Spain',
+      '24/7 outpatient and emergency room hospitalization',
+      'Reduced copays per medical appointment'
+    ],
+    price: 'From €24.90/mo',
+    link: '/en/health-insurance/asisa-completa/',
+    badge: 'Recommended for Families',
+    docCode: 'AFR01S0015'
+  },
+  {
+    id: 'asisa-completa-plus-plus',
+    title: 'ASISA Completa ++',
+    tagline: 'Maximum Monthly Savings with Hospitalization',
+    desc: 'Full medical network policy with a highly discounted monthly premium in exchange for medium copays per medical procedure.',
+    features: [
+      '100% covered medical and surgical hospitalization',
+      'Complex diagnostic tests (CT scans, MRIs, ultrasound)',
+      'Ultra-affordable monthly fee ideal for young adults and couples'
+    ],
+    price: 'From €19.90/mo',
+    link: '/en/health-insurance/asisa-completa/',
+    badge: 'Budget Friendly',
+    docCode: 'AFR01S0080'
+  }
+];
+
+export const asisaConsultProductsEn: AsisaCatalogCard[] = [
+  {
+    id: 'asisa-esencial',
+    title: 'ASISA Esencial',
+    tagline: 'Outpatient Care Without Waiting Lists',
+    desc: 'Outpatient policy focused on direct specialist appointments and diagnostic testing without hospital admission.',
+    features: [
+      'General medicine, pediatrics, and nursing care',
+      'Direct access to contracted medical specialists',
+      'Standard diagnostic tests (clinical analysis, x-rays)'
+    ],
+    price: 'Check rates',
+    link: 'https://wa.me/34694583452?text=Hi!%20I%27m%20visiting%20VitaBlue.%20I%27d%20like%20information%20about%20ASISA%20Esencial.',
+    badge: 'No Hospitalization',
+    docCode: 'AFR01S0071'
+  },
+  {
+    id: 'asisa-esencial-plus',
+    title: 'ASISA Esencial +',
+    tagline: 'Outpatient Coverage with Adjusted Copays',
+    desc: 'Outpatient services with an optimized monthly fee and reduced copays on routine consultations and clinical tests.',
+    features: [
+      'Unlimited GP and specialist consultations',
+      'Outpatient diagnostic testing with zero wait times',
+      'Childbirth preparation and AsisaLIVE video doctor'
+    ],
+    price: 'Check rates',
+    link: 'https://wa.me/34694583452?text=Hi!%20I%27m%20visiting%20VitaBlue.%20I%27d%20like%20information%20about%20ASISA%20Esencial%20%2B.',
+    docCode: 'AFR01S0074'
+  },
+  {
+    id: 'asisa-ya',
+    title: 'ASISA Ya',
+    tagline: 'Fast Preventive Access to Medical Network',
+    desc: 'Quick-enrollment product focused on annual preventive checkups, immediate consultations, and 24/7 telemedicine.',
+    features: [
+      'Fast track access to top specialists',
+      'Preventive health checkups and annual screenings',
+      'AsisaLIVE digital telemedicine on smartphone'
+    ],
+    price: 'Check rates',
+    link: 'https://wa.me/34694583452?text=Hi!%20I%27m%20visiting%20VitaBlue.%20I%27d%20like%20information%20about%20ASISA%20Ya.',
+    badge: 'Immediate Access',
+    docCode: 'AFR01S0035'
+  },
+  {
+    id: 'asisa-completa-mutualistas',
+    title: 'ASISA Completa Mutualistas',
+    tagline: 'Comprehensive Healthcare for Civil Servants',
+    desc: 'Full medical and hospital policy tailored for public sector mutualists (MUFACE, ISFAS, MUGEJU) choosing private care.',
+    features: [
+      'Priority hospital and surgical admission',
+      'HLA Group hospitals without prior approval hurdles',
+      'Nationwide assistance guarantees across Spain'
+    ],
+    price: 'Check group rate',
+    link: 'https://wa.me/34694583452?text=Hi!%20I%27m%20visiting%20VitaBlue.%20I%27d%20like%20information%20about%20ASISA%20Completa%20Mutualistas.',
+    badge: 'Civil Servants',
+    docCode: 'AFR01S0052'
+  },
+  {
+    id: 'asisa-esencial-mutualistas',
+    title: 'ASISA Esencial Mutualistas',
+    tagline: 'Specialists & Diagnostics for Civil Servants',
+    desc: 'Complementary outpatient plan for public mutualists desiring fast consultations and private clinical testing.',
+    features: [
+      'Consultations with benchmark specialist network',
+      'Clinical laboratory analysis and diagnostic imaging',
+      'Flexible supplement to standard public coverage'
+    ],
+    price: 'Check group rate',
+    link: 'https://wa.me/34694583452?text=Hi!%20I%27m%20visiting%20VitaBlue.%20I%27d%20like%20information%20about%20ASISA%20Esencial%20Mutualistas.',
+    badge: 'Civil Servants',
+    docCode: 'AFR01S0088'
+  }
+];
+
+export const getAsisaFeaturedProducts = (locale: 'es' | 'en' = 'es'): AsisaCatalogCard[] => {
+  return locale === 'en' ? asisaFeaturedProductsEn : asisaFeaturedProducts;
+};
+
+export const getAsisaConsultProducts = (locale: 'es' | 'en' = 'es'): AsisaCatalogCard[] => {
+  return locale === 'en' ? asisaConsultProductsEn : asisaConsultProducts;
+};
+

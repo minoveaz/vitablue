@@ -9,6 +9,8 @@ export interface InsuranceProductCardProps {
   description: string;
   features: string[];
   price: string;
+  priceLabel?: string;
+  actionLabel?: string;
   badge?: string;
   link: string;
   external?: boolean;
@@ -21,12 +23,15 @@ const InsuranceProductCard: React.FC<InsuranceProductCardProps> = ({
   description,
   features,
   price,
+  priceLabel = 'Tarifa',
+  actionLabel,
   badge,
   link,
   external = false,
   icon: Icon,
 }) => {
   const ProductIcon = Icon || (badge === 'Premium' ? Sparkle : external ? Layers : Activity);
+  const resolvedActionLabel = actionLabel || (external ? 'Consultar por WhatsApp' : 'Ver detalles y cotizar');
   const content = (
     <div className="flex h-full flex-col justify-between rounded-3xl border border-slate-150 bg-white p-6 shadow-sm transition-all duration-300 hover:border-slate-250 hover:shadow-md sm:p-8">
       {badge && (
@@ -54,11 +59,11 @@ const InsuranceProductCard: React.FC<InsuranceProductCardProps> = ({
       </div>
       <div className="mt-6 flex items-center justify-between gap-4 border-t border-slate-100 pt-6">
         <div className="flex flex-col">
-          <span className="text-[9px] font-black uppercase tracking-wider text-text-secondary">Tarifa</span>
+          <span className="text-[9px] font-black uppercase tracking-wider text-text-secondary">{priceLabel}</span>
           <span className="text-sm font-sans font-black text-text-main">{price}</span>
         </div>
         <Button variant={external ? 'accent' : 'primary'} size="sm" className="shrink-0 font-bold shadow-sm" rightIcon={<ArrowRight size={14} />}>
-          {external ? 'Consultar por WhatsApp' : 'Ver detalles y cotizar'}
+          {resolvedActionLabel}
         </Button>
       </div>
     </div>

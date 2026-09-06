@@ -219,10 +219,15 @@ const AppLayout: React.FC = () => {
 
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
             <Route path="/productos/seguros-salud/seguros-asisa" element={<AsisaInsurances />} />
+            <Route path="/en/health-insurance/asisa-insurance" element={<AsisaInsurances />} />
             <Route path="/productos/seguros-salud/seguros-asisa/asisa-health-students" element={<AsisaHealthStudents />} />
+            <Route path="/en/health-insurance/asisa-health-students" element={<AsisaHealthStudents />} />
             <Route path="/productos/seguros-salud/seguros-asisa/asisa-health-residents" element={<AsisaHealthResidents />} />
+            <Route path="/en/health-insurance/asisa-health-residents" element={<AsisaHealthResidents />} />
             <Route path="/productos/seguros-salud/seguros-asisa/asisa-completa" element={<AsisaCompleta />} />
+            <Route path="/en/health-insurance/asisa-completa" element={<AsisaCompleta />} />
             <Route path="/productos/seguros-salud/seguros-asisa/asisa-esencial" element={<AsisaEsencial />} />
+            <Route path="/en/health-insurance/asisa-esencial" element={<AsisaEsencial />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html" element={<SanitasMasSalud />} />

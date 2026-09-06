@@ -6,9 +6,30 @@ export interface AdvisorHelpSectionProps {
   description: React.ReactNode;
   whatsappUrl: string;
   phoneUrl?: string;
+  advisorName?: string;
+  advisorRole?: string;
+  advisorQuote?: string;
+  advisorBadge?: string;
+  advisorSchedule?: string;
+  advisorResponseTime?: string;
+  advisorCallText?: string;
+  advisorWhatsAppText?: string;
 }
 
-const AdvisorHelpSection: React.FC<AdvisorHelpSectionProps> = ({ title, description, whatsappUrl, phoneUrl = 'tel:+34694583452' }) => (
+const AdvisorHelpSection: React.FC<AdvisorHelpSectionProps> = ({
+  title,
+  description,
+  whatsappUrl,
+  phoneUrl = 'tel:+34694583452',
+  advisorName,
+  advisorRole,
+  advisorQuote,
+  advisorBadge,
+  advisorSchedule,
+  advisorResponseTime,
+  advisorCallText,
+  advisorWhatsAppText,
+}) => (
   <section className="w-full border-t border-slate-100 bg-slate-50 py-16">
     <div className="mx-auto max-w-4xl space-y-8 px-6 text-left sm:px-8">
       <div className="space-y-1">
@@ -16,6 +37,14 @@ const AdvisorHelpSection: React.FC<AdvisorHelpSectionProps> = ({ title, descript
         <p className="text-body-reg font-medium text-text-secondary">{description}</p>
       </div>
       <AdvisorCard
+        name={advisorName}
+        role={advisorRole}
+        quote={advisorQuote}
+        badgeText={advisorBadge}
+        scheduleText={advisorSchedule}
+        responseTimeText={advisorResponseTime}
+        callText={advisorCallText}
+        whatsAppText={advisorWhatsAppText}
         onWhatsAppClick={() => window.open(whatsappUrl, '_blank', 'noopener,noreferrer')}
         onPhoneClick={() => window.open(phoneUrl, '_self')}
       />
