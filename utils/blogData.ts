@@ -813,11 +813,11 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Al contratar tu seguro de estudiante con VitaBlue mediante nuestro <a href="/wizard/" class="text-primary hover:underline font-bold">cotizador de seguros online</a>, la aseguradora emite el Certificado Oficial de Cobertura en PDF en menos de 24 horas laborables. El documento está redactado en español (y disponible en formato bilingüe español/inglés), incluye la firma electrónica autorizada de la compañía y el Código Seguro de Verificación (CSV) para validación directa por parte del funcionario consular o en la plataforma telemática MERCURIO de Extranjería.'
+        text: 'Al contratar tu seguro de estudiante con VitaBlue mediante nuestro <a href="/wizard/" class="text-primary hover:underline font-bold">cotizador de seguros online</a> o explorando las guías específicas por consulado de origen (como <a href="/productos/seguros-salud/seguro-medico-estudiantes/colombia/" class="text-primary hover:underline font-bold">Colombia</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/mexico/" class="text-primary hover:underline font-bold">México</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/peru/" class="text-primary hover:underline font-bold">Perú</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/argentina/" class="text-primary hover:underline font-bold">Argentina</a> o <a href="/productos/seguros-salud/seguro-medico-estudiantes/ecuador/" class="text-primary hover:underline font-bold">Ecuador</a>), la aseguradora emite el Certificado Oficial de Cobertura en PDF en menos de 24 horas laborables. El documento está redactado en español (y disponible en formato bilingüe español/inglés), incluye la firma electrónica autorizada de la compañía y el Código Seguro de Verificación (CSV) para validación directa por parte del funcionario consular o en la plataforma telemática MERCURIO de Extranjería.'
       },
       {
         type: 'paragraph',
-        text: 'Asimismo, en cumplimiento del deber de transparencia y declaración de salud (puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>), si por cualquier causa ajena el consulado deniega tu visado, te garantizamos el reembolso íntegro del 100% del importe abonado.'
+        text: 'Asimismo, si ya conoces tu ciudad de estudios en España, puedes revisar los requisitos médicos y hospitales concertados en <a href="/productos/seguros-salud/seguro-medico-estudiantes/madrid/" class="text-primary hover:underline font-bold">Madrid</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/barcelona/" class="text-primary hover:underline font-bold">Barcelona</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/valencia/" class="text-primary hover:underline font-bold">Valencia</a> o <a href="/productos/seguros-salud/seguro-medico-estudiantes/malaga/" class="text-primary hover:underline font-bold">Málaga</a>. En cumplimiento del deber de transparencia y declaración de salud (puedes consultar nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>), si por cualquier causa ajena el consulado deniega tu visado, te garantizamos el reembolso íntegro del 100% del importe abonado.'
       },
       {
         type: 'heading-2',
@@ -1017,7 +1017,7 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Seguro Sin Copago</strong>: Pagas una prima mensual fija fija (tarifa plana). No importa cuántas veces vayas al médico o qué pruebas complejas necesites; nunca pagarás nada adicional. Es la opción ideal para familias con niños pequeños, personas mayores o aquellos que desean total tranquilidad financiera.',
+          '<strong>Seguro Sin Copago</strong>: Pagas una prima mensual fija fija (tarifa plana). No importa cuántas veces vayas al médico o qué pruebas complejas necesites; nunca pagarás nada adicional. Es la opción ideal para familias con niños pequeños, personas mayores o aquellos que desean total tranquilidad financiera. Puedes comparar planes completos en nuestro catálogo de <a href="/productos/seguros-salud/" class="text-primary hover:underline font-bold">seguros de salud privados</a>.',
           '<strong>Seguro Con Copago</strong>: Pagas una prima mensual reducida (a veces hasta un 40% más económica). Es la opción recomendada para personas jóvenes, deportistas sanos y aquellos que solo quieren el seguro como protección ante imprevistos graves o accidentes.'
         ]
       },
@@ -1225,7 +1225,7 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'To avoid rejection for "lack of adequate sanitary coverage," you must contract health insurance that strictly meets the specific standards of Spanish public healthcare. Travel insurance or policies from your home country are not accepted. In VitaBlue, all our student policies with <a href="/productos/seguros-salud/seguro-medico-estudiantes/" class="text-primary hover:underline font-bold">ASISA and Sanitas</a> are pre-configured to 100% satisfy consular standards.'
+        text: 'To avoid rejection for "lack of adequate sanitary coverage," you must contract health insurance that strictly meets the specific standards of Spanish public healthcare. Travel insurance or policies from your home country are not accepted. In VitaBlue, all our student policies with <a href="/en/health-insurance-student-visa-spain/" class="text-primary hover:underline font-bold">ASISA and Sanitas</a> are pre-configured to 100% satisfy consular standards. If you already know your study destination, you can review our local medical guides for <a href="/productos/seguros-salud/seguro-medico-estudiantes/madrid/" class="text-primary hover:underline font-bold">Madrid</a>, <a href="/productos/seguros-salud/seguro-medico-estudiantes/barcelona/" class="text-primary hover:underline font-bold">Barcelona</a>, or <a href="/productos/seguros-salud/seguro-medico-estudiantes/valencia/" class="text-primary hover:underline font-bold">Valencia</a>.'
       },
       {
         type: 'callout',
@@ -1317,11 +1317,11 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'The Non-Lucrative Visa is designed for non-EU citizens who wish to live in Spain without working. Since you do not contribute to the Spanish Social Security system, immigration law requires you to prove you have sufficient financial resources and a private <a href="/productos/seguros-salud/seguro-expatriados/" class="text-primary hover:underline font-bold">health insurance for expats in Spain</a> contracted with an authorized insurer.'
+        text: 'The Non-Lucrative Visa is designed for non-EU citizens who wish to live in Spain without working. Since you do not contribute to the Spanish Social Security system, immigration law requires you to prove you have sufficient financial resources and a private <a href="/en/health-insurance-expatriates-spain/" class="text-primary hover:underline font-bold">health insurance for expats in Spain</a> contracted with an authorized insurer.'
       },
       {
         type: 'paragraph',
-        text: 'The objective is to avoid foreign residents becoming a financial burden on Spain\'s public healthcare. Therefore, your private health insurance must offer coverage equivalent to the Spanish National Health System without copays or waiting periods.'
+        text: 'The objective is to avoid foreign residents becoming a financial burden on Spain\'s public healthcare. Therefore, your private health insurance must offer coverage equivalent to the Spanish National Health System without copays or waiting periods. The gold standard among consulates is <a href="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/" class="text-primary hover:underline font-bold">Sanitas Más Salud</a> with full annual prepayment.'
       },
       {
         type: 'heading-2',
@@ -1342,7 +1342,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Get Your Official Non-Lucrative Visa Insurance Certificate',
         ctaDescription: 'Compare pre-approved policies from Spain\'s leading providers with 100% consular acceptance guarantee.',
         ctaButtonText: 'Calculate Expat Insurance Online →',
-        ctaLink: '/productos/seguros-salud/seguro-expatriados/'
+        ctaLink: '/en/health-insurance-expatriates-spain/'
       },
       {
         type: 'heading-2',
@@ -1536,7 +1536,7 @@ export const blogPosts: BlogPostData[] = [
         ctaTitle: 'Get Your Pre-Approved Digital Nomad Insurance in 24 Hours',
         ctaDescription: 'Calculate your personalized quote without copays and receive your official consular certificate signed and stamped for UGE or embassy submission.',
         ctaButtonText: 'Calculate Nomad Insurance Online →',
-        ctaLink: '/productos/seguros-salud/seguro-nomadas-digitales/'
+        ctaLink: '/en/digital-nomad-insurance-spain/'
       },
       {
         type: 'heading-2',

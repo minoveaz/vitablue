@@ -66,6 +66,11 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
       name: post.author.name,
       jobTitle: post.author.role,
     },
+    reviewedBy: {
+      '@type': 'Organization',
+      name: 'VitaBlue Mediación y Asesoramiento de Seguros',
+      url: 'https://www.vitablue.es/',
+    },
     publisher: {
       '@type': 'Organization',
       name: 'VitaBlue',
