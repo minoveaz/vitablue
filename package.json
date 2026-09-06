@@ -44,7 +44,9 @@
     "gsc:queries": "node scripts/gsc_audit.cjs --queries",
     "gsc:countries": "node scripts/gsc_audit.cjs --countries",
     "gsc:inspect": "node scripts/gsc_audit.cjs --inspect",
-    "gsc:batch-inspect": "node scripts/gsc_batch_inspect.cjs --all"
+    "gsc:batch-inspect": "node scripts/gsc_batch_inspect.cjs --all",
+    "gsc:sitemaps": "node scripts/gsc_sitemaps.cjs --status",
+    "gsc:sitemaps:submit": "node scripts/gsc_sitemaps.cjs --submit"
   },
   "dependencies": {
     "@remotion/player": "4.0.228",
