@@ -118,7 +118,7 @@ export const CityDestinationVisaInsurance: React.FC = () => {
         '@type': 'MedicalBusiness',
         name: `Seguro Médico para Visado y Estudiantes en ${city.name} - VitaBlue`,
         url: canonicalUrl,
-        image: 'https://www.vitablue.es/vitablue_logo_social.jpg',
+        image: 'https://www.vitablue.es/og-image.jpg',
         description: city.metaDescription,
         address: {
           '@type': 'PostalAddress',
@@ -183,7 +183,7 @@ export const CityDestinationVisaInsurance: React.FC = () => {
         <meta property="og:title" content={city.metaTitle} />
         <meta property="og:description" content={city.metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />

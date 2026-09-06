@@ -181,7 +181,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
         <meta property="og:title" content={`${consulate.title} | VitaBlue`} />
         <meta property="og:description" content={consulate.metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />

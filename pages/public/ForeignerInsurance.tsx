@@ -171,14 +171,14 @@ export const ForeignerInsurance: React.FC = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Seguro de Salud para Extranjeros en España | Visados | VitaBlue" />
         <meta property="og:description" content="Compara seguros médicos para extranjeros en España. Pólizas homologadas sin copagos para visado de estudiantes, nómadas digitales y expatriados." />
-        <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Seguro de Salud para Extranjeros en España | Visados | VitaBlue" />
         <meta name="twitter:description" content="Compara seguros médicos para extranjeros en España. Pólizas homologadas sin copagos para visado de estudiantes, nómadas digitales y expatriados." />
-        <meta name="twitter:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
         </script>
