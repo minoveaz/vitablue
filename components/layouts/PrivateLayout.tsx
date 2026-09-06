@@ -1,10 +1,13 @@
 import React from 'react';
+import { AuthProvider } from '@/context/AuthContext';
 
-/** Private application shell. It deliberately has no public navigation or analytics UI. */
+/** Private application shell. Wraps authenticated backoffice and login flows with AuthProvider. */
 const PrivateLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="min-h-screen bg-background-light font-sans text-text-main">
-    {children}
-  </div>
+  <AuthProvider>
+    <div className="min-h-screen bg-background-light font-sans text-text-main">
+      {children}
+    </div>
+  </AuthProvider>
 );
 
 export default PrivateLayout;
