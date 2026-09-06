@@ -158,8 +158,8 @@ export const AsistenciaFamiliar: React.FC = () => {
   ];
 
   const canonicalUrl = 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/';
-  const title = 'Asistencia Familiar Iplus | Seguro de Decesos | VitaBlue';
-  const description = 'Protege a tu familia frente a imprevistos con Asistencia Familiar Iplus. Seguro de decesos completo con cobertura de traslado, asesoramiento legal y testamento.';
+  const title = 'Sanitas Asistencia Familiar iPlus | Seguro de Decesos y Traslado | VitaBlue';
+  const description = 'Contrata Sanitas Asistencia Familiar iPlus. Seguro de decesos integral con repatriación y traslado nacional e internacional, sepelio y asesoría jurídica familiar.';
 
   const schemaMarkup = {
     "@context": "https://schema.org",

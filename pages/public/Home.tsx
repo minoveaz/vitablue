@@ -390,10 +390,10 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
   return (
     <div className="w-full flex flex-col bg-background-light">
       <Helmet>
-        <title>{isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'}</title>
+        <title>{isEnglish ? 'Compare Health, Expat & Study Insurance in Spain | VitaBlue' : 'Comparador de Seguros de Salud y Agente Oficial Sanitas | VitaBlue'}</title>
         <meta
           name="description"
-          content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'}
+          content={isEnglish ? 'Find the best insurance to live, study, or travel in Spain. Compare health, student visa, and expat policies with official Sanitas advisors.' : 'Encuentra el seguro de salud ideal para vivir, estudiar o viajar en España. Comparador independiente y Agente Oficial Sanitas con asesoramiento personalizado gratuito.'}
         />
         <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'} />
         <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/" />
@@ -402,15 +402,15 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'} />
-        <meta property="og:description" content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'} />
+        <meta property="og:title" content={isEnglish ? 'Compare Health, Expat & Study Insurance in Spain | VitaBlue' : 'Comparador de Seguros de Salud y Agente Oficial Sanitas | VitaBlue'} />
+        <meta property="og:description" content={isEnglish ? 'Find the best insurance to live, study, or travel in Spain. Compare health, student visa, and expat policies with official Sanitas advisors.' : 'Encuentra el seguro de salud ideal para vivir, estudiar o viajar en España. Comparador independiente y Agente Oficial Sanitas con asesoramiento personalizado gratuito.'} />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content={isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'} />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={isEnglish ? 'Compare health, travel, and study insurance in Spain | VitaBlue' : 'Comparador de seguros de salud, viaje y estudios en España | VitaBlue'} />
-        <meta name="twitter:description" content={isEnglish ? 'Find the insurance that fits you best to live, study, or travel in Spain. Compare health, travel, pet, and family policies according to your needs.' : 'Encuentra el seguro que mejor encaja contigo para vivir, estudiar o viajar en España. Compara salud, viaje, mascotas y familia según tus necesidades.'} />
+        <meta name="twitter:title" content={isEnglish ? 'Compare Health, Expat & Study Insurance in Spain | VitaBlue' : 'Comparador de Seguros de Salud y Agente Oficial Sanitas | VitaBlue'} />
+        <meta name="twitter:description" content={isEnglish ? 'Find the best insurance to live, study, or travel in Spain. Compare health, student visa, and expat policies with official Sanitas advisors.' : 'Encuentra el seguro de salud ideal para vivir, estudiar o viajar en España. Comparador independiente y Agente Oficial Sanitas con asesoramiento personalizado gratuito.'} />
         <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
 
         <script type="application/ld+json">
