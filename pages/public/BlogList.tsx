@@ -301,14 +301,14 @@ export const BlogList: React.FC = () => {
 
       <BlogHeader isEnglish={isEnglish} />
 
-      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-14" id="blog-main-content">
+      <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12" id="blog-main-content">
         <div className="mx-auto w-full max-w-7xl">
           
-          {/* Main 12-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* Main Knowledge Hub Layout: Compact 280px sidebar on desktop, fluid rest */}
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 lg:gap-8 items-start">
             
-            {/* LEFT COLUMN: Sidebar Filters (4 cols on desktop) */}
-            <div className="lg:col-span-4">
+            {/* LEFT COLUMN: Compact Sidebar Filters */}
+            <div className="w-full">
               <BlogSidebarFilters
                 isEnglish={isEnglish}
                 selectedProfile={selectedProfile}
@@ -322,8 +322,8 @@ export const BlogList: React.FC = () => {
               />
             </div>
 
-            {/* RIGHT COLUMN: Search Header, Content & Grid (8 cols on desktop) */}
-            <main className="lg:col-span-8 space-y-8">
+            {/* RIGHT COLUMN: Search Header, Content & Grid */}
+            <main className="w-full min-w-0 space-y-6 sm:space-y-8">
               
               {/* Controls Bar: Search & Sort Dropdown */}
               <div className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-left">

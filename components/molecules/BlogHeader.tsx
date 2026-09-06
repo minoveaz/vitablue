@@ -6,8 +6,8 @@ interface BlogHeaderProps {
 }
 
 const BlogHeader: React.FC<BlogHeaderProps> = ({ isEnglish }) => (
-  <section className="relative overflow-hidden px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16 pb-12 sm:pb-16 bg-gradient-to-b from-primary/5 via-background-light to-brand-cyan/10 border-b border-slate-100">
-    <div className="mx-auto w-full max-w-6xl text-center space-y-4">
+  <section className="relative overflow-hidden px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-8 sm:pb-10 bg-gradient-to-b from-primary/5 via-background-light to-brand-cyan/10 border-b border-slate-100">
+    <div className="mx-auto w-full max-w-6xl text-center space-y-3 sm:space-y-4">
       <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/10 bg-white/80 backdrop-blur px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-primary shadow-sm select-none">
         <ShieldCheck className="w-3.5 h-3.5 text-sky-600 shrink-0" />
         <span>{isEnglish ? 'VitaBlue Guides Hub' : 'Centro de Guías VitaBlue'}</span>

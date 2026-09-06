@@ -20,7 +20,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post, isEngl
         {/* Visual Media Column */}
         <Link
           to={postUrl}
-          className="relative lg:col-span-7 aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto overflow-hidden bg-slate-100 block"
+          className="relative lg:col-span-6 aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto overflow-hidden bg-slate-100 block"
         >
           <img
             src={post.featuredImage}
@@ -35,7 +35,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post, isEngl
         </Link>
 
         {/* Content Details Column */}
-        <div className="lg:col-span-5 p-6 sm:p-10 flex flex-col justify-between space-y-6 bg-white">
+        <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-5 bg-white">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-black text-caption uppercase tracking-wider">
