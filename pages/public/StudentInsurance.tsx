@@ -355,7 +355,7 @@ export const StudentInsurance: React.FC = () => {
   let description = isEnglish
     ? 'Compare health insurance for student visas in Spain. Full coverage policies with zero copays, zero wait times, and repatriation included. Oficial certificate in 24h.'
     : 'Compara los seguros médicos para visado de estudiante en España. Pólizas sin copagos, sin carencias y con repatriación obligatoria. Certificados en 24h.';
-  let canonicalUrl = isEnglish
+  const canonicalUrl = isEnglish
     ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain/'
     : isLegacy2
       ? 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/'

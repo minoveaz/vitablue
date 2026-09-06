@@ -12,10 +12,7 @@ import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 import BlogRelatedPosts from '@/components/molecules/BlogRelatedPosts';
 
 const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-export const BlogPost: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
-  if (!post) return <Navigate to="/blog/" replace />;
+const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) => {
   const isEnglish = post.lang === 'en';
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
   const blogPath = isEnglish ? '/en/blog/' : '/blog/';
@@ -24,7 +21,6 @@ export const BlogPost: React.FC = () => {
   const resolvedImageUrl = post.featuredImage.startsWith('http')
     ? post.featuredImage
     : `https://www.vitablue.es${post.featuredImage}`;
-
 
   const isoDate = useMemo(() => {
     if (!post.date) return '2026-09-01';
@@ -78,7 +74,7 @@ export const BlogPost: React.FC = () => {
         url: 'https://www.vitablue.es/favicon.svg',
       },
     },
-  }), [post, blogPath, isEnglish, resolvedImageUrl]);
+  }), [post, blogPath, isEnglish, resolvedImageUrl, isoDate]);
 
   const jsonLdBreadcrumb = useMemo(() => ({
     '@context': 'https://schema.org',
@@ -279,6 +275,13 @@ export const BlogPost: React.FC = () => {
       </section>
     </div>
   );
+};
+
+export const BlogPost: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
+  if (!post) return <Navigate to="/blog/" replace />;
+  return <BlogPostView post={post} />;
 };
 
 export default BlogPost;

@@ -7,7 +7,7 @@ export interface TocItem {
 }
 
 const cleanTocTitle = (text: string): string => {
-  return text.replace(/^\d+[\.\-\)]\s*/, '').trim();
+  return text.replace(/^\d+[.)-]\s*/, '').trim();
 };
 
 const ArticleToc: React.FC<{ items: TocItem[]; isEnglish: boolean }> = ({ items, isEnglish }) => {
