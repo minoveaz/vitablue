@@ -60,8 +60,11 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           <img
             src={avatarUrl}
             alt={author}
+            width="40"
+            height="40"
             className="size-10 rounded-full object-cover border border-slate-100 flex-shrink-0"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="size-10 rounded-full bg-primary/10 text-primary font-display font-extrabold text-xs flex items-center justify-center flex-shrink-0">

@@ -38,6 +38,10 @@ export const InfiniteMarquee: React.FC<InfiniteMarqueeProps> = ({
                 <img 
                   src={logoSrc} 
                   alt={brand} 
+                  width="120"
+                  height="32"
+                  loading="lazy"
+                  decoding="async"
                   className="h-6 sm:h-8 w-auto max-w-[120px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-200 shrink-0" 
                 />
               </div>
