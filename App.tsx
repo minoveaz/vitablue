@@ -24,6 +24,7 @@ const ForeignerInsurance = lazy(() => import('@/pages/public/ForeignerInsurance'
 const TravelInsurance = lazy(() => import('@/pages/public/TravelInsurance'));
 const LifeInsurance = lazy(() => import('@/pages/public/LifeInsurance'));
 const SanitasInsurances = lazy(() => import('@/pages/public/SanitasInsurances'));
+const AsisaInsurances = lazy(() => import('@/pages/public/AsisaInsurances'));
 const Privacy = lazy(() => import('@/pages/public/Privacy'));
 const CookiesPolicy = lazy(() => import('@/pages/public/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/public/AvisoLegal'));
@@ -213,6 +214,7 @@ const AppLayout: React.FC = () => {
 
 
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
+            <Route path="/productos/seguros-salud/seguros-asisa" element={<AsisaInsurances />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html" element={<SanitasMasSalud />} />

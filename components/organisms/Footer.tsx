@@ -211,6 +211,11 @@ export const Footer: React.FC = () => {
                   {isEnglish ? 'Sanitas Insurance Catalog' : 'Catálogo Seguros Sanitas'}
                 </Link>
               </li>
+              <li>
+                <Link to="/productos/seguros-salud/seguros-asisa/" className="hover:text-accent transition-colors duration-150 font-bold text-primary-light">
+                  {isEnglish ? 'Asisa Insurance Catalog' : 'Catálogo Seguros Asisa'}
+                </Link>
+              </li>
             </ul>
           </div>
 

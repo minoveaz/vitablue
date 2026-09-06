@@ -791,6 +791,68 @@ export const HealthInsurance: React.FC = () => {
         </div>
       </section>
 
+      {/* Specialized Asisa Insurance Portal Link */}
+      <section className="py-16 sm:py-20 bg-white border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 flex flex-col lg:flex-row items-center gap-10">
+          
+          {/* Specialty Logo Card */}
+          <div className="w-48 sm:w-60 shrink-0 flex items-center justify-center bg-slate-50/50 rounded-3xl p-8 border border-slate-150 shadow-sm min-h-[140px] hover:shadow-md transition-shadow duration-300">
+            <img 
+              src="/images/logo-asisa.png" 
+              alt="Logotipo de Asisa" 
+              className="max-w-full h-10 object-contain" 
+            />
+          </div>
+
+          {/* Content Info */}
+          <div className="flex-grow space-y-6 text-left">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/5 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-primary">
+              <Sparkle className="w-3.5 h-3.5 text-primary" /> Especialista Asisa
+            </div>
+            
+            <h2 className="text-h2 font-display font-black text-text-main leading-tight">
+              Seguros de Salud Especializados Asisa
+            </h2>
+            
+            <p className="text-body-reg text-text-secondary leading-relaxed font-medium">
+              Conoce toda la gama oficial de Asisa: seguros para visados de estudiantes desde 35€/mes, residencia no lucrativa y pólizas completas con la red hospitalaria propia del Grupo HLA.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-bold text-text-main">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                <span>Gama oficial de 9 pólizas</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                <span>Red propia Grupo HLA (18 hospitales)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                <span>ASISA Health Students & Residents</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                <span>Telemedicina AsisaLIVE 24/7</span>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Link to="/productos/seguros-salud/seguros-asisa/">
+                <Button 
+                  variant="accent" 
+                  className="w-full sm:w-auto px-10 font-bold group shadow-md shadow-accent/20 whitespace-nowrap"
+                  rightIcon={<ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />}
+                >
+                  Explorar Catálogo Asisa
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Comparisons Teaser Table */}
       <section className="py-16 sm:py-20 w-full max-w-5xl mx-auto px-6 sm:px-8 border-t border-slate-100">
         <div className="text-center space-y-4 mb-12">
