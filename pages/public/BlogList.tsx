@@ -265,7 +265,7 @@ export const BlogList: React.FC = () => {
       ? 'Expert guides on health insurance, visa requirements and immigration compliance in Spain.'
       : 'Guías de expertos sobre seguros de salud, requisitos consulares y extranjería en España.';
 
-    [['og:title', title], ['og:description', description], ['og:image', 'https://www.vitablue.es/vitablue_logo_social.jpg']].forEach(
+    [['og:title', title], ['og:description', description], ['og:image', 'https://www.vitablue.es/og-image.jpg']].forEach(
       ([property, content]) => {
         let tag = document.head.querySelector(`meta[property="${property}"]`);
         if (!tag) {

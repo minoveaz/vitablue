@@ -146,11 +146,16 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
     }
 
     [
+      ['og:type', 'article'],
+      ['og:site_name', 'VitaBlue'],
       ['og:title', post.title],
       ['og:description', post.excerpt],
       ['og:image', resolvedImageUrl],
+      ['og:url', `https://www.vitablue.es${blogPath}${post.slug}/`],
+      ['twitter:card', 'summary_large_image'],
       ['twitter:title', post.title],
       ['twitter:description', post.excerpt],
+      ['twitter:image', resolvedImageUrl],
     ].forEach(([property, content]) => {
       let tag = document.head.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
       if (!tag) {
@@ -176,7 +181,7 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
       const postSchemas = document.head.querySelectorAll('script[data-schema-post="true"]');
       postSchemas.forEach((s) => s.remove());
     };
-  }, [post, resolvedImageUrl, jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq]);
+  }, [post, blogPath, resolvedImageUrl, jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq]);
 
   return (
     <div className="w-full flex flex-col bg-background-light">
@@ -191,6 +196,21 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
             href={`https://www.vitablue.es${isEnglish ? '/blog' : '/en/blog'}/${alternateSlug}/`}
           />
         )}
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="VitaBlue" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:image" content={resolvedImageUrl} />
+        <meta property="og:url" content={`https://www.vitablue.es${blogPath}${post.slug}/`} />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={resolvedImageUrl} />
+
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
         {jsonLdFaq && (
