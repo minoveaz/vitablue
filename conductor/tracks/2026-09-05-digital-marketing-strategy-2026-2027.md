@@ -53,13 +53,29 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 - [x] **Acción 6 ([Issue #135](https://github.com/minoveaz/vitablue/issues/135)):** Redactar y publicar comparativa: *"Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante"* (ES).
 - [x] **Acción 7 ([Issue #136](https://github.com/minoveaz/vitablue/issues/136)):** Redactar y publicar artículo: *"¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada"* (ES).
 - [x] **Acción 8 ([Issue #137](https://github.com/minoveaz/vitablue/issues/137)):** Redactar y publicar guía en inglés: *"ASISA student insurance Spain — is it valid for student visa?"* (EN).
+- [x] **Enlazado cruzado ([Issue #144](https://github.com/minoveaz/vitablue/issues/144)):** Inyectar enlaces internos contextuales cruzados entre todos los artículos de visados y estudiantes.
+- [x] **Versiones en inglés ([Issue #145](https://github.com/minoveaz/vitablue/issues/145)):** Publicar versiones en inglés de Copagos (`what-is-copay-health-insurance-spain-guide`) y Carencias (`waiting-periods-health-insurance-spain-guide`).
 - [x] Ejecutar `npm run sync-blog` y validar generación estática en `dist/` y `sitemap.xml`.
 
-#### 1.5 Canales de Adquisición Desacoplados (Comunidades y Redes)
-- [ ] Configurar perfil de WhatsApp Business con catálogo de seguros para estudiantes y visados, respuestas rápidas y etiquetas por país/estado.
-- [ ] Crear el canal oficial de Telegram de difusión (*@VitaBlueEspaña*).
-- [ ] Crear perfil oficial en TikTok e Instagram para distribución de vídeo corto y carruseles.
-- [ ] Identificar y unirse a los 10 principales grupos de WhatsApp/Facebook de estudiantes internacionales y expatriados.
+#### 1.5 Rediseño de Arquitectura y Experiencia del Blog (Knowledge Hub)
+- [x] **Artículo Destacado ([Issue #140](https://github.com/minoveaz/vitablue/issues/140)):** Implementar componente Hero Featured Post en `/blog/` y `/en/blog/`.
+- [x] **Barra de Filtros y Categorías ([Issue #141](https://github.com/minoveaz/vitablue/issues/141)):** Píldoras temáticas con iconos y contadores dinámicos.
+- [x] **Tarjeta Interactiva Nativa en Grid ([Issue #142](https://github.com/minoveaz/vitablue/issues/142)):** Inserción de lead magnet y cotización entre artículos.
+- [x] **Artículos Relacionados ([Issue #143](https://github.com/minoveaz/vitablue/issues/143)):** Carrusel horizontal deslizable por snap points al pie del artículo.
+- [x] **Layout Knowledge Hub & Mobile Drawer ([Issue #146](https://github.com/minoveaz/vitablue/issues/146)):** Disposición a 2 columnas, sidebar compacto, drawer deslizable con backdrop para móviles y paginación en cliente.
+
+#### 1.6 Auditorías Técnicas y Automatización con Google Search Console API
+- [x] **Diagnóstico Técnico de Indexación ([Issue #147](https://github.com/minoveaz/vitablue/issues/147)):** Inspección de 61 URLs con la URL Inspection API, resolución de discrepancias de canonicals y corrección de fechas ISO y BreadcrumbList.
+- [x] **Oportunidades de Alto Impacto ([Issue #148](https://github.com/minoveaz/vitablue/issues/148)):** Análisis con Search Analytics API y optimización de snippets en `Home.tsx` (*Agente Oficial Sanitas*) y `AsistenciaFamiliar.tsx` (*Sanitas Asistencia Familiar iPlus* con 403 impresiones en posición 21).
+- [x] **Salud y Automatización de Sitemaps ([Issue #149](https://github.com/minoveaz/vitablue/issues/149)):** Auditoría de sitemaps con Webmasters API e integración automática en `npm run sync-blog`.
+- [x] **Normalización Estricta de Trailing Slash ([Issue #150](https://github.com/minoveaz/vitablue/issues/150)):** Estandarización de `/` en todos los enlaces internos y regla estricta en CI.
+
+#### 1.7 Despliegue en Producción
+- [x] **Promoción a `develop` ([PR #151](https://github.com/minoveaz/vitablue/pull/151)):** Integrado mediante Squash and merge con 100% de tests y verificaciones aprobadas.
+- [x] **Promoción a `main` ([PR #152](https://github.com/minoveaz/vitablue/pull/152)):** Desplegado en vivo en `https://www.vitablue.es/` y validado en producción.
+
+#### 1.8 Optimización de Tarjetas Sociales y Open Graph
+- [x] **Open Graph y Twitter Cards ([Issue #155](https://github.com/minoveaz/vitablue/issues/155) - [PR #156](https://github.com/minoveaz/vitablue/pull/156)):** Creación de banner Retina oficial de 2400x1260 px, pre-renderizado SSG de imágenes destacadas por artículo y actualización de todas las páginas de producto.
 
 ---
 

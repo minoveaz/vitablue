@@ -66,19 +66,21 @@ El sitio web ya es visible para Google: el motor de búsqueda lo muestra **más 
 
 **Frecuencia objetivo:** 2 artículos semanales sincronizados con el prerender estático (`npm run sync-blog`).
 
-#### Septiembre 2026 — "El Mes del Consulado"
+#### Septiembre 2026 — "El Mes del Consulado" ✅ *(100% Ejecutado y Desplegado en Producción)*
 *Estrategia: Temporada alta de expedición de visados de estudio en consulados de todo el mundo.*
 
-| Semana | Artículo / Guía | Keyword Objetivo | Idioma |
-| :--- | :--- | :--- | :---: |
-| **S1** | ¿Qué seguro médico pide el consulado español para el visado de estudiante? | `seguro visado estudiante consulado españa` | ES |
-| **S1** | Best health insurance for student visa Spain 2026 | `student visa spain health insurance` | EN |
-| **S2** | Cuánto cuesta el seguro médico para el visado de estudiante en España | `precio seguro medico visado estudiante` | ES |
-| **S2** | How to get health insurance in Spain as an international student | `health insurance spain international student` | EN |
-| **S3** | Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante | `asisa sanitas adeslas visado estudiante` | ES |
-| **S3** | How to compare health insurance plans for Spanish student visa | `compare health insurance student visa spain` | EN |
-| **S4** | ¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada | `rechazo visado devolucion seguro` | ES |
-| **S4** | ASISA student insurance Spain — is it valid for student visa? | `asisa student insurance spain` | EN |
+| Semana | Artículo / Guía | Keyword Objetivo | Idioma | Estado |
+| :--- | :--- | :--- | :---: | :---: |
+| **S1** | ¿Qué seguro médico pide el consulado español para el visado de estudiante? | `seguro visado estudiante consulado españa` | ES | ✅ Publicado |
+| **S1** | Best health insurance for student visa Spain 2026 | `student visa spain health insurance` | EN | ✅ Publicado |
+| **S2** | Cuánto cuesta el seguro médico para el visado de estudiante en España | `precio seguro medico visado estudiante` | ES | ✅ Publicado |
+| **S2** | How to get health insurance in Spain as an international student | `health insurance spain international student` | EN | ✅ Publicado |
+| **S3** | Diferencias entre Asisa, Sanitas y Adeslas para el visado de estudiante | `asisa sanitas adeslas visado estudiante` | ES | ✅ Publicado |
+| **S3** | How to compare health insurance plans for Spanish student visa | `compare health insurance student visa spain` | EN | ✅ Publicado |
+| **S4** | ¿Qué pasa si te rechazan el visado? Seguro con devolución garantizada | `rechazo visado devolucion seguro` | ES | ✅ Publicado |
+| **S4** | ASISA student insurance Spain — is it valid for student visa? | `asisa student insurance spain` | EN | ✅ Publicado |
+| **S4** | Spain visa rejection: health insurance refund guarantee | `spain visa rejection insurance refund` | EN | ✅ Publicado |
+| **Extra** | Guías de Copagos y Periodos de Carencias (Bilingüe ES/EN) | `copago seguro salud`, `waiting periods` | ES/EN | ✅ Publicado |
 
 #### Octubre 2026 — "El Mes del NIE y la Residencia"
 *Estrategia: Capturar al estudiante que ya aterrizó o al residente que debe tramitar TIE/NIE o renovar.*
@@ -205,17 +207,19 @@ Este canal ofrece el retorno más rápido: el usuario ya se encuentra en una com
 
 ## 📊 3. Métricas y Cuadro de Mando (KPIs)
 
-| Canal / Iniciativa | KPI Principal | Meta a Mes 3 | Meta a Mes 6 |
-| :--- | :--- | :---: | :---: |
-| **SEO Orgánico** | Clics mensuales en GSC | 200 | **800** |
-| **Blog VitaBlue** | Artículos publicados y sincronizados | 8 | **20** |
-| **TikTok / Instagram** | Seguidores | 500 | **3.000** |
-| **TikTok / Instagram** | Alcance orgánico mensual | 10.000 | **80.000** |
-| **Comunidad WhatsApp/TG** | Miembros activos | 100 | **500** |
-| **Base de Datos Email** | Suscriptores en nurturing | 50 | **300** |
-| **LinkedIn** | Impresiones mensuales | 5.000 | **20.000** |
-| **Conversaciones Iniciadas** | Leads en WhatsApp | 30 / mes | **150 / mes** |
-| **Ventas Realizadas** | Pólizas contratadas | **8 / mes** | **25+ / mes** |
+| Canal / Iniciativa | KPI Principal | Estado Actual (Sept 2026) | Meta a Mes 3 | Meta a Mes 6 |
+| :--- | :--- | :---: | :---: | :---: |
+| **SEO Orgánico** | Clics mensuales en GSC | ~25 / mes (Línea base) | 200 | **800** |
+| **Blog VitaBlue** | Artículos publicados y sincronizados | **26 artículos** ✅ | 8 | **20** |
+| **Páginas Pre-renderizadas** | Cobertura estática SSG | **67 rutas** ✅ | 40 | **60** |
+| **Lead Magnets (PDF)** | Checklists oficiales desplegadas | **2 (ES/EN)** ✅ | 1 | **3** |
+| **TikTok / Instagram** | Seguidores | 0 (Por iniciar) | 500 | **3.000** |
+| **TikTok / Instagram** | Alcance orgánico mensual | 0 | 10.000 | **80.000** |
+| **Comunidad WhatsApp/TG** | Miembros activos | 0 (Por iniciar) | 100 | **500** |
+| **Base de Datos Email** | Suscriptores en nurturing | 0 (Por iniciar) | 50 | **300** |
+| **LinkedIn** | Impresiones mensuales | 0 (Por iniciar) | 5.000 | **20.000** |
+| **Conversaciones Iniciadas** | Leads en WhatsApp | ~10 / mes (Línea base) | 30 / mes | **150 / mes** |
+| **Ventas Realizadas** | Pólizas contratadas | 2 (Nigeria / Sudáfrica) | **8 / mes** | **25+ / mes** |
 
 ---
 

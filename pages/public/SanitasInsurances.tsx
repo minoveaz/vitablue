@@ -157,14 +157,14 @@ export const SanitasInsurances: React.FC = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue" />
         <meta property="og:description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
-        <meta property="og:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue" />
         <meta name="twitter:description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
-        <meta name="twitter:image" content="https://www.vitablue.es/vitablue_logo_social.jpg" />
+        <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
         </script>

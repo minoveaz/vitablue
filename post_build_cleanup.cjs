@@ -85,15 +85,36 @@ function injectBlogMetadataAndSchemas() {
     content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${post.excerpt}"`);
 
     // 3. Update OG and Twitter
-    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${post.title}"`);
-    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${post.excerpt}"`);
-    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${post.title}"`);
-    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${post.excerpt}"`);
-
-    // 4. Construct Schemas
     const resolvedImageUrl = post.featuredImage.startsWith('http')
       ? post.featuredImage
       : `https://www.vitablue.es${post.featuredImage}`;
+    const postCanonicalUrl = `https://www.vitablue.es${blogPath}/${post.slug}/`;
+
+    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${post.title}"`);
+    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${post.excerpt}"`);
+    content = content.replace(/<meta property="og:type" content="[^"]*"/i, `<meta property="og:type" content="article"`);
+    content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${postCanonicalUrl}"`);
+    if (/property="og:image"/i.test(content)) {
+      content = content.replace(/<meta property="og:image" content="[^"]*"/i, `<meta property="og:image" content="${resolvedImageUrl}"`);
+    } else {
+      content = content.replace(/<\/head>/i, `<meta property="og:image" content="${resolvedImageUrl}" />\n</head>`);
+    }
+
+    if (/name="twitter:card"/i.test(content)) {
+      content = content.replace(/<meta name="twitter:card" content="[^"]*"/i, `<meta name="twitter:card" content="summary_large_image"`);
+    } else {
+      content = content.replace(/<\/head>/i, `<meta name="twitter:card" content="summary_large_image" />\n</head>`);
+    }
+
+    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${post.title}"`);
+    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${post.excerpt}"`);
+    if (/name="twitter:image"/i.test(content)) {
+      content = content.replace(/<meta name="twitter:image" content="[^"]*"/i, `<meta name="twitter:image" content="${resolvedImageUrl}"`);
+    } else {
+      content = content.replace(/<\/head>/i, `<meta name="twitter:image" content="${resolvedImageUrl}" />\n</head>`);
+    }
+
+    // 4. Construct Schemas
 
     function parseDateToIso(dateStr) {
       if (!dateStr) return '2026-09-01';
