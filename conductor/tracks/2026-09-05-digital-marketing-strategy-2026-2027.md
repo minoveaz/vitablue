@@ -74,6 +74,9 @@ Conexión completada con la API oficial de Google Search Console (`sc-domain:vit
 - [x] **Promoción a `develop` ([PR #151](https://github.com/minoveaz/vitablue/pull/151)):** Integrado mediante Squash and merge con 100% de tests y verificaciones aprobadas.
 - [x] **Promoción a `main` ([PR #152](https://github.com/minoveaz/vitablue/pull/152)):** Desplegado en vivo en `https://www.vitablue.es/` y validado en producción.
 
+#### 1.8 Optimización de Tarjetas Sociales y Open Graph
+- [x] **Open Graph y Twitter Cards ([Issue #155](https://github.com/minoveaz/vitablue/issues/155) - [PR #156](https://github.com/minoveaz/vitablue/pull/156)):** Creación de banner Retina oficial de 2400x1260 px, pre-renderizado SSG de imágenes destacadas por artículo y actualización de todas las páginas de producto.
+
 ---
 
 ### Fase 2: Aceleración, Nurturing & Expansión (Octubre – Noviembre 2026)
