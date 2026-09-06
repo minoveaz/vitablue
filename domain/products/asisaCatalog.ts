@@ -22,7 +22,7 @@ export const asisaFeaturedProducts: AsisaCatalogCard[] = [
       'Repatriación sanitaria y de restos incluida de serie'
     ],
     price: 'Desde 35,00€/mes',
-    link: '/wizard?flow=students&insurer=asisa',
+    link: '/productos/seguros-salud/seguros-asisa/asisa-health-students/',
     badge: 'Más Vendido Visados',
     docCode: 'AFR01S0125'
   },
@@ -37,7 +37,7 @@ export const asisaFeaturedProducts: AsisaCatalogCard[] = [
       'Admite pago anual único requerido por consulados'
     ],
     price: 'Desde 45,00€/mes',
-    link: '/wizard?flow=residents&insurer=asisa',
+    link: '/productos/seguros-salud/seguros-asisa/asisa-health-residents/',
     badge: 'Expatriados & RNL',
     docCode: 'AFR01S0128'
   },
@@ -52,7 +52,7 @@ export const asisaFeaturedProducts: AsisaCatalogCard[] = [
       'Copagos reducidos por consulta médica'
     ],
     price: 'Desde 24,90€/mes',
-    link: '/wizard?flow=health&plan=completa-plus',
+    link: '/productos/seguros-salud/seguros-asisa/asisa-completa/',
     badge: 'Recomendado Familias',
     docCode: 'AFR01S0015'
   },
@@ -67,7 +67,7 @@ export const asisaFeaturedProducts: AsisaCatalogCard[] = [
       'Cuota mensual muy reducida ideal para jóvenes y parejas'
     ],
     price: 'Desde 19,90€/mes',
-    link: '/wizard?flow=health&plan=completa-plus-plus',
+    link: '/productos/seguros-salud/seguros-asisa/asisa-completa/',
     badge: 'Económico',
     docCode: 'AFR01S0080'
   }

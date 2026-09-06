@@ -25,6 +25,10 @@ const TravelInsurance = lazy(() => import('@/pages/public/TravelInsurance'));
 const LifeInsurance = lazy(() => import('@/pages/public/LifeInsurance'));
 const SanitasInsurances = lazy(() => import('@/pages/public/SanitasInsurances'));
 const AsisaInsurances = lazy(() => import('@/pages/public/AsisaInsurances'));
+const AsisaHealthStudents = lazy(() => import('@/pages/public/AsisaHealthStudents'));
+const AsisaHealthResidents = lazy(() => import('@/pages/public/AsisaHealthResidents'));
+const AsisaCompleta = lazy(() => import('@/pages/public/AsisaCompleta'));
+const AsisaEsencial = lazy(() => import('@/pages/public/AsisaEsencial'));
 const Privacy = lazy(() => import('@/pages/public/Privacy'));
 const CookiesPolicy = lazy(() => import('@/pages/public/CookiesPolicy'));
 const LegalNotice = lazy(() => import('@/pages/public/AvisoLegal'));
@@ -215,6 +219,10 @@ const AppLayout: React.FC = () => {
 
             <Route path="/productos/seguros-salud/seguros-sanitas" element={<SanitasInsurances />} />
             <Route path="/productos/seguros-salud/seguros-asisa" element={<AsisaInsurances />} />
+            <Route path="/productos/seguros-salud/seguros-asisa/asisa-health-students" element={<AsisaHealthStudents />} />
+            <Route path="/productos/seguros-salud/seguros-asisa/asisa-health-residents" element={<AsisaHealthResidents />} />
+            <Route path="/productos/seguros-salud/seguros-asisa/asisa-completa" element={<AsisaCompleta />} />
+            <Route path="/productos/seguros-salud/seguros-asisa/asisa-esencial" element={<AsisaEsencial />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud" element={<SanitasMasSalud />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/international-students" element={<StudentInsurance />} />
             <Route path="/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud.html" element={<SanitasMasSalud />} />
