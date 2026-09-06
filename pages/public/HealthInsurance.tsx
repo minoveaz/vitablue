@@ -840,8 +840,8 @@ export const HealthInsurance: React.FC = () => {
             <div className="pt-4">
               <Link to="/productos/seguros-salud/seguros-asisa/">
                 <Button 
-                  variant="accent" 
-                  className="w-full sm:w-auto px-10 font-bold group shadow-md shadow-accent/20 whitespace-nowrap"
+                  variant="primary" 
+                  className="w-full sm:w-auto px-10 font-bold group shadow-md shadow-primary/20 whitespace-nowrap"
                   rightIcon={<ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />}
                 >
                   Explorar Catálogo Asisa
