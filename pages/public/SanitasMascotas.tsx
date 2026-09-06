@@ -185,7 +185,7 @@ export const SanitasMascotas: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",

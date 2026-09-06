@@ -151,7 +151,7 @@ export const LifeInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguro-vida#producto",
+        "@id": "https://www.vitablue.es/productos/seguro-vida/#producto",
         "name": "Seguro de Vida Familiar",
         "description": "Seguro de vida familiar para proteger la estabilidad de tus seres queridos y cubrir tu hipoteca frente a imprevistos.",
         "brand": {
@@ -169,18 +169,19 @@ export const LifeInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros",
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro de Vida"
+            "name": "Seguro de Vida",
+            "item": "https://www.vitablue.es/productos/seguro-vida/"
           }
         ]
       },

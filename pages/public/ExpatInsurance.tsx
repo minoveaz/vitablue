@@ -285,7 +285,7 @@ export const ExpatInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados#producto",
+        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/#producto",
         "name": "Seguro Médico para Expatriados en España",
         "description": "Seguro de salud completo sin copagos y sin carencias para visados de residencia no lucrativa y Golden Visa en España.",
         "brand": {
@@ -303,18 +303,19 @@ export const ExpatInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Seguros de Salud",
-            "item": "https://www.vitablue.es/productos/seguros-salud"
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Expatriados"
+            "name": "Expatriados",
+            "item": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/"
           }
         ]
       },

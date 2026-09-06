@@ -411,18 +411,19 @@ export const StudentInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros de Salud",
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro Médico Estudiantes"
+            "name": "Seguro Médico Estudiantes",
+            "item": canonicalUrl
           }
         ]
       },

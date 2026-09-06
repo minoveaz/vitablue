@@ -348,12 +348,13 @@ export const HealthInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Seguros de Salud"
+            "name": "Seguros de Salud",
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           }
         ]
       },

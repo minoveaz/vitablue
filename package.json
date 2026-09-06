@@ -43,7 +43,8 @@
     "gsc:pages": "node scripts/gsc_audit.cjs --pages",
     "gsc:queries": "node scripts/gsc_audit.cjs --queries",
     "gsc:countries": "node scripts/gsc_audit.cjs --countries",
-    "gsc:inspect": "node scripts/gsc_audit.cjs --inspect"
+    "gsc:inspect": "node scripts/gsc_audit.cjs --inspect",
+    "gsc:batch-inspect": "node scripts/gsc_batch_inspect.cjs --all"
   },
   "dependencies": {
     "@remotion/player": "4.0.228",

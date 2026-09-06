@@ -206,18 +206,19 @@ export const AsistenciaFamiliar: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros",
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Asistencia Familiar iPlus"
+            "name": "Asistencia Familiar iPlus",
+            "item": canonicalUrl
           }
         ]
       },

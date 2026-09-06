@@ -102,7 +102,7 @@ export const ForeignerInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros#producto",
+        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/#producto",
         "name": "Seguro de Salud para Extranjeros en España",
         "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
         "brand": {
@@ -120,18 +120,19 @@ export const ForeignerInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Seguros de Salud",
-            "item": "https://www.vitablue.es/productos/seguros-salud"
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro para Extranjeros"
+            "name": "Seguro para Extranjeros",
+            "item": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/"
           }
         ]
       },

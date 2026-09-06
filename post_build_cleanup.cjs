@@ -95,14 +95,42 @@ function injectBlogMetadataAndSchemas() {
       ? post.featuredImage
       : `https://www.vitablue.es${post.featuredImage}`;
 
+    function parseDateToIso(dateStr) {
+      if (!dateStr) return '2026-09-01';
+      const monthMap = {
+        enero: '01', january: '01',
+        febrero: '02', february: '02',
+        marzo: '03', march: '03',
+        abril: '04', april: '04',
+        mayo: '05', may: '05',
+        junio: '06', june: '06',
+        julio: '07', july: '07',
+        agosto: '08', august: '08',
+        septiembre: '09', september: '09',
+        octubre: '10', october: '10',
+        noviembre: '11', november: '11',
+        diciembre: '12', december: '12',
+      };
+      const parts = dateStr.trim().split(/\s+/);
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = monthMap[parts[1].toLowerCase()] || '09';
+        const year = parts[2];
+        return `${year}-${month}-${day}`;
+      }
+      return dateStr;
+    }
+
+    const isoDate = parseDateToIso(post.date);
+
     const jsonLdArticle = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: post.title,
       description: post.excerpt,
       image: resolvedImageUrl,
-      datePublished: post.date,
-      dateModified: post.date,
+      datePublished: isoDate,
+      dateModified: isoDate,
       inLanguage: isEnglish ? 'en-US' : 'es-ES',
       mainEntityOfPage: {
         '@type': 'WebPage',
@@ -131,7 +159,7 @@ function injectBlogMetadataAndSchemas() {
           '@type': 'ListItem',
           position: 1,
           name: 'VitaBlue',
-          item: isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es',
+          item: isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/',
         },
         {
           '@type': 'ListItem',

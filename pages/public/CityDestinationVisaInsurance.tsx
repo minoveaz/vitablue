@@ -135,19 +135,19 @@ export const CityDestinationVisaInsurance: React.FC = () => {
             '@type': 'ListItem',
             position: 1,
             name: 'Inicio',
-            item: 'https://www.vitablue.es',
+            item: 'https://www.vitablue.es/',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Seguros de Salud',
-            item: 'https://www.vitablue.es/productos/seguros-salud',
+            item: 'https://www.vitablue.es/productos/seguros-salud/',
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: 'Seguro Estudiantes',
-            item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes',
+            item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/',
           },
           {
             '@type': 'ListItem',

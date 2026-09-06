@@ -152,7 +152,7 @@ export const TravelInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguro-viaje#producto",
+        "@id": "https://www.vitablue.es/productos/seguro-viaje/#producto",
         "name": "Seguro de Viaje Internacional",
         "description": "Seguro de asistencia en viaje internacional con cobertura de gastos médicos, repatriación y anulación.",
         "brand": {
@@ -170,18 +170,19 @@ export const TravelInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros",
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro de Viaje"
+            "name": "Seguro de Viaje",
+            "item": "https://www.vitablue.es/productos/seguro-viaje/"
           }
         ]
       },
