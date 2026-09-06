@@ -7,6 +7,11 @@ interface AdvisorCardProps {
   name?: string;
   role?: string;
   avatarUrl?: string;
+  quote?: string;
+  badgeText?: string;
+  scheduleText?: string;
+  responseTimeText?: string;
+  callText?: string;
   onWhatsAppClick?: () => void;
   onPhoneClick?: () => void;
   phoneText?: string;
@@ -17,6 +22,11 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
   name = 'Lucía Delgado',
   role = 'Asesora Senior de Salud en España',
   avatarUrl = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200',
+  quote = '"Hola, soy Lucía. Estoy aquí para resolver tus dudas de visado, copagos y carencias. Te guiaré de forma neutral y sin ningún tipo de compromiso."',
+  badgeText = 'Asesora Asignada',
+  scheduleText = 'Lunes a Viernes: 9:00 - 19:00 (CET)',
+  responseTimeText = 'Respuesta en < 15 mins',
+  callText = 'Llamar Gratis',
   onWhatsAppClick,
   onPhoneClick,
   phoneText = '+34 694 58 34 52',
@@ -39,24 +49,24 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
         <div className="flex-1 flex flex-col gap-3 text-center sm:text-left">
           <div className="space-y-0.5">
             <span className="text-[9px] font-black text-primary uppercase tracking-[0.25em] flex items-center justify-center sm:justify-start gap-1">
-              <Shield className="w-3.5 h-3.5 text-accent fill-current" /> Asesora Asignada
+              <Shield className="w-3.5 h-3.5 text-accent fill-current" /> {badgeText}
             </span>
             <h4 className="text-h3 font-display font-extrabold text-text-main leading-tight tracking-tight">{name}</h4>
             <p className="text-caption text-text-secondary/80 font-bold uppercase tracking-wider">{role}</p>
           </div>
 
           <p className="text-body-reg text-text-secondary font-medium leading-relaxed max-w-md">
-            "Hola, soy Lucía. Estoy aquí para resolver tus dudas de visado, copagos y carencias. Te guiaré de forma neutral y sin ningún tipo de compromiso."
+            {quote}
           </p>
 
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-1.5 pt-1 text-[10px] font-bold text-text-secondary/70">
             <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-primary" /> Lunes a Viernes: 9:00 - 19:00 (CET)
+              <Clock className="w-3.5 h-3.5 text-primary" /> {scheduleText}
             </span>
             <span className="flex items-center gap-1.5 text-whatsapp">
               {/* Inline official WhatsApp icon handset inside a bubble */}
               <WhatsAppIcon size={16} />
-              Respuesta en &lt; 15 mins
+              {responseTimeText}
             </span>
           </div>
         </div>
@@ -80,7 +90,7 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({
             variant="outline"
             leftIcon={<Phone size={14} />}
           >
-            Llamar Gratis
+            {callText}
           </Button>
         </a>
 

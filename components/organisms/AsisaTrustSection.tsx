@@ -1,19 +1,31 @@
 import React from 'react';
 
+export interface AsisaTrustStat {
+  value: string;
+  label: string;
+}
+
+export interface AsisaTrustHighlight {
+  title: string;
+  description: string;
+}
+
 export interface AsisaTrustSectionProps {
   eyebrow?: React.ReactNode;
   title?: React.ReactNode;
   description?: React.ReactNode;
+  stats?: AsisaTrustStat[];
+  highlights?: AsisaTrustHighlight[];
 }
 
-const stats = [
+const defaultStats: AsisaTrustStat[] = [
   { value: '40.000+', label: 'Médicos y profesionales' },
   { value: '18', label: 'Hospitales propios Grupo HLA' },
   { value: '36', label: 'Centros médicos multiespecialidad' },
   { value: '45+', label: 'Años de experiencia médica' },
 ];
 
-const highlights = [
+const defaultHighlights: AsisaTrustHighlight[] = [
   {
     title: 'Red Hospitalaria Propia (Grupo HLA)',
     description: 'Acceso preferente a 18 hospitales de primer nivel del Grupo HLA (Hospital Universitario Moncloa, Clínica El Ángel, HLA Santa Isabel, Vistahermosa, entre otros) equipados con tecnología de vanguardia.',
@@ -32,7 +44,10 @@ const AsisaTrustSection: React.FC<AsisaTrustSectionProps> = ({
   eyebrow = 'Garantía Asisa & Grupo HLA',
   title = 'Líder en sanidad privada con red hospitalaria propia',
   description = 'Asisa es una de las aseguradoras de salud más sólidas de España, respaldada por la cooperativa médica Lavinia y su red hospitalaria propia Grupo HLA.',
+  stats = defaultStats,
+  highlights = defaultHighlights,
 }) => (
+
   <section className="mx-auto max-w-6xl px-6 py-16 text-left sm:px-8 sm:py-20">
     <div className="mb-12 space-y-4 text-center">
       <img
