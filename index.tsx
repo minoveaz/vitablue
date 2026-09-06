@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { WizardProvider } from './context/WizardContext';
-import { AuthProvider } from './context/AuthContext';
 import { ConsentProvider } from './context/ConsentContext';
 import App from './App';
 import './index.css';
@@ -17,9 +16,9 @@ root.render(
   <React.StrictMode>
     <HelmetProvider>
       <WizardProvider>
-        <AuthProvider>
-          <ConsentProvider><App /></ConsentProvider>
-        </AuthProvider>
+        <ConsentProvider>
+          <App />
+        </ConsentProvider>
       </WizardProvider>
     </HelmetProvider>
   </React.StrictMode>
