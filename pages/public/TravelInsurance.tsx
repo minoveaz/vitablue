@@ -2,6 +2,7 @@ import React from 'react';
 import { travelPlans } from '@/domain/products/nonHealthCatalog';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   Clock, Award, Globe
 } from 'lucide-react';
@@ -34,7 +35,7 @@ export const TravelInsurance: React.FC = () => {
     resetWizard();
     setProfile('nomad'); // Nomad/traveler profile fits travel wizard
     setVisaRequired('unknown');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const inclusions = [
@@ -151,7 +152,7 @@ export const TravelInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguro-viaje#producto",
+        "@id": "https://www.vitablue.es/productos/seguro-viaje/#producto",
         "name": "Seguro de Viaje Internacional",
         "description": "Seguro de asistencia en viaje internacional con cobertura de gastos médicos, repatriación y anulación.",
         "brand": {
@@ -169,18 +170,19 @@ export const TravelInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Productos",
-            "item": "https://www.vitablue.es#productos"
+            "name": "Seguros",
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro de Viaje"
+            "name": "Seguro de Viaje",
+            "item": "https://www.vitablue.es/productos/seguro-viaje/"
           }
         ]
       },
@@ -331,7 +333,7 @@ export const TravelInsurance: React.FC = () => {
       <AdvisorHelpSection
         title="¿Necesitas asistencia en la contratación?"
         description="Te ayudamos a contratar tu póliza de viaje o a tramitar coberturas de grupo para estancias de larga duración. Te asesoramos sin compromiso de forma gratuita."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20informaci%C3%B3n%20sobre%20el%20Seguro%20de%20Viaje."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguro-viaje', tag: 'LANDING-VIAJE' })}
       />
     </div>
   );

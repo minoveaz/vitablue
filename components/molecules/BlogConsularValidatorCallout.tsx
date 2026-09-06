@@ -49,7 +49,7 @@ export const BlogConsularValidatorCallout: React.FC<BlogConsularValidatorCallout
             </div>
           ))}
         </div>
-        <Link to="/validador-visado" className="w-full block pt-1">
+        <Link to="/validador-visado/" className="w-full block pt-1">
           <Button
             className="w-full h-10 rounded-xl font-bold text-xs"
             variant="accent"
@@ -97,7 +97,7 @@ export const BlogConsularValidatorCallout: React.FC<BlogConsularValidatorCallout
       </div>
 
       <div className="pt-2">
-        <Link to="/validador-visado" className="inline-block">
+        <Link to="/validador-visado/" className="inline-block">
           <Button
             variant="accent"
             size="lg"

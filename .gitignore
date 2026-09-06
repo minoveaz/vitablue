@@ -28,6 +28,13 @@ playwright-report/
 test-results/
 .unlighthouse/
 .temp/
+.temp_audit/
+
+# credentials & service accounts
+.credentials/
+*-gserviceaccount*.json
+vitablue-marketing-*.json
+gsc-*.json
 
 # misc
 *.local

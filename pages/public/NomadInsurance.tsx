@@ -19,6 +19,7 @@ import ProductHero from '../../components/organisms/ProductHero';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { nomadTranslations } from '../../utils/translations';
+import { getProductWhatsAppUrl } from '@/utils/whatsappLinks';
 import {
   TravelIllustration,
   PreventionIllustration,
@@ -39,7 +40,7 @@ export const NomadInsurance: React.FC = () => {
   const handleStartQuoting = () => {
     resetWizard();
     setProfile('nomad');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const nomadRequirements = isEnglish ? [
@@ -284,7 +285,7 @@ export const NomadInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales#producto",
+        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/#producto",
         "name": "Seguro Médico para Nómadas Digitales",
         "description": "Seguro médico de cobertura completa sin copagos y con asistencia global en viaje para el visado de nómada digital en España.",
         "brand": {
@@ -302,18 +303,19 @@ export const NomadInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Seguros de Salud",
-            "item": "https://www.vitablue.es/productos/seguros-salud"
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Nómadas Digitales"
+            "name": "Nómadas Digitales",
+            "item": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/"
           }
         ]
       },
@@ -342,15 +344,15 @@ export const NomadInsurance: React.FC = () => {
   };
 
   const canonicalUrl = isEnglish
-    ? 'https://www.vitablue.es/en/digital-nomad-insurance-spain'
-    : 'https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales';
+    ? 'https://www.vitablue.es/en/digital-nomad-insurance-spain/'
+    : 'https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/';
 
   const title = isEnglish
-    ? 'Health Insurance for Digital Nomads and Remote Workers | VitaBlue'
+    ? 'Best Health Insurance for Digital Nomads in Spain (2026) | VitaBlue'
     : 'Seguro Médico para Nómadas Digitales y Remotos | VitaBlue';
 
   const description = isEnglish
-    ? 'Compare health insurance for digital nomads and remote workers in Spain. Full compliant medical coverage with zero copays and global travel assistance.'
+    ? 'Official health insurance for Spain Digital Nomad Visa. Full coverage, 0€ copays, international travel assistance and approved consular certificate in 24h.'
     : 'Compara seguros médicos para nómadas digitales y teletrabajadores remotos en España. Cobertura médica completa homologada sin copagos y con asistencia global.';
 
   return (
@@ -466,7 +468,7 @@ export const NomadInsurance: React.FC = () => {
       <AdvisorHelpSection
         title={isEnglish ? 'Doubts with coverage outside Spain?' : '¿Dudas con la cobertura fuera de España?'}
         description={isEnglish ? 'Ask our advisors over WhatsApp directly and free of charge. You will get fast answers on how the medical network works in your travel destinations without any commitment.' : 'Pregunta a nuestros asesores por WhatsApp de forma directa y gratuita. Obtendrás respuestas rápidas sobre cómo funciona la red médica en tus destinos de viaje sin ningún compromiso.'}
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20N%C3%B3madas%20Digitales."
+        whatsappUrl={getProductWhatsAppUrl('nomadas', isEnglish)}
       />
     </div>
   );

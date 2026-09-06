@@ -48,7 +48,7 @@ export const destinationCities: Record<string, DestinationCityData> = {
     heroSubtitle: 'Pólizas homologadas sin copagos ni carencias válidas para Extranjería y Visado. Accede a los mejores hospitales privados de Madrid (HLA Moncloa, Sanitas La Moraleja, Ruber y Cemtro).',
     metaTitle: 'Seguro Médico Estudiantes y Extranjeros Madrid (2026) | VitaBlue',
     metaDescription: 'Seguro de salud para visado de estudiante, nómadas y NIE en Madrid desde 35€/mes. Sin copagos, sin carencias y con acceso a Hospital Moncloa, La Moraleja y Ruber.',
-    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/madrid',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/madrid/',
     startingPrice: 35,
     universities: [
       { name: 'Universidad Complutense de Madrid', shortName: 'UCM', type: 'Pública' },
@@ -136,7 +136,7 @@ export const destinationCities: Record<string, DestinationCityData> = {
     heroSubtitle: 'Pólizas 100% homologadas para visado, NIE y TIE en Barcelona. Cuadro médico concertado de primer nivel: Hospital CIMA Sanitas, Sagrada Família, Dexeus y HLA.',
     metaTitle: 'Seguro Médico Estudiantes y Extranjeros Barcelona (2026) | VitaBlue',
     metaDescription: 'Seguro de salud para estudiantes internacionales y nómadas en Barcelona desde 35€/mes. 0€ copagos, sin carencias y acceso a Hospital CIMA, Sagrada Família y Quirón.',
-    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/barcelona',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/barcelona/',
     startingPrice: 35,
     universities: [
       { name: 'Universitat de Barcelona', shortName: 'UB', type: 'Pública' },
@@ -215,7 +215,7 @@ export const destinationCities: Record<string, DestinationCityData> = {
     heroSubtitle: 'Seguro de salud para visado y NIE en Valencia desde 35€/mes. Cobertura completa en el Hospital 9 de Octubre, Casa de Salud y Clínica HLA.',
     metaTitle: 'Seguro Médico Estudiantes y Extranjeros Valencia (2026) | VitaBlue',
     metaDescription: 'Póliza de salud para estudiantes de la UV, UPV y nómadas en Valencia. Sin copagos, sin carencias y certificado consular oficial en 24 horas.',
-    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/valencia',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/valencia/',
     startingPrice: 35,
     universities: [
       { name: 'Universitat de València', shortName: 'UV', type: 'Pública' },
@@ -279,7 +279,7 @@ export const destinationCities: Record<string, DestinationCityData> = {
     heroSubtitle: 'El seguro de salud líder para el polo tecnológico y universitario de Málaga y la Costa del Sol. Red concertada con Hospital HLA El Ángel, Quirónsalud y Sanitas.',
     metaTitle: 'Seguro Médico Estudiantes y Nómadas Málaga (2026) | VitaBlue',
     metaDescription: 'Seguro médico para visado y nómadas digitales en Málaga desde 35€/mes. Sin copagos, con Hospital HLA El Ángel y certificado express en 24h.',
-    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/malaga',
+    canonicalPath: '/productos/seguros-salud/seguro-medico-estudiantes/malaga/',
     startingPrice: 35,
     universities: [
       { name: 'Universidad de Málaga', shortName: 'UMA', type: 'Pública' },

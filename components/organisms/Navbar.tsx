@@ -4,6 +4,7 @@ import { Menu, X, ShieldCheck, Phone, ChevronRight, ChevronDown, BookOpen, Shiel
 import Logo from '@/components/atoms/Logo';
 import WhatsAppIcon from '@/components/atoms/WhatsAppIcon';
 import { navbarTranslations } from '@/utils/translations';
+import { getNavbarWhatsAppUrl } from '@/utils/whatsappLinks';
 
 // Custom Premium SVG Illustrations (VitaBlue Style)
 const LegacySaludGeneralIcon: React.FC = () => (
@@ -164,28 +165,36 @@ export const Navbar: React.FC = () => {
   const isEnglish = location.pathname.startsWith('/en');
   const lang = isEnglish ? 'en' : 'es';
   const t = navbarTranslations[lang];
+  const navbarWhatsAppUrl = getNavbarWhatsAppUrl(isEnglish ? 'en' : 'es', location.pathname);
 
   const getLanguageTogglePath = () => {
     const path = location.pathname;
     
     // Mapping dictionary for ES -> EN and EN -> ES
     const routeMap: Record<string, string> = {
-      '/': '/en',
-      '/productos/seguros-salud/seguro-medico-estudiantes': '/en/health-insurance-student-visa-spain',
-      '/productos/seguros-salud/seguros-sanitas/international-students': '/en/health-insurance-student-visa-spain',
-      '/productos/seguros-salud/seguro-expatriados': '/en/health-insurance-expatriates-spain',
-      '/productos/seguros-salud/seguro-nomadas-digitales': '/en/digital-nomad-insurance-spain',
-      '/blog': '/en/blog',
+      '/': '/en/',
+      '/en/': '/',
+      '/sobre-nosotros/': '/en/about-us/',
+      '/en/about-us/': '/sobre-nosotros/',
+      '/contacto/': '/en/contact/',
+      '/en/contact/': '/contacto/',
+      '/productos/seguros-salud/': '/productos/seguros-salud/',
+      '/productos/seguros-salud/seguro-medico-estudiantes/': '/en/health-insurance-student-visa-spain/',
+      '/productos/seguros-salud/seguros-sanitas/international-students/': '/en/health-insurance-student-visa-spain/',
+      '/productos/seguros-salud/seguro-expatriados/': '/en/health-insurance-expatriates-spain/',
+      '/productos/seguros-salud/seguro-nomadas-digitales/': '/en/digital-nomad-insurance-spain/',
+      '/blog/': '/en/blog/',
       
-      '/en': '/',
-      '/en/health-insurance-student-visa-spain': '/productos/seguros-salud/seguro-medico-estudiantes',
-      '/en/health-insurance-expatriates-spain': '/productos/seguros-salud/seguro-expatriados',
-      '/en/digital-nomad-insurance-spain': '/productos/seguros-salud/seguro-nomadas-digitales',
-      '/en/blog': '/blog',
+      '/en/health-insurance-student-visa-spain/': '/productos/seguros-salud/seguro-medico-estudiantes/',
+      '/en/health-insurance-expatriates-spain/': '/productos/seguros-salud/seguro-expatriados/',
+      '/en/digital-nomad-insurance-spain/': '/productos/seguros-salud/seguro-nomadas-digitales/',
+      '/en/blog/': '/blog/',
     };
 
-    if (routeMap[path]) {
-      return routeMap[path];
+    const normalizedPath = path.endsWith('/') ? path : `${path}/`;
+
+    if (routeMap[normalizedPath]) {
+      return routeMap[normalizedPath];
     }
 
     const blogPostMap: Record<string, string> = {
@@ -196,18 +205,18 @@ export const Navbar: React.FC = () => {
     };
 
     if (path.startsWith('/en/blog/')) {
-      const slug = path.replace('/en/blog/', '');
+      const slug = path.replace('/en/blog/', '').replace(/\/$/, '');
       const alt = blogPostMap[slug];
-      return alt ? `/blog/${alt}` : '/blog';
+      return alt ? `/blog/${alt}/` : '/blog/';
     }
 
     if (path.startsWith('/blog/')) {
-      const slug = path.replace('/blog/', '');
+      const slug = path.replace('/blog/', '').replace(/\/$/, '');
       const alt = blogPostMap[slug];
-      return alt ? `/en/blog/${alt}` : '/en/blog';
+      return alt ? `/en/blog/${alt}/` : '/en/blog/';
     }
 
-    return path.startsWith('/en') ? '/' : path;
+    return path.startsWith('/en') ? '/' : '/en/';
   };
 
   // Detect scroll to style the header dynamically
@@ -251,7 +260,7 @@ export const Navbar: React.FC = () => {
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 flex items-center justify-between">
           {/* Logo & Agent Badge */}
           <div className="flex items-center gap-3 z-[110]">
-            <Link to={isEnglish ? "/en" : "/"} aria-label="VitaBlue - Ir al inicio">
+            <Link to={isEnglish ? "/en/" : "/"} aria-label="VitaBlue - Ir al inicio">
               <Logo iconSize={38} showTagline={false} />
             </Link>
             <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-100/60 px-2.5 py-1 text-[9px] font-black text-sky-800 uppercase tracking-wider select-none">
@@ -277,7 +286,7 @@ export const Navbar: React.FC = () => {
                     {isEnglish ? 'Health Insurance' : 'Seguros de Salud'}
                   </h4>
                   <div className="flex flex-col gap-3.5">
-                    <Link to="/productos/seguros-salud" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to="/productos/seguros-salud/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <SaludGeneralIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -289,7 +298,7 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
                     
-                    <Link to={isEnglish ? "/en/health-insurance-student-visa-spain" : "/productos/seguros-salud/seguro-medico-estudiantes"} className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to={isEnglish ? "/en/health-insurance-student-visa-spain/" : "/productos/seguros-salud/seguro-medico-estudiantes/"} className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <EstudiantesIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -301,7 +310,7 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
 
-                    <Link to={isEnglish ? "/en/health-insurance-expatriates-spain" : "/productos/seguros-salud/seguro-expatriados"} className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to={isEnglish ? "/en/health-insurance-expatriates-spain/" : "/productos/seguros-salud/seguro-expatriados/"} className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <ExpatriadosIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -313,7 +322,7 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
 
-                    <Link to="/productos/seguros-salud/seguro-nomadas-digitales" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to={isEnglish ? "/en/digital-nomad-insurance-spain/" : "/productos/seguros-salud/seguro-nomadas-digitales/"} className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <NomadasIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -334,7 +343,7 @@ export const Navbar: React.FC = () => {
                     {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
                   </h4>
                   <div className="flex flex-col gap-3.5">
-                    <Link to="/productos/seguro-viaje" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to="/productos/seguro-viaje/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <Globe2 className="mt-0.5 size-10 shrink-0 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -354,7 +363,7 @@ export const Navbar: React.FC = () => {
                     {isEnglish ? 'Specialties' : 'Especialidades'}
                   </h4>
                   <div className="flex flex-col gap-3.5">
-                    <Link to="/productos/seguros-salud/seguros-sanitas" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to="/productos/seguros-salud/seguros-sanitas/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <SanitasIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -366,7 +375,7 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
 
-                    <Link to="/productos/seguro-mascotas/sanitas-mascotas" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to="/productos/seguro-mascotas/sanitas-mascotas/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <MascotasIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -378,7 +387,7 @@ export const Navbar: React.FC = () => {
                       </div>
                     </Link>
 
-                    <Link to="/productos/seguro-para-decesos/asistencia-familiar" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
+                    <Link to="/productos/seguro-para-decesos/asistencia-familiar/" className="group/item flex items-start gap-3 rounded-xl p-1.5 hover:bg-slate-50 transition-colors">
                       <FamiliarIcon />
                       <div>
                         <p className="text-xs font-black text-text-main group-hover/item:text-primary transition-colors leading-none">
@@ -395,17 +404,17 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Link 2: Sobre Nosotros */}
-            <Link to={isEnglish ? "/en/about-us" : "/sobre-nosotros"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/about-us/" : "/sobre-nosotros/"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.aboutUs}
             </Link>
 
             {/* Link 3: Blog */}
-            <Link to="/blog" className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/blog/" : "/blog/"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.blog}
             </Link>
 
             {/* Link 4: Contacto */}
-            <Link to={isEnglish ? "/en/contact" : "/contacto"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
+            <Link to={isEnglish ? "/en/contact/" : "/contacto/"} className="font-sans text-sm font-bold text-text-secondary hover:text-primary transition-colors duration-200">
               {t.contact}
             </Link>
 
@@ -430,7 +439,7 @@ export const Navbar: React.FC = () => {
           {/* Desktop & Tablet CTA Call Button */}
           <div className="hidden sm:flex items-center gap-4 z-[110]">
             <a 
-              href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+              href={navbarWhatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               data-event="whatsapp"
@@ -518,28 +527,28 @@ export const Navbar: React.FC = () => {
                 {/* Collapsible Submenu */}
                 {isMobileProductsOpen && (
                   <div className="bg-slate-50/50 border-b border-slate-100 flex flex-col">
-                    <Link to="/productos/seguros-salud" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguros-salud/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <SaludGeneralIcon />
                         <span>{isEnglish ? 'General Health' : 'Salud General'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to={isEnglish ? "/en/health-insurance-student-visa-spain" : "/productos/seguros-salud/seguros-sanitas/international-students"} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to={isEnglish ? "/en/health-insurance-student-visa-spain/" : "/productos/seguros-salud/seguros-sanitas/international-students/"} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <EstudiantesIcon />
                         <span>{isEnglish ? 'International Students' : 'Estudiantes Extranjeros'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to={isEnglish ? "/en/health-insurance-expatriates-spain" : "/productos/seguros-salud/seguro-expatriados"} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to={isEnglish ? "/en/health-insurance-expatriates-spain/" : "/productos/seguros-salud/seguro-expatriados/"} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <ExpatriadosIcon />
                         <span>{isEnglish ? 'Expats & Residents' : 'Expatriados y Residentes'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to="/productos/seguros-salud/seguro-nomadas-digitales" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguros-salud/seguro-nomadas-digitales/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <NomadasIcon />
                         <span>{isEnglish ? 'Digital Nomads' : 'Nómadas Digitales'}</span>
@@ -549,28 +558,28 @@ export const Navbar: React.FC = () => {
                     <div className="border-b border-slate-100/60 px-6 py-3 text-[10px] font-black uppercase tracking-[0.25em] text-primary">
                       {isEnglish ? 'Travel Insurance' : 'Seguros de Viaje'}
                     </div>
-                    <Link to="/productos/seguro-viaje" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguro-viaje/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <Globe2 className="size-10 rounded-xl bg-brand-cyan/20 p-2 text-primary" />
                         <span>{isEnglish ? 'Travel Insurance' : 'Seguro de Viaje'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to="/productos/seguros-salud/seguros-sanitas" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguros-salud/seguros-sanitas/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <SanitasIcon />
                         <span>{isEnglish ? 'Sanitas Insurances' : 'Seguros Sanitas'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to="/productos/seguro-mascotas/sanitas-mascotas" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguro-mascotas/sanitas-mascotas/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 border-b border-slate-100/60 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <MascotasIcon />
                         <span>{isEnglish ? 'Pet Insurance' : 'Seguro de Mascotas'}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-text-secondary/30" />
                     </Link>
-                    <Link to="/productos/seguro-para-decesos/asistencia-familiar" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
+                    <Link to="/productos/seguro-para-decesos/asistencia-familiar/" onClick={() => setIsOpen(false)} className="flex items-center justify-between px-6 py-4 hover:bg-slate-100 text-left text-sm font-bold text-text-main">
                       <div className="flex items-center gap-3">
                         <FamiliarIcon />
                         <span>{isEnglish ? 'Family Assistance' : 'Asistencia Familiar'}</span>
@@ -583,7 +592,7 @@ export const Navbar: React.FC = () => {
 
               {/* Link 2: Sobre Nosotros */}
               <Link
-                to={isEnglish ? "/en/about-us" : "/sobre-nosotros"}
+                to={isEnglish ? "/en/about-us/" : "/sobre-nosotros/"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -600,7 +609,7 @@ export const Navbar: React.FC = () => {
 
               {/* Link 3: Blog */}
               <Link
-                to="/blog"
+                to={isEnglish ? "/en/blog/" : "/blog/"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -617,7 +626,7 @@ export const Navbar: React.FC = () => {
 
               {/* Link 4: Contacto */}
               <Link
-                to={isEnglish ? "/en/contact" : "/contacto"}
+                to={isEnglish ? "/en/contact/" : "/contacto/"}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-between px-6 py-5 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
               >
@@ -658,7 +667,7 @@ export const Navbar: React.FC = () => {
 
             <div className="flex flex-col gap-3">
               <a 
-                href="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20general%20sobre%20seguros."
+                href={navbarWhatsAppUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-event="whatsapp"

@@ -35,6 +35,7 @@ import {
   HealthIllustration,
   MedicalAttentionIllustration,
 } from '@/components/illustrations';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
 
 export const ConsulateVisaInsurance: React.FC = () => {
   const { slug: paramSlug } = useParams<{ slug: string }>();
@@ -46,7 +47,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
   const consulate = getConsulateBySlug(currentSlug);
 
   if (!consulate) {
-    return <Navigate to="/productos/seguros-salud/seguro-medico-estudiantes" replace />;
+    return <Navigate to="/productos/seguros-salud/seguro-medico-estudiantes/" replace />;
   }
 
 
@@ -54,7 +55,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
     resetWizard();
     setProfile('student');
     setVisaRequired('yes');
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const whatsappHref = buildAttributedWhatsAppUrl(
@@ -138,18 +139,19 @@ export const ConsulateVisaInsurance: React.FC = () => {
             '@type': 'ListItem',
             position: 1,
             name: 'Inicio',
-            item: 'https://www.vitablue.es',
+            item: 'https://www.vitablue.es/',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Seguro Médico Estudiantes',
-            item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes',
+            item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/',
           },
           {
             '@type': 'ListItem',
             position: 3,
-            name: `${consulate.flag} ${consulate.country}`,
+            name: `${consulate.country}`,
+            item: canonicalUrl,
           },
         ],
       },
@@ -533,13 +535,21 @@ export const ConsulateVisaInsurance: React.FC = () => {
             </p>
           </div>
           <Link
-            to="/validador-visado"
+            to="/validador-visado/"
             className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-6 py-3.5 text-sm font-bold text-primary-dark shadow-md shadow-accent/20 hover:brightness-105 transition-all text-center whitespace-nowrap"
           >
             Abrir Validador Gratis
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </section>
+
+      {/* Official Student Visa Checklist Lead Magnet */}
+      <section className="px-4 sm:px-6 md:px-8 max-w-5xl mx-auto w-full">
+        <LeadMagnetBanner
+          isEnglish={false}
+          sourceContext={`consulate-${consulate.slug}`}
+        />
       </section>
 
       {/* FAQs Section */}

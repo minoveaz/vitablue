@@ -40,6 +40,22 @@ if (routeResult.status !== 0) {
   process.exit(routeResult.status || 1);
 }
 
+// Notificación opcional/automática a Google Search Console
+const gscCredentialsPath = path.join(root, '.credentials', 'gsc-credentials.json');
+const gscSitemapsPath = path.join(__dirname, 'gsc_sitemaps.cjs');
+if (fs.existsSync(gscCredentialsPath) && fs.existsSync(gscSitemapsPath)) {
+  console.log('\nNotificando sitemap actualizado a Google Search Console...');
+  const gscResult = spawnSync(process.execPath, [gscSitemapsPath, '--submit'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  if (gscResult.status === 0) {
+    console.log('✅ Google Search Console notificado correctamente con el sitemap actualizado.');
+  } else {
+    console.warn('⚠️ No se pudo enviar el sitemap a GSC automáticamente (no bloqueante).');
+  }
+}
+
 console.log('\n=== SINCRONIZACIÓN COMPLETADA ===');
 console.log('Las rutas de prerender se generan desde config/routes.ts.');
 console.log('El sitemap se genera desde el registro tipado y blogData.ts.');

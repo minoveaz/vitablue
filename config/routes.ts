@@ -127,9 +127,9 @@ export const legacyRoutes: RouteDefinition[] = [
 
   legacy('/productos/seguros-salud/seguros-sanitas/sanitas-mascotas.html', '/productos/seguro-mascotas/sanitas-mascotas'),
   legacy('/productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus.html', '/productos/seguro-para-decesos/asistencia-familiar'),
-  legacy('/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
+  legacy('/productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/productos/seguros-salud/sanitas-mas-salud', '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud'),
-  legacy('/productos/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
+  legacy('/productos/seguro-medico-estudiantes-extranjeros-espana.html', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/productos/international-students.html', '/productos/seguros-salud/seguros-sanitas/international-students'),
   legacy('/seguros-salud', '/productos/seguros-salud'),
   legacy('/productos/seguro-de-salud.html', '/productos/seguros-salud'),
@@ -162,9 +162,9 @@ export const privateRoutes: RouteDefinition[] = [
   { path: '/backoffice/tools/document-intelligence/extraccion', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/tools/document-intelligence/extraccion/new', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/marketing-studio/login', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false, redirectTo: '/login' },
-  { path: '/cotizador.html', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
-  { path: '/wizard', kind: 'private', locale: 'es', canonical: '/wizard', indexable: false, prerender: true, sitemap: false },
-  { path: '/resultados', kind: 'private', locale: 'es', canonical: '/resultados', indexable: false, prerender: true, sitemap: false },
+  { path: '/cotizador.html', kind: 'private', locale: 'es', canonical: '/wizard/', indexable: false, prerender: true, sitemap: false },
+  { path: '/wizard/', kind: 'private', locale: 'es', canonical: '/wizard/', indexable: false, prerender: true, sitemap: false },
+  { path: '/resultados/', kind: 'private', locale: 'es', canonical: '/resultados/', indexable: false, prerender: true, sitemap: false },
   { path: '/styleguide', kind: 'development', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
   { path: '/backoffice/marketing-studio/identidad-de-marca', kind: 'private', locale: 'neutral', indexable: false, prerender: false, sitemap: false },
@@ -191,5 +191,5 @@ export const prerenderRoutes = [
   ...routeRegistry
     .filter((route) => route.prerender && !route.path.includes(':'))
     .map((route) => route.path),
-  ...blogPosts.map((post) => `${post.lang === 'en' ? '/en' : ''}/blog/${post.slug}`),
+  ...blogPosts.map((post) => `${post.lang === 'en' ? '/en' : ''}/blog/${post.slug}/`),
 ];

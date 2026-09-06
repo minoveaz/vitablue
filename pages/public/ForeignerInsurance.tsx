@@ -11,6 +11,7 @@ import { Button } from '../../components/atoms/Button';
 import ProductTrustBar from '../../components/organisms/ProductTrustBar';
 import ProviderLogoBar from '../../components/organisms/ProviderLogoBar';
 import { StudentIllustration, ProfileIllustration, TravelIllustration } from '../../components/illustrations';
+import { buildContextualWhatsAppUrl } from '@/utils/whatsappLinks';
 
 export const ForeignerInsurance: React.FC = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export const ForeignerInsurance: React.FC = () => {
   const handleStartWizard = (profileType: 'student' | 'expat' | 'nomad') => {
     resetWizard();
     setProfile(profileType);
-    navigate('/wizard');
+    navigate('/wizard/');
   };
 
   const profiles = [
@@ -28,7 +29,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Estudiantes Internacionales',
       subtitle: 'Visado de Estudios',
       desc: 'Seguro médico completo sin copagos, sin carencias y con repatriación sanitaria incluida al 100%. Cumple los requisitos específicos para Universidades y Escuelas de Negocios.',
-      link: '/productos/seguros-salud/seguros-sanitas/international-students',
+      link: '/productos/seguros-salud/seguros-sanitas/international-students/',
       linkText: 'Explorar Requisitos de Estudios',
       illustration: StudentIllustration,
       badgeColor: 'bg-brand-cyan/10 text-brand-cyan-dark border border-brand-cyan/20'
@@ -38,7 +39,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Expatriados y Residentes',
       subtitle: 'Residencia No Lucrativa & Golden Visa',
       desc: 'Cobertura médica ilimitada en España equivalente al sistema público de salud. Ideal para la obtención del NIE, Golden Visa, residencia no lucrativa o reagrupación familiar.',
-      link: '/productos/seguros-salud/seguro-expatriados',
+      link: '/productos/seguros-salud/seguro-expatriados/',
       linkText: 'Explorar Requisitos de Residencia',
       illustration: ProfileIllustration,
       badgeColor: 'bg-primary/10 text-primary-dark border border-primary/20'
@@ -48,7 +49,7 @@ export const ForeignerInsurance: React.FC = () => {
       title: 'Nómadas Digitales',
       subtitle: 'Visado de Teletrabajo Internacional',
       desc: 'Seguro flexible que combina cobertura médica completa en España (sin copagos exigidos por ley) con asistencia médica de urgencia en tus viajes internacionales.',
-      link: '/productos/seguros-salud/seguro-nomadas-digitales',
+      link: '/productos/seguros-salud/seguro-nomadas-digitales/',
       linkText: 'Explorar Requisitos de Teletrabajo',
       illustration: TravelIllustration,
       badgeColor: 'bg-accent/10 text-accent-dark border border-accent/25'
@@ -101,7 +102,7 @@ export const ForeignerInsurance: React.FC = () => {
       },
       {
         "@type": "FinancialProduct",
-        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros#producto",
+        "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/#producto",
         "name": "Seguro de Salud para Extranjeros en España",
         "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
         "brand": {
@@ -119,18 +120,19 @@ export const ForeignerInsurance: React.FC = () => {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": "https://www.vitablue.es"
+            "item": "https://www.vitablue.es/"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Seguros de Salud",
-            "item": "https://www.vitablue.es/productos/seguros-salud"
+            "item": "https://www.vitablue.es/productos/seguros-salud/"
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Seguro para Extranjeros"
+            "name": "Seguro para Extranjeros",
+            "item": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/"
           }
         ]
       },
@@ -316,7 +318,7 @@ export const ForeignerInsurance: React.FC = () => {
       <AdvisorHelpSection
         title="¿No estás seguro de qué visado te corresponde?"
         description="Nuestros asesores senior en extranjería te atenderán directamente por WhatsApp o llamada gratuita para guiarte en los requisitos específicos del consulado de tu país de origen."
-        whatsappUrl="https://wa.me/34694583452?text=Hola!%20Vengo%20de%20la%20web%20de%20VitaBlue.%20Necesito%20asesoramiento%20sobre%20el%20Seguro%20de%20Salud%20para%20Extranjeros."
+        whatsappUrl={buildContextualWhatsAppUrl({ pathname: '/productos/seguros-salud/seguro-salud-extranjeros', tag: 'LANDING-EXTRANJEROS' })}
       />
     </div>
   );

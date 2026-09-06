@@ -8,42 +8,58 @@ import ArticleToc from '@/components/molecules/ArticleToc';
 import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
 import BlogAdvisorCta from '@/components/molecules/BlogAdvisorCta';
 import BlogConsularValidatorCallout from '@/components/molecules/BlogConsularValidatorCallout';
+import LeadMagnetBanner from '@/components/molecules/LeadMagnetBanner';
+import BlogRelatedPosts from '@/components/molecules/BlogRelatedPosts';
 
 const createHeadingId = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-export const BlogPost: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
-  if (!post) return <Navigate to="/blog" replace />;
+const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) => {
   const isEnglish = post.lang === 'en';
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
-  const blogPath = isEnglish ? '/en/blog' : '/blog';
+  const blogPath = isEnglish ? '/en/blog/' : '/blog/';
   const alternatePost = post.alternateSlug ? blogPosts.find((item) => item.slug === post.alternateSlug) : undefined;
   const alternateSlug = alternatePost?.slug;
   const resolvedImageUrl = post.featuredImage.startsWith('http')
     ? post.featuredImage
     : `https://www.vitablue.es${post.featuredImage}`;
 
+  const isoDate = useMemo(() => {
+    if (!post.date) return '2026-09-01';
+    const monthMap: Record<string, string> = {
+      enero: '01', january: '01',
+      febrero: '02', february: '02',
+      marzo: '03', march: '03',
+      abril: '04', april: '04',
+      mayo: '05', may: '05',
+      junio: '06', june: '06',
+      julio: '07', july: '07',
+      agosto: '08', august: '08',
+      septiembre: '09', september: '09',
+      octubre: '10', october: '10',
+      noviembre: '11', november: '11',
+      diciembre: '12', december: '12',
+    };
+    const parts = post.date.trim().split(/\s+/);
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0');
+      const month = monthMap[parts[1].toLowerCase()] || '09';
+      const year = parts[2];
+      return `${year}-${month}-${day}`;
+    }
+    return post.date;
+  }, [post.date]);
 
-  useEffect(() => {
-    [['og:title', post.title], ['og:description', post.excerpt], ['og:image', resolvedImageUrl]].forEach(([property, content]) => {
-      let tag = document.head.querySelector(`meta[property="${property}"]`);
-      if (!tag) { tag = document.createElement('meta'); tag.setAttribute('property', property); document.head.appendChild(tag); }
-      tag.setAttribute('content', content);
-    });
-  }, [post, resolvedImageUrl]);
-  const jsonLdArticle = {
+  const jsonLdArticle = useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
     image: resolvedImageUrl,
-    datePublished: post.date,
-    dateModified: post.date,
-
+    datePublished: isoDate,
+    dateModified: isoDate,
     inLanguage: isEnglish ? 'en-US' : 'es-ES',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.vitablue.es${blogPath}/${post.slug}`,
+      '@id': `https://www.vitablue.es${blogPath}${post.slug}/`,
     },
     author: {
       '@type': 'Person',
@@ -58,9 +74,9 @@ export const BlogPost: React.FC = () => {
         url: 'https://www.vitablue.es/favicon.svg',
       },
     },
-  };
+  }), [post, blogPath, isEnglish, resolvedImageUrl, isoDate]);
 
-  const jsonLdBreadcrumb = {
+  const jsonLdBreadcrumb = useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -68,29 +84,106 @@ export const BlogPost: React.FC = () => {
         '@type': 'ListItem',
         position: 1,
         name: 'VitaBlue',
-        item: isEnglish ? 'https://www.vitablue.es/en' : 'https://www.vitablue.es',
+        item: isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/',
       },
       {
         '@type': 'ListItem',
         position: 2,
-        name: isEnglish ? 'Blog' : 'Blog',
+        name: 'Blog',
         item: `https://www.vitablue.es${blogPath}`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: post.title,
-        item: `https://www.vitablue.es${blogPath}/${post.slug}`,
+        item: `https://www.vitablue.es${blogPath}${post.slug}/`,
       },
     ],
-  };
+  }), [post.title, post.slug, blogPath, isEnglish]);
+
+  const jsonLdFaq = useMemo(() => {
+    const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, '');
+    const faqSectionIndex = post.sections.findIndex(
+      (s) => s.type === 'heading-2' && s.text && s.text.includes('FAQ')
+    );
+    const faqListSection =
+      faqSectionIndex !== -1 && post.sections[faqSectionIndex + 1]?.type === 'list'
+        ? post.sections[faqSectionIndex + 1]
+        : null;
+
+    const faqEntities = faqListSection?.items
+      ?.map((item) => {
+        const match = item.match(/<strong>(.*?)<\/strong>[:\s]*(.*)/s);
+        if (match) {
+          return {
+            '@type': 'Question',
+            name: stripHtml(match[1]).trim(),
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: stripHtml(match[2]).trim(),
+            },
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    return faqEntities && faqEntities.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqEntities,
+        }
+      : null;
+  }, [post.sections]);
+
+  useEffect(() => {
+    document.title = post.title;
+
+    const metaDesc = document.head.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', post.excerpt);
+    }
+
+    [
+      ['og:title', post.title],
+      ['og:description', post.excerpt],
+      ['og:image', resolvedImageUrl],
+      ['twitter:title', post.title],
+      ['twitter:description', post.excerpt],
+    ].forEach(([property, content]) => {
+      let tag = document.head.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(property.startsWith('twitter:') ? 'name' : 'property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    const existingSchemas = document.head.querySelectorAll('script[data-schema-post="true"]');
+    existingSchemas.forEach((s) => s.remove());
+
+    [jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq].filter(Boolean).forEach((schemaData) => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-schema-post', 'true');
+      script.text = JSON.stringify(schemaData);
+      document.head.appendChild(script);
+    });
+
+    return () => {
+      const postSchemas = document.head.querySelectorAll('script[data-schema-post="true"]');
+      postSchemas.forEach((s) => s.remove());
+    };
+  }, [post, resolvedImageUrl, jsonLdArticle, jsonLdBreadcrumb, jsonLdFaq]);
 
   return (
     <div className="w-full flex flex-col bg-background-light">
       <Helmet>
         <title>{post.title}</title>
         <meta name="description" content={post.excerpt} />
-        <link rel="canonical" href={`https://www.vitablue.es${blogPath}/${post.slug}/`} />
+        <link rel="canonical" href={`https://www.vitablue.es${blogPath}${post.slug}/`} />
         {alternateSlug && (
           <link
             rel="alternate"
@@ -100,6 +193,9 @@ export const BlogPost: React.FC = () => {
         )}
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
+        {jsonLdFaq && (
+          <script type="application/ld+json">{JSON.stringify(jsonLdFaq)}</script>
+        )}
       </Helmet>
       <div className="bg-white border-b border-slate-100 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 text-xs font-bold text-text-secondary">
@@ -118,6 +214,12 @@ export const BlogPost: React.FC = () => {
               <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover" />
             </div>
             <BlogSectionRenderer sections={post.sections} />
+            {(post.category === 'visados' || post.slug.includes('estudiante') || post.slug.includes('student') || post.slug.includes('visa')) && (
+              <LeadMagnetBanner
+                isEnglish={isEnglish}
+                sourceContext={post.slug}
+              />
+            )}
             <BlogAdvisorCta
               isEnglish={isEnglish}
               title={
@@ -135,7 +237,15 @@ export const BlogPost: React.FC = () => {
           </article>
           <aside className="space-y-8 sticky top-28 hidden lg:block">
             <ArticleToc items={tocItems} isEnglish={isEnglish} />
-            <BlogConsularValidatorCallout variant="sidebar" isEnglish={isEnglish} />
+            {(post.category === 'visados' || post.slug.includes('estudiante') || post.slug.includes('student') || post.slug.includes('visa')) ? (
+              <LeadMagnetBanner
+                variant="sidebar"
+                isEnglish={isEnglish}
+                sourceContext={`sidebar-${post.slug}`}
+              />
+            ) : (
+              <BlogConsularValidatorCallout variant="sidebar" isEnglish={isEnglish} />
+            )}
             <BlogAdvisorCta
               variant="sidebar"
               isEnglish={isEnglish}
@@ -153,9 +263,25 @@ export const BlogPost: React.FC = () => {
             />
           </aside>
         </div>
+
+        {/* Related articles full-width section */}
+        <div className="mx-auto w-full max-w-6xl mt-12 sm:mt-16">
+          <BlogRelatedPosts
+            currentPost={post}
+            allPosts={blogPosts}
+            isEnglish={isEnglish}
+          />
+        </div>
       </section>
     </div>
   );
+};
+
+export const BlogPost: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
+  if (!post) return <Navigate to="/blog/" replace />;
+  return <BlogPostView post={post} />;
 };
 
 export default BlogPost;
