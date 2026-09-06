@@ -25,20 +25,14 @@
     <meta name="theme-color" content="#2563eb" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- DNS Prefetch & Preconnect para Google Fonts (Acelerar FCP) -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <!-- Google Fonts: Preconnect & Asynchronous High-Performance Loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <script>
-      (function() {
-        if (navigator.userAgent.indexOf('Headless') !== -1) return;
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap';
-        document.head.appendChild(link);
-      })();
-    </script>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" />
+    </noscript>
     
     <!-- Carga Diferida de Google Tag Manager & Google Analytics (Para 100/100 en PageSpeed) -->
     <script>

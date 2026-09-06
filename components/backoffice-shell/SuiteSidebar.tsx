@@ -1,7 +1,55 @@
 import React from 'react';
-import * as LucideIcons from 'lucide-react';
-import { PanelLeftClose, PanelLeftOpen, X, Home, Lock, Clock } from 'lucide-react';
+import {
+  PanelLeftClose,
+  PanelLeftOpen,
+  X,
+  Home,
+  Lock,
+  Clock,
+  LayoutDashboard,
+  Boxes,
+  Wrench,
+  Palette,
+  Image,
+  Layers,
+  Video,
+  BarChart3,
+  Link2,
+  Globe,
+  FileScan,
+  Sparkles,
+  GraduationCap,
+  ShieldCheck,
+  MessageCircle,
+  Mail,
+  type LucideIcon
+} from 'lucide-react';
 import type { AccessMap, NavigationSchema, NavMode, NavRouteRef, TelemetryMap } from './contracts/navigation';
+
+const iconMap: Record<string, LucideIcon> = {
+  PanelLeftClose,
+  PanelLeftOpen,
+  X,
+  Home,
+  Lock,
+  Clock,
+  LayoutDashboard,
+  Boxes,
+  Wrench,
+  Palette,
+  Image,
+  Layers,
+  Video,
+  BarChart3,
+  Link2,
+  Globe,
+  FileScan,
+  Sparkles,
+  GraduationCap,
+  ShieldCheck,
+  MessageCircle,
+  Mail
+};
 
 export interface SuiteSidebarProps {
   schema: NavigationSchema;
@@ -32,7 +80,7 @@ export const SuiteSidebar: React.FC<SuiteSidebarProps> = ({
   const isRail = navMode === 'rail';
 
   const renderIcon = (iconName: string, className = 'size-4 shrink-0') => {
-    const IconComponent = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>>)[iconName];
+    const IconComponent = iconMap[iconName];
     if (IconComponent) {
       return <IconComponent className={className} aria-hidden={true} />;
     }

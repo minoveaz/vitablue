@@ -49,8 +49,8 @@ export default {
         "text-secondary": "#4a5568",
       },
       fontFamily: {
-        "sans": ["Inter", "sans-serif"],
-        "display": ["Poppins", "sans-serif"],
+        "sans": ["Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        "display": ["Poppins", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
       },
     },
   },
