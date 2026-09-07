@@ -263,7 +263,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
     alternateSlug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain',
 
-    title: 'Sanitas vs Adeslas vs Asisa vs DKV: ¿Cuál es el mejor seguro médico en España en 2026?',
+    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Comparativa y Precios 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '8 min de lectura',

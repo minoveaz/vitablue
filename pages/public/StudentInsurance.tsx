@@ -350,11 +350,11 @@ export const StudentInsurance: React.FC = () => {
   const isLegacy2 = location.pathname.includes('international-students');
 
   let title = isEnglish
-    ? 'Health Insurance for Student Visa Spain | VitaBlue'
-    : 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
+    ? 'Best Health Insurance for Student Visa in Spain from €35/mo | VitaBlue'
+    : 'Seguro Médico Visado Estudiante España desde 35€/mes | 0 Copagos VitaBlue';
   let description = isEnglish
-    ? 'Compare health insurance for student visas in Spain. Full coverage policies with zero copays, zero wait times, and repatriation included. Oficial certificate in 24h.'
-    : 'Compara los seguros médicos para visado de estudiante en España. Pólizas sin copagos, sin carencias y con repatriación obligatoria. Certificados en 24h.';
+    ? 'Official student visa health insurance in Spain from €35/month. 0€ copays, zero waiting periods, repatriation & approved consular certificate in 24h.'
+    : 'Seguro médico oficial para visado de estudiante en España desde 35€/mes. Cobertura 100% sin copagos, sin carencias, repatriación y certificado consular en 24h.';
   const canonicalUrl = isEnglish
     ? 'https://www.vitablue.es/en/health-insurance-student-visa-spain/'
     : isLegacy2
@@ -362,8 +362,8 @@ export const StudentInsurance: React.FC = () => {
       : 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/';
 
   if (isLegacy2) {
-    title = 'Seguro médico para estudiantes extranjeros en España | VitaBlue';
-    description = 'Seguro médico para estudiantes extranjeros en España válido para visado. Cobertura sin copagos (según condiciones), certificado digital en minutos. Asesoramiento independiente por VitaBlue.';
+    title = 'Sanitas International Students | Seguro Médico Visado España | VitaBlue';
+    description = 'Seguro médico oficial Sanitas International Students para visado y NIE en España. Cobertura completa sin copagos y certificado consular oficial en 24h.';
   }
 
   const schemaMarkup = {
