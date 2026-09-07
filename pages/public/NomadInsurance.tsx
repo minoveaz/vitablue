@@ -349,11 +349,11 @@ export const NomadInsurance: React.FC = () => {
 
   const title = isEnglish
     ? 'Best Health Insurance for Digital Nomads in Spain (2026) | VitaBlue'
-    : 'Seguro Médico para Nómadas Digitales y Remotos | VitaBlue';
+    : 'Seguro Médico para Visado Nómada Digital España (2026) | VitaBlue';
 
   const description = isEnglish
     ? 'Official health insurance for Spain Digital Nomad Visa. Full coverage, 0€ copays, international travel assistance and approved consular certificate in 24h.'
-    : 'Compara seguros médicos para nómadas digitales y teletrabajadores remotos en España. Cobertura médica completa homologada sin copagos y con asistencia global.';
+    : 'Seguro médico oficial para el Visado de Nómada Digital en España. Cobertura completa homologada sin copagos, asistencia médica en viajes y certificado en 24h.';
 
   return (
     <div className="w-full flex flex-col bg-white">

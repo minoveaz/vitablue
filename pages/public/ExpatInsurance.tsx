@@ -356,12 +356,12 @@ export const ExpatInsurance: React.FC = () => {
     : 'https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/';
 
   const title = isEnglish
-    ? 'Health Insurance for Expatriates and Residents in Spain | VitaBlue'
-    : 'Seguro Médico para Expatriados y Residentes en España | VitaBlue';
+    ? 'Health Insurance for Expats & Non-Lucrative Visa in Spain | VitaBlue'
+    : 'Seguro Médico para Expatriados y Residencia en España (0 Copagos) | VitaBlue';
 
   const description = isEnglish
-    ? 'Compare health insurance for expats in Spain. Full coverage with no copays for non-lucrative and Golden Visas with instant certificates.'
-    : 'Compara seguros médicos para expatriados en España. Coberturas sin copago para visados de residencia no lucrativa y Golden Visa con certificados inmediatos.';
+    ? 'Official health insurance in Spain for expats, Non-Lucrative Visa and Golden Visa. Comprehensive coverage, zero copays, repatriation & 24h certificate.'
+    : 'Seguro de salud oficial en España para expatriados, Residencia No Lucrativa y Golden Visa. Cobertura médica completa, 0€ copagos, repatriación y certificado en 24h.';
 
   return (
     <div className="w-full flex flex-col bg-white">

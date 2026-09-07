@@ -149,21 +149,21 @@ export const SanitasInsurances: React.FC = () => {
   return (
     <div className="w-full flex flex-col bg-white">
       <Helmet>
-        <title>Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue</title>
-        <meta name="description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
+        <title>Seguros de Salud Sanitas: Precios y Catálogo Oficial 2026 | VitaBlue</title>
+        <meta name="description" content="Catálogo oficial y precios de seguros de salud Sanitas en España. Coberturas completas con y sin copago, seguro dental Blua gratis y asesoramiento gratuito." />
         <link rel="canonical" href="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue" />
-        <meta property="og:description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
+        <meta property="og:title" content="Seguros de Salud Sanitas: Precios y Catálogo Oficial 2026 | VitaBlue" />
+        <meta property="og:description" content="Catálogo oficial y precios de seguros de salud Sanitas en España. Coberturas completas con y sin copago, seguro dental Blua gratis y asesoramiento gratuito." />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Gama Oficial de Seguros de Salud Sanitas | Catálogo VitaBlue" />
-        <meta name="twitter:description" content="Explora y compara la gama oficial de seguros de salud de Sanitas. Coberturas esenciales, completas, familiares, premium y seguros para estudiantes o mascotas." />
+        <meta name="twitter:title" content="Seguros de Salud Sanitas: Precios y Catálogo Oficial 2026 | VitaBlue" />
+        <meta name="twitter:description" content="Catálogo oficial y precios de seguros de salud Sanitas en España. Coberturas completas con y sin copago, seguro dental Blua gratis y asesoramiento gratuito." />
         <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}

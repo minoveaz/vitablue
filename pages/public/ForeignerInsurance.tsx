@@ -163,21 +163,21 @@ export const ForeignerInsurance: React.FC = () => {
   return (
     <div className="w-full flex flex-col bg-white">
       <Helmet>
-        <title>Seguro de Salud para Extranjeros en España | Visados | VitaBlue</title>
-        <meta name="description" content="Compara seguros médicos para extranjeros en España. Pólizas homologadas sin copagos para visado de estudiantes, nómadas digitales y expatriados." />
+        <title>Seguros Médicos para Extranjeros en España: Visado y NIE sin Copagos | VitaBlue</title>
+        <meta name="description" content="Seguros de salud homologados para extranjeros en España. Coberturas completas sin copagos para visado de estudiante, nómada digital y residencia con certificado en 24h." />
         <link rel="canonical" href="https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Seguro de Salud para Extranjeros en España | Visados | VitaBlue" />
-        <meta property="og:description" content="Compara seguros médicos para extranjeros en España. Pólizas homologadas sin copagos para visado de estudiantes, nómadas digitales y expatriados." />
+        <meta property="og:title" content="Seguros Médicos para Extranjeros en España: Visado y NIE sin Copagos | VitaBlue" />
+        <meta property="og:description" content="Seguros de salud homologados para extranjeros en España. Coberturas completas sin copagos para visado de estudiante, nómada digital y residencia con certificado en 24h." />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
         <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Seguro de Salud para Extranjeros en España | Visados | VitaBlue" />
-        <meta name="twitter:description" content="Compara seguros médicos para extranjeros en España. Pólizas homologadas sin copagos para visado de estudiantes, nómadas digitales y expatriados." />
+        <meta name="twitter:title" content="Seguros Médicos para Extranjeros en España: Visado y NIE sin Copagos | VitaBlue" />
+        <meta name="twitter:description" content="Seguros de salud homologados para extranjeros en España. Coberturas completas sin copagos para visado de estudiante, nómada digital y residencia con certificado en 24h." />
         <meta name="twitter:image" content="https://www.vitablue.es/og-image.jpg" />
         <script type="application/ld+json">
           {JSON.stringify(schemaMarkup)}
