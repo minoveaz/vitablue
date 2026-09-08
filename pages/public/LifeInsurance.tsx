@@ -140,13 +140,6 @@ export const LifeInsurance: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "82",
-          "bestRating": "5",
-          "worstRating": "1"
         }
       },
       {
