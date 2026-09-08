@@ -150,13 +150,6 @@ export const SanitasMascotas: React.FC = () => {
           "telephone": "+34 694 58 34 52",
           "areaServed": "ES",
           "availableLanguage": ["es", "en"]
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.7",
-          "reviewCount": "52",
-          "bestRating": "5",
-          "worstRating": "1"
         }
       },
       {
