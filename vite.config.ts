@@ -21,7 +21,11 @@ export default defineConfig({
     prerender({
       staticDir: path.join(__dirname, 'dist'),
       renderer: new Renderer({
-        renderAfterTime: 5000,
+        // Event-driven: wait for React to signal it has fully mounted.
+        // App.tsx dispatches 'app-prerendered' after all components render.
+        // Falls back to timeout if the event never fires (e.g. runtime error).
+        renderAfterDocumentEvent: 'app-prerendered',
+        renderAfterTime: 12000,
         ...(prerenderExecutablePath ? { executablePath: prerenderExecutablePath } : {}),
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       }),

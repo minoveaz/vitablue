@@ -140,6 +140,19 @@ const ScrollToTop = () => {
   return null;
 };
 
+
+// Signals Puppeteer SSG that React has fully mounted the current route.
+// Must be rendered *inside* Suspense so it only fires after the lazy page resolves.
+const PrerenderSignal: React.FC = () => {
+  React.useEffect(() => {
+    // Small rAF delay ensures Helmet has committed its <title> to the DOM.
+    requestAnimationFrame(() => {
+      document.dispatchEvent(new Event('app-prerendered'));
+    });
+  }, []);
+  return null;
+};
+
 // Styleguide/Playground view for visual auditing
 // App Views Setup
 
@@ -289,6 +302,7 @@ const AppLayout: React.FC = () => {
               </div>
             } />
           </Routes>
+          <PrerenderSignal />
         </Suspense>
       </main>
     </Shell>

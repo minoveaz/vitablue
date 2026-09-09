@@ -126,6 +126,9 @@ jobs:
           # Puppeteer en CI usa Chromium del sistema, no el local de macOS
           PUPPETEER_EXECUTABLE_PATH: ''
 
+      - name: Validate SSG pre-render output
+        run: npm run validate:ssg
+
       - name: Validate generated SEO
         run: npm run validate-static-seo
 
