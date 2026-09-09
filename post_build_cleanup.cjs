@@ -538,6 +538,856 @@ function injectLandingMetadataAndSchemas() {
     }
   });
   console.log('✅ Metadatos SEO inyectados en 4 páginas de producto Asisa.');
+
+  // Additional Landing Pages with Title, Description, and JSON-LD Schemas
+  const landingPages = [
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguro-medico-estudiantes/index.html'),
+      title: 'Seguro Médico Visado Estudiante España desde 35€/mes | 0 Copagos VitaBlue',
+      description: 'Seguro médico oficial para visado de estudiante en España desde 35€/mes. Cobertura 100% sin copagos, sin carencias, repatriación y certificado consular en 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más. Asesoramiento personalizado y contratación 100% online.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/#producto",
+            "name": "Sanitas International Students & ASISA Students",
+            "description": "Seguro médico diseñado para estudiantes extranjeros en España válido para visado. Cobertura sin copagos y sin carencias.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros de Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Seguro Médico Estudiantes",
+                "item": "https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué requisitos debe tener el seguro médico para el visado de estudiante en España?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Para que el consulado o Extranjería apruebe tu visado de estudiante (o tarjeta TIE), tu seguro debe cumplir 4 requisitos: 1) Sin copagos ni franquicias, 2) Sin periodos de carencia (cobertura desde el primer día), 3) Cobertura sanitaria completa equivalente a la sanidad pública con hospitalización, y 4) Repatriación sanitaria y funeraria al país de origen incluida."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Sirve un seguro de viaje para solicitar el visado de estudios en España?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Los consulados de España rechazan los seguros de viaje estándar porque solo cubren emergencias temporales limitadas. Extranjería exige un seguro médico de salud completo homologado con hospitalización ilimitada."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cuál es el mejor seguro médico para estudiantes extranjeros en España en 2026?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "ASISA Salud Estudiantes es la opción #1 más recomendada en VitaBlue por su excelente precio (desde 38€/mes), cobertura nacional completa y la emisión más ágil de certificados consulares en menos de 24 horas."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance-student-visa-spain/index.html'),
+      title: 'Best Health Insurance for Student Visa in Spain from €35/mo | VitaBlue',
+      description: 'Official student visa health insurance in Spain from €35/month. 0€ copays, zero waiting periods, repatriation & approved consular certificate in 24h.',
+      canonical: 'https://www.vitablue.es/en/health-insurance-student-visa-spain/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/en/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Independent advice in health insurance in Spain for international students and expats.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/en/health-insurance-student-visa-spain/#producto",
+            "name": "Student Visa Health Insurance Spain",
+            "description": "Comprehensive health insurance policy for student visa in Spain with 0 copays and repatriation included.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.vitablue.es/en/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Student Insurance",
+                "item": "https://www.vitablue.es/en/health-insurance-student-visa-spain/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What requirements must health insurance meet for a student visa in Spain?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The policy must meet 4 mandatory conditions: 1) Zero copays or deductibles, 2) Zero wait times (carencias) for medical services, 3) Full coverage equivalent to the Spanish public healthcare system, and 4) Sanitary and funeral repatriation to the country of origin included."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguro-expatriados/index.html'),
+      title: 'Seguro Médico para Expatriados y Residencia en España (0 Copagos) | VitaBlue',
+      description: 'Seguro de salud oficial en España para expatriados, Residencia No Lucrativa y Golden Visa. Cobertura médica completa, 0€ copagos, repatriación y certificado en 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/#producto",
+            "name": "Seguro Médico para Expatriados en España",
+            "description": "Seguro de salud completo sin copagos y sin carencias para visados de residencia no lucrativa y Golden Visa en España.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros de Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Expatriados",
+                "item": "https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué requisitos debe cumplir el seguro para los visados de Residencia No Lucrativa o Golden Visa?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Debe ser un seguro de salud completo, sin copagos por consultas, sin periodos de carencia en coberturas (especialmente hospitalización) y con cobertura de repatriación en caso de fallecimiento."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance-expatriates-spain/index.html'),
+      title: 'Health Insurance for Expats & Non-Lucrative Visa in Spain | VitaBlue',
+      description: 'Official health insurance in Spain for expats, Non-Lucrative Visa and Golden Visa. Comprehensive coverage, zero copays, repatriation & 24h certificate.',
+      canonical: 'https://www.vitablue.es/en/health-insurance-expatriates-spain/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/en/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Official health insurance in Spain for expats, Non-Lucrative Visa and Golden Visa.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/en/health-insurance-expatriates-spain/#producto",
+            "name": "Expat Health Insurance Spain",
+            "description": "Full coverage health insurance for expats in Spain with zero copays and official certificate in 24h.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.vitablue.es/en/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Expatriates",
+                "item": "https://www.vitablue.es/en/health-insurance-expatriates-spain/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Which insurance is mandatory for the Non-Lucrative Visa?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Immigration requires private health insurance contracted with a company authorized in Spain, providing full coverage (medical and hospital), without copays and without waiting periods."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguro-nomadas-digitales/index.html'),
+      title: 'Seguro Médico para Visado Nómada Digital España (2026) | VitaBlue',
+      description: 'Seguro médico oficial para el Visado de Nómada Digital en España. Cobertura completa homologada sin copagos, asistencia médica en viajes y certificado en 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito para estudiantes, expatriados, nómadas y familias.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/#producto",
+            "name": "Seguro Médico para Nómadas Digitales en España",
+            "description": "Seguro médico privado con cobertura nacional en España y asistencia médica internacional de urgencia para visado de nómada digital.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros de Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Nómadas Digitales",
+                "item": "https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Por qué el visado de Nómada Digital exige un seguro sin copagos?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La Unidad de Grandes Empresas y Colectivos Estratégicos (UGE) exige acreditar cobertura médica completa en España equivalente al Sistema Nacional de Salud, sin copagos ni carencias."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'en/digital-nomad-insurance-spain/index.html'),
+      title: 'Best Health Insurance for Digital Nomads in Spain (2026) | VitaBlue',
+      description: 'Official health insurance for Spain Digital Nomad Visa. Full coverage, 0€ copays, international travel assistance and approved consular certificate in 24h.',
+      canonical: 'https://www.vitablue.es/en/digital-nomad-insurance-spain/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/en/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Official health insurance for Spain Digital Nomad Visa.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/en/digital-nomad-insurance-spain/#producto",
+            "name": "Digital Nomad Health Insurance Spain",
+            "description": "Official health insurance policy for Spain Digital Nomad Visa with zero copays and international emergency coverage.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.vitablue.es/en/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Digital Nomads",
+                "item": "https://www.vitablue.es/en/digital-nomad-insurance-spain/"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguro-salud-extranjeros/index.html'),
+      title: 'Seguros Médicos para Extranjeros en España: Visado y NIE sin Copagos | VitaBlue',
+      description: 'Seguros de salud homologados para extranjeros en España. Coberturas completas sin copagos para visado de estudiante, nómada digital y residencia con certificado en 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Seguros de salud homologados para extranjeros en España. Coberturas completas sin copagos para visado de estudiante, nómada digital y residencia.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/#producto",
+            "name": "Seguro Médico para Extranjeros en España",
+            "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros de Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Seguro para Extranjeros",
+                "item": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué documentación exacta recibiré para mi cita de visado?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Una vez formalizada la póliza, te enviaremos por correo electrónico el Certificado Oficial de Cobertura en castellano, firmado digitalmente, indicando explícitamente que no tiene copagos ni carencias, y que incluye la repatriación."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/index.html'),
+      title: 'Sanitas Más Salud: Precios y Coberturas 2026 (Plus y Óptima) | VitaBlue',
+      description: 'Precios y coberturas oficiales de Sanitas Más Salud (Plus, Óptima y Sin Copago). Hospitalización completa, 50.000 médicos y app Blua digital gratis.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/#producto",
+            "name": "Sanitas Más Salud",
+            "description": "Seguro médico privado con Hospitalización, urgencias 24/7, red propia de hospitales Sanitas y servicios digitales Blua.",
+            "brand": {
+              "@type": "Brand",
+              "name": "Sanitas"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros de Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Sanitas Más Salud",
+                "item": "https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguro-viaje/index.html'),
+      title: 'Seguro de Viaje Internacional | Cobertura Médica | VitaBlue',
+      description: 'Compara y contrata tu seguro de viaje internacional. Cobertura de gastos médicos, repatriación, pérdida de equipaje y anulación para tus viajes vacacionales o de larga estancia.',
+      canonical: 'https://www.vitablue.es/productos/seguro-viaje/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Compara y contrata los mejores seguros de salud en España. Asesoramiento 100% independiente y gratuito.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguro-viaje/#producto",
+            "name": "Seguro de Viaje Internacional",
+            "description": "Seguro de asistencia en viaje internacional con cobertura de gastos médicos, repatriación y anulación.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Seguro de Viaje",
+                "item": "https://www.vitablue.es/productos/seguro-viaje/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué cubre la garantía de cancelación de viaje?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Te reembolsa los gastos de billetes y reservas de hotel no recuperables si tienes que suspender el viaje antes de su inicio por causas justificadas de fuerza mayor."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguro-vida/index.html'),
+      title: 'Seguro de Vida Familiar | Cobertura e Hipoteca | VitaBlue',
+      description: 'Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca con cuotas económicas sin revisiones médicas complejas.',
+      canonical: 'https://www.vitablue.es/productos/seguro-vida/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Compara y contrata tu seguro de vida familiar. Protege la estabilidad de tu familia y asegura tu hipoteca.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguro-vida/#producto",
+            "name": "Seguro de Vida Familiar",
+            "description": "Seguro de vida riesgo y protección familiar e hipotecaria con cobertura de fallecimiento e invalidez absoluta.",
+            "brand": {
+              "@type": "Brand",
+              "name": "VitaBlue"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Seguro de Vida",
+                "item": "https://www.vitablue.es/productos/seguro-vida/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Cómo puedo cambiar mi seguro de vida de la hipoteca a VitaBlue?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Es tu derecho legal. Puedes dar de baja el seguro de vida del banco avisando con 30 días de antelación al vencimiento y presentar la nueva póliza de VitaBlue."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'productos/seguro-para-decesos/asistencia-familiar/index.html'),
+      title: 'Sanitas Asistencia Familiar iPlus | Seguro de Decesos y Traslado | VitaBlue',
+      description: 'Contrata Sanitas Asistencia Familiar iPlus. Seguro de decesos integral con repatriación y traslado nacional e internacional, sepelio y asesoría jurídica familiar.',
+      canonical: 'https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/',
+      schema: {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "InsuranceAgency",
+            "@id": "https://www.vitablue.es/#organization",
+            "name": "VitaBlue",
+            "url": "https://www.vitablue.es/",
+            "logo": "https://www.vitablue.es/assets/logo-vitablue.svg",
+            "description": "Asesoramiento independiente en seguros de salud. Te ayudamos a encontrar y contratar los mejores seguros de salud de Sanitas, Adeslas, Asisa y más.",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "telephone": "+34 694 58 34 52",
+              "areaServed": "ES",
+              "availableLanguage": ["es", "en"]
+            }
+          },
+          {
+            "@type": "FinancialProduct",
+            "@id": "https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/#producto",
+            "name": "Asistencia Familiar iPlus Sanitas",
+            "description": "Seguro de asistencia familiar y decesos: servicios funerarios completos, traslado mundial, apoyo emocional y gestión documental.",
+            "brand": {
+              "@type": "Brand",
+              "name": "Sanitas"
+            },
+            "provider": {
+              "@id": "https://www.vitablue.es/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Seguros",
+                "item": "https://www.vitablue.es/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Asistencia Familiar iPlus",
+                "item": "https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/"
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Qué incluye el servicio funerario?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Organización, tanatorio, féretro, ceremonia y gestiones básicas."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      file: path.join(distDir, 'blog/index.html'),
+      title: 'Hub de Guías y Visados | Blog VitaBlue',
+      description: 'Guías de expertos sobre seguros de salud, requisitos consulares y extranjería en España. Artículos actualizados para tramitar visados y estancias.',
+      canonical: 'https://www.vitablue.es/blog/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'en/blog/index.html'),
+      title: 'Guides & Consular Hub | VitaBlue Blog',
+      description: 'Expert guides on health insurance, visa requirements and immigration compliance in Spain. Up-to-date articles for expats, nomads and students.',
+      canonical: 'https://www.vitablue.es/en/blog/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'contacto/index.html'),
+      title: 'Contacto VitaBlue | Asesoría en seguros',
+      description: 'Contacta con VitaBlue para comparar seguros de salud, expatriados, estudiantes, mascotas y otras coberturas en España. Asesoramiento 100% gratuito.',
+      canonical: 'https://www.vitablue.es/contacto/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'en/contact/index.html'),
+      title: 'Contact VitaBlue | Insurance advice',
+      description: 'Contact VitaBlue for help comparing health, expat, student, pet and other insurance options in Spain. Free and independent consultation.',
+      canonical: 'https://www.vitablue.es/en/contact/',
+      schema: null
+    }
+  ];
+
+  landingPages.forEach((landing) => {
+    if (fs.existsSync(landing.file)) {
+      let content = fs.readFileSync(landing.file, 'utf8');
+      content = content.replace(/<title>[^<]*<\/title>/i, `<title>${landing.title}</title>`);
+      content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${landing.description}"`);
+      content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${landing.title}"`);
+      content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${landing.description}"`);
+      content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${landing.canonical}"`);
+      content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${landing.title}"`);
+      content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${landing.description}"`);
+
+      if (landing.schema && !content.includes('"@type":"FAQPage"') && !content.includes('"@type":"FinancialProduct"')) {
+        content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(landing.schema)}</script>\n</head>`);
+      }
+
+      fs.writeFileSync(landing.file, content, 'utf8');
+    }
+  });
+  console.log(`✅ Metadatos SEO y esquemas inyectados en ${landingPages.length} landing pages adicionales.`);
+
 }
 
 injectLandingMetadataAndSchemas();

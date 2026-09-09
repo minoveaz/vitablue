@@ -21,7 +21,13 @@ export default defineConfig({
     prerender({
       staticDir: path.join(__dirname, 'dist'),
       renderer: new Renderer({
-        renderAfterTime: 5000,
+        // 8s timer: covers all pages including the heaviest lazy-loaded ones
+        // (StudentInsurance, SanitasMasSalud) that failed with the original 5s.
+        // NOTE: renderAfterDocumentEvent cannot be used here because
+        // @prerenderer/renderer-puppeteer ignores renderAfterTime when the
+        // event option is set, causing indefinite hangs if the event fires
+        // before evaluateOnNewDocument registers its listener.
+        renderAfterTime: 8000,
         ...(prerenderExecutablePath ? { executablePath: prerenderExecutablePath } : {}),
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       }),

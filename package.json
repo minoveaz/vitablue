@@ -15,6 +15,7 @@
     "audit:components:json": "node scripts/audit_component_usage.cjs --format=json",
     "audit:components:ci": "node scripts/audit_component_usage.cjs --format=json --fail-under=90",
     "validate": "node scripts/audit_front.cjs && node scripts/validate_routes.cjs && node scripts/validate_sitemap.cjs && node scripts/validate_route_registry.cjs",
+    "validate:ssg": "node scripts/validate_ssg_output.cjs",
     "validate-routes": "node scripts/validate_routes.cjs",
     "validate-routes:strict": "node scripts/validate_routes.cjs --strict",
     "validate-sitemap": "node scripts/validate_sitemap.cjs",
