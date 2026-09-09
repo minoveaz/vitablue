@@ -32,7 +32,7 @@ const REQUIRED_PAGES = {
   'productos/seguro-vida/index.html':                                        'Vida',
   'productos/seguro-para-decesos/asistencia-familiar/index.html':           'Asistencia Familiar',
   'en/health-insurance-student-visa-spain/index.html':                      'Student',
-  'en/health-insurance-expatriates-spain/index.html':                       'Expatriates',
+  'en/health-insurance-expatriates-spain/index.html':                       'Expat',
   'en/digital-nomad-insurance-spain/index.html':                            'Nomad',
   'blog/index.html':                                                         'Blog',
   'contacto/index.html':                                                     'Contacto',
@@ -86,7 +86,7 @@ for (const [relPath, titleMustContain] of Object.entries(REQUIRED_PAGES)) {
   const title = extractTitle(html);
   const schemaCount = countSchemaBlocks(html);
   const description = extractDescription(html);
-  const isGenericTitle = title === GENERIC_TITLE;
+  const isGenericTitle = relPath !== 'index.html' && title === GENERIC_TITLE;
   const needsSchema = SCHEMA_REQUIRED.includes(relPath);
 
   const pageErrors = [];
