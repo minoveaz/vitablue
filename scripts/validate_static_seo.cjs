@@ -1,5 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const {
+  buildAlternates,
+  getPageForRoute,
+  pageMap,
+  validateManifest,
+} = require('./hreflang_manifest.cjs');
 
 const root = path.join(__dirname, '..');
 const distDir = path.join(root, 'dist');
@@ -12,7 +18,10 @@ if (!fs.existsSync(sitemapPath)) {
 
 const sitemap = fs.readFileSync(sitemapPath, 'utf8');
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url);
-const failures = [];
+const failures = validateManifest().map((error) => `hreflang manifest: ${error}`);
+const getAttribute = (tag, name) => tag.match(new RegExp(`\\b${name}\\s*=\\s*(['"])(.*?)\\1`, 'i'))?.[2] ?? '';
+const getTags = (html, tagName) => html.match(new RegExp(`<${tagName}\\b[^>]*>`, 'gi')) ?? [];
+const normalizeRoute = (route) => (route === '/' ? route : route.replace(/\/+$/, ''));
 
 const htmlPathFor = (url) => {
   const pathname = new URL(url).pathname;
@@ -35,6 +44,32 @@ for (const url of urls) {
   if (canonical !== url) failures.push(`${url}: canonical is ${canonical ?? 'missing'}`);
   if (!title) failures.push(`${url}: missing title`);
   if (!description) failures.push(`${url}: missing meta description`);
+
+  const route = normalizeRoute(new URL(url).pathname);
+  const page = getPageForRoute(route);
+  if (!page) {
+    failures.push(`${url}: missing hreflang manifest entry`);
+    continue;
+  }
+
+  const alternates = getTags(html, 'link')
+    .filter((tag) => getAttribute(tag, 'rel').toLowerCase() === 'alternate' && getAttribute(tag, 'hreflang'))
+    .map((tag) => `${getAttribute(tag, 'hreflang')}|${getAttribute(tag, 'href')}`);
+  const expectedAlternates = buildAlternates(page).map(({ hreflang, href }) => `${hreflang}|${href}`);
+  if (new Set(alternates).size !== alternates.length) failures.push(`${url}: duplicate hreflang links`);
+  if (alternates.length !== expectedAlternates.length || expectedAlternates.some((key) => !alternates.includes(key))) {
+    failures.push(`${url}: incomplete or incorrect hreflang links`);
+  }
+  for (const alternate of alternates) {
+    const href = alternate.split('|').slice(1).join('|');
+    try {
+      if (!pageMap.has(normalizeRoute(new URL(href).pathname))) {
+        failures.push(`${url}: hreflang points to unknown route ${href}`);
+      }
+    } catch {
+      failures.push(`${url}: invalid hreflang URL ${href}`);
+    }
+  }
 }
 
 console.log(`Static SEO audit: ${urls.length} sitemap URLs checked.`);
