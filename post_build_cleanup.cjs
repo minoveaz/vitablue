@@ -1,5 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+const {
+  buildAlternates,
+  getPageForRoute,
+  validateManifest,
+} = require('./scripts/hreflang_manifest.cjs');
 
 const distDir = path.resolve(__dirname, 'dist');
 
@@ -39,6 +44,59 @@ function cleanHtmlFolders(dir) {
 }
 
 cleanHtmlFolders(distDir);
+
+function routeFromHtmlPath(filePath) {
+  const relativePath = path.relative(distDir, filePath).replace(/\\/g, '/');
+  if (relativePath === 'index.html') return '/';
+  if (relativePath.endsWith('/index.html')) return `/${relativePath.slice(0, -'/index.html'.length)}`;
+  if (relativePath.endsWith('.html')) return `/${relativePath.slice(0, -'.html'.length)}`;
+  return undefined;
+}
+
+function readAttribute(tag, attributeName) {
+  const attributePattern = new RegExp(`\\b${attributeName}\\s*=\\s*(['"])(.*?)\\1`, 'i');
+  return tag.match(attributePattern)?.[2] ?? '';
+}
+
+function injectHreflangTags(html, pagePath) {
+  const page = getPageForRoute(pagePath);
+  if (!page) return html;
+
+  const withoutExisting = html.replace(/<link\b[^>]*>/gi, (tag) => {
+    const isAlternate = readAttribute(tag, 'rel').toLowerCase() === 'alternate';
+    const hasHreflang = Boolean(readAttribute(tag, 'hreflang') || readAttribute(tag, 'hrefLang'));
+    return isAlternate && hasHreflang ? '' : tag;
+  });
+  const tags = buildAlternates(page)
+    .map(({ hreflang, href }) => `    <link rel="alternate" hreflang="${hreflang}" href="${href}" />`)
+    .join('\n');
+  const headClose = withoutExisting.search(/<\/head>/i);
+  if (headClose === -1) throw new Error(`No se encontró </head> para hreflang en ${pagePath}`);
+  return `${withoutExisting.slice(0, headClose)}${tags}\n${withoutExisting.slice(headClose)}`;
+}
+
+function injectHreflangRecursive(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const item of fs.readdirSync(dir)) {
+    const fullPath = path.join(dir, item);
+    if (fs.statSync(fullPath).isDirectory()) {
+      injectHreflangRecursive(fullPath);
+      continue;
+    }
+    if (!item.endsWith('.html')) continue;
+    const pagePath = routeFromHtmlPath(fullPath);
+    if (!pagePath || !getPageForRoute(pagePath)) continue;
+    const content = fs.readFileSync(fullPath, 'utf8');
+    fs.writeFileSync(fullPath, injectHreflangTags(content, pagePath), 'utf8');
+  }
+}
+
+const manifestErrors = validateManifest();
+if (manifestErrors.length > 0) {
+  throw new Error(`Hreflang manifest inválido:\n${manifestErrors.map((error) => `- ${error}`).join('\n')}`);
+}
+
+injectHreflangRecursive(distDir);
 
 // Ensure prerendered indexable pages expose their canonical URL in static HTML.
 function injectCanonicalTags() {
