@@ -19,6 +19,9 @@ if (!fs.existsSync(sitemapPath)) {
 const sitemap = fs.readFileSync(sitemapPath, 'utf8');
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url);
 const failures = validateManifest().map((error) => `hreflang manifest: ${error}`);
+if (new Set(urls).size !== urls.length) {
+  failures.push(`sitemap contains duplicate URLs (${urls.length - new Set(urls).size} duplicate(s))`);
+}
 const getAttribute = (tag, name) => tag.match(new RegExp(`\\b${name}\\s*=\\s*(['"])(.*?)\\1`, 'i'))?.[2] ?? '';
 const getTags = (html, tagName) => html.match(new RegExp(`<${tagName}\\b[^>]*>`, 'gi')) ?? [];
 const normalizeRoute = (route) => (route === '/' ? route : route.replace(/\/+$/, ''));
