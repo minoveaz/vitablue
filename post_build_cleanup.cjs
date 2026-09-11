@@ -1568,6 +1568,40 @@ function injectCorporateSchemas() {
 
 injectCorporateSchemas();
 
+function escapeHtmlAttribute(value) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function repairMissingMetaDescriptions() {
+  const descriptionsByPath = new Map([
+    ['blog/index.html', 'Guías de expertos sobre seguros de salud, requisitos consulares y extranjería en España.'],
+    ['en/blog/index.html', 'Expert guides on health insurance, visa requirements and immigration compliance in Spain.'],
+  ]);
+
+  for (const [relativePath, description] of descriptionsByPath) {
+    const filePath = path.join(distDir, relativePath);
+    if (!fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+    const descriptions = content.match(/<meta\b[^>]*\bname\s*=\s*(['"])description\1[^>]*>/gi) ?? [];
+    if (descriptions.length === 1 && readAttribute(descriptions[0], 'content').trim()) continue;
+
+    content = content.replace(
+      /[ \t]*<meta\b[^>]*\bname\s*=\s*(['"])description\1[^>]*>\s*/gi,
+      '',
+    );
+    const tag = `    <meta name="description" content="${escapeHtmlAttribute(description)}" />\n`;
+    content = content.replace(/<\/head>/i, `${tag}</head>`);
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+repairMissingMetaDescriptions();
+
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 
 function optimizeHtmlHeadTagsRecursive(dir) {
