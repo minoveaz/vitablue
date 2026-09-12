@@ -1602,6 +1602,37 @@ function repairMissingMetaDescriptions() {
 
 repairMissingMetaDescriptions();
 
+function ensureMetaDescriptions() {
+  const sitemapPath = path.join(distDir, 'sitemap.xml');
+  if (!fs.existsSync(sitemapPath)) return;
+
+  const urls = [...fs.readFileSync(sitemapPath, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map(([, url]) => url);
+  const fallbackDescriptions = {
+    es: 'Compara seguros de salud y asistencia en España con asesoramiento independiente y gratuito.',
+    en: 'Compare health insurance and assistance in Spain with free, independent advice.',
+  };
+
+  for (const url of urls) {
+    const pathname = new URL(url).pathname;
+    const filePath = pathname === '/'
+      ? path.join(distDir, 'index.html')
+      : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
+    if (!fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+    const descriptions = content.match(/<meta\b[^>]*\bname\s*=\s*(['"])description\1[^>]*>/gi) ?? [];
+    if (descriptions.some((tag) => readAttribute(tag, 'content').trim())) continue;
+
+    const locale = pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'es';
+    const tag = `<meta name="description" content="${fallbackDescriptions[locale]}" />\n`;
+    content = content.replace(/<\/head>/i, `    ${tag}</head>`);
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+ensureMetaDescriptions();
+
 function ensureTwitterCardMetadata() {
   const sitemapPath = path.join(distDir, 'sitemap.xml');
   if (!fs.existsSync(sitemapPath)) return;
