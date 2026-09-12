@@ -47,6 +47,18 @@ for (const url of urls) {
   if (canonical !== url) failures.push(`${url}: canonical is ${canonical ?? 'missing'}`);
   if (!title) failures.push(`${url}: missing title`);
   if (!description) failures.push(`${url}: missing meta description`);
+  for (const tag of ['card', 'title', 'description', 'image']) {
+    const twitterTag = html.match(new RegExp(`<meta[^>]+name="twitter:${tag}"[^>]*>`, 'i'))?.[0];
+    if (!twitterTag || !getAttribute(twitterTag, 'content').trim()) {
+      failures.push(`${url}: missing twitter:${tag}`);
+    }
+  }
+  for (const property of ['title', 'description', 'type', 'url', 'image']) {
+    const openGraphTag = html.match(new RegExp(`<meta[^>]+property="og:${property}"[^>]*>`, 'i'))?.[0];
+    if (!openGraphTag || !getAttribute(openGraphTag, 'content').trim()) {
+      failures.push(`${url}: missing og:${property}`);
+    }
+  }
 
   const route = normalizeRoute(new URL(url).pathname);
   const page = getPageForRoute(route);
