@@ -43,7 +43,7 @@
   RewriteEngine On
   RewriteBase /
 
-  RewriteRule ^(?:login|backoffice)(?:/|$) - [E=VITABLUE_PRIVATE_ROUTE:1]
+  RewriteRule ^(?:login|backoffice|wizard|resultados)(?:/|$) - [E=VITABLUE_PRIVATE_ROUTE:1]
 
   # ---------------------------------------------------------------
   # FIX CRÍTICO 2: Redirigir HTTP y/o sin-www a HTTPS + www.
