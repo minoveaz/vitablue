@@ -197,6 +197,30 @@ async function main() {
     return;
   }
 
+  if (mode === '--query-pages') {
+    const limit = parseInt(args[1] || '250', 10);
+    const { rows, startDate, endDate } = await queryAnalytics(token, {
+      dimensions: ['query', 'page'],
+      days: 90,
+      rowLimit: limit,
+    });
+    rows.sort((a, b) => b.impressions - a.impressions);
+
+    console.log(`\n🔍 === CONSULTAS Y PÁGINAS (Últimos 90 días) ===`);
+    console.log(`Periodo: ${startDate} a ${endDate}\n`);
+    rows.forEach((r) => {
+      console.log(JSON.stringify({
+        query: r.keys[0],
+        page: r.keys[1],
+        impressions: r.impressions,
+        clicks: r.clicks,
+        ctr: Number((r.ctr * 100).toFixed(2)),
+        position: Number(r.position.toFixed(1)),
+      }));
+    });
+    return;
+  }
+
   if (mode === '--countries') {
     const limit = parseInt(args[1] || '15', 10);
     const { rows } = await queryAnalytics(token, { dimensions: ['country'], days: 90, rowLimit: limit });
@@ -232,7 +256,7 @@ async function main() {
   }
 
   console.log(`Opción no reconocida: ${mode}`);
-  console.log(`Uso: --summary | --opportunities | --pages | --queries | --countries | --inspect <url>`);
+  console.log(`Uso: --summary | --opportunities | --pages | --queries | --query-pages | --countries | --inspect <url>`);
 }
 
 main().catch((err) => {

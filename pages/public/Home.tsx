@@ -509,11 +509,11 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         </div>
       </section>
 
-      <div className="mt-8 bg-white border-y border-slate-100 py-2 shadow-[inset_0_1px_0_rgba(5,95,115,0.06)]">
+      <div className="mt-8 bg-white border-y border-slate-100 py-2 shadow-[inset_0_1px_0_rgba(5,95,115,0.06)] [content-visibility:auto] [contain-intrinsic-size:80px]">
         <InfiniteMarquee />
       </div>
 
-      <section id="como-funciona" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section id="como-funciona" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white [content-visibility:auto] [contain-intrinsic-size:720px]">
         <div className="mx-auto w-full max-w-6xl">
           <div className="text-center space-y-4 mb-12">
             <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'How we help you' : 'Cómo te ayudamos'}</span>
@@ -545,7 +545,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
         </div>
       </section>
 
-      <section id="productos" className="py-16 sm:py-20 bg-gradient-to-b from-slate-50/60 to-brand-cyan/5 border-y border-slate-100 px-4 sm:px-6 lg:px-8">
+      <section id="productos" className="py-16 sm:py-20 bg-gradient-to-b from-slate-50/60 to-brand-cyan/5 border-y border-slate-100 px-4 sm:px-6 lg:px-8 [content-visibility:auto] [contain-intrinsic-size:760px]">
         <div className="mx-auto w-full max-w-6xl space-y-10">
           <div className="text-left space-y-2 border-l-4 border-primary pl-4 sm:pl-6">
             <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Common options' : 'Opciones frecuentes'}</span>
@@ -582,7 +582,7 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
       </div>
 
       {/* Blog/Guides Section - Bento Grid */}
-      <section id="guias" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/50 border-b border-slate-100">
+      <section id="guias" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/50 border-b border-slate-100 [content-visibility:auto] [contain-intrinsic-size:760px]">
         <div className="mx-auto w-full max-w-6xl space-y-12">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <span className="text-caption font-black text-primary uppercase tracking-[0.25em]">{isEnglish ? 'Advice & Guides' : 'Asesoría y Guías'}</span>
