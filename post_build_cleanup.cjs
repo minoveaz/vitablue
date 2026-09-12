@@ -425,6 +425,7 @@ function injectLandingMetadataAndSchemas() {
     content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${description}"`);
     content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${title}"`);
     content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${description}"`);
+    content = content.replace(/<meta property="og:url" content="[^"]*"/i, '<meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/"');
     content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${title}"`);
     content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${description}"`);
 
@@ -1058,10 +1059,16 @@ function injectLandingMetadataAndSchemas() {
             }
           },
           {
-            "@type": "FinancialProduct",
+            "@type": "Service",
             "@id": "https://www.vitablue.es/productos/seguros-salud/seguro-salud-extranjeros/#producto",
             "name": "Seguro Médico para Extranjeros en España",
             "description": "Seguro médico completo sin copagos y sin carencias homologado para visados de extranjería en España.",
+            "serviceType": "Seguro médico homologado para extranjeros en España",
+            "areaServed": {
+              "@type": "Country",
+              "name": "España"
+            },
+            "image": "https://www.vitablue.es/og-image.jpg",
             "brand": {
               "@type": "Brand",
               "name": "VitaBlue"
@@ -1710,6 +1717,10 @@ function ensureOpenGraphMetadata() {
     for (const [property, fallback] of values) {
       const pattern = new RegExp(`<meta\\b[^>]*\\bproperty\\s*=\\s*(['"])${property}\\1[^>]*>`, 'i');
       const existing = content.match(pattern)?.[0];
+      if (existing && property === 'og:url') {
+        content = content.replace(pattern, `<meta property="og:url" content="${escapeHtmlAttribute(url)}" />`);
+        continue;
+      }
       if (existing && readAttribute(existing, 'content').trim()) continue;
 
       const tag = `<meta property="${property}" content="${escapeHtmlAttribute(fallback)}" />\n`;

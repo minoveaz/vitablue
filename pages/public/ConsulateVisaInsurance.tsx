@@ -27,7 +27,7 @@ import FaqSection from '@/components/organisms/FaqSection';
 import AdvisorHelpSection from '@/components/organisms/AdvisorHelpSection';
 import QuoteEstimator from '@/components/molecules/QuoteEstimator';
 import { useWizard } from '@/context/WizardContext';
-import { getConsulateBySlug } from '@/utils/consulatesData';
+import { consulatesList, getConsulateBySlug } from '@/utils/consulatesData';
 import { buildAttributedWhatsAppUrl } from '@/utils/analytics';
 import {
   StudentIllustration,
@@ -62,6 +62,10 @@ export const ConsulateVisaInsurance: React.FC = () => {
     '34694583452',
     consulate.whatsappMessage,
     consulate.whatsappTag
+  );
+  const regionalConsulates = consulatesList.filter((item) =>
+    ['colombia', 'mexico', 'argentina', 'chile', 'peru', 'ecuador'].includes(item.slug) &&
+    item.slug !== consulate.slug
   );
 
   const coverages = [
@@ -559,6 +563,30 @@ export const ConsulateVisaInsurance: React.FC = () => {
         title={`Preguntas Frecuentes sobre el Seguro para el Consulado de España en ${consulate.city}`}
         items={consulate.faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}
       />
+
+      {regionalConsulates.length > 0 && (
+        <section className="w-full bg-slate-50 px-4 py-10 sm:px-6 md:px-8">
+          <div className="mx-auto w-full max-w-5xl">
+            <p className="text-caption font-semibold uppercase text-primary">
+              Más consulados de España
+            </p>
+            <h2 className="mt-2 text-h2 font-display text-text-main">
+              Requisitos para otros países de Latinoamérica
+            </h2>
+            <nav aria-label="Otros consulados de España en Latinoamérica" className="mt-6 flex flex-wrap gap-3">
+              {regionalConsulates.map((item) => (
+                <Link
+                  key={item.slug}
+                  to={item.canonicalPath}
+                  className="rounded-full border border-primary/20 bg-white px-4 py-2 text-body-reg font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-white"
+                >
+                  Seguro para solicitantes de {item.country}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </section>
+      )}
 
       {/* Advisor Final CTA */}
       <AdvisorHelpSection
