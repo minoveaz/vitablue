@@ -1602,6 +1602,97 @@ function repairMissingMetaDescriptions() {
 
 repairMissingMetaDescriptions();
 
+function ensureTwitterCardMetadata() {
+  const sitemapPath = path.join(distDir, 'sitemap.xml');
+  if (!fs.existsSync(sitemapPath)) return;
+
+  const urls = [...fs.readFileSync(sitemapPath, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map(([, url]) => url);
+  const fallbackImage = 'https://www.vitablue.es/og-image.jpg';
+
+  for (const url of urls) {
+    const pathname = new URL(url).pathname;
+    const filePath = pathname === '/'
+      ? path.join(distDir, 'index.html')
+      : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
+    if (!fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+    const title = content.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+    const descriptionTag = content.match(/<meta\b[^>]*\bname\s*=\s*(['"])description\1[^>]*>/i)?.[0];
+    const description = descriptionTag ? readAttribute(descriptionTag, 'content').trim() : '';
+    if (!title || !description) continue;
+
+    const values = new Map([
+      ['twitter:card', 'summary_large_image'],
+      ['twitter:title', title],
+      ['twitter:description', description],
+      ['twitter:image', fallbackImage],
+    ]);
+
+    for (const [name, fallback] of values) {
+      const pattern = new RegExp(`<meta\\b[^>]*\\bname\\s*=\\s*(['"])${name}\\1[^>]*>`, 'i');
+      const existing = content.match(pattern)?.[0];
+      if (existing && readAttribute(existing, 'content').trim()) continue;
+
+      const tag = `<meta name="${name}" content="${escapeHtmlAttribute(fallback)}" />\n`;
+      content = existing
+        ? content.replace(pattern, tag.trim())
+        : content.replace(/<\/head>/i, `    ${tag}</head>`);
+    }
+
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+ensureTwitterCardMetadata();
+
+function ensureOpenGraphMetadata() {
+  const sitemapPath = path.join(distDir, 'sitemap.xml');
+  if (!fs.existsSync(sitemapPath)) return;
+
+  const urls = [...fs.readFileSync(sitemapPath, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map(([, url]) => url);
+  const fallbackImage = 'https://www.vitablue.es/og-image.jpg';
+
+  for (const url of urls) {
+    const pathname = new URL(url).pathname;
+    const filePath = pathname === '/'
+      ? path.join(distDir, 'index.html')
+      : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
+    if (!fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+    const title = content.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+    const descriptionTag = content.match(/<meta\b[^>]*\bname\s*=\s*(['"])description\1[^>]*>/i)?.[0];
+    const description = descriptionTag ? readAttribute(descriptionTag, 'content').trim() : '';
+    if (!title || !description) continue;
+
+    const values = new Map([
+      ['og:title', title],
+      ['og:description', description],
+      ['og:type', 'website'],
+      ['og:url', url],
+      ['og:image', fallbackImage],
+    ]);
+
+    for (const [property, fallback] of values) {
+      const pattern = new RegExp(`<meta\\b[^>]*\\bproperty\\s*=\\s*(['"])${property}\\1[^>]*>`, 'i');
+      const existing = content.match(pattern)?.[0];
+      if (existing && readAttribute(existing, 'content').trim()) continue;
+
+      const tag = `<meta property="${property}" content="${escapeHtmlAttribute(fallback)}" />\n`;
+      content = existing
+        ? content.replace(pattern, tag.trim())
+        : content.replace(/<\/head>/i, `    ${tag}</head>`);
+    }
+
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+ensureOpenGraphMetadata();
+
 // === OPTIMIZACIÓN DE RENDERIZADO CRÍTICO (HEAD TAGS) ===
 
 function optimizeHtmlHeadTagsRecursive(dir) {
