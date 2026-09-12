@@ -19,7 +19,7 @@ const PublicRouteSeo: React.FC = () => {
   // Hostinger CDN añade trailing slash a todas las rutas (excecto "/").
   // Normalizamos canonical y alternate para que coincidan con la URL real
   // que sirve el servidor (200 OK) y Google no detecte un redirect.
-  const withSlash = (p: string) => (p === '/' ? p : `${p}/`);
+  const withSlash = (p: string) => (p === '/' ? p : `${p.replace(/\/+$/, '')}/`);
 
   const origin = 'https://www.vitablue.es';
   const canonicalPath = withSlash(definition.canonical ?? pathname);
