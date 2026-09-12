@@ -135,6 +135,9 @@ jobs:
       - name: Validate internal links
         run: npm run validate-internal-links
 
+      - name: Validate cannibalization guard
+        run: npm run validate-cannibalization
+
       - name: Save dist to Cache
         uses: actions/cache/save@v4
         with:

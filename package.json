@@ -21,6 +21,7 @@
     "validate-sitemap": "node scripts/validate_sitemap.cjs",
     "validate-static-seo": "node scripts/validate_static_seo.cjs",
     "validate-internal-links": "node scripts/validate_internal_links.cjs",
+    "validate-cannibalization": "node scripts/validate_cannibalization.cjs",
     "generate-sitemap": "node scripts/generate_sitemap.cjs --write",
     "generate-sitemap:check": "node scripts/generate_sitemap.cjs",
     "lint": "eslint .",

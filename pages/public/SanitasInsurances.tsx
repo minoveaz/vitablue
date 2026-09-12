@@ -158,7 +158,7 @@ export const SanitasInsurances: React.FC = () => {
         <meta property="og:title" content="Seguros de Salud Sanitas: Precios y Catálogo Oficial 2026 | VitaBlue" />
         <meta property="og:description" content="Catálogo oficial y precios de seguros de salud Sanitas en España. Coberturas completas con y sin copago, seguro dental Blua gratis y asesoramiento gratuito." />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
-        <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas" />
+        <meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -379,4 +379,3 @@ export const SanitasInsurances: React.FC = () => {
 };
 
 export default SanitasInsurances;
-
