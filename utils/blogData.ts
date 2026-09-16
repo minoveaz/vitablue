@@ -37,7 +37,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
     alternateSlug: 'pregnancy-maternity-waiting-periods-health-insurance-spain',
-    title: 'Periodos de Carencia en el Embarazo: Qué Pólizas Cubren Parto en 2026',
+    title: 'Periodos de Carencia en Embarazo y Parto en España (2026)',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '7 min de lectura',
@@ -49,7 +49,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Estás planificando un embarazo o esperando un bebé? Analizamos los periodos de carencia para el parto en España, cómo eliminar las carencias si vienes de otra aseguradora y qué ventajas ofrece la red de maternidad de Asisa y Sanitas.',
+    excerpt: '¿Planificando un embarazo? Analizamos las carencias para el parto en España, cómo eliminarlas al cambiar de compañía y coberturas de maternidad de Asisa y Sanitas.',
     featuredImage: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
 
@@ -152,7 +152,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'seguro-salud-mayores-65-anos-espana-precios',
     alternateSlug: 'health-insurance-spain-seniors-over-65-prices',
 
-    title: 'Seguro de Salud para Mayores de 65 Años en España: Precios y Límites (Guía 2026)',
+    title: 'Seguro Médico para Mayores de 65 Años en España: Guía 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '7 min de lectura',
@@ -164,7 +164,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Es posible contratar un seguro médico privado a partir de los 65 o 70 años? Analizamos los límites máximos de edad, precios mensuales reales, coberturas senior y las mejores opciones en Asisa y Sanitas.',
+    excerpt: 'Guía completa de seguros médicos para mayores de 65 años y jubilados en España: límites de edad, precios reales y opciones válidas para residencia y visados.',
     featuredImage: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
@@ -263,7 +263,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
     alternateSlug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain',
 
-    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Comparativa y Precios 2026',
+    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Comparativa Salud 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '8 min de lectura',
@@ -275,7 +275,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Comparativa exhaustiva entre las 4 grandes aseguradoras de salud en España: Sanitas, Adeslas, Asisa y DKV. Analizamos cuadros médicos, copagos, precios, hospitales y tecnología digital para ayudarte a elegir la mejor opción.',
+    excerpt: 'Comparativa 2026 de las 4 grandes aseguradoras en España: cuadros médicos, precios sin copagos, atención digital y rapidez en certificados consulares.',
     featuredImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
@@ -395,7 +395,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'seguro-salud-nomadas-digitales-espana-requisitos',
     alternateSlug: 'digital-nomad-health-insurance-spain-requirements',
 
-    title: 'Seguro de Salud para Nómadas Digitales en España: Requisitos UGE (Guía 2026)',
+    title: 'Seguro de Salud para Nómadas Digitales en España (UGE 2026)',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '7 min de lectura',
@@ -407,7 +407,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Vas a solicitar la Visa de Nómada Digital en España? Te explicamos los requisitos exactos del seguro médico exigidos por la UGE (Unidad de Grandes Empresas), coberturas internacionales y opciones recomendadas.',
+    excerpt: 'Requisitos oficiales del seguro médico para la Visa de Nómada Digital en España: 0€ copagos, hospitalización completa, repatriación y certificado UGE en 24h.',
     featuredImage: 'https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
@@ -506,7 +506,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'certificado-seguro-medico-visado-estudiante-consulado',
     alternateSlug: 'consular-health-insurance-certificate-spain-visa',
 
-    title: 'Cómo Tramitar el Certificado del Seguro Médico para el Visado en 24h (Guía 2026)',
+    title: 'Certificado Médico para Visado de Estudiante en España',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '6 min de lectura',
@@ -518,7 +518,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Tienes cita en el consulado o en Extranjería y necesitas tu certificado oficial de seguro médico? Te explicamos paso a paso cómo obtener el documento homologado con firma electrónica válida en menos de 24 horas.',
+    excerpt: 'Cómo obtener el certificado del seguro médico para visado en 24 horas. Documento oficial en PDF con firma digital aceptado por consulados y Extranjería.',
     featuredImage: 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
 
@@ -619,7 +619,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'precios-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-prices',
 
-    title: 'Precios Sanitas International Students y Seguro Visado España 2026',
+    title: 'Precios de Seguros para Visado de Estudiante España 2026',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '7 min de lectura',
@@ -631,7 +631,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Cuánto cuesta Sanitas International Students? Precios oficiales desde 35€/mes para el visado de estudiante en España. Póliza 100% homologada sin copagos ni carencias.',
+    excerpt: 'Tarifas oficiales 2026 de seguros médicos para visado de estudiante en España: ASISA desde 38€/mes y Sanitas desde 45€/mes sin copagos ni carencias.',
     featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
 
@@ -738,7 +738,7 @@ export const blogPosts: BlogPostData[] = [
     slug: 'requisitos-seguro-medico-visado-estudiante-espana',
     alternateSlug: 'student-visa-spain-health-insurance-requirements',
 
-    title: '¿Qué Seguro Médico Pide el Consulado Español para el Visado de Estudiante? (Requisitos 2026)',
+    title: 'Requisitos del Seguro Médico para Visado de Estudiante 2026',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '7 min de lectura',
@@ -750,7 +750,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Descubre qué seguro médico exige el consulado de España para aprobar tu visado de estudiante en 2026: 0€ copagos, sin carencias, repatriación sanitaria ilimitada, aseguradoras DGSFP y cómo evitar los 5 motivos típicos de denegación.',
+    excerpt: 'Requisitos oficiales del consulado español para visado de estudiante: 0€ copagos, sin carencias, repatriación sanitaria y aseguradoras DGSFP autorizadas.',
     featuredImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -839,7 +839,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'seguro-medico-residencia-no-lucrativa-espana',
     alternateSlug: 'health-insurance-spain-non-lucrative-visa-requirements',
-    title: 'Seguro Médico Residencia No Lucrativa España 2026: Requisitos y Precios',
+    title: 'Seguro Médico para Residencia No Lucrativa en España 2026',
     category: 'visados',
     categoryLabel: 'Visados y NIE',
     readTime: '5 min de lectura',
@@ -851,7 +851,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Requisitos oficiales 2026 del seguro médico para la Residencia No Lucrativa en España. Pólizas sin copagos ni carencias desde 45€/mes aceptadas por consulados.',
+    excerpt: 'Requisitos oficiales 2026 del seguro de salud para Residencia No Lucrativa en España: pólizas completas sin copagos aceptadas por consulados desde 45€/mes.',
     featuredImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -912,7 +912,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'seguro-de-salud-pareja-de-hecho-nie',
-    title: 'Guía Completa del Seguro de Salud para Pareja de Hecho y NIE',
+    title: 'Seguro de Salud para Pareja de Hecho y NIE en España 2026',
     category: 'tramites',
     categoryLabel: 'Trámites en España',
     readTime: '5 min de lectura',
@@ -924,7 +924,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Vas a formalizar tu relación como Pareja de Hecho en España para obtener la tarjeta de familiar de comunitario? Te detallamos el tipo de seguro de salud que debes presentar.',
+    excerpt: 'Guía del seguro médico exigido para formalizar la Pareja de Hecho y tramitar la tarjeta de familiar comunitario (TIE) en España sin copagos ni carencias.',
     featuredImage: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -975,7 +975,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'que-es-el-copago-seguro-salud',
     alternateSlug: 'what-is-copay-health-insurance-spain-guide',
-    title: '¿Qué es el Copago en un Seguro de Salud? Cómo Funciona y Tarifas',
+    title: '¿Qué es el Copago en Seguros de Salud? Guía y Tarifas 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '5 min de lectura',
@@ -987,7 +987,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Qué es el copago en salud y cómo funciona? Descubre las tarifas reales por consulta (2€-12€), cuándo conviene una póliza con o sin copago y cómo ahorrar.',
+    excerpt: 'Descubre cómo funciona el copago médico en España, tarifas habituales por consulta y cuándo te conviene contratar una póliza con o sin copago para ahorrar.',
     featuredImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -1069,7 +1069,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Por qué tengo que esperar para usar ciertas coberturas complejas tras contratar un seguro? Te explicamos el funcionamiento de las carencias y cómo eliminarlas.',
+    excerpt: 'Te explicamos los plazos de carencia en seguros de salud en España, qué coberturas exigen espera y cómo eliminarlas al cambiarte desde otra compañía aseguradora.',
     featuredImage: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -1127,7 +1127,7 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     slug: 'preexistencias-medicas-seguro-salud',
-    title: 'Preexistencias Médicas en el Seguro de Salud: Guía de Honestidad',
+    title: 'Preexistencias Médicas en el Seguro de Salud: Guía 2026',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '6 min de lectura',
@@ -1139,7 +1139,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Me cubrirán si tengo una enfermedad previa al contratar un seguro médico? Te explicamos el papel de los cuestionarios de salud y cómo evitar exclusiones futuras.',
+    excerpt: '¿Cómo afectan las enfermedades previas al contratar un seguro médico en España? Cuestionarios de salud, exclusiones médicas y consejos para declarar con éxito.',
     featuredImage: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop',
     sections: [
       {
@@ -1203,7 +1203,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'student-visa-spain-health-insurance-requirements',
     alternateSlug: 'requisitos-seguro-medico-visado-estudiante-espana',
-    title: 'Student Visa Spain Health Insurance from €35/mo | 100% Approved VitaBlue',
+    title: 'Student Visa Spain Health Insurance: Requirements (2026)',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
     readTime: '7 min read',
@@ -1215,7 +1215,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Official health insurance requirements for Spanish student visas in 2026. Certified ASISA & Sanitas policies with 0€ copays, full hospitalization & instant 24h certificate.',
+    excerpt: 'Official health insurance criteria for Spanish student visas in 2026: 0€ copays, zero wait times, full hospital cover and instant consular certificate in 24h.',
     featuredImage: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1299,7 +1299,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'health-insurance-spain-non-lucrative-visa-requirements',
     alternateSlug: 'seguro-medico-residencia-no-lucrativa-espana',
-    title: 'Health Insurance for Spain Non-Lucrative Visa: What Immigration Demands',
+    title: 'Health Insurance for Spain Non-Lucrative Visa (2026 Guide)',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
     readTime: '6 min read',
@@ -1311,7 +1311,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'The Non-Lucrative Visa (NLV) is a popular option to live in Spain. Here are the exact health insurance criteria to avoid consular rejection.',
+    excerpt: 'Official health insurance requirements for Spain Non-Lucrative Visa: zero copays, comprehensive coverage and certified policies from €45/month.',
     featuredImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1361,7 +1361,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'consular-health-insurance-certificate-spain-visa',
     alternateSlug: 'certificado-seguro-medico-visado-estudiante-consulado',
-    title: 'How to Get the Official 24h Consular Health Insurance Certificate for Spain (2026 Guide)',
+    title: 'How to Get the Official Consular Insurance Certificate 24h',
     category: 'tramites',
     categoryLabel: 'Visa Procedures',
     readTime: '7 min read',
@@ -1373,7 +1373,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Preparing your visa appointment with the Spanish Consulate or BLS? Here is your complete step-by-step guide to obtaining the official consular health insurance certificate with legal electronic signature in under 24 hours.',
+    excerpt: 'Step-by-step guide to getting your official consular health insurance certificate with legal electronic signature in under 24 hours for Spanish visa approval.',
     featuredImage: 'https://images.unsplash.com/photo-1569098644584-210bcd375b59?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1472,7 +1472,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'digital-nomad-health-insurance-spain-requirements',
     alternateSlug: 'seguro-salud-nomadas-digitales-espana-requisitos',
-    title: 'Digital Nomad Health Insurance Spain 2026: UGE & Telework Visa Requirements',
+    title: 'Digital Nomad Health Insurance Spain: UGE Requirements',
     category: 'visados',
     categoryLabel: 'Digital Nomads & Visas',
     readTime: '8 min read',
@@ -1484,7 +1484,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Complete guide for remote workers & freelancers applying for the Spanish Digital Nomad Visa under the Startup Act (UGE-CE). Learn the 4 mandatory health insurance criteria: 0€ copays, full hospitalization, zero waiting periods, and repatriation.',
+    excerpt: 'Health insurance rules for the Spanish Digital Nomad Visa under the Startup Act (UGE): 0€ copays, full hospitalization and instant 24h certificate delivery.',
     featuredImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1570,7 +1570,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'student-visa-spain-health-insurance-prices',
     alternateSlug: 'precios-seguro-medico-visado-estudiante-espana',
-    title: 'Student Visa Health Insurance Spain: Real 2026 Prices (From €35/mo)',
+    title: 'Student Visa Health Insurance Spain: 2026 Prices (€35/mo)',
     category: 'visados',
     categoryLabel: 'Visas & NIE',
     readTime: '7 min read',
@@ -1582,7 +1582,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Compare real 2026 costs for Spanish student visa health insurance: ASISA from €35/mo, Sanitas from €45/mo, Adeslas from €49/mo. 100% visa approval guarantee with zero copay.',
+    excerpt: 'Compare real 2026 prices for Spanish student visa insurance: ASISA from €38/mo, Sanitas from €45/mo and Adeslas from €49/mo with 0€ copays and 100% approval.',
     featuredImage: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1649,7 +1649,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain',
     alternateSlug: 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud',
-    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Best Spanish Health Insurance Comparison (2026)',
+    title: 'Sanitas vs Adeslas vs Asisa vs DKV: Spain Insurance 2026',
     category: 'salud',
     categoryLabel: 'Insurance Comparison',
     readTime: '8 min read',
@@ -1661,7 +1661,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Direct head-to-head comparison of Spain\'s top 4 private health insurance companies. We analyze medical networks, english-speaking customer support, digital apps (Blua/Adeslas Salud), and visa acceptance rates.',
+    excerpt: 'Head-to-head comparison of Spain top 4 health insurers for expats: medical networks, English support, mobile apps, pricing and visa compliance records.',
     featuredImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1722,7 +1722,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'health-insurance-spain-seniors-over-65-prices',
     alternateSlug: 'seguro-salud-mayores-65-anos-espana-precios',
-    title: 'Health Insurance in Spain for Expats & Seniors Over 65: Prices and Rules (2026)',
+    title: 'Health Insurance in Spain for Expats & Seniors Over 65',
     category: 'salud',
     categoryLabel: 'Senior & Expat Care',
     readTime: '8 min read',
@@ -1734,7 +1734,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Comprehensive guide for retirees and expats over 65 moving to Spain. Learn maximum age limits, medical questionnaire underwriting, non-lucrative visa compliance, and specialist health plans for senior citizens.',
+    excerpt: 'Guide for retirees and expats over 65 moving to Spain: age limits, underwriting rules, visa-compliant policies and specialist healthcare plans from top insurers.',
     featuredImage: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1797,7 +1797,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'pregnancy-maternity-waiting-periods-health-insurance-spain',
     alternateSlug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
-    title: 'Pregnancy & Maternity Waiting Periods in Spanish Health Insurance (2026 Guide)',
+    title: 'Pregnancy & Maternity Waiting Periods: Spain Guide 2026',
     category: 'salud',
     categoryLabel: 'Maternity & Family Care',
     readTime: '8 min read',
@@ -1809,7 +1809,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Planning a pregnancy or relocating to Spain while expecting? Understand private health insurance maternity waiting periods (8-10 months), delivery coverage, private single hospital rooms, and how to waive waiting periods from previous providers.',
+    excerpt: 'Understand private health insurance maternity waiting periods (8 months), private hospital delivery, neonatal ICU and how to waive wait times in Spain.',
     featuredImage: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -1866,7 +1866,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'asisa-sanitas-adeslas-comparativa-visado-estudiante-espana',
     alternateSlug: 'asisa-student-insurance-spain-visa-validity',
-    title: 'Asisa vs Sanitas vs Adeslas: Comparativa de Seguros para Visado de Estudiante en España (2026)',
+    title: 'Asisa vs Sanitas vs Adeslas: Seguro Visado Estudiante 2026',
     category: 'visados',
     categoryLabel: 'Visados y Residencia',
     readTime: '8 min de lectura',
@@ -1878,7 +1878,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Asisa, Sanitas o Adeslas? Comparamos precios reales, tiempos de emisión del certificado consular (24h), copagos, carencias y políticas de devolución ante denegación. Descubre por qué Asisa Health Students es la opción número 1 recomendada por VitaBlue en 2026.',
+    excerpt: 'Comparamos ASISA, Sanitas y Adeslas para visados de estudiantes en España: precios reales desde 38€/mes, certificados en 24h y política de devolución 100%.',
     featuredImage: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
@@ -2080,7 +2080,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'asisa-student-insurance-spain-visa-validity',
     alternateSlug: 'asisa-sanitas-adeslas-comparativa-visado-estudiante-espana',
-    title: 'ASISA Student Insurance Spain: Is It Valid for the Student Visa? (2026 Comparison)',
+    title: 'Is ASISA Student Insurance Valid for Spain Visa? (2026)',
     category: 'visados',
     categoryLabel: 'Visas & Residency',
     readTime: '8 min read',
@@ -2092,7 +2092,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Is ASISA Health Students accepted by Spanish Consulates worldwide? Learn why ASISA (€38/mo) is 100% compliant with zero copays, zero waiting periods, 24h certificate delivery, and how it compares with Sanitas and Adeslas.',
+    excerpt: 'Is ASISA Health Students accepted by Spanish Consulates worldwide? Learn why ASISA (€38/mo) is 100% compliant with 0€ copays and 24h certificate delivery.',
     featuredImage: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -2275,7 +2275,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'rechazo-visado-espana-devolucion-seguro-medico',
     alternateSlug: 'spain-visa-rejection-health-insurance-refund-guarantee',
-    title: '¿Qué Pasa si Rechazan tu Visado? Seguros Médicos con Devolución Garantizada (2026)',
+    title: 'Seguro Médico con Devolución por Rechazo de Visado España',
     category: 'visados',
     categoryLabel: 'Visados y Residencia',
     readTime: '7 min de lectura',
@@ -2287,7 +2287,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: '¿Temes perder tu dinero si el consulado deniega tu visado de estudiante o residencia? Descubre cómo funciona la cláusula de devolución garantizada al 100% en ASISA y Sanitas, requisitos exactos y cómo tramitar el reembolso sin penalizaciones.',
+    excerpt: 'Garantía de reembolso del 100% si el consulado deniega tu visado en España: cómo funciona la devolución en ASISA y Sanitas y pasos para tramitarla sin costes.',
     featuredImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
@@ -2443,7 +2443,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'spain-visa-rejection-health-insurance-refund-guarantee',
     alternateSlug: 'rechazo-visado-espana-devolucion-seguro-medico',
-    title: 'What Happens If Your Spanish Visa Is Denied? 100% Health Insurance Refund Guarantee (2026)',
+    title: 'Spanish Visa Denied? 100% Insurance Money-Back Guarantee',
     category: 'visados',
     categoryLabel: 'Visas & Residency',
     readTime: '7 min read',
@@ -2455,7 +2455,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Afraid of losing your money if the Spanish Consulate refuses your visa? Understand how the 100% money-back guarantee works with ASISA and Sanitas, official requirements, and how to get your full refund with no penalties.',
+    excerpt: 'Understand how the 100% refund guarantee works if the Spanish Consulate refuses your visa: official cancellation proof, ASISA/Sanitas rules and zero fees.',
     featuredImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -2611,7 +2611,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'what-is-copay-health-insurance-spain-guide',
     alternateSlug: 'que-es-el-copago-seguro-salud',
-    title: 'What is Copay in Spanish Health Insurance? (Expat & Visa Guide 2026)',
+    title: 'What is Copay in Spanish Health Insurance? (2026 Guide)',
     category: 'salud',
     categoryLabel: 'Insurance Guide',
     readTime: '6 min read',
@@ -2623,7 +2623,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Understand how copays work in Spain, when choosing a policy with copays saves you money, and why Spanish consulates strictly require 0€ copay policies for all visas.',
+    excerpt: 'Understand how copays work in Spain, when choosing a copay policy saves money, and why Spanish consulates require 0€ copay insurance for all visa filings.',
     featuredImage: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
@@ -2696,7 +2696,7 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'waiting-periods-health-insurance-spain-guide',
     alternateSlug: 'periodos-de-carencia-seguro-medico',
-    title: 'Waiting Periods in Spanish Health Insurance: How to Waive Them (2026)',
+    title: 'Waiting Periods in Spanish Health Insurance: How to Waive',
     category: 'salud',
     categoryLabel: 'Insurance Guide',
     readTime: '6 min read',
@@ -2708,7 +2708,7 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'What are waiting periods (carencias) in Spain, which services require wait times, and how to eliminate them if you switch insurers or need a visa-compliant policy.',
+    excerpt: 'Learn how waiting periods (carencias) work in Spain, which services have wait times, and how to waive them when switching insurers or applying for a visa.',
     featuredImage: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
