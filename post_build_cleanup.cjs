@@ -10,6 +10,23 @@ const distDir = path.resolve(__dirname, 'dist');
 
 console.log('=== INICIANDO LIMPIEZA POST-BUILD PARA SEO ===\n');
 
+function setMetaTag(html, nameOrProp, isProperty, value) {
+  const attr = isProperty ? 'property' : 'name';
+  const tagPattern = new RegExp(`<meta(?=[^>]*\\b${attr}=["']${nameOrProp}["'])[^>]*>`, 'i');
+  const newTag = `<meta ${attr}="${nameOrProp}" content="${value}" />`;
+  if (tagPattern.test(html)) {
+    return html.replace(tagPattern, newTag);
+  }
+  return html.replace('</head>', `    ${newTag}\n</head>`);
+}
+
+function setTitleTag(html, title) {
+  if (/<title>[^<]*<\/title>/i.test(html)) {
+    return html.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
+  }
+  return html.replace('</head>', `    <title>${title}</title>\n</head>`);
+}
+
 function cleanHtmlFolders(dir) {
   if (!fs.existsSync(dir)) return;
   const items = fs.readdirSync(dir);
@@ -136,11 +153,12 @@ function injectBlogMetadataAndSchemas() {
 
     let content = fs.readFileSync(filePath, 'utf8');
 
-    // 1. Update Title
-    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${post.title}</title>`);
+    // 1. Clean existing JSON-LD schemas to prevent duplicate blocks
+    content = content.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
 
-    // 2. Update Meta Description
-    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${post.excerpt}"`);
+    // 2. Update Title and Meta Description
+    content = setTitleTag(content, post.title);
+    content = setMetaTag(content, 'description', false, post.excerpt);
 
     // 3. Update OG and Twitter
     const resolvedImageUrl = post.featuredImage.startsWith('http')
@@ -148,29 +166,16 @@ function injectBlogMetadataAndSchemas() {
       : `https://www.vitablue.es${post.featuredImage}`;
     const postCanonicalUrl = `https://www.vitablue.es${blogPath}/${post.slug}/`;
 
-    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${post.title}"`);
-    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${post.excerpt}"`);
-    content = content.replace(/<meta property="og:type" content="[^"]*"/i, `<meta property="og:type" content="article"`);
-    content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${postCanonicalUrl}"`);
-    if (/property="og:image"/i.test(content)) {
-      content = content.replace(/<meta property="og:image" content="[^"]*"/i, `<meta property="og:image" content="${resolvedImageUrl}"`);
-    } else {
-      content = content.replace(/<\/head>/i, `<meta property="og:image" content="${resolvedImageUrl}" />\n</head>`);
-    }
+    content = setMetaTag(content, 'og:title', true, post.title);
+    content = setMetaTag(content, 'og:description', true, post.excerpt);
+    content = setMetaTag(content, 'og:type', true, 'article');
+    content = setMetaTag(content, 'og:url', true, postCanonicalUrl);
+    content = setMetaTag(content, 'og:image', true, resolvedImageUrl);
 
-    if (/name="twitter:card"/i.test(content)) {
-      content = content.replace(/<meta name="twitter:card" content="[^"]*"/i, `<meta name="twitter:card" content="summary_large_image"`);
-    } else {
-      content = content.replace(/<\/head>/i, `<meta name="twitter:card" content="summary_large_image" />\n</head>`);
-    }
-
-    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${post.title}"`);
-    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${post.excerpt}"`);
-    if (/name="twitter:image"/i.test(content)) {
-      content = content.replace(/<meta name="twitter:image" content="[^"]*"/i, `<meta name="twitter:image" content="${resolvedImageUrl}"`);
-    } else {
-      content = content.replace(/<\/head>/i, `<meta name="twitter:image" content="${resolvedImageUrl}" />\n</head>`);
-    }
+    content = setMetaTag(content, 'twitter:card', false, 'summary_large_image');
+    content = setMetaTag(content, 'twitter:title', false, post.title);
+    content = setMetaTag(content, 'twitter:description', false, post.excerpt);
+    content = setMetaTag(content, 'twitter:image', false, resolvedImageUrl);
 
     // 4. Construct Schemas
 
@@ -294,9 +299,7 @@ function injectBlogMetadataAndSchemas() {
       .map((s) => `    <script type="application/ld+json">${JSON.stringify(s)}</script>`)
       .join('\n');
 
-    if (!content.includes('"@type":"BlogPosting"')) {
-      content = content.replace('</head>', `${schemaTags}\n</head>`);
-    }
+    content = content.replace('</head>', `${schemaTags}\n</head>`);
 
     fs.writeFileSync(filePath, content, 'utf8');
   });
@@ -576,23 +579,65 @@ function injectLandingMetadataAndSchemas() {
     },
     {
       file: path.join(distDir, 'productos/seguros-salud/seguros-asisa/asisa-esencial/index.html'),
-      title: 'ASISA Esencial | Seguro Médico Sin Hospitalización | VitaBlue',
-      description: 'Seguro de salud ambulatorio ASISA Esencial y Esencial +: especialistas, pruebas diagnósticas y telemedicina sin listas de espera desde 13,90€/mes.',
+      title: 'ASISA Esencial: Seguro Médico Ambulatorio 2026 | VitaBlue',
+      description: 'Seguro de salud extrahospitalario ASISA Esencial desde 16€/mes: especialistas y pruebas diagnósticas sin esperas con tarifas reducidas en VitaBlue.',
       canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-esencial/',
       productName: 'ASISA Esencial'
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance/asisa-insurance/index.html'),
+      title: 'ASISA Health Insurance Spain: Plans & Prices 2026 | VitaBlue',
+      description: 'Compare all ASISA health insurance plans in Spain for students, expats and residents. Independent advice, English support and instant certificate delivery.',
+      canonical: 'https://www.vitablue.es/en/health-insurance/asisa-insurance/',
+      productName: 'ASISA Insurance'
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance/asisa-health-students/index.html'),
+      title: 'ASISA Health Students | Spain Student Visa | VitaBlue',
+      description: 'Official ASISA Health Students insurance in Spain from €38/mo. 0€ copays, zero wait times, repatriation & fast consular certificate delivered in under 24 hours.',
+      canonical: 'https://www.vitablue.es/en/health-insurance/asisa-health-students/',
+      productName: 'ASISA Health Students'
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance/asisa-health-residents/index.html'),
+      title: 'ASISA Health Residents | Residency in Spain Policy | VitaBlue',
+      description: 'Official ASISA health insurance for residency in Spain & Non-Lucrative Visa. 0€ copays, full HLA hospital network and official certificate in under 24 hours.',
+      canonical: 'https://www.vitablue.es/en/health-insurance/asisa-health-residents/',
+      productName: 'ASISA Health Residents'
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance/asisa-completa/index.html'),
+      title: 'ASISA Salud Completa | Spanish Health Insurance | VitaBlue',
+      description: 'Comprehensive ASISA private health insurance in Spain: over 40,000 specialists, full hospitalization, zero copays and English-speaking medical directory.',
+      canonical: 'https://www.vitablue.es/en/health-insurance/asisa-completa/',
+      productName: 'ASISA Completa'
+    },
+    {
+      file: path.join(distDir, 'en/health-insurance/asisa-esencial/index.html'),
+      title: 'ASISA Esencial | Outpatient Health Cover in Spain | VitaBlue',
+      description: 'Affordable outpatient health insurance with ASISA Esencial from €16/mo: specialist visits and diagnostic tests with immediate access and no long waitlists.',
+      canonical: 'https://www.vitablue.es/en/health-insurance/asisa-esencial/',
+      productName: 'ASISA Esencial'
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/seguros-sanitas/international-students/index.html'),
+      title: 'Sanitas International Students | Seguro Visado | VitaBlue',
+      description: 'Seguro de salud oficial Sanitas International Students para visados en España: sin copagos, telemedicina Blua gratis y certificado consular inmediato en 24h.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/',
+      productName: 'Sanitas International Students'
     }
   ];
 
   asisaProducts.forEach((prod) => {
     if (fs.existsSync(prod.file)) {
       let content = fs.readFileSync(prod.file, 'utf8');
-      content = content.replace(/<title>[^<]*<\/title>/i, `<title>${prod.title}</title>`);
-      content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${prod.description}"`);
-      content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${prod.title}"`);
-      content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${prod.description}"`);
-      content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${prod.canonical}"`);
-      content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${prod.title}"`);
-      content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${prod.description}"`);
+      content = setTitleTag(content, prod.title);
+      content = setMetaTag(content, 'description', false, prod.description);
+      content = setMetaTag(content, 'og:title', true, prod.title);
+      content = setMetaTag(content, 'og:description', true, prod.description);
+      content = setMetaTag(content, 'og:url', true, prod.canonical);
+      content = setMetaTag(content, 'twitter:title', false, prod.title);
+      content = setMetaTag(content, 'twitter:description', false, prod.description);
       fs.writeFileSync(prod.file, content, 'utf8');
     }
   });
@@ -1436,15 +1481,16 @@ function injectLandingMetadataAndSchemas() {
   landingPages.forEach((landing) => {
     if (fs.existsSync(landing.file)) {
       let content = fs.readFileSync(landing.file, 'utf8');
-      content = content.replace(/<title>[^<]*<\/title>/i, `<title>${landing.title}</title>`);
-      content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${landing.description}"`);
-      content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${landing.title}"`);
-      content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${landing.description}"`);
-      content = content.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${landing.canonical}"`);
-      content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${landing.title}"`);
-      content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${landing.description}"`);
+      content = setTitleTag(content, landing.title);
+      content = setMetaTag(content, 'description', false, landing.description);
+      content = setMetaTag(content, 'og:title', true, landing.title);
+      content = setMetaTag(content, 'og:description', true, landing.description);
+      content = setMetaTag(content, 'og:url', true, landing.canonical);
+      content = setMetaTag(content, 'twitter:title', false, landing.title);
+      content = setMetaTag(content, 'twitter:description', false, landing.description);
 
-      if (landing.schema && !content.includes('"@type":"FAQPage"') && !content.includes('"@type":"FinancialProduct"')) {
+      if (landing.schema) {
+        content = content.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
         content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(landing.schema)}</script>\n</head>`);
       }
 
