@@ -56,6 +56,15 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      - name: Validate SSG Output
+        run: npm run validate:ssg
+
+      - name: Validate Static SEO Metadata
+        run: npm run validate-static-seo
+
+      - name: Validate Internal Links
+        run: npm run validate-internal-links
+
       - name: Detect dist changes
         id: dist
         shell: bash
