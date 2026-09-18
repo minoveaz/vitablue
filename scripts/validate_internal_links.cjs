@@ -33,6 +33,12 @@ for (const file of htmlFiles(distDir)) {
 
     const urlPath = href.split('#')[0].split('?')[0];
 
+    // Check for double slashes
+    if (urlPath.includes('//')) {
+      failures.push(`[DOUBLE SLASH DETECTED] ${path.relative(distDir, file)} -> ${href} (contains consecutive slashes '//')`);
+      continue;
+    }
+
     // Check if link points to a static asset or file with extension (e.g. .pdf, .svg, .png, .xml, .html)
     const hasFileExtension = path.extname(urlPath) !== '';
 
