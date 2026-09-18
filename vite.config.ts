@@ -79,10 +79,25 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) {
-            return 'vendor';
+            return 'vendor-react';
           }
           if (id.includes('node_modules/framer-motion')) {
             return 'framer-motion';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'lucide-icons';
+          }
+          if (id.includes('node_modules/@supabase')) {
+            return 'supabase';
+          }
+          if (id.includes('node_modules/@tiptap')) {
+            return 'tiptap-editor';
+          }
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas') || id.includes('node_modules/pdfjs-dist')) {
+            return 'pdf-lib';
+          }
+          if (id.includes('node_modules/@remotion') || id.includes('node_modules/remotion')) {
+            return 'remotion-player';
           }
         }
       }
