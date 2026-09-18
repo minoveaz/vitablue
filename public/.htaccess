@@ -45,90 +45,111 @@
 
   RewriteRule ^(?:login|backoffice|wizard|resultados)(?:/|$) - [E=VITABLUE_PRIVATE_ROUTE:1]
 
-  # ---------------------------------------------------------------
-  # FIX CRÍTICO 2: Redirigir HTTP y/o sin-www a HTTPS + www.
-  # Evita que http://vitablue.es/ aparezca como "Página con
-  # redirección" por depender solo del panel de Hostinger.
-  # ---------------------------------------------------------------
-  # Combine host/protocol normalization with the index redirect.
+  # ----------------------------------------------------------------------
+  # 1. NORMALIZACIÓN DE DOBLES BARRAS CONSECUTIVAS (// -> /)
+  # Evita que Googlebot indexe URLs duplicadas con doble slash.
+  # ----------------------------------------------------------------------
+  RewriteCond %{THE_REQUEST} //
+  RewriteRule ^(.*)$ https://www.vitablue.es/$1 [R=301,L,NE]
+
+  # ----------------------------------------------------------------------
+  # 2. CANONICALIZACIÓN EN 1 SOLO SALTO 301 (HTTP / SIN-WWW -> HTTPS + WWW + /)
+  # Previene cadenas de redirección múltiples que provocan "Error de redirección".
+  # ----------------------------------------------------------------------
+  # 2a. Si piden /index.html directo -> https://www.vitablue.es/
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/index\.html [NC,OR]
   RewriteCond %{REQUEST_URI} ^/index\.html$ [NC]
-  RewriteCond %{HTTPS} off [OR]
-  RewriteCond %{HTTP_HOST} !^www\. [NC]
   RewriteRule ^index\.html$ https://www.vitablue.es/ [R=301,L,NE]
 
+  # 2b. HTTP o sin-www sin barra final y sin extensión -> HTTPS + www + barra final en 1 solo salto
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]+$
+  RewriteRule ^(.*)$ https://www.vitablue.es/$1/ [R=301,L,NE]
+
+  # 2c. HTTP o sin-www para URLs que ya tienen barra final o archivos con extensión
   RewriteCond %{HTTPS} off [OR]
   RewriteCond %{HTTP_HOST} !^www\. [NC]
   RewriteRule ^ https://www.vitablue.es%{REQUEST_URI} [R=301,L,NE]
 
-  # Aliases legacy de Marketing Studio: conservar la sección solicitada.
-  RewriteRule ^marketing-studio/login$ /login/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/identidad-de-marca$ /backoffice/marketing-studio/identidad-de-marca/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/perfiles-sociales$ /backoffice/marketing-studio/perfiles-sociales/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/campanas(?:/.*)?$ /backoffice/marketing-studio/campanas/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/conexiones$ /backoffice/marketing-studio/conexiones/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/assets$ /backoffice/marketing-studio/assets/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/enlaces$ /backoffice/marketing-studio/enlaces/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/generador-contenido$ /backoffice/marketing-studio/generador-contenido/ [R=301,L,NE]
-  RewriteRule ^marketing-studio/?$ /backoffice/marketing-studio/ [R=301,L,NE]
+  # ----------------------------------------------------------------------
+  # 3. ALIASES LEGACY DE MARKETING STUDIO & BACKOFFICE (URLS ABSOLUTAS)
+  # ----------------------------------------------------------------------
+  RewriteRule ^marketing-studio/login$ https://www.vitablue.es/login/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/identidad-de-marca$ https://www.vitablue.es/backoffice/marketing-studio/identidad-de-marca/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/perfiles-sociales$ https://www.vitablue.es/backoffice/marketing-studio/perfiles-sociales/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/campanas(?:/.*)?$ https://www.vitablue.es/backoffice/marketing-studio/campanas/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/conexiones$ https://www.vitablue.es/backoffice/marketing-studio/conexiones/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/assets$ https://www.vitablue.es/backoffice/marketing-studio/assets/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/enlaces$ https://www.vitablue.es/backoffice/marketing-studio/enlaces/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/generador-contenido$ https://www.vitablue.es/backoffice/marketing-studio/generador-contenido/ [R=301,L,NE]
+  RewriteRule ^marketing-studio/?$ https://www.vitablue.es/backoffice/marketing-studio/ [R=301,L,NE]
+  RewriteRule ^backoffice/document-intelligence$ https://www.vitablue.es/backoffice/tools/document-intelligence/ [R=301,L,NE]
 
-  # Backoffice legacy alias
-  RewriteRule ^backoffice/document-intelligence$ /backoffice/tools/document-intelligence/ [R=301,L,NE]
+  # ----------------------------------------------------------------------
+  # 4. REDIRECCIONES DE PRODUCTOS Y RUTAS LEGACY DE PAÍSES / CIUDADES
+  # ----------------------------------------------------------------------
+  RewriteRule ^estudiantes/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
+  RewriteRule ^cotizador\.html/?$ https://www.vitablue.es/wizard/ [R=301,L,NE]
 
-  # Alias de productos sin trailing slash
-  RewriteRule ^estudiantes/?$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
-  RewriteRule ^cotizador\.html/?$ /wizard/ [R=301,L,NE]
-
-  # Redirecciones legacy de países y ciudades (con o sin barra final).
-  # Este bloque mantiene una única fuente para estas rutas legacy.
-  # Las rutas antiguas se redirigen siempre a URLs canónicas con barra final.
-  RewriteRule ^seguro-medico-visado-espana/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-visado-espana/mexico-cdmx/?$ /productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-visado-espana/peru-lima/?$ /productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-visado-espana/argentina-buenos-aires/?$ /productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-visado-espana/ecuador-quito-guayaquil/?$ /productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/colombia-bogota/?$ /productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/mexico-cdmx/?$ /productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/peru-lima/?$ /productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/argentina-buenos-aires/?$ /productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/ecuador-quito-guayaquil/?$ /productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-estudiantes/madrid/?$ /productos/seguros-salud/seguro-medico-estudiantes/madrid/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-estudiantes/barcelona/?$ /productos/seguros-salud/seguro-medico-estudiantes/barcelona/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-estudiantes/valencia/?$ /productos/seguros-salud/seguro-medico-estudiantes/valencia/ [R=301,L,NE]
-  RewriteRule ^seguro-medico-estudiantes/malaga/?$ /productos/seguros-salud/seguro-medico-estudiantes/malaga/ [R=301,L,NE]
-
-  # Redirecciones permanentes de URLs legacy hacia sus canónicas.
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html/?$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus\.html/?$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana\.html/?$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
-  RewriteRule ^productos/seguros-salud/sanitas-mas-salud/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-medico-estudiantes-extranjeros-espana\.html/?$ /productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
-  RewriteRule ^productos/international-students\.html/?$ /productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
-  RewriteRule ^seguros-salud/?$ /productos/seguros-salud/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-de-salud\.html/?$ /productos/seguros-salud/ [R=301,L,NE]
-  RewriteRule ^seguro-expatriados/?$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-medico-expatriados\.html/?$ /productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
-  RewriteRule ^seguro-nomadas/?$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
-  RewriteRule ^productos/seguro-nomadas-digitales\.html/?$ /productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
-  RewriteRule ^productos/sanitas-mas-salud\.html/?$ /productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
-  RewriteRule ^productos/sanitas-mascotas\.html/?$ /productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
-  RewriteRule ^productos/asistencia-familiar-iplus\.html/?$ /productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
-  RewriteRule ^privacidad\.html/?$ /privacidad/ [R=301,L,NE]
-  RewriteRule ^politica-cookies\.html/?$ /politica-cookies/ [R=301,L,NE]
+  # Rutas legacy de países (antiguas campañas de visado)
+  RewriteRule ^seguro-medico-visado-espana/colombia-bogota/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/mexico-cdmx/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/peru-lima/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/argentina-buenos-aires/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-visado-espana/ecuador-quito-guayaquil/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/colombia-bogota/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/colombia/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/mexico-cdmx/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/mexico/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/peru-lima/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/peru/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/argentina-buenos-aires/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/argentina/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguro-medico-estudiantes/ecuador-quito-guayaquil/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ecuador/ [R=301,L,NE]
   
-  RewriteRule ^index\.html$ / [R=301,L,NE]
+  # Rutas legacy de ciudades
+  RewriteRule ^seguro-medico-estudiantes/madrid/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/madrid/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/barcelona/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/barcelona/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/valencia/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/valencia/ [R=301,L,NE]
+  RewriteRule ^seguro-medico-estudiantes/malaga/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/malaga/ [R=301,L,NE]
 
-  # Canonical trailing slash for virtual HTML routes.
+  # ----------------------------------------------------------------------
+  # 5. REDIRECCIONES PERMANENTES DE ARCHIVOS .HTML LEGACY
+  # ----------------------------------------------------------------------
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mas-salud\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/sanitas-mascotas\.html/?$ https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/asistencia-familiar-iplus\.html/?$ https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/seguros-sanitas/seguro-medico-estudiantes-extranjeros-espana\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
+  RewriteRule ^productos/seguros-salud/sanitas-mas-salud/?$ https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-medico-estudiantes-extranjeros-espana\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/ [R=301,L,NE]
+  RewriteRule ^productos/international-students\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/international-students/ [R=301,L,NE]
+  RewriteRule ^seguros-salud/?$ https://www.vitablue.es/productos/seguros-salud/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-de-salud\.html/?$ https://www.vitablue.es/productos/seguros-salud/ [R=301,L,NE]
+  RewriteRule ^seguro-expatriados/?$ https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-medico-expatriados\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguro-expatriados/ [R=301,L,NE]
+  RewriteRule ^seguro-nomadas/?$ https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
+  RewriteRule ^productos/seguro-nomadas-digitales\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguro-nomadas-digitales/ [R=301,L,NE]
+  RewriteRule ^productos/sanitas-mas-salud\.html/?$ https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/ [R=301,L,NE]
+  RewriteRule ^productos/sanitas-mascotas\.html/?$ https://www.vitablue.es/productos/seguro-mascotas/sanitas-mascotas/ [R=301,L,NE]
+  RewriteRule ^productos/asistencia-familiar-iplus\.html/?$ https://www.vitablue.es/productos/seguro-para-decesos/asistencia-familiar/ [R=301,L,NE]
+  RewriteRule ^privacidad\.html/?$ https://www.vitablue.es/privacidad/ [R=301,L,NE]
+  RewriteRule ^politica-cookies\.html/?$ https://www.vitablue.es/politica-cookies/ [R=301,L,NE]
+
+  # ----------------------------------------------------------------------
+  # 6. CANONICAL TRAILING SLASH PARA RUTAS VIRTUALES (1 SOLO SALTO DIRECTO)
+  # ----------------------------------------------------------------------
   RewriteCond %{REQUEST_URI} !/$
-  RewriteCond %{REQUEST_URI} !\.[^/]+$
+  RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]+$
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.+)$ /$1/ [R=301,L,NE]
+  RewriteRule ^(.*)$ https://www.vitablue.es/$1/ [R=301,L,NE]
 
-  # Si el archivo o directorio físico solicitado existe, servirlo directamente (SEO & SSG)
+  # ----------------------------------------------------------------------
+  # 7. SERVIR ARCHIVOS / DIRECTORIOS FÍSICOS (SSG & STATIC ASSETS)
+  # ----------------------------------------------------------------------
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Fallback a index.html para rutas virtuales manejadas por React Router (SPA Fallback)
+  # ----------------------------------------------------------------------
+  # 8. SPA FALLBACK (RUTAS DINÁMICAS REACT ROUTER)
+  # ----------------------------------------------------------------------
   RewriteRule . /index.html [L]
 </IfModule>
