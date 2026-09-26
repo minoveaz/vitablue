@@ -280,7 +280,7 @@ export const AsistenciaFamiliar: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }, { label: 'Asistencia Familiar', href: '/productos/seguro-para-decesos/asistencia-familiar' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud/' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas/' }, { label: 'Asistencia Familiar', href: '/productos/seguro-para-decesos/asistencia-familiar/' }]} />
 
       {/* Reusable ProductHero comparison */}
       <ProductHero

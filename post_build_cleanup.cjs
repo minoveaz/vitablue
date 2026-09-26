@@ -1475,6 +1475,104 @@ function injectLandingMetadataAndSchemas() {
       description: 'Contact VitaBlue for help comparing health, expat, student, pet and other insurance options in Spain. Free and independent consultation.',
       canonical: 'https://www.vitablue.es/en/contact/',
       schema: null
+    },
+    {
+      file: path.join(distDir, 'index.html'),
+      title: 'Comparador de Seguros de Salud y Visados en España | VitaBlue',
+      description: 'Encuentra el mejor seguro de salud para vivir, estudiar o tramitar visado en España. Comparador independiente con 0€ copagos, asesoría gratuita y certificado en 24h.',
+      canonical: 'https://www.vitablue.es/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'en/index.html'),
+      title: 'Compare Health, Expat & Study Insurance in Spain | VitaBlue',
+      description: 'Find the best health insurance to live, study, or travel in Spain. Independent comparator and official advisors with 0€ copays, visa approval guarantee and 24h certificate.',
+      canonical: 'https://www.vitablue.es/en/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'en/about-us/index.html'),
+      title: 'About VitaBlue | 100% Independent Insurance Broker in Spain',
+      description: 'VitaBlue is an independent insurance comparison and advisory service in Spain. We help expats, international students and residents choose the best health coverage.',
+      canonical: 'https://www.vitablue.es/en/about-us/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'sobre-nosotros/index.html'),
+      title: 'Sobre VitaBlue | Comparador de Seguros 100% Independiente',
+      description: 'VitaBlue es un servicio de comparación y asesoramiento de seguros en España. Te ayudamos a elegir la mejor cobertura de salud y visado con absoluta claridad y soporte humano.',
+      canonical: 'https://www.vitablue.es/sobre-nosotros/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'validador-visado/index.html'),
+      title: 'Validador de Seguro Médico para Visado de España (2026) | VitaBlue',
+      description: 'Comprueba gratis en 30 segundos si tu póliza cumple las 4 exigencias del Consulado de España y Extranjería: 0€ copagos, sin carencias, repatriación y DGSFP.',
+      canonical: 'https://www.vitablue.es/validador-visado/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'productos/seguros-salud/index.html'),
+      title: 'Comparador de Seguros de Salud en España: Sanitas vs Adeslas vs Asisa | VitaBlue',
+      description: 'Compara los mejores seguros de salud privados en España (Sanitas, Adeslas, Asisa, DKV). Tarifas oficiales, coberturas con y sin copago y asesoría sin comisiones.',
+      canonical: 'https://www.vitablue.es/productos/seguros-salud/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'aviso-legal/index.html'),
+      title: 'Aviso Legal y Condiciones Generales de Uso | VitaBlue',
+      description: 'Información legal, titularidad del sitio web y condiciones generales de uso del comparador de seguros VitaBlue en España.',
+      canonical: 'https://www.vitablue.es/aviso-legal/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'cookies/index.html'),
+      title: 'Política de Cookies | VitaBlue',
+      description: 'Información sobre el uso y configuración de cookies técnicas y analíticas en el comparador de seguros VitaBlue.',
+      canonical: 'https://www.vitablue.es/cookies/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'politica-cookies/index.html'),
+      title: 'Política de Cookies | VitaBlue',
+      description: 'Información sobre el uso y configuración de cookies técnicas y analíticas en el comparador de seguros VitaBlue.',
+      canonical: 'https://www.vitablue.es/politica-cookies/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'privacidad/index.html'),
+      title: 'Política de Privacidad y Protección de Datos | VitaBlue',
+      description: 'Información sobre el tratamiento y protección de datos personales de los usuarios en VitaBlue conforme al RGPD.',
+      canonical: 'https://www.vitablue.es/privacidad/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'politica-privacidad/index.html'),
+      title: 'Política de Privacidad y Protección de Datos | VitaBlue',
+      description: 'Información sobre el tratamiento y protección de datos personales de los usuarios en VitaBlue conforme al RGPD.',
+      canonical: 'https://www.vitablue.es/politica-privacidad/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'cotizador.html'),
+      title: 'Cotizador Online de Seguros de Salud y Visado en España | VitaBlue',
+      description: 'Calcula tu presupuesto online de seguro médico para visado, estancia o residencia en España sin compromiso ni registro previo.',
+      canonical: 'https://www.vitablue.es/cotizador.html',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'wizard/index.html'),
+      title: 'Cotizador Online de Seguros de Salud y Visado en España | VitaBlue',
+      description: 'Calcula tu presupuesto online de seguro médico para visado, estancia o residencia en España sin compromiso ni registro previo.',
+      canonical: 'https://www.vitablue.es/wizard/',
+      schema: null
+    },
+    {
+      file: path.join(distDir, 'resultados/index.html'),
+      title: 'Comparativa de Pólizas y Precios de Seguros de Salud | VitaBlue',
+      description: 'Compara precios y coberturas de Sanitas, Adeslas, Asisa y DKV adaptadas a tu perfil con contratación 100% online.',
+      canonical: 'https://www.vitablue.es/resultados/',
+      schema: null
     }
   ];
 
@@ -1502,6 +1600,187 @@ function injectLandingMetadataAndSchemas() {
 }
 
 injectLandingMetadataAndSchemas();
+
+function injectConsularLandingMetadataAndSchemas() {
+  const { consulatesList } = require('./utils/consulatesData.ts');
+
+  consulatesList.forEach((consulate) => {
+    const relativePath = consulate.canonicalPath.replace(/^\//, '').replace(/\/$/, '');
+    const htmlFile = path.join(distDir, relativePath, 'index.html');
+
+    if (fs.existsSync(htmlFile)) {
+      let content = fs.readFileSync(htmlFile, 'utf8');
+
+      const metaTitle = consulate.title.includes('VitaBlue')
+        ? consulate.title
+        : `${consulate.title} | VitaBlue`;
+      const canonicalUrl = `https://www.vitablue.es${consulate.canonicalPath}`;
+
+      content = setTitleTag(content, metaTitle);
+      content = setMetaTag(content, 'description', false, consulate.metaDescription);
+      content = setMetaTag(content, 'og:title', true, metaTitle);
+      content = setMetaTag(content, 'og:description', true, consulate.metaDescription);
+      content = setMetaTag(content, 'og:url', true, canonicalUrl);
+      content = setMetaTag(content, 'twitter:title', false, metaTitle);
+      content = setMetaTag(content, 'twitter:description', false, consulate.metaDescription);
+
+      const schema = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'GovernmentService',
+            name: consulate.title,
+            serviceType: 'Seguro Médico Homologado para Visados en España',
+            provider: {
+              '@type': 'InsuranceAgency',
+              name: 'VitaBlue Correduría de Seguros',
+              url: 'https://www.vitablue.es',
+            },
+            areaServed: {
+              '@type': 'AdministrativeArea',
+              name: consulate.country,
+            },
+            description: consulate.metaDescription,
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Inicio',
+                item: 'https://www.vitablue.es/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Seguro Médico Estudiantes',
+                item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 3,
+                name: `${consulate.country}`,
+                item: canonicalUrl,
+              },
+            ],
+          },
+          {
+            '@type': 'FAQPage',
+            mainEntity: consulate.faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.q,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.a,
+              },
+            })),
+          },
+        ],
+      };
+
+      content = content.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
+
+      fs.writeFileSync(htmlFile, content, 'utf8');
+    }
+  });
+
+  console.log(`✅ Metadatos SEO y esquemas inyectados en ${consulatesList.length} landing pages consulares.`);
+}
+
+injectConsularLandingMetadataAndSchemas();
+
+function injectDestinationCityMetadataAndSchemas() {
+  const { destinationCities } = require('./utils/destinationCitiesData.ts');
+
+  const cityList = Object.values(destinationCities);
+  cityList.forEach((city) => {
+    const relativePath = city.canonicalPath.replace(/^\//, '').replace(/\/$/, '');
+    const htmlFile = path.join(distDir, relativePath, 'index.html');
+
+    if (fs.existsSync(htmlFile)) {
+      let content = fs.readFileSync(htmlFile, 'utf8');
+
+      const metaTitle = city.metaTitle.includes('VitaBlue')
+        ? city.metaTitle
+        : `${city.metaTitle} | VitaBlue`;
+      const canonicalUrl = `https://www.vitablue.es${city.canonicalPath}`;
+
+      content = setTitleTag(content, metaTitle);
+      content = setMetaTag(content, 'description', false, city.metaDescription);
+      content = setMetaTag(content, 'og:title', true, metaTitle);
+      content = setMetaTag(content, 'og:description', true, city.metaDescription);
+      content = setMetaTag(content, 'og:url', true, canonicalUrl);
+      content = setMetaTag(content, 'twitter:title', false, metaTitle);
+      content = setMetaTag(content, 'twitter:description', false, city.metaDescription);
+
+      const schema = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'City',
+            name: city.name,
+            containedInPlace: {
+              '@type': 'AdministrativeArea',
+              name: city.region,
+            },
+          },
+          {
+            '@type': 'MedicalBusiness',
+            name: `Red Médica de Seguros de Salud en ${city.name} - VitaBlue`,
+            areaServed: city.name,
+            description: city.metaDescription,
+            url: canonicalUrl,
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Inicio',
+                item: 'https://www.vitablue.es/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Seguro Médico Estudiantes',
+                item: 'https://www.vitablue.es/productos/seguros-salud/seguro-medico-estudiantes/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 3,
+                name: city.name,
+                item: canonicalUrl,
+              },
+            ],
+          },
+          {
+            '@type': 'FAQPage',
+            mainEntity: city.faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.q,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.a,
+              },
+            })),
+          },
+        ],
+      };
+
+      content = content.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
+      content = content.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
+
+      fs.writeFileSync(htmlFile, content, 'utf8');
+    }
+  });
+
+  console.log(`✅ Metadatos SEO y esquemas inyectados en ${cityList.length} landing pages de ciudades de destino.`);
+}
+
+injectDestinationCityMetadataAndSchemas();
 
 function injectCorporateSchemas() {
   const { VITA_BLUE_ORGANIZATION_SCHEMA } = require('./utils/organizationSchema.ts');

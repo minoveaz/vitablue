@@ -329,12 +329,12 @@ export const AsisaEsencial: React.FC = () => {
 
       <ProductBreadcrumbBar
         items={isEnglish ? [
-          { label: 'Health Insurance', href: '/en/health-insurance-student-visa-spain' },
-          { label: 'ASISA Insurance', href: '/en/health-insurance/asisa-insurance' },
+          { label: 'Health Insurance', href: '/en/health-insurance-student-visa-spain/' },
+          { label: 'ASISA Insurance', href: '/en/health-insurance/asisa-insurance/' },
           { label: 'ASISA Esencial', href: canonicalUrl }
         ] : [
-          { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-          { label: 'Seguros Asisa', href: '/productos/seguros-salud/seguros-asisa' },
+          { label: 'Seguros de Salud', href: '/productos/seguros-salud/' },
+          { label: 'Seguros Asisa', href: '/productos/seguros-salud/seguros-asisa/' },
           { label: 'ASISA Esencial', href: canonicalUrl }
         ]}
       />

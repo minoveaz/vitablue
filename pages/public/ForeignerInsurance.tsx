@@ -184,7 +184,7 @@ export const ForeignerInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguro para Extranjeros', href: '/productos/seguros-salud/seguro-salud-extranjeros' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud/' }, { label: 'Seguro para Extranjeros', href: '/productos/seguros-salud/seguro-salud-extranjeros/' }]} />
 
       {/* Hero Header */}
       <section className="relative overflow-hidden py-16 lg:py-20 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">

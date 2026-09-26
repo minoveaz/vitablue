@@ -234,7 +234,7 @@ export const SanitasMasSalud: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }, { label: 'Sanitas Más Salud', href: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud/' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas/' }, { label: 'Sanitas Más Salud', href: '/productos/seguros-salud/seguros-sanitas/sanitas-mas-salud/' }]} />
 
       <ProductHero
         badges={[
