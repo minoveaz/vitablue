@@ -68,6 +68,17 @@ export const ConsulateVisaInsurance: React.FC = () => {
     item.slug !== consulate.slug
   );
 
+  const DEMONYMS: Record<string, string> = {
+    colombia: 'Colombianos',
+    peru: 'Peruanos',
+    argentina: 'Argentinos',
+    mexico: 'Mexicanos',
+    ecuador: 'Ecuatorianos',
+    chile: 'Chilenos',
+    'estados-unidos': 'Residentes en EE.UU.',
+  };
+  const demonym = DEMONYMS[consulate.slug] || `Solicitantes en ${consulate.country}`;
+
   const coverages = [
     {
       title: 'Aseguradora Autorizada en España',
@@ -117,6 +128,10 @@ export const ConsulateVisaInsurance: React.FC = () => {
   ];
 
   const canonicalUrl = `https://www.vitablue.es${consulate.canonicalPath}`;
+  const metaTitle = consulate.title.includes('VitaBlue')
+    ? consulate.title
+    : `${consulate.title} | VitaBlue`;
+  const cleanHeroTitle = consulate.title.replace(/\s*\|\s*VitaBlue.*$/, '');
 
   const schemaMarkup = {
     '@context': 'https://schema.org',
@@ -176,20 +191,20 @@ export const ConsulateVisaInsurance: React.FC = () => {
   return (
     <div className="w-full flex flex-col bg-white">
       <Helmet>
-        <title>{consulate.title} | VitaBlue</title>
+        <title>{metaTitle}</title>
         <meta name="description" content={consulate.metaDescription} />
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${consulate.title} | VitaBlue`} />
+        <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={consulate.metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.vitablue.es/og-image.jpg" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${consulate.title} | VitaBlue`} />
+        <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={consulate.metaDescription} />
 
         {/* Structured JSON-LD */}
@@ -199,8 +214,8 @@ export const ConsulateVisaInsurance: React.FC = () => {
       {/* Breadcrumb Navigation */}
       <ProductBreadcrumbBar
         items={[
-          { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-          { label: 'Seguro Estudiantes', href: '/productos/seguros-salud/seguro-medico-estudiantes' },
+          { label: 'Seguros de Salud', href: '/productos/seguros-salud/' },
+          { label: 'Seguro Estudiantes', href: '/productos/seguros-salud/seguro-medico-estudiantes/' },
           { label: `${consulate.flag} ${consulate.country}`, href: consulate.canonicalPath },
         ]}
       />
@@ -210,9 +225,9 @@ export const ConsulateVisaInsurance: React.FC = () => {
       <ProductHero
         badges={[
           { label: `${consulate.flag} Consulado de España en ${consulate.city}`, icon: <Building2 className="h-4 w-4" /> },
-          { label: '100% Homologado', tone: 'accent' },
+          { label: '100% Homologado Extranjería', tone: 'accent' },
         ]}
-        title={consulate.title}
+        title={cleanHeroTitle}
         description={consulate.heroSubtitle}
         primaryAction={{ label: 'Calcular Seguro Online', onClick: handleStartQuoting }}
         secondaryAction={{
@@ -221,8 +236,8 @@ export const ConsulateVisaInsurance: React.FC = () => {
         }}
         highlights={[
           'Certificado oficial sellado en 24h',
-          'Sin copagos ni carencias',
-          'Devolución 100% por denegación',
+          'Sin copagos ni carencias en España',
+          'Devolución 100% garantizada por denegación',
         ]}
       >
         <QuoteEstimator
@@ -350,8 +365,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
           <div className="text-center space-y-3 max-w-3xl mx-auto">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Tipos de Visado</span>
             <h2 className="text-h2 font-display font-bold text-text-main">
-
-              Trámites de Visado que Exigen Seguro Médico en {consulate.city}
+              Trámites de Visado para España que Exigen Seguro Médico en {consulate.city}
             </h2>
             <p className="text-body-reg text-text-secondary">
               Nuestras pólizas están pre-configuradas para superar la revisión consular en cualquiera de estas modalidades:
@@ -386,12 +400,13 @@ export const ConsulateVisaInsurance: React.FC = () => {
         title={`Los 4 Requisitos del Seguro Médico en el Consulado de España en ${consulate.city}`}
         description={`Para que el funcionario consular o BLS en ${consulate.city} apruebe tu expediente, la póliza debe cumplir estrictamente las siguientes 4 condiciones:`}
         items={coverages}
+        columns={2}
       />
 
       {/* Travel vs Health Comparison */}
       <TravelVsHealthComparison
         eyebrow="Diferenciación Crítica"
-        title={`¿Por Qué el Consulado en ${consulate.city} Rechaza los Seguros de Viaje?`}
+        title={`¿Por Qué el Consulado Español en ${consulate.city} Rechaza los Seguros de Viaje?`}
         description={`Uno de los motivos más frecuentes de requerimiento o denegación en ${consulate.city} es presentar asistencias al viajero genéricas (Assist Card, seguros de tarjetas de crédito o seguros locales sin sede en España).`}
         alertNotice={`⚠️ El Consulado General de España en ${consulate.city} rechaza de forma tajante las pólizas con reembolso diferido o con tope de 30.000€.`}
         travelLabel="Seguro de Asistencia en Viaje"
@@ -437,7 +452,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Evita Errores Frecuentes</span>
             <h2 className="text-h2 font-display font-bold text-text-main">
-              Motivos de Denegación de Seguro en el Consulado de {consulate.city}
+              Motivos de Denegación de Seguro en el Consulado Español de {consulate.city}
             </h2>
           </div>
 
@@ -473,8 +488,8 @@ export const ConsulateVisaInsurance: React.FC = () => {
             Sin Comisiones Ocultas
           </span>,
         ]}
-        title={`Precios del Seguro Médico para Visado en ${consulate.country}`}
-        description={`Tarifas directas de aseguradora en euros (€) con pago online seguro en tarjeta o divisa local (${consulate.priceFromLocal}):`}
+        title={`Precio del Seguro Médico para Visado Español para ${demonym}`}
+        description={`Tarifas oficiales con cobertura médica completa en España y repatriación a ${consulate.country}. Pago online seguro en tarjeta o divisa local (${consulate.priceFromLocal}):`}
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           <div className="rounded-2xl bg-white/10 p-5 border border-white/15 backdrop-blur-sm">
@@ -590,7 +605,7 @@ export const ConsulateVisaInsurance: React.FC = () => {
 
       {/* Advisor Final CTA */}
       <AdvisorHelpSection
-        title={`¿Tienes dudas sobre los requisitos en el Consulado de ${consulate.city}?`}
+        title={`¿Tienes dudas sobre los requisitos en el Consulado Español de ${consulate.city}?`}
         description={`Nuestros asesores expertos en extranjería revisarán tu expediente y te recomendarán la póliza homologada exacta de Asisa, Sanitas o Adeslas.`}
         whatsappUrl={whatsappHref}
       />

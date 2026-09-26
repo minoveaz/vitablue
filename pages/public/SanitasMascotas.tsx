@@ -253,7 +253,7 @@ export const SanitasMascotas: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas' }, { label: 'Seguro de Mascotas', href: '/productos/seguro-mascotas/sanitas-mascotas' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud/' }, { label: 'Seguros Sanitas', href: '/productos/seguros-salud/seguros-sanitas/' }, { label: 'Seguro de Mascotas', href: '/productos/seguro-mascotas/sanitas-mascotas/' }]} />
 
       {/* Reusable ProductHero comparison */}
       <ProductHero
