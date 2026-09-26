@@ -15,25 +15,29 @@ export interface CoverageGridProps {
   columns?: 2 | 3;
 }
 
-const CoverageGrid: React.FC<CoverageGridProps> = ({ eyebrow, title, description, items, columns = 3 }) => (
-  <section className="w-full bg-white py-16 text-left sm:py-20">
-    {(eyebrow || title || description) && (
-      <div className="mx-auto mb-12 max-w-6xl px-6 text-center sm:px-8">
-        {eyebrow && <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">{eyebrow}</span>}
-        {title && <h2 className="mt-4 text-h2 font-display font-extrabold leading-tight tracking-tight text-text-main">{title}</h2>}
-        {description && <p className="mx-auto mt-4 max-w-xl text-body-reg font-medium leading-relaxed text-text-secondary">{description}</p>}
-      </div>
-    )}
+const CoverageGrid: React.FC<CoverageGridProps> = ({ eyebrow, title, description, items, columns }) => {
+  const effectiveColumns = columns ?? (items.length === 4 ? 2 : 3);
 
-    <div className={`mx-auto grid gap-6 px-6 sm:px-8 ${
-      columns === 2 
-        ? 'max-w-5xl md:grid-cols-2' 
-        : 'max-w-6xl md:grid-cols-2 lg:grid-cols-3'
-    }`}>
-      {items.map((item) => <CoverageCard key={item.title} {...item} />)}
-    </div>
-  </section>
-);
+  return (
+    <section className="w-full bg-white py-16 text-left sm:py-20">
+      {(eyebrow || title || description) && (
+        <div className="mx-auto mb-12 max-w-6xl px-6 text-center sm:px-8">
+          {eyebrow && <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">{eyebrow}</span>}
+          {title && <h2 className="mt-4 text-h2 font-display font-extrabold leading-tight tracking-tight text-text-main">{title}</h2>}
+          {description && <p className="mx-auto mt-4 max-w-xl text-body-reg font-medium leading-relaxed text-text-secondary">{description}</p>}
+        </div>
+      )}
+
+      <div className={`mx-auto grid gap-6 px-6 sm:px-8 ${
+        effectiveColumns === 2 
+          ? 'max-w-5xl md:grid-cols-2' 
+          : 'max-w-6xl md:grid-cols-2 lg:grid-cols-3'
+      }`}>
+        {items.map((item) => <CoverageCard key={item.title} {...item} />)}
+      </div>
+    </section>
+  );
+};
 
 
 export default CoverageGrid;

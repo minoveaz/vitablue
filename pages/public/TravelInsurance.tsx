@@ -228,7 +228,7 @@ export const TravelInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Viaje', href: '/productos/seguro-viaje' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Viaje', href: '/productos/seguro-viaje/' }]} />
 
       {/* Reusable ProductHero comparison */}
       <ProductHero

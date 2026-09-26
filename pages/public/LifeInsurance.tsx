@@ -227,7 +227,7 @@ export const LifeInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Vida', href: '/productos/seguro-vida' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Vida', href: '/productos/seguro-vida/' }]} />
 
       {/* Reusable ProductHero comparison */}
       <ProductHero

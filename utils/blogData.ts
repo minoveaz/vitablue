@@ -2435,6 +2435,23 @@ export const blogPosts: BlogPostData[] = [
         ]
       },
       {
+        type: 'heading-2',
+        text: 'Requisitos y Consulados de España en Latinoamérica'
+      },
+      {
+        type: 'paragraph',
+        text: 'Las exigencias y el trámite de presentación del certificado médico varían según la sede consular y el centro de visados de tu país:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Consulado de España en Bogotá (Colombia) y BLS</strong>: Consulta precios oficiales y particularidades en nuestra guía del <a href="/productos/seguros-salud/seguro-medico-estudiantes/colombia/" class="text-primary hover:underline font-bold">seguro médico para visado en Colombia</a>.',
+          '<strong>Consulado de España en Lima (Perú) y BLS Miraflores</strong>: Requisitos del Visado Tipo D y estudiantes en el <a href="/productos/seguros-salud/seguro-medico-estudiantes/peru/" class="text-primary hover:underline font-bold">seguro médico para visado en Perú</a>.',
+          '<strong>Consulado de España en Buenos Aires (Argentina)</strong>: Condiciones y trámites en el <a href="/productos/seguros-salud/seguro-medico-estudiantes/argentina/" class="text-primary hover:underline font-bold">seguro médico para visado en Argentina</a>.',
+          '<strong>Consulado de España en CDMX (México)</strong>: Información para citas en Polanco y BLS en el <a href="/productos/seguros-salud/seguro-medico-estudiantes/mexico/" class="text-primary hover:underline font-bold">seguro médico para visado en México</a>.'
+        ]
+      },
+      {
         type: 'paragraph',
         text: 'Si tienes cualquier consulta sobre tu trámite o necesitas tramitar tu póliza con certificado de emisión en 24h y garantía de devolución, contáctanos por WhatsApp o utiliza nuestro comparador oficial.'
       }

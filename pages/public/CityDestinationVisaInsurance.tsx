@@ -198,8 +198,8 @@ export const CityDestinationVisaInsurance: React.FC = () => {
       <ProductBreadcrumbBar
         items={[
           { label: 'Inicio', href: '/' },
-          { label: 'Seguros de Salud', href: '/productos/seguros-salud' },
-          { label: 'Seguro Estudiantes', href: '/productos/seguros-salud/seguro-medico-estudiantes' },
+          { label: 'Seguros de Salud', href: '/productos/seguros-salud/' },
+          { label: 'Seguro Estudiantes', href: '/productos/seguros-salud/seguro-medico-estudiantes/' },
           { label: city.name, href: city.canonicalPath },
         ]}
       />

@@ -415,7 +415,7 @@ export const HealthInsurance: React.FC = () => {
       </Helmet>
 
       {/* Breadcrumbs Bar */}
-      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud' }]} />
+      <ProductBreadcrumbBar items={[{ label: 'Seguros de Salud', href: '/productos/seguros-salud/' }]} />
 
       {/* Hero Banner */}
       <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-primary via-primary-dark to-slate-900 text-white text-left">
