@@ -2833,11 +2833,11 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'Renovar tu autorización de estancia o residencia en España ante la Oficina de Extranjería es un paso crucial para mantener tu estatus legal regular. Ya sea que estés prorrogando una estancia por estudios, renovando una residencia no lucrativa o tramitando la tarjeta de residencia temporal, <strong>el seguro médico privado es uno de los requisitos documentales más escrutados por los funcionarios de Extranjería</strong>.'
+        text: 'Renovar tu autorización de estancia o residencia en España ante la Oficina de Extranjería es un paso crucial para mantener tu estatus legal regular. Ya sea que estés tramitando la prórroga de estancia por estudios, renovando una residencia no lucrativa o solicitando la tarjeta de residencia temporal por cualquier otra vía, <strong>el seguro médico privado es el documento que genera el mayor porcentaje de requerimientos de subsanación y retrasos administrativos</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> analizamos los requerimientos exactos que exige el Reglamento de Extranjería en 2026 para que tu expediente sea aprobado sin requerimientos de subsanación ni denegaciones innecesarias.'
+        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> asesoramos a miles de extranjeros anualmente. En esta guía detallamos los requerimientos exactos que exige el Reglamento de Extranjería (Real Decreto 557/2011 y directrices de la Dirección General de Migraciones para 2026), cómo evitar requerimientos oficiales y el paso a paso exacto para presentar tu certificado en la plataforma Mercurio.'
       },
       {
         type: 'heading-2',
@@ -2845,70 +2845,102 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'A diferencia de los visados iniciales tramitados en el consulado de origen, la renovación del NIE ante Extranjería comprueba de manera rigurosa que no existan huecos de cobertura entre el periodo vencido y el nuevo periodo:'
+        text: 'A diferencia del visado inicial tramitado en el consulado de origen, las Oficinas de Extranjería en territorio nacional (Madrid, Barcelona, Valencia, Sevilla, Málaga, etc.) aplican un escrutinio exhaustivo sobre la continuidad de la cobertura y la ausencia total de costes adicionales:'
       },
       {
         type: 'list',
         items: [
-          '<strong>Sin copagos (0€ de copago)</strong>: No se admiten pólizas con copagos por acto médico, ni copagos bajos ni progresivos. La cobertura debe ser íntegra e ilimitada.',
-          '<strong>Sin periodos de carencia</strong>: Al tratarse de una prórroga o renovación, el asegurado debe tener acceso inmediato a hospitalización, pruebas de alta tecnología e intervenciones.',
-          '<strong>Hospitalización completa y cobertura de urgencias</strong>: La póliza debe garantizar cobertura médica equivalente a las prestaciones del Sistema Nacional de Salud (SNS) español.',
-          '<strong>Vigencia mínima continuada de 12 meses</strong>: Si tu renovación es por un año completo, el certificado debe acreditar vigencia para todo el periodo solicitado.',
-          '<strong>Repatriación sanitaria y de restos</strong>: Obligatorio para estudiantes y extranjeros no comunitarios en la mayoría de delegaciones provinciales de Extranjería.'
+          '<strong>Sin copagos (0€ de copago por acto médico)</strong>: No se admiten pólizas con copagos, ni copagos bajos (de 1€ a 5€), ni copagos progresivos. El certificado emitido por la compañía debe reflejar de forma explícita que la cobertura carece de copagos.',
+          '<strong>Sin periodos de carencia (Acceso inmediato)</strong>: Al tratarse de una prórroga o renovación, el asegurado debe tener disponibilidad de hospitalización completa, cirugía y pruebas diagnósticas de alta resolución desde el primer día.',
+          '<strong>Hospitalización completa equivalente al Sistema Nacional de Salud (SNS)</strong>: La póliza debe garantizar cobertura médica, quirúrgica y hospitalaria completa en toda España, sin límite de días de internamiento en habitación individual.',
+          '<strong>Vigencia mínima continuada de 12 meses</strong>: Si tu renovación abarca una prórroga de un año, el certificado debe acreditar vigencia para todo el periodo solicitado, sin lapsos de tiempo sin asegurar.',
+          '<strong>Repatriación sanitaria y de restos mortales</strong>: Cobertura obligatoria para estudiantes no comunitarios y exigida en la inmensa mayoría de delegaciones provinciales de Extranjería.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Tipo de Autorización NIE', '¿Exige Seguro Privado?', 'Requisito de Copago', 'Plazo de Renovación'],
+        tableHeader: ['Tipo de Autorización NIE', '¿Exige Seguro Privado?', 'Requisito de Copago', 'Plazo de Presentación en Extranjería'],
         tableRows: [
-          ['Prórroga de Estancia por Estudios', 'Sí, 100% obligatorio', 'Sin copagos (0€)', '60 días antes o 90 días después de caducar'],
-          ['Residencia No Lucrativa (1ª y 2ª renovación)', 'Sí, obligatorio para toda la familia', 'Sin copagos y sin carencias', '60 días antes o 90 días después'],
-          ['Nómada Digital (Prórroga UGE)', 'Obligatorio si no cotiza en Seg. Social', 'Sin copagos', '60 días antes del vencimiento'],
-          ['Residencia Larga Duración (5 años)', 'Solo acreditación económica general', 'Varía según vía laboral', '60 días antes del vencimiento']
+          ['Prórroga de Estancia por Estudios', 'Sí, 100% obligatorio', 'Sin copagos (0€)', '60 días antes o 90 días naturales tras vencer'],
+          ['Residencia No Lucrativa (1ª y 2ª renovación)', 'Sí, obligatorio para toda la familia', 'Sin copagos y sin carencias', '60 días antes o 90 días naturales tras vencer'],
+          ['Nómada Digital (Prórroga UGE)', 'Obligatorio si no cotiza en Seguridad Social', 'Sin copagos (0€)', '60 días antes del vencimiento'],
+          ['Residencia Larga Duración (5 años)', 'Solo acreditación económica general', 'Varía según vía laboral', '60 días antes del vencimiento'],
+          ['Reagrupación Familiar Comunitaria / General', 'Obligatorio si el reagrupante no cotiza', 'Sin copagos ni carencias', 'Durante la tramitación inicial o prórroga']
         ]
       },
       {
+        type: 'heading-2',
+        text: 'Requerimientos Reales de Extranjería: ¿Qué dice la carta si tu seguro falla?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Cuando un extranjero aporta un seguro médico inadecuado (un seguro de viaje, una póliza con copago de 5€ o un seguro internacional no autorizado en España), la Oficina de Extranjería paraliza el expediente y emite una <strong>Notificación de Trámite de Subsanación</strong> con un texto legal estandarizado:'
+      },
+      {
+        type: 'callout',
+        text: '📑 <strong>Texto oficial literal de requerimiento de Extranjería</strong>:<br/><em>«De conformidad con lo dispuesto en la normativa vigente, se requiere al interesado para que en el <strong>plazo improrrogable de DIEZ DÍAS HÁBILES</strong> subsane la solicitud aportando: <strong>Copia de la póliza o certificado de seguro de enfermedad concertado con Entidad aseguradora autorizada para operar en España, de cobertura completa equivalente a la del Sistema Nacional de Salud, SIN COPAGOS y SIN PERIODOS DE CARENCIA</strong> durante todo el tiempo de su autorización. La no subsanación motivará que se le tenga por DESISTIDO de su petición.»</em>'
+      },
+      {
+        type: 'paragraph',
+        text: 'Recibir este requerimiento genera una gran alarma porque solo dispones de 10 días hábiles para contratar una nueva póliza válida, obtener el certificado oficial y cargarlo en el expediente telemático. Si no se subsana en plazo, la solicitud se archiva automáticamente y el solicitante queda en situación irregular sobrevenida.'
+      },
+      {
         type: 'cta-validator',
-        ctaBadge: 'Validación Oficial 2026',
-        ctaTitle: '¿Tienes dudas sobre si tu seguro cumple los requisitos de Extranjería?',
-        ctaDescription: 'Sube o audita las condiciones de tu póliza con nuestro validador gratuito y comprueba si tu certificado cumple el 100% de los criterios exigidos por las Oficinas de Extranjería en Madrid, Barcelona, Valencia y toda España.',
-        ctaButtonText: 'Verificar mi seguro ahora',
+        ctaBadge: 'Validador Consular & Extranjería',
+        ctaTitle: '¿Tienes dudas sobre si tu certificado cumple el 100% de los criterios?',
+        ctaDescription: 'Audita tu póliza con nuestro validador gratuito y comprueba si tu certificado cumple las exigencias legales antes de subirlo a la plataforma de Extranjería.',
+        ctaButtonText: 'Verificar mi certificado online',
         ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
-        text: 'Documentos del seguro que debes adjuntar a tu expediente'
+        text: 'Paso a paso: Cómo presentar el seguro médico en la Plataforma Mercurio'
       },
       {
         type: 'paragraph',
-        text: 'Para presentar en la plataforma telemática Mercurio o presencialmente en Extranjería, debes preparar la siguiente terna documental de tu aseguradora:'
+        text: 'La presentación telemática a través de la plataforma <strong>Mercurio (Sede Electrónica del Ministerio de Política Territorial)</strong> es el método más rápido y seguro para renovar. Para garantizar que el funcionario procese tu seguro sin objeciones, sigue estos pasos:'
       },
       {
         type: 'list',
         items: [
-          '<strong>Certificado de cobertura oficial para Extranjería</strong>: Documento sellado y firmado por la compañía (como Asisa o Sanitas) que certifique explícitamente: cobertura completa, sin copagos, sin carencias y repatriación incluida.',
-          '<strong>Condiciones particulares de la póliza</strong>: Donde figuren tus datos, número de NIE/pasaporte y fecha de efecto.',
-          '<strong>Último justificante de pago bancario</strong>: Acredita que la póliza está al corriente de pago y no incurre en impago o suspensión.'
+          '<strong>Paso 1: Solicitar el Certificado Especial para Extranjería</strong>: No subas únicamente el recibo bancario ni el condicionado general de 80 páginas. Solicita a tu mediador o a la compañía el <em>Certificado de Cobertura para Extranjería</em> (en VitaBlue lo emitimos firmado y con código de verificación en 24 horas).',
+          '<strong>Paso 2: Nombrar el archivo PDF con claridad</strong>: Guarda el archivo con un nombre inequívoco antes de adjuntarlo en Mercurio, por ejemplo: <code>CERTIFICADO_SEGURO_MEDICO_EXTRANJERIA_NOMBRE_APELLIDO.pdf</code>.',
+          '<strong>Paso 3: Adjuntar el justificante bancario de pago</strong>: Si la póliza es de pago anual o mensual continuado, añade en el mismo apartado el comprobante de transferencia bancaria o recibo SEPA donde conste que la póliza está al corriente y en vigor.',
+          '<strong>Paso 4: Seleccionar la categoría documental correcta en Mercurio</strong>: En el desplegable de tipos de documentos de Mercurio, selecciona la opción <em>«Seguro médico / Acreditación de cobertura sanitaria»</em> para que el sistema indexe el documento directamente al revisor del expediente.'
         ]
       },
       {
+        type: 'heading-2',
+        text: '¿Puedo cambiar de aseguradora para la renovación sin perder mi antigüedad?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Muchos residentes y estudiantes extranjeros sufren subidas de cuota abusivas al momento de la renovación o descubren que la aseguradora que contrataron en su país no les ofrece buen servicio en España. <strong>Sí puedes cambiar de compañía aseguradora para tu renovación de NIE</strong>, contratando pólizas aprobadas de <a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> (como Asisa Health Students o Asisa Salud) o <a href="/productos/seguros-salud/seguros-sanitas/" class="text-primary hover:underline font-bold">Sanitas</a>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Al contratar tu nueva póliza a través de VitaBlue, gestionamos la <strong>eliminación total de carencias por traspaso de compañía</strong> aportando tu recibo y condiciones anteriores, coordinando la fecha de entrada en vigor para que no exista ni un solo día sin cobertura médica continuada.'
+      },
+      {
         type: 'cta-wizard',
-        ctaBadge: 'Renovación Rápida',
-        ctaTitle: '¿Necesitas contratar o renovar tu seguro para Extranjería hoy?',
-        ctaDescription: 'Compara al instante pólizas aprobadas por Extranjería con Asisa y Sanitas. Emisión inmediata del certificado oficial para tu cita o trámite telemático.',
-        ctaButtonText: 'Comparar seguros para NIE',
+        ctaBadge: 'Renovación Segura 2026',
+        ctaTitle: '¿Necesitas tu certificado oficial de seguro para renovar el NIE hoy?',
+        ctaDescription: 'Calcula tu seguro de salud con cobertura completa para Extranjería (0€ copagos, sin carencias y repatriación). Certificado digital inmediato admitido en todas las provincias de España.',
+        ctaButtonText: 'Calcular mi seguro para NIE',
         ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
-        text: 'Preguntas Frecuentes sobre el Seguro para Renovar el NIE'
+        text: 'Preguntas Frecuentes sobre el Seguro para Renovar el NIE (FAQ)'
       },
       {
         type: 'list',
         items: [
-          '<strong>¿Qué pasa si mi seguro actual tiene copagos?</strong>: La Oficina de Extranjería emitirá un requerimiento de subsanación concediéndote 10 días hábiles para aportar una póliza sin copagos. Si no subsanas a tiempo, denegarán la renovación.',
-          '<strong>¿Puedo renovar si cambio de compañía aseguradora?</strong>: Sí. Al cambiar de compañía (por ejemplo, pasando a Asisa o Sanitas), solicitas el reconocimiento de antigüedad para eliminar cualquier periodo de carencia.',
-          '<strong>¿Sirve un seguro de viaje con cobertura médica?</strong>: No. Los seguros de asistencia en viaje no son aceptados bajo ningún concepto para renovar el NIE o la TIE en territorio español.'
+          '<strong>¿Qué pasa si me llega un requerimiento de 10 días de Extranjería?</strong>: Debes contratar urgentemente una póliza válida sin copagos. En VitaBlue emitimos tu certificado oficial en menos de 24 horas laborables para que puedas responder al requerimiento telemático dentro del plazo legal.',
+          '<strong>¿Puedo renovar si tengo una póliza con copagos bajos (por ejemplo, 5€ o 10€)?</strong>: Rotundamente no. Las instrucciones internas de Extranjería son estrictas: cualquier copago, independientemente de su importe, invalida el cumplimiento de cobertura sanitaria completa y motiva requerimiento de subsanación.',
+          '<strong>¿Sirve un seguro de viaje con cobertura médica?</strong>: No. Los seguros de asistencia en viaje solo son válidos para visados turísticos Schengen de corta estancia (hasta 90 días), pero son nulos para renovar tarjetas TIE o NIE de estancia o residencia.',
+          '<strong>¿Qué hago si mi NIE ya está caducado?</strong>: La Ley de Extranjería permite presentar la renovación durante los <strong>60 días naturales previos a la fecha de caducidad y hasta 90 días naturales posteriores</strong>. Tu seguro debe estar activo y cubrir ininterrumpidamente desde la fecha de expiración del NIE anterior.',
+          '<strong>¿Debo pagar el seguro por un año completo por adelantado?</strong>: Para estudiantes y residencias no lucrativas se exige certificar la cobertura íntegra del periodo de prórroga (habitualmente 12 meses). En ciertas residencias temporales vinculadas a cuenta bancaria española se admiten modalidades de pago mensual según la delegación de Extranjería.'
         ]
       }
     ]
@@ -2935,11 +2967,11 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'Renewing your residency or study stay authorization in Spain at the Foreigners Office (Oficina de Extranjería) requires meeting stringent legal criteria. Whether you are extending a student permit, renewing a Non-Lucrative Visa, or maintaining your digital nomad status, <strong>private medical insurance is one of the most rigorously checked elements of your application dossier</strong>.'
+        text: 'Renewing your residency or study stay authorization in Spain at the Foreigners Office (Oficina de Extranjería) requires meeting stringent legal criteria. Whether you are extending an international student permit, renewing a Non-Lucrative Visa, or maintaining your digital nomad residency, <strong>private medical insurance generates the largest volume of formal document requests (requerimientos) and administrative delays</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'At <a href="/en/" class="text-primary hover:underline font-bold">VitaBlue</a>, we detail the mandatory requirements established under Spanish immigration regulations for 2026 to ensure your renewal is approved smoothly without formal document requests (requerimientos) or denials.'
+        text: 'At <a href="/en/" class="text-primary hover:underline font-bold">VitaBlue</a>, we assist thousands of expatriates across Madrid, Barcelona, Valencia, and all Spanish regions. In this guide, we break down the exact statutory requirements set by the Spanish Immigration Regulation (Royal Decree 557/2011 and General Directorate of Migration directives for 2026), explain how to avoid formal rejections, and provide a clear step-by-step tutorial on uploading your policy to the Mercurio platform.'
       },
       {
         type: 'heading-2',
@@ -2947,58 +2979,88 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'Unlike initial visa filings at overseas consulates, Extranjería inspects domestic renewal files closely to verify uninterrupted healthcare coverage:'
+        text: 'Unlike initial visa filings at overseas consulates, Extranjería immigration examiners inside Spain inspect renewal files with heightened rigor to verify continuous, unfragmented coverage without financial out-of-pocket exposure:'
       },
       {
         type: 'list',
         items: [
-          '<strong>Zero Copayments (0€ Copay)</strong>: Policies containing copayments per medical act or visit will be rejected by immigration officers.',
-          '<strong>No Waiting Periods (Carencias)</strong>: The insured individual must have immediate access to all hospital treatments, specialized care, and surgical interventions.',
-          '<strong>Full Hospitalization Equivalent to Spanish National Health System (SNS)</strong>: Unlimited hospital stays, intensive care, and diagnostic imaging.',
-          '<strong>Unbroken 12-Month Coverage</strong>: The certificate must prove active continuous coverage across the entire requested validity period.',
-          '<strong>Repatriation of Remains</strong>: Required for non-EU students and residents in virtually all Spanish provinces.'
+          '<strong>Strict Zero Copayments (0€ Copay)</strong>: Policies containing copayments per medical consultation, specialist visit, or diagnostic procedure are routinely disqualified. The certificate must state 0€ copay explicitly.',
+          '<strong>Zero Waiting Periods (Immediate Access from Day 1)</strong>: Because renewals verify continuing legal residence, the insured party must have immediate access to surgery, high-tech imaging, and hospitalization without multi-month waiting delays.',
+          '<strong>Full Hospitalization Equivalent to the Spanish National Health System (SNS)</strong>: Unlimited days of private hospitalization in an individual suite, intensive care units, and emergency medicine throughout Spain.',
+          '<strong>Unbroken 12-Month Coverage</strong>: The certificate must prove active, valid coverage spanning the full length of the authorized renewal period.',
+          '<strong>Medical & Mortal Repatriation Included</strong>: Repatriation of remains and medical evacuation to the home country is strictly required for non-EU students and standard residents.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Permit Category', 'Private Insurance Needed?', 'Copay Rule', 'Renewal Window'],
+        tableHeader: ['Permit Category', 'Private Insurance Needed?', 'Copay Requirement', 'Extranjería Filing Window'],
         tableRows: [
-          ['Student Stay Extension (Prórroga)', 'Yes, 100% Mandatory', 'Zero Copay (0€)', '60 days before to 90 days after expiry'],
-          ['Non-Lucrative Residency (1st & 2nd renewal)', 'Yes, for all family members', 'Zero Copay & No Waiting Periods', '60 days before to 90 days after expiry'],
-          ['Digital Nomad (UGE extension)', 'Mandatory if not paying Spanish Social Security', 'Zero Copay', '60 days prior to expiry'],
-          ['Long-Term Residency (5-year mark)', 'General economic sufficiency only', 'Subject to employment status', '60 days prior to expiry']
+          ['Student Stay Extension (Prórroga de Estudios)', 'Yes, 100% Mandatory', 'Zero Copay (0€)', '60 calendar days before to 90 days after expiry'],
+          ['Non-Lucrative Residency (1st & 2nd renewal)', 'Yes, for all family members', 'Zero Copay & No Waiting Periods', '60 calendar days before to 90 days after expiry'],
+          ['Digital Nomad Residency (UGE extension)', 'Mandatory if not paying Spanish Social Security', 'Zero Copay (0€)', '60 calendar days before expiry'],
+          ['Long-Term Residency (5-year mark)', 'General economic sufficiency only', 'Subject to employment status', '60 calendar days before expiry'],
+          ['Family Reunification (EU & General Regime)', 'Mandatory if sponsor is not active worker', 'Zero Copay & Full Hospitalization', 'Initial filing or renewal']
         ]
       },
       {
+        type: 'heading-2',
+        text: 'Actual Extranjería Rejection Notices: What Examiners Write When Policies Fail'
+      },
+      {
+        type: 'paragraph',
+        text: 'When an applicant submits non-compliant paperwork (such as travel medical insurance, a cheap domestic plan with small copays, or an unaccredited foreign plan), Extranjería halts the application and issues an official <strong>Formal Notice for Rectification (Trámite de Subsanación)</strong>:'
+      },
+      {
+        type: 'callout',
+        text: '📑 <strong>Verbatim Spanish Immigration Formal Notice</strong>:<br/><em>«Pursuant to prevailing immigration regulations, the applicant is hereby granted a <strong>non-extendable deadline of TEN WORKING DAYS</strong> to cure deficiencies by submitting: <strong>Copy of health insurance policy or certificate contracted with an insurance entity legally licensed to operate in Spain, providing comprehensive coverage equivalent to the National Health System, ZERO COPAYMENTS and ZERO WAITING PERIODS</strong> covering the entirety of the authorized stay. Failure to comply within said deadline shall result in the application being legally deemed WITHDRAWN (DESISTIMIENTO).»</em>'
+      },
+      {
+        type: 'paragraph',
+        text: 'Receiving this notice causes immense anxiety because 10 working days leaves very little time to find an insurer, complete underwriting, pay the premium, and secure a bilingual certificate. Failing to cure the deficiency leads to an archived file and irregular immigration status in Spain.'
+      },
+      {
         type: 'cta-validator',
-        ctaBadge: 'Extranjería Compliance Tool',
-        ctaTitle: 'Not Sure If Your Insurance Meets Spanish Renewal Guidelines?',
-        ctaDescription: 'Audit your policy certificate using our free digital validation tool before filing your application on Mercurio or attending your appointment.',
-        ctaButtonText: 'Validate My Policy for Extranjería',
+        ctaBadge: 'Free Consular & Immigration Check',
+        ctaTitle: 'Not Sure If Your Insurance Meets 2026 Spanish Renewal Rules?',
+        ctaDescription: 'Audit your certificate using our free digital validation tool before uploading your dossier to the Mercurio platform.',
+        ctaButtonText: 'Validate My Certificate Online',
         ctaLink: '/validador-visado/'
       },
       {
         type: 'heading-2',
-        text: 'Essential Insurance Documentation for Your Application'
+        text: 'Step-by-Step: How to Upload Your Insurance on the Mercurio Platform'
       },
       {
         type: 'paragraph',
-        text: 'When submitting your application electronically via Mercurio or in person, make sure to attach these three mandatory documents:'
+        text: 'Submitting your renewal electronically through the <strong>Mercurio System (Spanish Ministry of Territorial Policy Electronic Office)</strong> is the fastest way to obtain your renewed resolution. Follow these proven recommendations to prevent clerical errors:'
       },
       {
         type: 'list',
         items: [
-          '<strong>Official Certificate for Extranjería</strong>: Signed and stamped by the insurer (e.g., ASISA or Sanitas), explicitly stating 0€ copay, zero waiting periods, full hospitalization, and repatriation coverage.',
-          '<strong>Schedule of Particular Conditions</strong>: Showing your legal name, NIE/passport number, and active inception and termination dates.',
-          '<strong>Latest Bank Payment Receipt</strong>: Verifying that policy premiums are fully paid and current without administrative suspension.'
+          '<strong>Step 1: Request the Special Immigration Certificate</strong>: Do not just upload a bank receipt or a generic 90-page terms booklet. Request an official <em>Certificado de Extranjería</em> from your insurer (VitaBlue generates digitally signed certificates within 24 hours).',
+          '<strong>Step 2: Clear File Naming</strong>: Name your PDF document clearly prior to upload, for example: <code>HEALTH_INSURANCE_CERTIFICATE_EXTRANJERIA_FULLNAME.pdf</code>.',
+          '<strong>Step 3: Attach Valid Proof of Payment</strong>: Include your bank transfer slip or SEPA direct debit receipt showing that policy premiums are fully active and paid up to date.',
+          '<strong>Step 4: Pick the Proper Document Category in Mercurio</strong>: Under the document upload dropdown menu, select <em>«Seguro médico / Acreditación de cobertura sanitaria»</em> so the portal tags your file directly for the reviewing civil servant.'
         ]
       },
       {
+        type: 'heading-2',
+        text: 'Can You Switch Insurers for Your Renewal Without Losing Seniority?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Many expats face unreasonable premium hikes at renewal or find that their initial carrier lacks good customer support in Spain. <strong>You are fully entitled to switch to leading Spanish carriers for your NIE renewal</strong>, such as <a href="/en/health-insurance/asisa-insurance/" class="text-primary hover:underline font-bold">ASISA</a> (with ASISA Health Students) or Sanitas.'
+      },
+      {
+        type: 'paragraph',
+        text: 'When moving to a new carrier through VitaBlue, we arrange a <strong>complete waiver of waiting periods based on previous insurance seniority</strong> (antigüedad), timing the effective start date so there is zero gap in your legal coverage history in Spain.'
+      },
+      {
         type: 'cta-wizard',
-        ctaBadge: 'Instant Issuance',
-        ctaTitle: 'Need a Compliant Health Policy for Your NIE Renewal Today?',
-        ctaDescription: 'Compare approved policies from Spain’s top carriers (ASISA & Sanitas). Get immediate digital certificates recognized by all Spanish immigration offices.',
-        ctaButtonText: 'Compare NIE Renewal Policies',
+        ctaBadge: 'Instant 24h Issuance',
+        ctaTitle: 'Need an Extranjería-Approved Policy for Your Renewal Today?',
+        ctaDescription: 'Compare compliant plans from Spain’s top carriers (0€ copay, zero waiting periods, full hospitalization, and repatriation). Immediate digital certificate accepted across all Spanish provinces.',
+        ctaButtonText: 'Compare NIE Health Insurance',
         ctaLink: '/wizard/'
       },
       {
@@ -3008,9 +3070,11 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Can I submit travel insurance for my NIE renewal?</strong>: No. Travel assistance insurance is strictly invalid for renewing residency or student authorizations inside Spain.',
-          '<strong>What happens if Extranjería issues a formal notice (requerimiento)?</strong>: You are typically granted 10 working days to submit a corrected certificate with zero copays. If missed, the renewal procedure is archived.',
-          '<strong>Can I switch insurers without losing my waiting period waivers?</strong>: Yes. By presenting proof of at least 10–12 months of prior Spanish insurance seniority, ASISA or Sanitas will waive waiting periods immediately.'
+          '<strong>What should I do if I receive a 10-day Extranjería notice?</strong>: Act immediately to replace your policy with a 0€ copay plan. VitaBlue issues official certificates within 24 business hours so you can upload your response to Mercurio well within the statutory deadline.',
+          '<strong>Can I submit travel insurance for my NIE renewal?</strong>: Absolutely not. International travel assistance insurance is only valid for short-stay tourist visas up to 90 days. It will be rejected outright by Spanish immigration offices for any residency or student renewal.',
+          '<strong>Is a policy with low copays (e.g., €5 or €10 per visit) acceptable?</strong>: No. Official immigration criteria require comprehensive coverage with strictly zero copayments.',
+          '<strong>What happens if my TIE / NIE has already expired?</strong>: Spanish immigration legislation allows you to file your renewal dossier within <strong>60 calendar days before the expiration date and up to 90 calendar days following expiration</strong>. Your medical policy must cover seamlessly from the prior expiration date.',
+          '<strong>Do I have to pay the entire year upfront?</strong>: For student permits and non-lucrative renewals, examiners generally require proof of a full 12-month prepaid policy. For work-related authorizations connected to a local Spanish bank account, some regional offices accept monthly installments.'
         ]
       }
     ]
