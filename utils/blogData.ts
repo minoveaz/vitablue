@@ -2828,7 +2828,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: 'Guía completa sobre el seguro médico obligatorio para renovar tu NIE o TIE en Extranjería: pólizas sin copagos, continuidad de cobertura, vigencia de 12 meses y modelos de certificado válidos.',
-    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
       {
@@ -2930,7 +2930,7 @@ export const blogPosts: BlogPostData[] = [
       linkedIn: 'https://linkedin.com'
     },
     excerpt: 'Detailed guide to private medical insurance requirements for renewing your NIE or TIE card in Spain: 0€ copay rules, continuous coverage proof, and official certificate formats.',
-    featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
+    featuredImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
       {
