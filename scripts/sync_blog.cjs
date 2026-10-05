@@ -10,15 +10,32 @@ const validateRoutesPath = path.join(__dirname, 'validate_routes.cjs');
 console.log('=== INICIANDO SINCRONIZACIÓN DEL BLOG ===');
 
 const blogData = fs.readFileSync(blogDataPath, 'utf8');
-const slugs = [...blogData.matchAll(/slug:\s*['"]([^'"]+)['"]/g)].map((match) => match[1]);
+const todayIso = new Date().toISOString().slice(0, 10);
+const postEntries = blogData.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
+const postsInfo = postEntries.map((block) => {
+  const slug = block.split("'")[0];
+  const publishDateMatch = block.match(/publishDate:\s*'([^']+)'/);
+  const publishDate = publishDateMatch ? publishDateMatch[1] : null;
+  const isPublished = !publishDate || publishDate <= todayIso;
+  return { slug, publishDate, isPublished };
+});
 
-if (slugs.length === 0) {
-  console.error('Error: no se encontraron slugs en blogData.ts.');
+const activePosts = postsInfo.filter((p) => p.isPublished);
+const scheduledPosts = postsInfo.filter((p) => !p.isPublished);
+
+if (postsInfo.length === 0) {
+  console.error('Error: no se encontraron posts en blogData.ts.');
   process.exit(1);
 }
 
-console.log(`Slugs detectados: ${slugs.length}`);
-slugs.forEach((slug) => console.log(`- ${slug}`));
+console.log(`Total artículos en base de datos: ${postsInfo.length}`);
+console.log(`Artículos activos hoy (${todayIso}): ${activePosts.length}`);
+activePosts.forEach((p) => console.log(`  ✅ [PUBLICADO] ${p.slug}`));
+
+if (scheduledPosts.length > 0) {
+  console.log(`\nArtículos programados para fechas futuras: ${scheduledPosts.length}`);
+  scheduledPosts.forEach((p) => console.log(`  ⏳ [PROGRAMADO ${p.publishDate}] ${p.slug}`));
+}
 
 console.log('\nGenerando sitemap desde config/routes.ts y blogData.ts...');
 const sitemapResult = spawnSync(process.execPath, [generateSitemapPath, '--write'], {
