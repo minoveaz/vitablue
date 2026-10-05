@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { BlogPostData } from '@/utils/blogData';
+import { BlogPostData, isPostPublished } from '@/utils/blogData';
 import { Sparkles, ChevronLeft, ChevronRight, Calendar, Clock, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -16,9 +16,12 @@ export const BlogRelatedPosts: React.FC<BlogRelatedPostsProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Filter by same language and exclude current post
+  // Filter by same language, published in current runtime, and exclude current post
   const candidatePosts = allPosts.filter(
-    (p) => (p.lang || 'es') === (currentPost.lang || 'es') && p.slug !== currentPost.slug
+    (p) =>
+      (p.lang || 'es') === (currentPost.lang || 'es') &&
+      p.slug !== currentPost.slug &&
+      (import.meta.env.DEV ? true : isPostPublished(p))
   );
 
   // Score candidates by relevance
