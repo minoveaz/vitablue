@@ -3085,7 +3085,7 @@ export const blogPosts: BlogPostData[] = [
     title: 'Seguro Médico para Residencia No Lucrativa en España (2026): Guía Definitiva',
     category: 'visados',
     categoryLabel: 'Visados y Residencia',
-    readTime: '8 min de lectura',
+    readTime: '9 min de lectura',
     date: '12 Octubre 2026',
     publishDate: '2026-10-12',
     author: {
@@ -3101,51 +3101,92 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'La <strong>Autorización de Residencia Temporal No Lucrativa (RNL)</strong> es la vía predilecta para jubilados, rentistas y familias internacionales que desean establecerse en España sin realizar actividades laborales en el país. Al no cotizar en el sistema público de la Seguridad Social, <strong>la ley española exige de forma taxativa que el solicitante y sus familiares cuenten con un seguro médico privado integral</strong>.'
+        text: 'La <strong>Autorización de Residencia Temporal No Lucrativa (RNL)</strong> es la vía de inmigración más solicitada por jubilados, rentistas, inversores pasivos y familias extranjeras que desean trasladarse a vivir a España sin realizar actividades laborales o profesionales en territorio nacional. Al no incorporarse al mercado de trabajo ni tributar cuotas a la Seguridad Social, <strong>la legislación española exige de forma rigurosa que el solicitante principal y cada uno de sus dependientes cuenten con un seguro médico privado integral</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'En los últimos meses, los consulados españoles (como Londres, Miami, Nueva York, Buenos Aires o Bogotá) han endurecido la revisión de las pólizas de salud, denegando expedientes que presentan copagos ocultos o carencias hospitalarias. En esta guía detallamos los requisitos exactos para obtener tu visado a la primera.'
+        text: 'En los consulados generales de España en el exterior (como Londres, Edimburgo, Washington, Miami, Nueva York, Los Ángeles, Buenos Aires, Bogotá o Ciudad de México), los expedientes de visado no lucrativo se analizan con un estándar de exigencia documental máximo. Presentar una póliza de viaje, un seguro con copagos inadvertidos o una compañía no autorizada en España es **la causa número uno de denegación directa del visado**.'
       },
       {
         type: 'heading-2',
         text: 'Los 4 pilares obligatorios del seguro para el Visado No Lucrativo'
       },
       {
+        type: 'paragraph',
+        text: 'El marco regulatorio de Extranjería (Ley Orgánica 4/2000 y Real Decreto 557/2011) establece que la cobertura médica debe ser homologable a la cartera de servicios del Sistema Nacional de Salud (SNS). Para que el funcionario consular dé por válido el expediente, la póliza debe cumplir simultáneamente cuatro condiciones innegociables:'
+      },
+      {
         type: 'list',
         items: [
-          '<strong>1. Entidad aseguradora autorizada en España</strong>: Debe ser una compañía debidamente registrada ante la Dirección General de Seguros y Fondos de Pensiones (DGSFP), como <strong>Asisa</strong> o <strong>Sanitas</strong>. No son válidas aseguradoras internacionales que operen bajo régimen de libre prestación de servicios sin sede y cuadro médico en España.',
-          '<strong>2. Cobertura completa sin copagos (0€)</strong>: El certificado debe indicar literalmente que el asegurado no abona ningún importe por consultas, pruebas diagnósticas, hospitalización o urgencias.',
-          '<strong>3. Cero periodos de carencia</strong>: Todo el cuadro médico, hospitalario y quirúrgico debe estar disponible desde el minuto uno de vigencia.',
-          '<strong>4. Repatriación médica y de restos mortales</strong>: Cobertura de traslado sanitario internacional al país de origen en caso de fallecimiento o necesidad médica sobrevenida.'
+          '<strong>1. Entidad aseguradora autorizada en España</strong>: La aseguradora debe figurar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) del Ministerio de Asuntos Económicos de España. Compañías de primer nivel como <a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> o <a href="/productos/seguros-salud/seguros-salud-extranjeros/" class="text-primary hover:underline font-bold">Sanitas</a> cumplen 100% con este requisito y cuentan con cuadros médicos y hospitales concertados en todas las provincias.',
+          '<strong>2. Cobertura completa sin copagos (0€)</strong>: El certificado consular debe manifestar de forma taxativa que el asegurado no abona importes de copago por actos médicos, consultas con especialistas, pruebas de diagnóstico, hospitalización o intervenciones quirúrgicas.',
+          '<strong>3. Cero periodos de carencia</strong>: Todo el catálogo de prestaciones hospitalarias y médicas debe estar disponible desde el primer día de vigor. No se admiten pólizas con esperas de 6 u 8 meses para intervenciones o internamiento en clínica.',
+          '<strong>4. Repatriación sanitaria y de restos mortales</strong>: Debe garantizar el traslado médico de urgencia y la repatriación internacional al país de procedencia en caso de fallecimiento fortuito o necesidad médica grave.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Criterio Consular', 'Póliza Válida (VitaBlue / Asisa / Sanitas)', 'Póliza No Válida (Riesgo de Denegación)'],
+        tableHeader: ['Criterio Consular Exigido', 'Póliza Aprobada (VitaBlue / Asisa / Sanitas)', 'Póliza Rechazada (Riesgo Crítico de Denegación)'],
         tableRows: [
-          ['Copagos', '0€ de copago garantizado', 'Copagos de 5€ a 50€ por acto médico'],
-          ['Hospitalización', 'Ilimitada en habitación individual', 'Límite de días o franquicia monetaria'],
-          ['Periodos de carencia', 'Sin carencias para hospitalización', 'Carencia de 6 a 10 meses para operaciones'],
-          ['Pago de la prima', 'Anual anticipado (12 meses)', 'Pago fraccionado mensual o trimestral'],
-          ['Repatriación', 'Incluida en certificado oficial', 'No incluida o con límites insuficientes']
+          ['Régimen de Copagos', '0€ de copago certificado explícitamente', 'Copagos por visita médica (5€ a 50€) o deducible anual'],
+          ['Hospitalización y Cirugía', 'Ilimitada en habitación individual con cama acompañante', 'Límite de días por año (ej. 30 días) o franquicias'],
+          ['Periodos de carencia', 'Sin carencias (0 días desde entrada en vigor)', 'Carencia de 6 a 10 meses para operaciones complejas'],
+          ['Forma de pago de la prima', 'Anual anticipada (12 meses completos)', 'Mensual o fraccionada (rechazada en la mayoría de consulados)'],
+          ['Ámbito territorial', 'Válida en todo el territorio español', 'Seguro de viaje Schengen temporal (máx 90 días)']
         ]
       },
       {
-        type: 'cta-wizard',
-        ctaBadge: 'Visado No Lucrativo',
-        ctaTitle: '¿Preparando tu solicitud de Residencia No Lucrativa en España?',
-        ctaDescription: 'Calcula el presupuesto para ti o tu grupo familiar con las aseguradoras líderes autorizadas por los Consulados de España. Certificado oficial emitido en 24h con garantía 100% de devolución.',
-        ctaButtonText: 'Calcular seguro Residencia No Lucrativa',
-        ctaLink: '/wizard/'
-      },
-      {
         type: 'heading-2',
-        text: 'Particularidades para solicitantes mayores de 65 y 75 años'
+        text: 'Motivos de Denegación Frecuentes y Errores en la Solicitud'
       },
       {
         type: 'paragraph',
-        text: 'Uno de los mayores retos en la Residencia No Lucrativa es asegurar a solicitantes sénior. Muchas compañías tradicionales deniegan el alta a mayores de 65 años o aplican exclusiones severas. En VitaBlue trabajamos con productos específicos de <strong>Asisa</strong> y <strong>Sanitas</strong> diseñados para extranjeros sénior sin límite restrictivo de edad, asegurando la emisión del certificado consular oficial.'
+        text: 'A lo largo de los últimos años hemos identificado los errores más habituales que cometen los solicitantes al gestionar el seguro por su cuenta antes de acudir a la cita consular:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Contratar seguros internacionales de expatriados con deducible</strong>: Muchas pólizas globales contratadas en EE.UU. o Reino Unido incluyen deducibles (franquicias) de 500$ o 1.000$. Para la ley española, un deducible actúa jurídicamente como un copago y motiva la denegación automática.',
+          '<strong>Aportar seguros de viaje en lugar de seguros de salud</strong>: Las pólizas de asistencia en viaje solo cubren emergencias sobrevenidas y no contemplan tratamientos ordinarios ni seguimiento oncológico o crónico.',
+          '<strong>Certificados genéricos sin mención a las cláusulas consulares</strong>: Presentar una tarjeta de plástico o el condicionado general no es válido. Los consulados exigen el <em>Certificado de Cobertura Consular</em> emitido en castellano, sellado y con firma autorizada de la compañía.',
+          '<strong>Fraccionar el pago de la póliza</strong>: Aunque las aseguradoras permitan el pago mensual a residentes con cuenta bancaria española, en el trámite de visado inicial en el consulado se exige acreditar la prima anual íntegra y desembolsada.'
+        ]
+      },
+      {
+        type: 'cta-validator',
+        ctaBadge: 'Auditoría Consular Gratuita',
+        ctaTitle: '¿Quieres verificar si tu póliza cumple todos los requisitos consulares?',
+        ctaDescription: 'Comprueba al instante las condiciones de tu seguro con nuestro validador consular interactivo antes de presentar tu expediente ante el consulado o centro BLS.',
+        ctaButtonText: 'Auditar mi seguro para visado',
+        ctaLink: '/validador-visado/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Particularidades para solicitantes sénior mayores de 65, 70 y 75 años'
+      },
+      {
+        type: 'paragraph',
+        text: 'Dado que una gran proporción de los solicitantes de la Residencia No Lucrativa son jubilados que eligen la costa mediterránea o las islas para su retiro, <strong>la edad de contratación es el obstáculo más común en el mercado asegurador tradicional</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'La inmensa mayoría de aseguradoras particulares fijan el límite de nueva contratación en los 65 años o aplican exclusiones drásticas. En VitaBlue trabajamos estrechamente con departamentos de suscripción especializados de <strong>Asisa</strong> y <strong>Sanitas</strong> que cuentan con modalidades específicas para extranjeros mayores de 65, 70 e incluso 75 años, garantizando la emisión del certificado consular exigido sin bloqueos por edad.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Gestión para toda la unidad familiar: Cónyuge e hijos a cargo'
+      },
+      {
+        type: 'paragraph',
+        text: 'Cuando la solicitud de Residencia No Lucrativa se tramita conjuntamente para una familia, el consulado exige que <strong>cada miembro de la familia cuente con un certificado oficial individual a su nombre</strong>. Aunque todos los asegurados estén agrupados bajo la misma póliza familiar y cuenta de pago, los documentos consulares deben desglosar el nombre completo y número de pasaporte de cada uno.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Garantía 100% Reembolso',
+        ctaTitle: '¿Preparando tu solicitud de Residencia No Lucrativa para España?',
+        ctaDescription: 'Compara planes de salud homologados por todos los Consulados de España. Certificado oficial en 24 horas y garantía contractual de devolución íntegra si tu visado no es concedido.',
+        ctaButtonText: 'Calcular seguro Residencia No Lucrativa',
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -3154,9 +3195,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>¿Toda la familia debe estar en la misma póliza?</strong>: Sí, o bien en pólizas individuales vinculadas, pero cada miembro (cónyuge e hijos) debe tener su propio certificado consular individualizado a su nombre.',
-          '<strong>¿Es necesario pagar el año completo antes de la cita consular?</strong>: Sí. Los consulados exigen que la prima anual esté íntegramente pagada para acreditar suficiencia económica y compromiso de cobertura durante el primer año.',
-          '<strong>¿Qué sucede si el consulado deniega mi visado no lucrativo?</strong>: Con VitaBlue dispones de una <strong>garantía de devolución del 100% de la prima no consumida</strong> presentando la carta oficial de denegación consular.'
+          '<strong>¿Qué sucede si el Consulado de España deniega mi visado no lucrativo?</strong>: En VitaBlue todas las pólizas tramitadas para visados incluyen una <strong>garantía de devolución del 100% de la prima no consumida</strong>. Basta con aportar la resolución o carta oficial de denegación emitida por el consulado antes de la fecha de inicio de la cobertura.',
+          '<strong>¿Puedo modificar la fecha de inicio del seguro si mi cita consular se retrasa?</strong>: Sí. Puedes retrasar la fecha de entrada en vigor de la póliza de forma gratuita y tantas veces como sea necesario antes de que la cobertura comience activamente.',
+          '<strong>¿Es necesario presentar el certificado traducido o apostillado?</strong>: No. El certificado emitido por aseguradoras reguladas en España (como Asisa o Sanitas) se redacta directamente en español oficial con firma digital reconocida, por lo que es admitido sin necesidad de apostilla en ningún consulado español.',
+          '<strong>¿El seguro médico cubre enfermedades preexistentes?</strong>: Todas las pólizas requieren rellenar una declaración de salud previa. Si tienes alguna patología previa conocida, en VitaBlue evaluamos previamente tu caso para presentarlo ante la aseguradora con la suscripción más favorable y asegurar la viabilidad del visado.'
         ]
       }
     ]
@@ -3167,7 +3209,7 @@ export const blogPosts: BlogPostData[] = [
     title: 'Health Insurance for Spain Non-Lucrative Visa (NLV 2026): Complete Guide',
     category: 'visados',
     categoryLabel: 'Visas & Residency',
-    readTime: '8 min read',
+    readTime: '9 min read',
     date: '12 October 2026',
     publishDate: '2026-10-12',
     author: {
@@ -3183,51 +3225,92 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'The <strong>Non-Lucrative Visa (NLV)</strong> is Spain’s premier immigration pathway for retirees, remote wealth holders, and families moving to Spain without working locally. Because visa holders do not contribute to Spanish Social Security, <strong>immigration law mandates complete, comprehensive private health coverage for all applicants</strong>.'
+        text: 'The <strong>Non-Lucrative Visa (NLV)</strong> is Spain’s premier immigration route for international retirees, passive income earners, and families looking to relocate without carrying out professional or employment activities inside the country. Because visa holders do not contribute to the Spanish Social Security system, <strong>Spanish immigration law strictly obligates all applicants and accompanying family members to secure comprehensive private medical insurance</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'Spanish consulates in London, Edinburgh, Miami, New York, San Francisco, and Toronto strictly scrutinize healthcare documents. Applications submitted with sub-standard international travel policies or plans containing hidden copays face instant administrative denial. In this guide, we break down every mandatory requirement.'
+        text: 'Spanish consulates across London, Edinburgh, Manchester, Washington DC, Miami, New York, San Francisco, Los Angeles, and Toronto inspect medical documents under strict scrutiny. Submitting generic travel plans, policies with hidden deductibles, or non-compliant international schemes represents <strong>the single most frequent reason for outright visa rejection</strong>.'
       },
       {
         type: 'heading-2',
         text: 'The 4 Non-Negotiable Consular Pillars for NLV Health Insurance'
       },
       {
+        type: 'paragraph',
+        text: 'Under Spanish Immigration Law (Organic Law 4/2000 and Royal Decree 557/2011), private healthcare must offer statutory parity with Spain’s National Health System (SNS). Consular visa examiners verify four core conditions:'
+      },
+      {
         type: 'list',
         items: [
-          '<strong>1. Authorized Spanish Insurer</strong>: Must be legally licensed and registered with Spain’s regulatory body (DGSFP), such as <strong>ASISA</strong> or <strong>Sanitas</strong>, featuring a nationwide medical network in Spain.',
-          '<strong>2. Strict 0€ Copayment</strong>: The official certificate must verify zero out-of-pocket fees for doctor appointments, diagnostics, emergencies, and hospital care.',
-          '<strong>3. Zero Waiting Periods (Carencias)</strong>: Full hospital and surgery benefits must be effective immediately from day one.',
-          '<strong>4. Medical & Mortal Repatriation Included</strong>: Guaranteed medical evacuation and repatriation of mortal remains to the home country.'
+          '<strong>1. Authorized Spanish Insurer</strong>: The insurance entity must be formally licensed and registered with the Spanish Directorate General of Insurance and Pension Funds (DGSFP). Premier carriers such as <a href="/en/health-insurance/asisa-insurance/" class="text-primary hover:underline font-bold">ASISA</a> and Sanitas operate dedicated medical networks throughout all Spanish autonomous communities.',
+          '<strong>2. Strict 0€ Copayment</strong>: The consular certificate must explicitly state that the insured individual is exempt from copayments, out-of-pocket fees, or coinsurance per medical appointment, specialist visit, emergency intervention, or hospital stay.',
+          '<strong>3. Zero Waiting Periods (Immediate Access from Day 1)</strong>: Full access to hospitalization, intensive care units, and scheduled surgeries must take effect immediately upon inception. Multi-month waiting periods disqualify the policy.',
+          '<strong>4. Medical & Mortal Repatriation Included</strong>: Guaranteed coverage for emergency international medical transfer and repatriation of mortal remains to the home country in the event of death or critical injury.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Consular Requirement', 'Compliant Policy (VitaBlue Plans)', 'Non-Compliant Policy (High Risk)'],
+        tableHeader: ['Consular Standard', 'Compliant Policy (VitaBlue Plans)', 'Non-Compliant Policy (High Rejection Risk)'],
         tableRows: [
-          ['Copayments', '0€ Copay guaranteed by certificate', 'Per-visit deductible or co-insurance'],
-          ['Hospital Admission', 'Unlimited in private single room', 'Capped monetary limits or day limits'],
-          ['Waiting Periods', 'Waived from Day 1', '6 to 10 month waiting list for surgery'],
-          ['Payment Method', 'Paid in full for 12 months', 'Monthly or split installments'],
-          ['Repatriation', 'Full international repatriation included', 'Missing or excluded']
+          ['Copayment Framework', '0€ Copay explicitly certified in writing', 'Out-of-pocket fees per visit (€5 to €50) or annual deductible'],
+          ['Hospital Admission', 'Unlimited days in private room with guest bed', 'Capped daily limit (e.g., 30 days) or monetary ceiling'],
+          ['Waiting Periods (Carencias)', 'Zero waiting periods from effective start date', '6 to 10-month wait for planned surgery or inpatient care'],
+          ['Payment Method', 'Paid in full for 12 months upfront', 'Monthly split installments (rejected by most consulates)'],
+          ['Territorial Validity', 'Full national coverage across all Spain', 'Short-term travel Schengen policy (max 90 days)']
         ]
       },
       {
-        type: 'cta-wizard',
-        ctaBadge: 'NLV Preparation 2026',
-        ctaTitle: 'Applying for Spain’s Non-Lucrative Visa with Family?',
-        ctaDescription: 'Calculate transparent health insurance rates for individuals and families with Spain’s top insurers. Certificate issued within 24 hours with a 100% money-back guarantee in case of visa rejection.',
-        ctaButtonText: 'Quote Non-Lucrative Visa Plans',
-        ctaLink: '/wizard/'
-      },
-      {
         type: 'heading-2',
-        text: 'Crucial Advice for Applicants Over 65 and 75 Years Old'
+        text: 'Top Consular Pitfalls: Why International Policies Get Rejected'
       },
       {
         type: 'paragraph',
-        text: 'Senior applicants frequently encounter steep age barriers when looking for Spanish health insurance. Many providers refuse new applications past age 65 or 70. VitaBlue partners with specialized programs from <strong>ASISA</strong> and <strong>Sanitas</strong> tailored for international retirees, providing verified consular certification regardless of age.'
+        text: 'Expatriates frequently encounter administrative obstacles when purchasing insurance without specialized visa guidance. These are the most common rejection causes:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Submitting US/UK global health insurance with deductibles</strong>: Many international policies include a $500, $1,000, or $2,500 deductible. Under Spanish consular jurisprudence, any deductible is categorized as a copay, rendering the application invalid.',
+          '<strong>Confusing travel insurance with resident health insurance</strong>: Travel insurance only responds to acute unforeseen emergencies and specifically excludes planned preventative care, ongoing diagnostics, or chronic medical management.',
+          '<strong>Lacking the Official Bilingual Consular Certificate</strong>: Handing in an insurance card or an English booklet does not satisfy consular requirements. Examiners mandate an official stamped certificate issued in Spanish.',
+          '<strong>Failing to provide proof of full annual payment</strong>: While residents inside Spain may pay monthly via domestic SEPA accounts, consular visa applications mandate proof of full 12-month prepayment.'
+        ]
+      },
+      {
+        type: 'cta-validator',
+        ctaBadge: 'Free Consular Audit Tool',
+        ctaTitle: 'Audit Your Policy Before Your BLS or Consulate Appointment',
+        ctaDescription: 'Run your policy conditions through our automated consular validation checker to verify 100% compliance with Spanish immigration standards.',
+        ctaButtonText: 'Validate My Certificate Online',
+        ctaLink: '/validador-visado/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Crucial Guidance for Senior Applicants Over 65, 70, and 75'
+      },
+      {
+        type: 'paragraph',
+        text: 'Because retirement in Spain is the primary motivation for Non-Lucrative Visa applicants, <strong>age underwriting represents the most significant barrier in private health insurance</strong>.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Most retail insurance brokers reject applicants aged 65 and older. VitaBlue coordinates directly with specialized senior underwriting desks at <strong>ASISA</strong> and <strong>Sanitas</strong>, enabling foreign retirees aged 65 to 75+ to secure qualifying, copay-free policies with verified consular certificates.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Family Group Applications: Spouses and Dependent Children'
+      },
+      {
+        type: 'paragraph',
+        text: 'When moving as a family unit, Spanish consulates require an <strong>individualized certificate for each applicant</strong>. While all members can be billed under a single collective family policy, each dependent’s legal name and passport number must appear on their own designated certificate.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: '100% Refund Protection',
+        ctaTitle: 'Preparing Your Spain Non-Lucrative Visa Application?',
+        ctaDescription: 'Compare approved plans from Spain’s top carriers with zero copays and repatriation included. Includes digital certificates in 24 hours and a contractual 100% money-back guarantee if your visa is refused.',
+        ctaButtonText: 'Quote Non-Lucrative Visa Plans',
+        ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
@@ -3236,9 +3319,10 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>Can each family member have their own policy?</strong>: Yes. Even under a shared family account, each dependent receives an individualized consular certificate with their passport number.',
-          '<strong>Do I have to pay for a full year upfront?</strong>: Yes. Spanish consulates mandate proof of a prepaid 12-month policy before stamping your visa.',
-          '<strong>What if my Non-Lucrative Visa is rejected?</strong>: VitaBlue guarantees a <strong>100% refund of the unconsumed premium</strong> upon presentation of the consulate’s official refusal letter.'
+          '<strong>What happens if the Spanish Consulate refuses my visa?</strong>: All qualifying policies arranged through VitaBlue include a <strong>100% money-back refund guarantee</strong> of the unconsumed premium upon submission of the official consular refusal notice.',
+          '<strong>Can I postpone my policy start date if my visa appointment is delayed?</strong>: Yes. You can change your effective inception date free of charge as many times as needed before the policy becomes active.',
+          '<strong>Does the certificate require an Apostille or sworn translation?</strong>: No. Certificates issued by regulated Spanish entities (ASISA and Sanitas) are drafted directly in official Spanish with digital verification barcodes, making them legally valid without apostille across all Spanish consulates worldwide.',
+          '<strong>Are pre-existing medical conditions covered?</strong>: Private policies require completing an initial medical questionnaire. VitaBlue evaluates pre-existing conditions in advance to identify the carrier with the most favorable underwriting terms for your profile.'
         ]
       }
     ]
@@ -3248,7 +3332,7 @@ export const blogPosts: BlogPostData[] = [
     title: 'Seguro Médico para Residencia de Larga Duración en España (2026)',
     category: 'tramites',
     categoryLabel: 'Trámites de Extranjería',
-    readTime: '7 min de lectura',
+    readTime: '8 min de lectura',
     date: '19 Octubre 2026',
     publishDate: '2026-10-19',
     author: {
@@ -3264,30 +3348,52 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'Alcanzar los 5 años continuados de residencia legal en España abre la puerta a la <strong>Autorización de Residencia de Larga Duración</strong> (o Larga Duración UE), otorgando el derecho a residir y trabajar indefinidamente en el país en igualdad de condiciones que los ciudadanos españoles.'
+        text: 'Alcanzar los 5 años continuados de residencia legal en España abre la puerta a la <strong>Autorización de Residencia de Larga Duración</strong> (o Larga Duración UE), otorgando el derecho a residir y trabajar indefinidamente en el país en igualdad de condiciones que los ciudadanos españoles. Es el estatus migratorio permanente más codiciado por la comunidad extranjera.'
       },
       {
         type: 'paragraph',
-        text: 'Aunque muchos solicitantes cuentan ya con cobertura pública mediante cotización activa a la Seguridad Social, <strong>quienes tramitan la Larga Duración UE o se encuentran en periodos de inactividad laboral deben justificar seguro médico privado sin copagos</strong> para acreditar suficiencia de recursos sanitarios para sí mismos y su unidad familiar.'
+        text: 'Aunque muchos solicitantes cuentan ya con cobertura pública mediante cotización activa a la Seguridad Social, <strong>quienes tramitan la Larga Duración UE, quienes provienen de visados no lucrativos o aquellos que se encuentran en periodos de inactividad laboral deben justificar seguro médico privado sin copagos</strong> para acreditar suficiencia de recursos sanitarios para sí mismos y su unidad familiar.'
       },
       {
         type: 'heading-2',
         text: 'Diferencias clave: Larga Duración Ordinaria vs Larga Duración UE'
       },
       {
+        type: 'paragraph',
+        text: 'La normativa distingue con nitidez dos modalidades que con frecuencia confunden a los solicitantes:'
+      },
+      {
         type: 'list',
         items: [
-          '<strong>Residencia de Larga Duración Ordinaria</strong>: Basta con acreditar los 5 años de residencia legal previa y carecer de antecedentes penales. Si estás cotizando, la Seguridad Social es suficiente.',
-          '<strong>Residencia de Larga Duración UE</strong>: Exige acreditar medios económicos estables y un <strong>seguro médico público o privado completo</strong> que cubra todos los riesgos normalmente cubiertos para los nacionales en España.'
+          '<strong>Residencia de Larga Duración Ordinaria</strong>: Basta con acreditar 5 años de residencia legal continuada en España (con ausencias inferiores a 10 meses en total) y carecer de antecedentes penales. Si estás trabajando y de alta en la Seguridad Social, la cobertura pública del INSS es suficiente.',
+          '<strong>Residencia de Larga Duración UE (Directiva 2003/109/CE)</strong>: Permite obtener autorización de residencia y trabajo en otros Estados miembros de la Unión Europea. Para concederla, Extranjería exige acreditar <strong>recursos económicos fijos y regulares</strong> y un <strong>seguro de enfermedad público o privado que cubra todos los riesgos normalmente cubiertos para los nacionales</strong> sin generar cargas al erario público.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Vía de Solicitud', 'Requisito Sanitario Extranjería', 'Tipo de Póliza Válida', 'Periodo Exigido'],
+        tableHeader: ['Vía de Solicitud en Extranjería', 'Requisito Sanitario', 'Tipo de Póliza Aceptada', 'Periodo de Cobertura'],
         tableRows: [
-          ['Larga Duración (Trabajador Activo)', 'Alta en Seguridad Social (INSS)', 'Pública SNS', 'Continuada'],
-          ['Larga Duración UE (Recursos Propios)', 'Seguro médico privado integral', 'Privada 0€ Copago (Asisa / Sanitas)', 'Mínimo 12 meses'],
-          ['Reagrupados dependientes', 'Seguro privado si no cotizan', 'Póliza sin copagos ni carencias', 'Vigencia anual']
+          ['Larga Duración Ordinaria (Trabajador Activo)', 'Alta activa en Seguridad Social (INSS)', 'Pública (Cartilla Sanitaria SNS)', 'Indefinida'],
+          ['Larga Duración UE (Recursos Propios / Rentista)', 'Seguro médico privado integral obligatorio', 'Privada 0€ Copago (<a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> / <a href="/productos/seguros-salud/seguros-sanitas/" class="text-primary hover:underline font-bold">Sanitas</a>)', '12 meses continuados'],
+          ['Transición desde Residencia No Lucrativa', 'Seguro privado continuado sin huecos', 'Póliza sin copagos ni carencias', 'Hasta resolución definitiva'],
+          ['Familiares a cargo sin cotización', 'Seguro privado individualizado', 'Póliza completa con hospitalización', 'Anual']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Criterios que debe certificar la aseguradora ante Extranjería'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para expedientes de Larga Duración UE o solicitudes sin cotización activa, la Oficina de Extranjería comprueba minuciosamente:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Cobertura equiparable al Catálogo del SNS</strong>: Debe incluir medicina general, especialidades, pruebas diagnósticas complejas, hospitalización médica y quirúrgica en habitación individual e intervenciones de urgencia.',
+          '<strong>Cláusula expresa de cero copagos</strong>: No se toleran pólizas con franquicias ni pequeñas aportaciones por consulta.',
+          '<strong>Cero periodos de carencia</strong>: Al tratarse de residentes consolidados con 5 años en España, el seguro debe dar cobertura plena e inmediata.',
+          '<strong>Acreditación de pago bancario</strong>: Certificado de estar al corriente de pago para evitar que pólizas impagadas o devueltas invaliden la resolución favorable.'
         ]
       },
       {
@@ -3300,13 +3406,31 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'heading-2',
-        text: 'Preguntas Frecuentes sobre la Residencia de Larga Duración'
+        text: '¿Qué ocurre al obtener la Larga Duración si ya no trabajas?'
+      },
+      {
+        type: 'paragraph',
+        text: 'Una de las grandes ventajas de obtener la tarjeta de Larga Duración permanente es que el derecho de residencia se desvincula de la necesidad de mantener un contrato laboral activo. Sin embargo, para aquellos extranjeros que no alcanzan el periodo de cotización exigido para la sanidad pública o que desean mantener una asistencia médica ágil y sin listas de espera, **mantener una póliza privada de salud sin copagos garantiza el acceso a los mejores hospitales privados de España**.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Larga Duración UE',
+        ctaTitle: '¿Tramitando tu residencia de Larga Duración en España?',
+        ctaDescription: 'Calcula tu póliza homologada para Extranjería con Asisa y Sanitas. Certificado digital oficial en 24 horas y asesoría personalizada para tu expediente.',
+        ctaButtonText: 'Calcular seguro Larga Duración',
+        ctaLink: '/wizard/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas Frecuentes sobre la Residencia de Larga Duración (FAQ)'
       },
       {
         type: 'list',
         items: [
-          '<strong>¿Puedo perder la larga duración si me doy de baja del seguro?</strong>: Una vez concedida la tarjeta permanente, la condición es indefinida, pero para mantener la Larga Duración UE deberás seguir cumpliendo los requisitos en caso de traslado a otro Estado miembro.',
-          '<strong>¿Qué seguro debo contratar si vengo de una residencia no lucrativa?</strong>: Se recomienda mantener una póliza privada completa sin copagos (como Asisa Salud o Sanitas Más Salud) para evitar cualquier objeción de recursos.'
+          '<strong>¿Puedo perder la tarjeta permanente si cancelo el seguro médico?</strong>: Una vez concedida la residencia de Larga Duración ordinaria, la condición de residente es indefinida y la tarjeta se renueva cada 5 años como un mero trámite de huellas (TIE). No obstante, para la Larga Duración UE deberás seguir acreditando seguro y recursos si pretendes trasladarte a trabajar a otro país de la Unión Europea.',
+          '<strong>¿Qué seguro debo contratar si vengo de 5 años de residencia no lucrativa?</strong>: Se recomienda mantener una póliza completa sin copagos (como Asisa Salud o Sanitas Más Salud) durante todo el periodo en que Extranjería resuelva tu expediente de Larga Duración para acreditar continuidad absoluta de cobertura sanitaria.',
+          '<strong>¿Qué plazo tiene Extranjería para resolver la solicitud de Larga Duración?</strong>: El plazo reglamentario es de 3 meses. Si transcurrido ese plazo la Administración no ha emitido resolución expresa, opera el **silencio administrativo positivo**, entendiéndose estimada la solicitud.',
+          '<strong>¿Sirve el convenio especial de la Seguridad Social para la Larga Duración?</strong>: Sí. El Convenio Especial de prestación de asistencia sanitaria pública es válido ante Extranjería, siempre que el extranjero lleve al menos un año empadronado en España y abone la cuota mensual estipulada por su Comunidad Autónoma.'
         ]
       }
     ]
@@ -3316,7 +3440,7 @@ export const blogPosts: BlogPostData[] = [
     title: 'Seguro Médico para Reagrupación Familiar en España (2026): Requisitos',
     category: 'tramites',
     categoryLabel: 'Trámites de Extranjería',
-    readTime: '7 min de lectura',
+    readTime: '8 min de lectura',
     date: '19 Octubre 2026',
     publishDate: '2026-10-19',
     author: {
@@ -3332,22 +3456,73 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'La reagrupación familiar es uno de los trámites más emotivos y trascendentales para los residentes extranjeros en España. Traer a tu cónyuge, hijos menores o progenitores mayores exige cumplir estrictos baremos económicos y de habitabilidad, pero <strong>la cobertura sanitaria de los familiares reagrupados es uno de los puntos que genera mayor número de requerimientos administrativos</strong>.'
+        text: 'La reagrupación familiar es uno de los trámites más emotivos y trascendentales para los residentes extranjeros en España. Traer legalmente a tu cónyuge, hijos menores o progenitores mayores exige cumplir estrictos baremos económicos y de habitabilidad de la vivienda. Sin embargo, <strong>la cobertura sanitaria de los familiares reagrupados es el requisito que genera mayor número de requerimientos de subsanación y suspensiones de expediente en las Oficinas de Extranjería</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'En esta guía explicamos en qué supuestos es obligatorio contratar un seguro médico privado para tus familiares y qué cláusulas debe certificar la aseguradora para que la Delegación de Gobierno apruebe la solicitud.'
+        text: 'En esta guía detallada explicamos en qué supuestos exactos es obligatorio contratar un seguro médico privado para tus familiares, qué cláusulas exige la Delegación del Gobierno y cómo asegurar a padres mayores de 65 años sin trabas médicas.'
       },
       {
         type: 'heading-2',
         text: '¿Cuándo es obligatorio el seguro privado en la reagrupación?'
       },
       {
+        type: 'paragraph',
+        text: 'La obligatoriedad de contratar una póliza privada depende directamente del tipo de reagrupación y de la relación de parentesco:'
+      },
+      {
         type: 'list',
         items: [
-          '<strong>Reagrupación de cónyuge e hijos menores</strong>: Si el reagrupante trabaja y cotiza en el Régimen General o de Autónomos, los hijos menores y cónyuge suelen poder incluirse como beneficiarios en la Seguridad Social. No obstante, mientras se resuelve la tarjeta física y el alta en el ambulatorio, Extranjería a menudo exige seguro privado preventivo.',
-          '<strong>Reagrupación de ascendientes (padres mayores de 65 años)</strong>: El Instituto Nacional de la Seguridad Social (INSS) suele denegar la inclusión de los progenitores reagrupados. Por tanto, <strong>el seguro médico privado sin copagos es 100% obligatorio para los padres reagrupados</strong>.',
-          '<strong>Reagrupación en régimen comunitario (Tarjeta de Familiar Comunitario)</strong>: Si el ciudadano de la UE no ejerce actividad laboral por cuenta ajena o propia, debe contratar un seguro privado para sí mismo y para todos los miembros reagrupados.'
+          '<strong>Reagrupación de cónyuge e hijos menores (Régimen General)</strong>: Si el reagrupante trabaja y cotiza en el Régimen General o de Autónomos de la Seguridad Social, los hijos menores y el cónyuge suelen tener derecho a ser dados de alta como beneficiarios en el INSS. No obstante, mientras se tramita la tarjeta física de identidad (TIE) y la cartilla del ambulatorio, muchas oficinas de Extranjería exigen una póliza privada preventiva.',
+          '<strong>Reagrupación de ascendientes (padres o suegros mayores de 65 años)</strong>: En este supuesto, el INSS sistemáticamente deniega la condición de beneficiario público si el ascendiente no ha cotizado previamente en España o en la UE. Por tanto, <strong>el seguro médico privado sin copagos es 100% obligatorio por ley para reagrupar a los padres</strong>.',
+          '<strong>Reagrupación en régimen comunitario (Familiar de Ciudadano de la UE)</strong>: Si el ciudadano comunitario (español o europeo) no ejerce actividad laboral por cuenta ajena o propia (es estudiante o reside con recursos propios), debe acreditar la contratación de un seguro médico privado completo para sí mismo y para cada uno de los familiares reagrupados.'
+        ]
+      },
+      {
+        type: 'table',
+        tableHeader: ['Familiar a Reagrupar', '¿Exige Seguro Privado Obligatorio?', 'Requisito de Copago', 'Particularidad Sanitaria'],
+        tableRows: [
+          ['Hijos menores de 18 años', 'Generalmente cubiertos por INSS si padre cotiza', 'Sin copagos si se aporta privado', 'Atención pediátrica inmediata'],
+          ['Cónyuge o pareja de hecho', 'Cubierto por INSS si hay matrimonio/registro', 'Sin copagos si se aporta privado', 'Seguimiento ginecológico y general'],
+          ['Padres mayores de 65 años', 'Sí, 100% obligatorio (INSS deniega cobertura)', 'Sin copagos (0€) y sin carencias', 'Requiere póliza para mayores sin exclusiones'],
+          ['Familiar comunitario no trabajador', 'Sí, obligatorio para toda la unidad familiar', 'Sin copagos (0€)', 'Equiparable a la sanidad pública española']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'El gran reto: Asegurar a padres mayores de 65 años'
+      },
+      {
+        type: 'paragraph',
+        text: 'El punto más crítico de las solicitudes de reagrupación familiar de ascendientes es que los padres suelen superar los 65 o 70 años. Las aseguradoras comerciales habituales deniegan el alta a personas de edad avanzada o imponen cuestionarios de salud imposibles de superar.'
+      },
+      {
+        type: 'paragraph',
+        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> trabajamos con productos especializados de <a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> y <a href="/productos/seguros-salud/seguros-sanitas/" class="text-primary hover:underline font-bold">Sanitas</a> configurados específicamente para personas mayores que tramitan extranjería: **sin copagos, con hospitalización completa y con emisión de certificado oficial admisible ante Extranjería**.'
+      },
+      {
+        type: 'cta-validator',
+        ctaBadge: 'Verificación Extranjería',
+        ctaTitle: '¿Vas a presentar los papeles de reagrupación familiar?',
+        ctaDescription: 'Comprueba que el certificado médico de tus familiares cumple exactamente con lo exigido por el Reglamento de Extranjería antes de ingresar el expediente telemático.',
+        ctaButtonText: 'Verificar certificado familiar',
+        ctaLink: '/validador-visado/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Requisitos técnicos que debe reflejar el certificado de salud familiar'
+      },
+      {
+        type: 'paragraph',
+        text: 'La Delegación del Gobierno exige que el documento aportado contenga menciones legales precisas:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Identificación individual de cada familiar</strong>: Nombre, apellidos y número de pasaporte de cada beneficiario.',
+          '<strong>Declaración expresa de ausencia de copagos</strong>: Ningún coste por consulta médica, urgencias o internamiento.',
+          '<strong>Hospitalización ilimitada y urgencias 24h</strong>: Acceso pleno a la red de clínicas y hospitales privados en toda España.',
+          '<strong>Garantía de repatriación sanitaria</strong>: Cobertura de traslado sanitario internacional al país de origen.'
         ]
       },
       {
@@ -3360,13 +3535,15 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'heading-2',
-        text: 'Preguntas Frecuentes sobre la Reagrupación Familiar'
+        text: 'Preguntas Frecuentes sobre la Reagrupación Familiar (FAQ)'
       },
       {
         type: 'list',
         items: [
-          '<strong>¿Qué pasa si mis padres tienen enfermedades preexistentes?</strong>: Las aseguradoras valoran el cuestionario de salud. En VitaBlue asesoramos para elegir la póliza con la suscripción más flexible del mercado.',
-          '<strong>¿Sirve un seguro con copagos bajos?</strong>: No. Cualquier mención a copagos motiva la suspensión o denegación del trámite en Extranjería.'
+          '<strong>¿Qué pasa si mis padres tienen hipertensión o diabetes?</strong>: Las aseguradoras valoran el cuestionario de salud. En VitaBlue estudiamos previamente los informes médicos para canalizar la solicitud hacia la aseguradora con mayor flexibilidad en patologías crónicas controladas.',
+          '<strong>¿Sirve un seguro de salud con copagos bajos?</strong>: No. Cualquier mención a copagos motivará una carta de requerimiento de 10 días o la denegación directa del trámite en la Delegación del Gobierno.',
+          '<strong>¿Cuánto tiempo debe durar la póliza de mis familiares?</strong>: Debe cubrir un mínimo de 12 meses ininterrumpidos a partir de la fecha prevista de llegada a territorio español.',
+          '<strong>¿Puedo asegurar a mis padres antes de que el visado esté concedido?</strong>: Sí, es un requisito previo indispensable para que Extranjería conceda la autorización inicial. Todas nuestras pólizas cuentan con garantía de devolución del 100% de la prima si el trámite fuese denegado.'
         ]
       }
     ]
@@ -3376,7 +3553,7 @@ export const blogPosts: BlogPostData[] = [
     title: 'Cómo Cambiar de Seguro Médico en España Sin Carencias (Guía 2026)',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
-    readTime: '7 min de lectura',
+    readTime: '8 min de lectura',
     date: '26 Octubre 2026',
     publishDate: '2026-10-26',
     author: {
@@ -3392,11 +3569,11 @@ export const blogPosts: BlogPostData[] = [
     sections: [
       {
         type: 'paragraph',
-        text: 'A medida que se acerca el fin de año, miles de asegurados en España reciben la carta de renovación de su póliza médica con subidas notables en la prima mensual. Si estás descontento con tu precio o con el cuadro médico de tu actual compañía, <strong>tienes derecho a cambiarte a otra aseguradora mejor (como Asisa o Sanitas) manteniendo tu antigüedad y eliminando los periodos de carencia</strong>.'
+        text: 'A medida que se acerca el último trimestre del año, cientos de miles de asegurados en España reciben la carta anual de su compañía médica notificando subidas considerables en la prima de renovación. Si estás insatisfecho con el encarecimiento de tu póliza, con recortes en el cuadro médico o con la atención recibida, <strong>tienes el derecho legal de cambiarte a una aseguradora de primer nivel (como Asisa o Sanitas) conservando tu antigüedad y eliminando los periodos de carencia</strong>.'
       },
       {
         type: 'paragraph',
-        text: 'En esta guía práctica te explicamos los plazos legales de preaviso, la documentación necesaria para la supresión de carencias y los errores más comunes que debes evitar para no quedarte sin cobertura médica ni un solo día.'
+        text: 'En esta guía práctica te explicamos los plazos legales de preaviso, la documentación necesaria para la supresión total de carencias y los errores más comunes que debes evitar para disfrutar de una transición médica perfecta y sin pagar doble recibo.'
       },
       {
         type: 'heading-2',
@@ -3404,53 +3581,80 @@ export const blogPosts: BlogPostData[] = [
       },
       {
         type: 'paragraph',
-        text: 'El periodo de carencia es el tiempo que debe transcurrir entre el alta del seguro y el momento en que puedes acceder a ciertas pruebas complejas o cirugías. Sin embargo, cuando cambias de compañía:'
+        text: 'El periodo de carencia es el plazo temporal que debe transcurrir entre el alta inicial de la póliza y el momento en que puedes acceder a ciertas pruebas diagnósticas de alta resolución, intervenciones quirúrgicas u hospitalización (habitualmente de 3 a 8 meses). No obstante, en el mercado asegurador español opera el principio de **Reconocimiento de Antigüedad (Seniority Waiver)**:'
       },
       {
         type: 'list',
         items: [
-          '<strong>Reconocimiento de antigüedad</strong>: Si has estado asegurado al menos 10 a 12 meses ininterrumpidos en otra entidad de salud en España, la nueva aseguradora elimina todas las carencias habituales (pruebas diagnósticas complejas, resonancias, intervenciones quirúrgicas y hospitalización).',
-          '<strong>Excepciones del sector</strong>: La única carencia que habitualmente no se elimina es la asistencia al parto (8 meses), salvo acuerdos corporativos especiales.',
-          '<strong>Sin duplicar pagos</strong>: Coordinamos la fecha de efecto de tu nueva póliza exactamente para el día siguiente al cese de la anterior.'
+          '<strong>Reconocimiento de antigüedad acreditada</strong>: Si has permanecido asegurado durante al menos 10 a 12 meses ininterrumpidos en otra aseguradora autorizada en España (Adeslas, DKV, Mapfre, Caser, etc.), la nueva compañía (<a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> o <a href="/productos/seguros-salud/seguros-sanitas/" class="text-primary hover:underline font-bold">Sanitas</a>) **elimina íntegramente las carencias estándar**.',
+          '<strong>Acceso hospitalario y quirúrgico inmediato</strong>: Desde el primer día de vigor de tu nueva póliza tienes acceso a resonancias magnéticas, TAC, ecografías de alta resolución, cirugías programadas y hospitalización médica.',
+          '<strong>Excepciones habituales del sector</strong>: La única carencia que habitualmente no se suprime por traspaso individual es la asistencia al parto (fijada en 8 meses), para evitar contrataciones oportunistas en gestaciones avanzadas.',
+          '<strong>Sincronización exacta de fechas</strong>: Coordinamos el inicio de tu nueva póliza para el día exacto en que finaliza la cobertura anterior, asegurando cero días sin seguro médico.'
         ]
       },
       {
         type: 'table',
-        tableHeader: ['Prestación Médica', 'Carencia Nueva Contratación', 'Carencia con Cambio de Compañía (Seniority)'],
+        tableHeader: ['Servicio o Tratamiento Médico', 'Carencia en Contratación Nueva', 'Carencia con Cambio de Compañía (Traspaso VitaBlue)'],
         tableRows: [
-          ['Consultas y analíticas básicas', '0 días (Inmediato)', '0 días (Inmediato)'],
-          ['Pruebas diagnósticas de alta resolución (TAC, RMN)', '3 a 6 meses', 'ELIMINADA (0 días)'],
-          ['Hospitalización e intervenciones quirúrgicas', '6 a 8 meses', 'ELIMINADA (0 días)'],
-          ['Tratamientos oncológicos y diálisis', '6 meses', 'ELIMINADA (0 días)'],
-          ['Parto y cesárea programada', '8 meses', 'Mantiene 8 meses (Salvo excepciones)']
+          ['Consultas con especialistas y análisis clínicos', '0 días (Acceso inmediato)', '0 días (Acceso inmediato)'],
+          ['Pruebas diagnósticas de alta tecnología (RMN, TAC, Endoscopias)', '3 a 6 meses de espera', 'TOTALMENTE ELIMINADA (0 días)'],
+          ['Hospitalización médica y quirúrgica en clínica privada', '6 a 8 meses de espera', 'TOTALMENTE ELIMINADA (0 días)'],
+          ['Cirugía ambulatoria y quirófano programado', '6 meses de espera', 'TOTALMENTE ELIMINADA (0 días)'],
+          ['Tratamientos oncológicos y radioterapia', '6 meses de espera', 'TOTALMENTE ELIMINADA (0 días)'],
+          ['Parto, cesárea y estancia obstétrica', '8 meses de espera', '8 meses (salvo pólizas corporativas)']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'El Plazo Legal Ineludible: La Regla del Preaviso de 30 Días'
+      },
+      {
+        type: 'paragraph',
+        text: 'El marco regulatorio fijado por el **artículo 22 de la Ley 50/1980 de Contrato de Seguro** establece que las partes pueden oponerse a la prórroga del contrato mediante una notificación escrita a la otra parte efectuada con un plazo de, al menos, **un mes de anticipación a la conclusión del periodo del seguro en curso**.'
+      },
+      {
+        type: 'callout',
+        text: '📅 <strong>Atención a la fecha límite del 30 de Noviembre</strong>:<br/>La inmensa mayoría de seguros de salud individuales en España tienen vencimiento fijado al 31 de diciembre de cada año. Esto significa que tu comunicación formal de cancelación debe obrar en poder de tu aseguradora actual **antes del 30 de noviembre** para que no puedan obligarte a renovar otro año.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si tu aseguradora actual te notifica una subida unilateral del precio de la póliza sin respetar los dos meses previos de antelación legal, dispones del derecho a rescindir el contrato de forma extraordinaria sin penalización.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Documentos requeridos para tramitar la eliminación de carencias'
+      },
+      {
+        type: 'paragraph',
+        text: 'El procedimiento documental es muy sencillo. Para que la nueva aseguradora emita tu póliza con supresión de carencias solo debes aportar:'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Copia de las Condiciones Particulares de tu seguro actual</strong>: Donde conste la fecha de efecto original de la póliza para certificar tu antigüedad.',
+          '<strong>Último recibo bancario pagado</strong>: Justificante que acredite que la póliza se encuentra al corriente de pago y en vigor.',
+          '<strong>Cuestionario de salud cumplimentado</strong>: Como en cualquier contratación privada, deberás declarar tu estado de salud actual para valorar posibles patologías sobrevenidas.'
         ]
       },
       {
         type: 'cta-wizard',
-        ctaBadge: 'Ahorro Salud 2026',
-        ctaTitle: '¿Quieres mejorar el precio de tu seguro médico sin perder antigüedad?',
-        ctaDescription: 'Calcula tu ahorro al cambiar a Asisa o Sanitas. Gestionamos la eliminación total de carencias y te asesoramos con la carta de cancelación de tu compañía anterior.',
+        ctaBadge: 'Optimización de Póliza 2026',
+        ctaTitle: '¿Quieres comparar alternativas antes del 30 de noviembre?',
+        ctaDescription: 'Descubre cuánto puedes ahorrar cambiando tu seguro a Asisa o Sanitas manteniendo toda tu antigüedad y con eliminación íntegra de carencias.',
         ctaButtonText: 'Comparar y cambiar de seguro',
         ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
-        text: 'Plazo legal para cancelar tu seguro actual: La regla de los 30 días'
-      },
-      {
-        type: 'paragraph',
-        text: 'Según el artículo 22 de la Ley 50/1980 de Contrato de Seguro de España, para rescindir una póliza de salud debes notificar a tu aseguradora con al menos <strong>un mes de antelación al vencimiento anual</strong> (habitualmente antes del 30 de noviembre en contratos con vigencia por año natural). No obstante, si tu compañía te aplica una subida unilateral de prima sin previo aviso suficiente, dispones de opciones extraordinarias de rescisión.'
-      },
-      {
-        type: 'heading-2',
-        text: 'Preguntas Frecuentes sobre el Cambio de Compañía (FAQ)'
+        text: 'Preguntas Frecuentes sobre el Cambio de Aseguradora (FAQ)'
       },
       {
         type: 'list',
         items: [
-          '<strong>¿Qué documentos me piden para quitar las carencias?</strong>: Únicamente la copia de las condiciones particulares de tu seguro actual y el último recibo bancario pagado.',
-          '<strong>¿Tengo que volver a rellenar el cuestionario de salud?</strong>: Sí. Toda nueva aseguradora requiere cumplimentar la declaración de salud para verificar si han surgido patologías preexistentes.',
-          '<strong>¿Cuándo empieza a cubrir la nueva póliza?</strong>: El mismo día en que entre en vigor, con acceso inmediato a los mejores hospitales privados de España.'
+          '<strong>¿Qué ocurre si tengo una enfermedad diagnosticada durante este año?</strong>: La nueva aseguradora podría excluir la cobertura de esa dolencia específica en su cuestionario de salud. En VitaBlue analizamos tu caso previamente para aconsejarte si te conviene cambiar o permanecer en tu compañía actual.',
+          '<strong>¿Me cobran algún gasto o comisión por gestionar el cambio de compañía?</strong>: En VitaBlue el servicio de asesoramiento, gestión del traspaso y supresión de carencias es 100% gratuito para el asegurado.',
+          '<strong>¿Cómo envío la carta de baja a mi aseguradora anterior?</strong>: Te proporcionamos una plantilla de cancelación legalmente blindada para enviarla por correo electrónico certificado, burofax o a través del área de cliente de tu aseguradora antes del plazo de 30 días.',
+          '<strong>¿Cuándo empieza a cubrir la nueva póliza de salud?</strong>: Se programa para entrar en vigor el día 1 de enero (o el día inmediatamente posterior a la baja de la póliza anterior), sin que exista ningún periodo de desprotección sanitaria.'
         ]
       }
     ]
