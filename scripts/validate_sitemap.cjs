@@ -10,13 +10,23 @@ const registryCanonicalRoutes = [...registry.matchAll(/canonical\('([^']+)',\s*\
   .filter(([, , options]) => !/sitemap:\s*false/.test(options))
   .map(([, path]) => path);
 
+const todayIso = new Date().toISOString().slice(0, 10);
 const postEntries = blogData.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
-const blogExpectedRoutes = postEntries.map((block) => {
-  const slug = block.split("'")[0];
-  const langMatch = block.match(/lang:\s*'([^']+)'/);
-  const isEn = langMatch ? langMatch[1] === 'en' : false;
-  return `${isEn ? '/en' : ''}/blog/${slug}`;
-});
+const blogExpectedRoutes = postEntries
+  .map((block) => {
+    const slug = block.split("'")[0];
+    const langMatch = block.match(/lang:\s*'([^']+)'/);
+    const publishDateMatch = block.match(/publishDate:\s*'([^']+)'/);
+    const isEn = langMatch ? langMatch[1] === 'en' : false;
+    const publishDate = publishDateMatch ? publishDateMatch[1] : null;
+    return {
+      slug,
+      isEn,
+      publishDate,
+    };
+  })
+  .filter((post) => !post.publishDate || post.publishDate <= todayIso)
+  .map((post) => `${post.isEn ? '/en' : ''}/blog/${post.slug}`);
 
 const expectedRoutes = [
   ...registryCanonicalRoutes,

@@ -1,0 +1,97 @@
+name: Scheduled Blog Publishing & Indexing
+
+on:
+  schedule:
+    # Runs every Monday at 08:00 UTC (10:00 CEST)
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+    # Allows manual trigger at any time from GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  scheduled-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Sync Blog & Generate Sitemap
+        run: npm run sync-blog
+
+      - name: Check for Sitemap / Content Changes
+        id: git_diff
+        shell: bash
+        run: |
+          git status --porcelain
+          if [ -n "$(git status --porcelain public/sitemap.xml)" ]; then
+            echo "sitemap_changed=true" >> "$GITHUB_OUTPUT"
+            echo "New blog post(s) became active based on current date!"
+          else
+            echo "sitemap_changed=false" >> "$GITHUB_OUTPUT"
+            echo "No new blog posts scheduled for this cycle."
+          fi
+
+      - name: Validate Quality Gates
+        run: |
+          npm run typecheck
+          npm run validate-products
+          npm run validate-route-registry
+          npm run validate-routes:strict
+          npm run validate-sitemap
+
+      - name: Build Project (SSG Prerender)
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Validate SSG Output & SEO
+        run: |
+          npm run validate:ssg
+          npm run validate-static-seo
+          npm run validate-internal-links
+
+      - name: Commit & Push Updated Sitemap to main
+        if: steps.git_diff.outputs.sitemap_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/sitemap.xml
+          git commit -m "chore(blog): update sitemap for scheduled weekly publication [skip ci]"
+          git push origin main
+
+      - name: Deploy Compiled Files to deploy Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: deploy
+          clean: true
+
+      - name: Notify Google Search Console
+        if: success()
+        run: |
+          node -e "
+            const https = require('https');
+            const sitemapUrl = encodeURIComponent('https://www.vitablue.es/sitemap.xml');
+            const pingUrl = 'https://www.google.com/ping?sitemap=' + sitemapUrl;
+            console.log('Pinging Google sitemap endpoint:', pingUrl);
+            https.get(pingUrl, (res) => {
+              console.log('Google ping response status:', res.statusCode);
+            }).on('error', (err) => {
+              console.warn('Google ping warning (non-blocking):', err.message);
+            });
+          "

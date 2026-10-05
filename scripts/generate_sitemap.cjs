@@ -28,42 +28,48 @@ for (const [, routePath, options] of canonicalMatches) {
   }
 }
 
-// Extraer posts del blog con sus alternateSlug
+// Extraer posts del blog con sus alternateSlug y fecha de publicación
+const todayIso = new Date().toISOString().slice(0, 10);
 const postEntries = blogData.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
-const blogPostsRaw = postEntries.map((block) => {
-  const slug = block.split("'")[0];
-  const alternateMatch = block.match(/alternateSlug:\s*'([^']+)'/);
-  const langMatch = block.match(/lang:\s*'([^']+)'/);
-  const dateMatch = block.match(/date:\s*'([^']+)'/);
-  const updatedAtMatch = block.match(/updatedAt:\s*'([^']+)'/);
-  const isEn = langMatch ? langMatch[1] === 'en' : false;
-  
-  // Parse Spanish and English textual dates to YYYY-MM-DD
-  let isoDate = '2026-08-03';
-  const rawDate = (updatedAtMatch && updatedAtMatch[1]) || (dateMatch && dateMatch[1]);
-  if (rawDate) {
-    const months = {
-      'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
-      'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
-      'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06',
-      'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12'
-    };
-    const parts = rawDate.toLowerCase().split(/\s+/);
-    if (parts.length === 3) {
-      const day = parts[0].padStart(2, '0');
-      const month = months[parts[1]] || '08';
-      const year = parts[2];
-      isoDate = `${year}-${month}-${day}`;
+const blogPostsRaw = postEntries
+  .map((block) => {
+    const slug = block.split("'")[0];
+    const alternateMatch = block.match(/alternateSlug:\s*'([^']+)'/);
+    const langMatch = block.match(/lang:\s*'([^']+)'/);
+    const dateMatch = block.match(/date:\s*'([^']+)'/);
+    const updatedAtMatch = block.match(/updatedAt:\s*'([^']+)'/);
+    const publishDateMatch = block.match(/publishDate:\s*'([^']+)'/);
+    const isEn = langMatch ? langMatch[1] === 'en' : false;
+    const publishDate = publishDateMatch ? publishDateMatch[1] : null;
+    
+    // Parse Spanish and English textual dates to YYYY-MM-DD
+    let isoDate = '2026-08-03';
+    const rawDate = (updatedAtMatch && updatedAtMatch[1]) || (dateMatch && dateMatch[1]);
+    if (rawDate) {
+      const months = {
+        'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
+        'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
+        'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06',
+        'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12'
+      };
+      const parts = rawDate.toLowerCase().split(/\s+/);
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = months[parts[1]] || '08';
+        const year = parts[2];
+        isoDate = `${year}-${month}-${day}`;
+      }
     }
-  }
 
-  return {
-    slug,
-    lang: isEn ? 'en' : 'es',
-    alternateSlug: alternateMatch ? alternateMatch[1] : undefined,
-    lastmod: isoDate,
-  };
-});
+    return {
+      slug,
+      lang: isEn ? 'en' : 'es',
+      alternateSlug: alternateMatch ? alternateMatch[1] : undefined,
+      publishDate,
+      lastmod: isoDate,
+    };
+  })
+  .filter((post) => !post.publishDate || post.publishDate <= todayIso);
 
 
 const routeLastmods = new Map();

@@ -21,7 +21,7 @@ import BlogSidebarFilters, {
   QuickTopicOption 
 } from '@/components/molecules/BlogSidebarFilters';
 import BlogPagination from '@/components/molecules/BlogPagination';
-import { blogPosts, BlogPostData } from '@/utils/blogData';
+import { blogPosts, BlogPostData, isPostPublished } from '@/utils/blogData';
 
 // Month dictionary for strict chronological sorting
 const monthsMap: Record<string, string> = {
@@ -107,9 +107,12 @@ export const BlogList: React.FC = () => {
     setSearchParams(newParams, { replace: true });
   };
 
-  // Base list filtered by current locale
+  // Base list filtered by current locale and publication schedule (in production)
   const languagePosts = useMemo(
-    () => blogPosts.filter((post) => (post.lang || 'es') === (isEnglish ? 'en' : 'es')),
+    () =>
+      blogPosts
+        .filter((post) => (import.meta.env.DEV ? true : isPostPublished(post)))
+        .filter((post) => (post.lang || 'es') === (isEnglish ? 'en' : 'es')),
     [isEnglish]
   );
 
