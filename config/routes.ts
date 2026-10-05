@@ -1,4 +1,4 @@
-import { blogPosts } from '../utils/blogData';
+import { blogPosts, isPostPublished } from '../utils/blogData';
 
 /**
  * Route inventory for the future single source of truth.
@@ -201,5 +201,7 @@ export const prerenderRoutes = [
   ...routeRegistry
     .filter((route) => route.prerender && !route.path.includes(':'))
     .map((route) => route.path),
-  ...blogPosts.map((post) => `${post.lang === 'en' ? '/en' : ''}/blog/${post.slug}/`),
+  ...blogPosts
+    .filter((post) => isPostPublished(post))
+    .map((post) => `${post.lang === 'en' ? '/en' : ''}/blog/${post.slug}/`),
 ];

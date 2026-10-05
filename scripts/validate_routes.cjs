@@ -26,8 +26,20 @@ if (prerenderRoutes.length === 0 && /routes:\s*prerenderRoutes/.test(vite)) {
     ...[...registry.matchAll(/(?:canonical|legacy)\('([^']+)'/g)].map((match) => match[1]),
     ...[...registry.matchAll(/path:\s*'\/(?:cotizador\.html|wizard\/?|resultados\/?)'/g)].map((match) => match[0].match(/'([^']+)'/)[1]),
   ];
-  const blogSlugs = [...fs.readFileSync(path.join(root, 'utils', 'blogData.ts'), 'utf8').matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]);
-  prerenderRoutes = [...staticRegistryRoutes, ...blogSlugs.map((slug) => `${slug.startsWith('student-visa-') || slug.startsWith('health-insurance-') ? '/en' : ''}/blog/${slug}/`)];
+  const blogRaw = fs.readFileSync(path.join(root, 'utils', 'blogData.ts'), 'utf8');
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const blogEntries = blogRaw.split(/\n\s*\{\s*\n?\s*slug:\s*'/).slice(1);
+  const activeBlogSlugs = blogEntries
+    .map((block) => {
+      const slug = block.split("'")[0];
+      const publishDateMatch = block.match(/publishDate:\s*'([^']+)'/);
+      const publishDate = publishDateMatch ? publishDateMatch[1] : null;
+      return { slug, publishDate };
+    })
+    .filter((entry) => !entry.publishDate || entry.publishDate <= todayIso)
+    .map((entry) => entry.slug);
+
+  prerenderRoutes = [...staticRegistryRoutes, ...activeBlogSlugs.map((slug) => `${slug.startsWith('student-visa-') || slug.startsWith('health-insurance-') ? '/en' : ''}/blog/${slug}/`)];
 }
 const sitemapRoutes = [...sitemap.matchAll(/<loc>https?:\/\/[^<]+?(\/[^<]*)<\/loc>/g)].map((match) => match[1] || '/');
 const registryRoutes = [

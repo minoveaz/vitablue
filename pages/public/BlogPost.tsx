@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ChevronLeft } from 'lucide-react';
-import { blogPosts } from '@/utils/blogData';
+import { blogPosts, isPostPublished } from '@/utils/blogData';
 import ArticleHeader from '@/components/molecules/ArticleHeader';
 import ArticleToc from '@/components/molecules/ArticleToc';
 import BlogSectionRenderer from '@/components/molecules/BlogSectionRenderer';
@@ -304,8 +304,18 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
 
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = useMemo(() => blogPosts.find((item) => item.slug === slug), [slug]);
-  if (!post) return <Navigate to="/blog/" replace />;
+  const isEnglish = window.location.pathname.startsWith('/en');
+  const fallbackUrl = isEnglish ? '/en/blog/' : '/blog/';
+
+  const post = useMemo(() => {
+    const found = blogPosts.find((item) => item.slug === slug);
+    if (!found) return undefined;
+    // In production, block unpublished future posts with redirect to blog list
+    if (!import.meta.env.DEV && !isPostPublished(found)) return undefined;
+    return found;
+  }, [slug]);
+
+  if (!post) return <Navigate to={fallbackUrl} replace />;
   return <BlogPostView post={post} />;
 };
 
