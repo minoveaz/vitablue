@@ -17,7 +17,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const variantClasses = {
     primary: 'bg-primary/10 text-primary',
-    accent: 'bg-accent/10 text-accent-strong',
+    accent: 'bg-accent/10 text-accent-dark',
     success: 'bg-brand-cyan/20 text-success-strong',
     neutral: 'bg-slate-100 text-slate-600',    
   };

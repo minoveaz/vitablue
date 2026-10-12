@@ -123,6 +123,8 @@ jobs:
       - name: Build Project (SSG + Prerender)
         run: npm run build
         env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           # Puppeteer en CI usa Chromium del sistema, no el local de macOS
           PUPPETEER_EXECUTABLE_PATH: ''
 

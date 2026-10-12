@@ -122,6 +122,8 @@ export const dynamicRoutes: RouteDefinition[] = [
  * are implemented and verified in production.
  */
 export const legacyRoutes: RouteDefinition[] = [
+  legacy('/blog/consular-health-insurance-certificate-spain-visa', '/en/blog/consular-health-insurance-certificate-spain-visa'),
+  legacy('/blog/student-visa-spain-health-insurance-requirements', '/en/blog/student-visa-spain-health-insurance-requirements'),
   legacy('/estudiantes', '/productos/seguros-salud/seguro-medico-estudiantes'),
   legacy('/seguro-medico-visado-espana/colombia-bogota', '/productos/seguros-salud/seguro-medico-estudiantes/colombia'),
   legacy('/seguro-medico-visado-espana/mexico-cdmx', '/productos/seguros-salud/seguro-medico-estudiantes/mexico'),

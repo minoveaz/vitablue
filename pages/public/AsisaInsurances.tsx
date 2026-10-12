@@ -212,9 +212,6 @@ export const AsisaInsurances: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Multilingual Alternate Links */}
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance/asisa-insurance/" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
@@ -545,4 +542,3 @@ export const AsisaInsurances: React.FC = () => {
 };
 
 export default AsisaInsurances;
-
