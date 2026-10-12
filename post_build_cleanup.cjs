@@ -439,13 +439,13 @@ function injectLandingMetadataAndSchemas() {
     const title = 'Gama Oficial de Seguros de Salud Asisa | Catálogo VitaBlue';
     const description = 'Explora y compara la gama oficial de seguros de salud de Asisa: ASISA Health Students, Residents, Completa +, Esencial y Mutualistas. Precio oficial sin comisiones.';
 
-    content = content.replace(/<title>[^<]*<\/title>/i, `<title>${title}</title>`);
-    content = content.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${description}"`);
-    content = content.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${title}"`);
-    content = content.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${description}"`);
-    content = content.replace(/<meta property="og:url" content="[^"]*"/i, '<meta property="og:url" content="https://www.vitablue.es/productos/seguros-salud/seguros-sanitas/"');
-    content = content.replace(/<meta name="twitter:title" content="[^"]*"/i, `<meta name="twitter:title" content="${title}"`);
-    content = content.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${description}"`);
+    content = setTitleTag(content, title);
+    content = setMetaTag(content, 'description', false, description);
+    content = setMetaTag(content, 'og:title', true, title);
+    content = setMetaTag(content, 'og:description', true, description);
+    content = setMetaTag(content, 'og:url', true, 'https://www.vitablue.es/productos/seguros-salud/seguros-asisa/');
+    content = setMetaTag(content, 'twitter:title', false, title);
+    content = setMetaTag(content, 'twitter:description', false, description);
 
     const faqs = [
       {

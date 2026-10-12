@@ -8,7 +8,9 @@ test.describe('Public blog functional flows', () => {
     await expect(page.locator('article').first()).toBeVisible();
     expect(await page.locator('article').count()).toBeGreaterThanOrEqual(2);
     await search.fill('');
-    await page.getByRole('button', { name: /visados y nie|visas & nie/i }).click();
+    await page.getByRole('radio', { name: /estudiantes extranjeros/i }).click();
+    await expect(page.getByRole('radio', { name: /estudiantes extranjeros/i })).toHaveAttribute('aria-checked', 'true');
+    await expect(page.locator('article').first()).toBeVisible();
     await page.locator('article').first().getByRole('link').first().click();
     await expect(page.locator('h1')).toBeVisible();
   });
