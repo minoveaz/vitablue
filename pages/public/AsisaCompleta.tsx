@@ -335,9 +335,6 @@ export const AsisaCompleta: React.FC = () => {
         <meta name="description" content={description} />
         <link rel="canonical" href={canonicalUrl} />
 
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/health-insurance/asisa-completa/" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/productos/seguros-salud/seguros-asisa/asisa-completa/" />
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
@@ -569,7 +566,7 @@ export const AsisaCompleta: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-display font-black leading-snug">AsisaLIVE App</h4>
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">
+                  <span className="text-[8px] font-black uppercase tracking-wider text-white">
                     {isEnglish ? 'General Medicine' : 'Medicina General'}
                   </span>
                   <p className="text-xs font-bold leading-tight">
@@ -580,7 +577,7 @@ export const AsisaCompleta: React.FC = () => {
                   </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-left space-y-1">
-                  <span className="text-[8px] font-black uppercase tracking-wider text-brand-cyan">
+                  <span className="text-[8px] font-black uppercase tracking-wider text-white">
                     {isEnglish ? 'Specialists' : 'Especialistas'}
                   </span>
                   <p className="text-xs font-bold leading-tight">

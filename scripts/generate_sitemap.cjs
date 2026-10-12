@@ -117,11 +117,18 @@ for (const post of blogPostsRaw) {
   const path = `${isEn ? '/en' : ''}/blog/${post.slug}`;
   routeLocales.set(path, isEn ? 'en' : 'es');
   routeLastmods.set(path, post.lastmod);
+}
 
+const publishedBlogRoutes = new Set(blogPostsRaw.map((post) => (
+  `${post.lang === 'en' ? '/en' : ''}/blog/${post.slug}`
+)));
+for (const post of blogPostsRaw) {
+  const isEn = post.lang === 'en';
+  const path = `${isEn ? '/en' : ''}/blog/${post.slug}`;
   if (post.alternateSlug) {
     const altIsEn = !isEn;
     const altPath = `${altIsEn ? '/en' : ''}/blog/${post.alternateSlug}`;
-    alternatesMap.set(path, altPath);
+    if (publishedBlogRoutes.has(altPath)) alternatesMap.set(path, altPath);
   }
 }
 

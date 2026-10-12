@@ -16,8 +16,6 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
   const isEnglish = post.lang === 'en';
   const tocItems = post.sections.filter((section) => section.type === 'heading-2').map((section) => ({ text: section.text || '', id: createHeadingId(section.text) }));
   const blogPath = isEnglish ? '/en/blog/' : '/blog/';
-  const alternatePost = post.alternateSlug ? blogPosts.find((item) => item.slug === post.alternateSlug) : undefined;
-  const alternateSlug = alternatePost?.slug;
   const resolvedImageUrl = post.featuredImage.startsWith('http')
     ? post.featuredImage
     : `https://www.vitablue.es${post.featuredImage}`;
@@ -194,13 +192,6 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
         <title>{post.title}</title>
         <meta name="description" content={post.excerpt} />
         <link rel="canonical" href={`https://www.vitablue.es${blogPath}${post.slug}/`} />
-        {alternateSlug && (
-          <link
-            rel="alternate"
-            hrefLang={isEnglish ? 'es' : 'en'}
-            href={`https://www.vitablue.es${isEnglish ? '/blog' : '/en/blog'}/${alternateSlug}/`}
-          />
-        )}
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />

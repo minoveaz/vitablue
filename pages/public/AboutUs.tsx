@@ -110,9 +110,6 @@ const AboutUs: React.FC = () => {
         <meta property="og:description" content={content.seo.description} />
         <meta property="og:image" content="https://www.vitablue.es/assets/vitablue-share.jpg" />
         <link rel="canonical" href={`https://www.vitablue.es${content.seo.path}/`} />
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/sobre-nosotros/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/about-us/" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/sobre-nosotros/" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@graph': [

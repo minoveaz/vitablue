@@ -298,6 +298,11 @@ test.describe('🔍 SEO Audit — Páginas Públicas Indexables', () => {
       ).toBeLessThanOrEqual(120);
 
       // ── Meta Description ───────────────────────────────
+      await expect(
+        page.locator('meta[name="description"]'),
+        `${route.path}: debe haber exactamente una meta description`,
+      ).toHaveCount(1);
+
       const description = await page
         .locator('meta[name="description"]')
         .getAttribute('content');
@@ -316,6 +321,26 @@ test.describe('🔍 SEO Audit — Páginas Públicas Indexables', () => {
         description!.length,
         `${route.path}: meta description demasiado larga (${description!.length} chars > 300). Desc: "${description!.slice(0, 60)}..."`,
       ).toBeLessThanOrEqual(300);
+
+      // ── Language and hreflang ───────────────────────────
+      const expectedLanguage = route.path === '/en' || route.path.startsWith('/en/')
+        ? 'en'
+        : 'es';
+      await expect(page.locator('html')).toHaveAttribute('lang', expectedLanguage);
+
+      const alternates = await page.locator('head link[rel="alternate"][hreflang]').evaluateAll((links) =>
+        links.map((link) => ({
+          language: link.getAttribute('hreflang')?.toLowerCase() ?? '',
+          href: link.getAttribute('href') ?? '',
+        })),
+      );
+      const alternateLanguages = alternates.map(({ language }) => language);
+      expect(new Set(alternateLanguages).size, `${route.path}: hreflang duplicado`).toBe(alternateLanguages.length);
+      const defaultAlternate = alternates.find(({ language }) => language === 'x-default');
+      const spanishAlternate = alternates.find(({ language }) => language === 'es-es');
+      if (defaultAlternate) {
+        expect(defaultAlternate.href, `${route.path}: x-default debe apuntar a la versión española`).toBe(spanishAlternate?.href);
+      }
 
       // ── H1 único ───────────────────────────────────────
       try {

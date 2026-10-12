@@ -41,12 +41,28 @@ for (const url of urls) {
   }
 
   const html = fs.readFileSync(filePath, 'utf8');
-  const canonical = html.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/)?.[1];
+  const pathname = new URL(url).pathname;
+  const route = normalizeRoute(pathname);
+  const page = getPageForRoute(route);
+  const canonicalTags = getTags(html, 'link')
+    .filter((tag) => getAttribute(tag, 'rel').toLowerCase() === 'canonical');
+  const canonical = canonicalTags.length === 1 ? getAttribute(canonicalTags[0], 'href') : undefined;
+  if (canonicalTags.length !== 1) failures.push(`${url}: expected exactly one canonical tag, found ${canonicalTags.length}`);
   const title = html.match(/<title>([^<]+)<\/title>/)?.[1]?.trim();
-  const description = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/)?.[1]?.trim();
+  const descriptionTags = getTags(html, 'meta')
+    .filter((tag) => getAttribute(tag, 'name').toLowerCase() === 'description');
+  const description = descriptionTags.length === 1 ? getAttribute(descriptionTags[0], 'content').trim() : '';
+  if (descriptionTags.length !== 1) {
+    failures.push(`${url}: expected exactly one meta description, found ${descriptionTags.length}`);
+  }
   if (canonical !== url) failures.push(`${url}: canonical is ${canonical ?? 'missing'}`);
   if (!title) failures.push(`${url}: missing title`);
   if (!description) failures.push(`${url}: missing meta description`);
+  const htmlTag = html.match(/<html\b[^>]*>/i)?.[0] ?? '';
+  const expectedLanguage = pathname === '/en/' || pathname.startsWith('/en/') ? 'en' : 'es';
+  if (getAttribute(htmlTag, 'lang').toLowerCase() !== expectedLanguage) {
+    failures.push(`${url}: expected html lang="${expectedLanguage}", found "${getAttribute(htmlTag, 'lang') || 'missing'}"`);
+  }
   for (const tag of ['card', 'title', 'description', 'image']) {
     const twitterTag = html.match(new RegExp(`<meta[^>]+name="twitter:${tag}"[^>]*>`, 'i'))?.[0];
     if (!twitterTag || !getAttribute(twitterTag, 'content').trim()) {
@@ -60,8 +76,6 @@ for (const url of urls) {
     }
   }
 
-  const route = normalizeRoute(new URL(url).pathname);
-  const page = getPageForRoute(route);
   if (!page) {
     failures.push(`${url}: missing hreflang manifest entry`);
     continue;

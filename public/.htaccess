@@ -45,6 +45,10 @@
 
   RewriteRule ^(?:login|backoffice|wizard|resultados)(?:/|$) - [E=VITABLUE_PRIVATE_ROUTE:1]
 
+  # English blog slugs discovered without their /en/ locale prefix
+  RewriteRule ^blog/consular-health-insurance-certificate-spain-visa/?$ https://www.vitablue.es/en/blog/consular-health-insurance-certificate-spain-visa/ [R=301,L,NE]
+  RewriteRule ^blog/student-visa-spain-health-insurance-requirements/?$ https://www.vitablue.es/en/blog/student-visa-spain-health-insurance-requirements/ [R=301,L,NE]
+
   # ----------------------------------------------------------------------
   # 1. NORMALIZACIÓN DE DOBLES BARRAS CONSECUTIVAS (// -> /)
   # Evita que Googlebot indexe URLs duplicadas con doble slash.

@@ -396,9 +396,6 @@ La carencia es el periodo de tiempo que transcurre desde que das de alta el segu
           content={isEnglish ? 'Find the best insurance to live, study, or travel in Spain. Compare health, student visa, and expat policies with official Sanitas advisors.' : 'Encuentra el seguro de salud ideal para vivir, estudiar o viajar en España. Comparador independiente y Agente Oficial Sanitas con asesoramiento personalizado gratuito.'}
         />
         <link rel="canonical" href={isEnglish ? 'https://www.vitablue.es/en/' : 'https://www.vitablue.es/'} />
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />

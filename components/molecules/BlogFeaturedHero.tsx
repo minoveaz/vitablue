@@ -38,7 +38,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post, isEngl
         <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-5 bg-white">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-black text-caption uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-dark font-black text-caption uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5 fill-accent" />
                 {badgeText}
               </span>

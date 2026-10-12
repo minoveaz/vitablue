@@ -1,5 +1,5 @@
 import { canonicalRoutes, legacyRoutes } from '../../config/routes';
-import { blogPosts } from '../../utils/blogData';
+import { blogPosts, isPostPublished } from '../../utils/blogData';
 
 export interface PublicRoute {
   name: string;
@@ -20,7 +20,7 @@ const canonicalPublicRoutes: PublicRoute[] = canonicalRoutes.map((route) => ({
   expectedCanonical: canonicalPath(route.canonical || route.path),
 }));
 
-const blogArticleRoutes: PublicRoute[] = blogPosts.map((post) => {
+const blogArticleRoutes: PublicRoute[] = blogPosts.filter((post) => isPostPublished(post)).map((post) => {
   const prefix = post.lang === 'en' ? '/en' : '';
   const path = `${prefix}/blog/${post.slug}`;
   return { name: routeName(path), path: canonicalPath(path), indexable: true, expectedCanonical: canonicalPath(path) };
