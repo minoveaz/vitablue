@@ -30,12 +30,25 @@ const blogPages = blogSource
     const slug = block.split("'")[0];
     const locale = block.match(/lang:\s*'([^']+)'/)?.[1] === 'en' ? 'en' : 'es';
     const alternateSlug = block.match(/alternateSlug:\s*'([^']+)'/)?.[1];
+    const publishDate = block.match(/publishDate:\s*'([^']+)'/)?.[1];
     return {
       path: blogPath(locale, slug),
       locale,
-      alternatePath: alternateSlug ? blogPath(locale === 'en' ? 'es' : 'en', alternateSlug) : undefined,
+      alternateSlug,
+      publishDate,
     };
-  });
+  })
+  .filter(({ publishDate }) => !publishDate || publishDate <= new Date().toISOString().slice(0, 10));
+
+const publishedBlogKeys = new Set(blogPages.map((page) => `${page.locale}:${page.path.split('/').pop()}`));
+for (const page of blogPages) {
+  const alternateLocale = page.locale === 'en' ? 'es' : 'en';
+  page.alternatePath = page.alternateSlug && publishedBlogKeys.has(`${alternateLocale}:${page.alternateSlug}`)
+    ? blogPath(alternateLocale, page.alternateSlug)
+    : undefined;
+  delete page.alternateSlug;
+  delete page.publishDate;
+}
 
 const pages = [...canonicalPages, ...blogPages];
 const pageMap = new Map(pages.map((page) => [page.path, page]));
@@ -49,9 +62,14 @@ function getSpanishPage(page) {
   return page.alternatePath ? pageMap.get(page.alternatePath) : undefined;
 }
 
+function getEnglishPage(page) {
+  if (page.locale === 'en') return page;
+  return page.alternatePath ? pageMap.get(page.alternatePath) : undefined;
+}
+
 function buildAlternates(page) {
   const spanishPage = getSpanishPage(page);
-  const englishPath = page.locale === 'en' ? page.path : page.alternatePath;
+  const englishPage = getEnglishPage(page);
   const alternates = [];
   const absolute = (pagePath) => `${siteOrigin}${pagePath}${pagePath.endsWith('/') ? '' : '/'}`;
 
@@ -61,12 +79,12 @@ function buildAlternates(page) {
       alternates.push({ hreflang: 'es-419', href: absolute(spanishPage.path) });
     }
   }
-  if (englishPath && pageMap.has(englishPath)) {
-    alternates.push({ hreflang: 'en', href: absolute(englishPath) });
+  if (englishPage) {
+    alternates.push({ hreflang: 'en', href: absolute(englishPage.path) });
   }
-
-  const xDefaultPath = englishPath && pageMap.has(englishPath) ? englishPath : '/en';
-  alternates.push({ hreflang: 'x-default', href: absolute(xDefaultPath) });
+  if (spanishPage && englishPage) {
+    alternates.push({ hreflang: 'x-default', href: absolute(spanishPage.path) });
+  }
   return alternates;
 }
 

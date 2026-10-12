@@ -297,9 +297,6 @@ export const BlogList: React.FC = () => {
           }
         />
         <link rel="canonical" href={`https://www.vitablue.es${isEnglish ? '/en/blog/' : '/blog/'}`} />
-        <link rel="alternate" hrefLang="es" href="https://www.vitablue.es/blog/" />
-        <link rel="alternate" hrefLang="en" href="https://www.vitablue.es/en/blog/" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.vitablue.es/blog/" />
       </Helmet>
 
       <BlogHeader isEnglish={isEnglish} />
@@ -382,7 +379,7 @@ export const BlogList: React.FC = () => {
                       </span>
                     )}
                     {selectedTopic !== 'all' && (
-                      <span className="font-bold text-accent bg-accent/10 px-2.5 py-1 rounded-lg">
+                      <span className="font-bold text-accent-dark bg-accent/10 px-2.5 py-1 rounded-lg">
                         {quickTopics.find((t) => t.id === selectedTopic)?.label}
                       </span>
                     )}

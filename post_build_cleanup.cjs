@@ -12,12 +12,22 @@ console.log('=== INICIANDO LIMPIEZA POST-BUILD PARA SEO ===\n');
 
 function setMetaTag(html, nameOrProp, isProperty, value) {
   const attr = isProperty ? 'property' : 'name';
-  const tagPattern = new RegExp(`<meta(?=[^>]*\\b${attr}=["']${nameOrProp}["'])[^>]*>`, 'i');
-  const newTag = `<meta ${attr}="${nameOrProp}" content="${value}" />`;
-  if (tagPattern.test(html)) {
-    return html.replace(tagPattern, newTag);
+  const escapedName = nameOrProp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const tagPattern = new RegExp(
+    `<meta\\b(?=[^>]*\\b${attr}\\s*=\\s*(['"])${escapedName}\\1)[^>]*>`,
+    'gi',
+  );
+  const newTag = `<meta ${attr}="${nameOrProp}" content="${escapeHtmlAttribute(value)}" data-rh="true" />`;
+  let replaced = false;
+  const updatedHtml = html.replace(tagPattern, () => {
+    if (replaced) return '';
+    replaced = true;
+    return newTag;
+  });
+  if (replaced) {
+    return updatedHtml;
   }
-  return html.replace('</head>', `    ${newTag}\n</head>`);
+  return updatedHtml.replace(/<\/head>/i, `    ${newTag}\n</head>`);
 }
 
 function setTitleTag(html, title) {
@@ -85,7 +95,7 @@ function injectHreflangTags(html, pagePath) {
     return isAlternate && hasHreflang ? '' : tag;
   });
   const tags = buildAlternates(page)
-    .map(({ hreflang, href }) => `    <link rel="alternate" hreflang="${hreflang}" href="${href}" />`)
+    .map(({ hreflang, href }) => `    <link data-rh="true" rel="alternate" hreflang="${hreflang}" href="${href}" />`)
     .join('\n');
   const headClose = withoutExisting.search(/<\/head>/i);
   if (headClose === -1) throw new Error(`No se encontró </head> para hreflang en ${pagePath}`);
@@ -128,12 +138,17 @@ function injectCanonicalTags() {
       : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
     if (!fs.existsSync(filePath)) return;
     let content = fs.readFileSync(filePath, 'utf8');
-    if (content.includes('rel="canonical"')) {
-      content = content.replace(/<link(?!\s+data-rh="true")\s+rel="canonical"/g, '<link data-rh="true" rel="canonical"');
-      fs.writeFileSync(filePath, content, 'utf8');
-      return;
+    const canonicalTag = `<link data-rh="true" rel="canonical" href="${url}" />`;
+    let canonicalFound = false;
+    content = content.replace(/<link\b[^>]*>/gi, (tag) => {
+      if (!/\srel\s*=\s*(["'])canonical\1/i.test(tag)) return tag;
+      if (canonicalFound) return '';
+      canonicalFound = true;
+      return canonicalTag;
+    });
+    if (!canonicalFound) {
+      content = content.replace('</head>', `    ${canonicalTag}\n</head>`);
     }
-    content = content.replace('</head>', `    <link data-rh="true" rel="canonical" href="${url}" />\n</head>`);
     fs.writeFileSync(filePath, content, 'utf8');
   });
 }
@@ -2113,5 +2128,50 @@ function optimizeHeadTags(filePath) {
 console.log('\n⚡ Optimizando orden de carga crítica de CSS en cabeceras...');
 optimizeHtmlHeadTagsRecursive(distDir);
 console.log('✅ Cabeceras optimizadas con éxito para FCP ultra rápido.');
+
+function normalizeSitemapSeoMetadata() {
+  const sitemapPath = path.join(distDir, 'sitemap.xml');
+  if (!fs.existsSync(sitemapPath)) return;
+
+  const urls = [...fs.readFileSync(sitemapPath, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map(([, url]) => url);
+  const fallbackDescriptions = {
+    es: 'Compara seguros de salud y asistencia en España con asesoramiento independiente y gratuito.',
+    en: 'Compare health insurance and assistance in Spain with free, independent advice.',
+  };
+
+  for (const url of urls) {
+    const pathname = new URL(url).pathname;
+    const pagePath = pathname === '/' ? '/' : pathname.replace(/\/+$/, '');
+    const page = getPageForRoute(pagePath);
+    const filePath = pathname === '/'
+      ? path.join(distDir, 'index.html')
+      : path.join(distDir, pathname.replace(/^\/|\/$/g, ''), 'index.html');
+    if (!page || !fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, 'utf8');
+    content = content.replace(/<html\b[^>]*>/i, (tag) => (
+      /\blang\s*=/i.test(tag)
+        ? tag.replace(/\blang\s*=\s*(['"])[^'"]*\1/i, `lang="${page.locale}"`)
+        : tag.replace(/>$/, ` lang="${page.locale}">`)
+    ));
+    content = injectHreflangTags(content, pagePath);
+
+    const descriptionPattern = /<meta\b(?=[^>]*\bname\s*=\s*(['"])description\1)[^>]*>/gi;
+    const descriptionTags = content.match(descriptionPattern) ?? [];
+    const preferredDescription = descriptionTags.find((tag) => readAttribute(tag, 'content').trim());
+    const descriptionTag = preferredDescription
+      ? (/\bdata-rh\s*=/.test(preferredDescription)
+        ? preferredDescription
+        : preferredDescription.replace(/\s*\/?>$/, (closing) => ` data-rh="true" ${closing.trim()}`))
+      : `<meta name="description" content="${escapeHtmlAttribute(fallbackDescriptions[page.locale])}" data-rh="true" />`;
+
+    content = content.replace(/<meta\b(?=[^>]*\bname\s*=\s*(['"])description\1)[^>]*>\s*/gi, '');
+    content = content.replace(/<\/head>/i, `    ${descriptionTag}\n</head>`);
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+normalizeSitemapSeoMetadata();
 
 console.log('\n=== LIMPIEZA POST-BUILD COMPLETADA CON ÉXITO ===');

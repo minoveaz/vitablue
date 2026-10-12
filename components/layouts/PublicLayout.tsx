@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { routeRegistry } from '@/config/routes';
+import { buildHreflangAlternates } from '@/config/hreflang';
 import Navbar from '@/components/organisms/Navbar';
 import Footer from '@/components/organisms/Footer';
 import CookieBanner from '@/components/organisms/CookieBanner';
@@ -14,21 +15,31 @@ const PublicRouteSeo: React.FC = () => {
     route.path === pathname || route.path.replace(/\/$/, '') === normalizedPath
   ))
     ?? routeRegistry.find((route) => route.path.includes(':') && pathname.startsWith(route.path.split('/:')[0]));
-  if (!definition?.indexable) return null;
 
-  // Hostinger CDN añade trailing slash a todas las rutas (excecto "/").
-  // Normalizamos canonical y alternate para que coincidan con la URL real
-  // que sirve el servidor (200 OK) y Google no detecte un redirect.
   const withSlash = (p: string) => (p === '/' ? p : `${p.replace(/\/+$/, '')}/`);
-
   const origin = 'https://www.vitablue.es';
-  const canonicalPath = withSlash(definition.canonical ?? pathname);
-  const alternatePath = definition.alternate ? withSlash(definition.alternate) : undefined;
+  const locale = definition?.locale === 'en' || pathname === '/en' || pathname.startsWith('/en/')
+    ? 'en'
+    : 'es';
+  const canonicalPath = definition?.indexable
+    ? withSlash(definition.canonical ?? pathname)
+    : undefined;
+  const alternates = definition?.indexable
+    ? buildHreflangAlternates(normalizedPath)
+    : [];
+
   return (
-    <Helmet>
-      <link rel="canonical" href={`${origin}${canonicalPath}`} />
-      {alternatePath && <link rel="alternate" hrefLang={definition.locale === 'en' ? 'es' : 'en'} href={`${origin}${alternatePath}`} />}
-      {alternatePath && <link rel="alternate" hrefLang="x-default" href={`${origin}${definition.locale === 'en' ? alternatePath : canonicalPath}`} />}
+    <Helmet htmlAttributes={{ lang: locale }}>
+      {canonicalPath && <link rel="canonical" href={`${origin}${canonicalPath}`} />}
+      {alternates.map(({ hreflang, href }) => (
+        <link key={`${hreflang}:${href}`} rel="alternate" hrefLang={hreflang} href={href} />
+      ))}
+      {definition?.indexable && (
+        <>
+          <meta property="og:image" content={`${origin}/og-image.jpg`} />
+          <meta name="twitter:image" content={`${origin}/og-image.jpg`} />
+        </>
+      )}
     </Helmet>
   );
 };

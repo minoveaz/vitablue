@@ -29,7 +29,7 @@ const ArticleToc: React.FC<{ items: TocItem[]; isEnglish: boolean }> = ({ items,
                   href={`#${item.id}`}
                   className="text-xs font-semibold text-text-secondary hover:text-primary flex items-start gap-2 leading-snug group transition-colors"
                 >
-                  <span className="text-[11px] text-primary/70 font-black group-hover:text-primary transition-colors shrink-0 mt-0.5">
+                  <span className="text-[11px] text-primary font-black group-hover:text-primary transition-colors shrink-0 mt-0.5">
                     {index + 1}.
                   </span>
                   <span>{displayTitle}</span>
@@ -44,4 +44,3 @@ const ArticleToc: React.FC<{ items: TocItem[]; isEnglish: boolean }> = ({ items,
 };
 
 export default ArticleToc;
-
