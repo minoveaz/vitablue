@@ -144,6 +144,14 @@ const ScrollToTop = () => {
 // Styleguide/Playground view for visual auditing
 // App Views Setup
 
+const PrerenderReady: React.FC = () => {
+  React.useEffect(() => {
+    document.dispatchEvent(new Event('app-prerendered'));
+  }, []);
+
+  return null;
+};
+
 const AppLayout: React.FC = () => {
   const { pathname } = useLocation();
   const isPrivateArea = pathname === '/login'
@@ -290,6 +298,7 @@ const AppLayout: React.FC = () => {
               </div>
             } />
           </Routes>
+          <PrerenderReady />
         </Suspense>
       </main>
     </Shell>
