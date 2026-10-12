@@ -3118,7 +3118,7 @@ export const blogPosts: BlogPostData[] = [
       {
         type: 'list',
         items: [
-          '<strong>1. Entidad aseguradora autorizada en España</strong>: La aseguradora debe figurar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) del Ministerio de Asuntos Económicos de España. Compañías de primer nivel como <a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> o <a href="/productos/seguros-salud/seguros-salud-extranjeros/" class="text-primary hover:underline font-bold">Sanitas</a> cumplen 100% con este requisito y cuentan con cuadros médicos y hospitales concertados en todas las provincias.',
+          '<strong>1. Entidad aseguradora autorizada en España</strong>: La aseguradora debe figurar inscrita en el registro oficial de la Dirección General de Seguros y Fondos de Pensiones (DGSFP) del Ministerio de Asuntos Económicos de España. Compañías de primer nivel como <a href="/productos/seguros-salud/seguros-asisa/" class="text-primary hover:underline font-bold">Asisa</a> o <a href="/productos/seguros-salud/seguro-salud-extranjeros/" class="text-primary hover:underline font-bold">Sanitas</a> cumplen 100% con este requisito y cuentan con cuadros médicos y hospitales concertados en todas las provincias.',
           '<strong>2. Cobertura completa sin copagos (0€)</strong>: El certificado consular debe manifestar de forma taxativa que el asegurado no abona importes de copago por actos médicos, consultas con especialistas, pruebas de diagnóstico, hospitalización o intervenciones quirúrgicas.',
           '<strong>3. Cero periodos de carencia</strong>: Todo el catálogo de prestaciones hospitalarias y médicas debe estar disponible desde el primer día de vigor. No se admiten pólizas con esperas de 6 u 8 meses para intervenciones o internamiento en clínica.',
           '<strong>4. Repatriación sanitaria y de restos mortales</strong>: Debe garantizar el traslado médico de urgencia y la repatriación internacional al país de procedencia en caso de fallecimiento fortuito o necesidad médica grave.'
@@ -3660,7 +3660,6 @@ export const blogPosts: BlogPostData[] = [
     ]
   }
 ];
-
 
 
 
