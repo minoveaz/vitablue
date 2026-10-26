@@ -23,22 +23,30 @@ const canonicalPages = [...routesSource.matchAll(/canonical\('([^']+)',\s*\{([\s
   .filter(({ locale }) => locale === 'es' || locale === 'en');
 
 const blogPath = (locale, slug) => `${locale === 'en' ? '/en' : ''}/blog/${slug}`;
-const blogPages = blogSource
+const allBlogPosts = blogSource
   .split(/\n\s*\{\s*\n?\s*slug:\s*'/)
   .slice(1)
   .map((block) => {
     const slug = block.split("'")[0];
     const locale = block.match(/lang:\s*'([^']+)'/)?.[1] === 'en' ? 'en' : 'es';
     const alternateSlug = block.match(/alternateSlug:\s*'([^']+)'/)?.[1];
+    const date = block.match(/^\s*date:\s*'([^']+)'/m)?.[1];
     const publishDate = block.match(/publishDate:\s*'([^']+)'/)?.[1];
+    const updatedAt = block.match(/updatedAt:\s*'([^']+)'/)?.[1];
     return {
+      slug,
       path: blogPath(locale, slug),
       locale,
       alternateSlug,
+      date,
       publishDate,
+      updatedAt,
     };
-  })
-  .filter(({ publishDate }) => !publishDate || publishDate <= new Date().toISOString().slice(0, 10));
+  });
+
+const blogPages = allBlogPosts
+  .filter(({ publishDate }) => !publishDate || publishDate <= new Date().toISOString().slice(0, 10))
+  .map((post) => ({ ...post }));
 
 const publishedBlogKeys = new Set(blogPages.map((page) => `${page.locale}:${page.path.split('/').pop()}`));
 for (const page of blogPages) {
@@ -92,8 +100,100 @@ function getPageForRoute(route) {
   return pageMap.get(route);
 }
 
-function validateManifest() {
+const monthNumbers = {
+  enero: '01', january: '01',
+  febrero: '02', february: '02',
+  marzo: '03', march: '03',
+  abril: '04', april: '04',
+  mayo: '05', may: '05',
+  junio: '06', june: '06',
+  julio: '07', july: '07',
+  agosto: '08', august: '08',
+  septiembre: '09', september: '09',
+  octubre: '10', october: '10',
+  noviembre: '11', november: '11',
+  diciembre: '12', december: '12',
+};
+
+function parseDisplayDate(value) {
+  const match = value?.trim().toLowerCase().match(/^(\d{1,2})\s+([a-záéíóúñ]+)\s+(\d{4})$/);
+  if (!match) return undefined;
+  const [, day, monthName, year] = match;
+  const month = monthNumbers[monthName];
+  if (!month) return undefined;
+  const isoDate = `${year}-${month}-${day.padStart(2, '0')}`;
+  const parsed = new Date(`${isoDate}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== isoDate
+    ? undefined
+    : isoDate;
+}
+
+function validateBlogTranslations() {
   const errors = [];
+  const blogPostMap = new Map();
+
+  for (const post of allBlogPosts) {
+    const key = `${post.locale}:${post.slug}`;
+    if (blogPostMap.has(key)) errors.push(`Blog post locale/slug duplicated: ${key}`);
+    blogPostMap.set(key, post);
+
+    if (post.publishDate) {
+      const publishedDate = new Date(`${post.publishDate}T00:00:00Z`);
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(post.publishDate)
+        || Number.isNaN(publishedDate.getTime())
+        || publishedDate.toISOString().slice(0, 10) !== post.publishDate
+      ) {
+        errors.push(`${post.path}: invalid publishDate ${post.publishDate}`);
+      }
+      if (!post.alternateSlug) {
+        errors.push(`${post.path}: dated publication is missing its translated alternateSlug`);
+      }
+      if (parseDisplayDate(post.date) !== post.publishDate) {
+        errors.push(`${post.path}: displayed date does not match publishDate ${post.publishDate}`);
+      }
+    }
+    if (post.updatedAt) {
+      const updatedDate = new Date(`${post.updatedAt}T00:00:00Z`);
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(post.updatedAt)
+        || Number.isNaN(updatedDate.getTime())
+        || updatedDate.toISOString().slice(0, 10) !== post.updatedAt
+      ) {
+        errors.push(`${post.path}: invalid updatedAt ${post.updatedAt}`);
+      }
+    }
+  }
+
+  for (const post of allBlogPosts) {
+    if (!post.alternateSlug) continue;
+    const alternateLocale = post.locale === 'en' ? 'es' : 'en';
+    const alternate = blogPostMap.get(`${alternateLocale}:${post.alternateSlug}`);
+    if (!alternate) {
+      errors.push(`${post.path}: translated alternate is missing (${alternateLocale}:${post.alternateSlug})`);
+      continue;
+    }
+    if (alternate.alternateSlug !== post.slug) {
+      errors.push(`${post.path}: translated alternate does not point back to ${post.slug}`);
+    }
+
+    if (Boolean(post.publishDate) !== Boolean(alternate.publishDate)) {
+      errors.push(`${post.path}: translated alternate must also declare publishDate`);
+    } else if (post.publishDate && post.publishDate !== alternate.publishDate) {
+      errors.push(`${post.path}: publishDate ${post.publishDate} differs from ${alternate.path} (${alternate.publishDate})`);
+    }
+    if (Boolean(post.updatedAt) !== Boolean(alternate.updatedAt)) {
+      errors.push(`${post.path}: translated alternate must also declare updatedAt`);
+    } else if (post.updatedAt && post.updatedAt !== alternate.updatedAt) {
+      errors.push(`${post.path}: updatedAt ${post.updatedAt} differs from ${alternate.path} (${alternate.updatedAt})`);
+    }
+  }
+
+  return errors;
+}
+
+function validateManifest() {
+  const errors = validateBlogTranslations();
   const seenPaths = new Set();
 
   for (const page of pages) {

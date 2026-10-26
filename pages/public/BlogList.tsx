@@ -174,8 +174,8 @@ export const BlogList: React.FC = () => {
   // Featured hero post
   const featuredPost = useMemo(() => {
     const preferredSlug = isEnglish
-      ? 'asisa-student-insurance-spain-visa-validity'
-      : 'asisa-sanitas-adeslas-comparativa-visado-estudiante-espana';
+      ? 'student-visa-spain-health-insurance-requirements'
+      : 'sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud';
 
     return languagePosts.find((p) => p.slug === preferredSlug) || languagePosts[0];
   }, [languagePosts, isEnglish]);
