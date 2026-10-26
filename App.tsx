@@ -140,7 +140,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-
 // Styleguide/Playground view for visual auditing
 // App Views Setup
 
@@ -298,6 +297,7 @@ const AppLayout: React.FC = () => {
               </div>
             } />
           </Routes>
+          {/* Keep the prerender signal inside Suspense so lazy routes are committed first. */}
           <PrerenderReady />
         </Suspense>
       </main>

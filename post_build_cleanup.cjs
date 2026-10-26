@@ -220,7 +220,7 @@ function injectBlogMetadataAndSchemas() {
       return dateStr;
     }
 
-    const isoDate = parseDateToIso(post.date);
+    const isoDate = post.publishDate || parseDateToIso(post.date);
 
     const jsonLdArticle = {
       '@context': 'https://schema.org',
@@ -229,7 +229,7 @@ function injectBlogMetadataAndSchemas() {
       description: post.excerpt,
       image: resolvedImageUrl,
       datePublished: isoDate,
-      dateModified: isoDate,
+      dateModified: post.updatedAt || isoDate,
       inLanguage: isEnglish ? 'en-US' : 'es-ES',
       mainEntityOfPage: {
         '@type': 'WebPage',
@@ -240,6 +240,13 @@ function injectBlogMetadataAndSchemas() {
         name: post.author.name,
         jobTitle: post.author.role,
       },
+      ...(post.editorialReviewer && {
+        reviewedBy: {
+          '@type': 'Person',
+          name: post.editorialReviewer.name,
+          jobTitle: post.editorialReviewer.role,
+        },
+      }),
       publisher: {
         '@type': 'Organization',
         name: 'VitaBlue',
