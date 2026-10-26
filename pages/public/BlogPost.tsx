@@ -21,6 +21,7 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
     : `https://www.vitablue.es${post.featuredImage}`;
 
   const isoDate = useMemo(() => {
+    if (post.publishDate) return post.publishDate;
     if (!post.date) return '2026-09-01';
     const monthMap: Record<string, string> = {
       enero: '01', january: '01',
@@ -44,7 +45,7 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
       return `${year}-${month}-${day}`;
     }
     return post.date;
-  }, [post.date]);
+  }, [post.date, post.publishDate]);
 
   const jsonLdArticle = useMemo(() => ({
     '@context': 'https://schema.org',
@@ -53,7 +54,7 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
     description: post.excerpt,
     image: resolvedImageUrl,
     datePublished: isoDate,
-    dateModified: isoDate,
+    dateModified: post.updatedAt ?? isoDate,
     inLanguage: isEnglish ? 'en-US' : 'es-ES',
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -64,11 +65,13 @@ const BlogPostView: React.FC<{ post: (typeof blogPosts)[number] }> = ({ post }) 
       name: post.author.name,
       jobTitle: post.author.role,
     },
-    reviewedBy: {
-      '@type': 'Organization',
-      name: 'VitaBlue Mediación y Asesoramiento de Seguros',
-      url: 'https://www.vitablue.es/',
-    },
+    ...(post.editorialReviewer && {
+      reviewedBy: {
+        '@type': 'Person',
+        name: post.editorialReviewer.name,
+        jobTitle: post.editorialReviewer.role,
+      },
+    }),
     publisher: {
       '@type': 'Organization',
       name: 'VitaBlue',
