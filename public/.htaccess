@@ -29,6 +29,12 @@
     Header set Cache-Control "max-age=31536000, public, no-transform"
   </FilesMatch>
   
+  # The sitemap is regenerated on publication; avoid serving a stale copy.
+  <FilesMatch "^sitemap\.xml$">
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Expires "0"
+  </FilesMatch>
+
   # Evitar almacenamiento en caché del HTML principal (para que los usuarios vean cambios de inmediato)
   <FilesMatch "\.(html)$">
     Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
