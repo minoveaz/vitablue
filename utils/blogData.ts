@@ -52,6 +52,516 @@ export const isPostPublished = (post: BlogPostData, targetDate = new Date()): bo
 
 export const blogPosts: BlogPostData[] = [
   {
+    slug: 'seguro-viaje-o-seguro-medico-vivir-espana',
+    alternateSlug: 'travel-insurance-vs-health-insurance-living-spain',
+    title: 'Seguro de viaje o seguro médico para vivir en España: diferencias',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '7 min de lectura',
+    date: '9 Noviembre 2026',
+    publishDate: '2026-11-09',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Si vas a trasladarte o pasar una temporada larga en España, compara seguro de viaje y seguro médico por duración, servicios, límites, exclusiones y forma de acceso.',
+    featuredImage: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Un seguro de viaje y un seguro médico privado pueden incluir asistencia sanitaria, pero no necesariamente están pensados para la misma situación ni ofrecen las mismas condiciones. Si vas a trasladarte a España o pasar aquí una temporada larga, compara la duración, los servicios cubiertos, los límites y la forma de recibir asistencia antes de elegir.'
+      },
+      {
+        type: 'paragraph',
+        text: 'No hay una regla universal basada solo en el nombre del producto. La póliza concreta, tu situación y el motivo de la estancia determinan qué opción puede encajar. Esta guía ofrece criterios de comparación; no determina si una póliza cumple un requisito consular o de residencia.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Diferencias habituales entre un seguro de viaje y uno de salud'
+      },
+      {
+        type: 'paragraph',
+        text: 'Los seguros de viaje suelen combinar asistencia durante el viaje con otras coberturas que dependen del plan, como incidencias de equipaje, cancelación o regreso anticipado. Los seguros de salud privados describen los servicios médicos incluidos, el acceso a centros, los copagos y otras condiciones de la póliza. Ninguna descripción general sustituye el condicionado del producto.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Aspecto', 'Seguro de viaje', 'Seguro de salud privado'],
+        tableRows: [
+          ['Uso previsto', 'Comprueba los viajes, destinos y fechas que admite el contrato.', 'Comprueba el territorio, la duración y los servicios previstos en la póliza.'],
+          ['Atención médica', 'Revisa qué asistencia se considera urgente, cómo se coordina y qué límites se aplican.', 'Revisa consultas, especialistas, pruebas, hospitalización y la red disponible, según el producto.'],
+          ['Forma de pago', 'Confirma si se coordina la atención, se adelantan gastos o se solicita reembolso.', 'Comprueba si se utiliza un cuadro médico, reembolso o una combinación, y si hay copagos.'],
+          ['Otras prestaciones', 'Puede incluir coberturas de viaje, como equipaje, cancelación o regreso, según el plan.', 'Las coberturas se centran en los servicios de salud indicados en las condiciones.'],
+          ['Condiciones', 'Comprueba duración, exclusiones, límites por siniestro y asistencia en destino.', 'Comprueba carencias, exclusiones, copagos, renovación y condiciones de aceptación.']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Qué revisar si vas a vivir o quedarte una temporada en España'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Fechas de cobertura</strong>: comprueba desde cuándo hasta cuándo queda asegurado cada miembro y qué ocurre si la estancia se alarga.',
+          '<strong>Atención no urgente</strong>: confirma si están incluidos el seguimiento médico, las consultas ordinarias y las pruebas que podrías necesitar, o si la cobertura se limita a determinadas incidencias del viaje.',
+          '<strong>Acceso a la asistencia</strong>: revisa si debes usar una red de centros, llamar antes a la central de asistencia o pagar primero y pedir después un reembolso.',
+          '<strong>Costes por uso</strong>: además de la prima, comprueba copagos, franquicias, límites y gastos que quedarían a tu cargo.',
+          '<strong>Condiciones personales</strong>: revisa edad, cuestionarios, preexistencias, exclusiones y cualquier requisito para que la cobertura siga activa.',
+          '<strong>Necesidades fuera de España</strong>: si viajarás a otros países, confirma los territorios cubiertos y los límites de asistencia y repatriación.'
+        ]
+      },
+      {
+        type: 'paragraph',
+        text: 'No presupongas que una póliza cubre toda atención médica habitual, ni que un seguro de salud incluya todas las incidencias de un viaje. Comprueba cada prestación en las condiciones y pide por escrito las aclaraciones importantes.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Si necesitas la póliza para un visado o trámite de residencia'
+      },
+      {
+        type: 'paragraph',
+        text: 'No elijas basándote únicamente en las palabras «viaje», «salud» o «internacional». Las instrucciones pueden depender del procedimiento, la autoridad que tramita la solicitud y las circunstancias de la persona. Antes de contratar, consulta la lista oficial aplicable y verifica que el documento y las condiciones del producto respondan a esa lista.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Para casos concretos, consulta nuestras guías de <a href="/blog/requisitos-seguro-medico-visado-estudiante-espana/" class="text-primary hover:underline font-bold">seguro médico para el visado de estudiante</a> y <a href="/blog/seguro-medico-residencia-no-lucrativa-espana/" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>. Cada guía se refiere a un trámite específico y no sustituye sus instrucciones oficiales vigentes.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Compara según tu estancia',
+        ctaTitle: '¿Buscas cobertura para vivir en España?',
+        ctaDescription: 'Compara opciones de salud para tu situación y revisa la documentación del producto antes de contratar.',
+        ctaButtonText: 'Comparar seguros de salud',
+        ctaLink: '/wizard/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas frecuentes sobre seguro de viaje y seguro médico'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Un seguro de viaje sirve para una estancia larga en España?</strong>: Depende del contrato, de las fechas y de la cobertura que necesites. Revisa los límites y comprueba qué sucede si cambia la duración del viaje.',
+          '<strong>¿El seguro de viaje cubre consultas médicas rutinarias?</strong>: No lo des por hecho. Comprueba si incluye consultas no urgentes, seguimiento y pruebas, o si la asistencia se limita a situaciones concretas.',
+          '<strong>¿Un seguro de salud privado cubre también equipaje o cancelaciones?</strong>: No necesariamente. Las incidencias de viaje dependen de las garantías expresamente incluidas o contratadas.',
+          '<strong>¿Puedo contratar los dos?</strong>: Puede ser posible, pero revisa cómo coordinan la asistencia y los reembolsos, qué exclusiones se aplican y si existe algún solapamiento.',
+          '<strong>¿Qué seguro debo presentar para un visado?</strong>: Depende del trámite y de las instrucciones oficiales que se apliquen a tu caso. Confirma los requisitos con la autoridad competente y revisa el producto exacto antes de contratar.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Fuentes oficiales y alcance de la guía'
+      },
+      {
+        type: 'paragraph',
+        text: 'Revisamos la información pública disponible el 2 de noviembre de 2026: las páginas de producto de <a href="https://heymondo.es/seguro-de-viaje-temporal/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Heymondo</a>, <a href="https://www.sanitas.es/seguros/seguros-medicos-privados" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas</a> y <a href="https://www.asisa.es/seguros-medicos" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA</a>. Son fuentes de los propios proveedores, no una comparación independiente de contratos. Consulta siempre las condiciones particulares y la oferta vigente.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si buscas una comparación general de coberturas médicas, consulta también nuestra <a href="/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/" class="text-primary hover:underline font-bold">guía para comparar seguros de salud</a>.'
+      }
+    ]
+  },
+  {
+    slug: 'travel-insurance-vs-health-insurance-living-spain',
+    alternateSlug: 'seguro-viaje-o-seguro-medico-vivir-espana',
+    title: 'Travel Insurance vs Health Insurance for Living in Spain',
+    category: 'salud',
+    categoryLabel: 'Health Insurance Guides',
+    readTime: '7 min read',
+    date: '9 November 2026',
+    publishDate: '2026-11-09',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Moving to Spain or staying for an extended period? Compare travel and private health insurance by duration, services, limits, exclusions and access to care.',
+    featuredImage: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Travel insurance and private health insurance can both include medical assistance, but they are not necessarily designed for the same situation or offer the same terms. If you are moving to Spain or staying for an extended period, compare duration, covered services, limits and how assistance is provided before choosing.'
+      },
+      {
+        type: 'paragraph',
+        text: 'There is no universal rule based only on a product label. The specific policy, your circumstances and the reason for your stay all matter. This guide provides comparison criteria; it does not determine whether a policy meets a visa or residence requirement.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Typical differences between travel and health insurance'
+      },
+      {
+        type: 'paragraph',
+        text: 'Travel insurance often combines assistance during a trip with other cover that depends on the plan, such as baggage incidents, cancellation or an early return. Private health insurance describes the medical services included, access to providers, copayments and other policy terms. Neither general description replaces the product contract.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['What to compare', 'Travel insurance', 'Private health insurance'],
+        tableRows: [
+          ['Intended use', 'Check which trips, destinations and dates the contract covers.', 'Check the territory, duration and services covered by the policy.'],
+          ['Medical care', 'Review what counts as an emergency, how assistance is arranged and what limits apply.', 'Review consultations, specialists, tests, hospitalisation and the available provider network, as applicable.'],
+          ['How care is paid for', 'Confirm whether care is arranged directly, paid upfront or claimed as a reimbursement.', 'Check whether the plan uses a provider network, reimbursement or a combination, and whether copayments apply.'],
+          ['Other benefits', 'May include travel-related benefits such as baggage, cancellation or return, depending on the plan.', 'Cover focuses on the health services stated in the policy terms.'],
+          ['Conditions', 'Check duration, exclusions, per-claim limits and assistance at your destination.', 'Check waiting periods, exclusions, copayments, renewal and acceptance terms.']
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'What to check if you are living or staying in Spain for a while'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Cover dates</strong>: check when each person’s cover starts and ends, and what happens if the stay is extended.',
+          '<strong>Non-emergency care</strong>: confirm whether ongoing care, routine consultations and tests you may need are included, or whether cover is limited to specific travel incidents.',
+          '<strong>Access to care</strong>: check whether you must use a provider network, call an assistance centre first, or pay and request reimbursement later.',
+          '<strong>Costs when using the policy</strong>: in addition to the premium, check copayments, deductibles, limits and any costs you would have to pay yourself.',
+          '<strong>Personal terms</strong>: review age, questionnaires, pre-existing conditions, exclusions and any requirements for keeping cover active.',
+          '<strong>Needs outside Spain</strong>: if you will travel to other countries, confirm the territories covered and the limits for assistance and repatriation.'
+        ]
+      },
+      {
+        type: 'paragraph',
+        text: 'Do not assume a policy covers all routine medical care, or that a health plan includes every travel-related incident. Check each benefit in the policy terms and ask for important clarifications in writing.'
+      },
+      {
+        type: 'heading-2',
+        text: 'If you need insurance for a visa or residence procedure'
+      },
+      {
+        type: 'paragraph',
+        text: 'Do not choose based only on words such as “travel”, “health” or “international”. Instructions may depend on the procedure, the authority handling the application and the applicant’s circumstances. Before buying, check the applicable official checklist and verify that the policy documents address it.'
+      },
+      {
+        type: 'paragraph',
+        text: 'For specific situations, read our guides to <a href="/en/blog/student-visa-spain-health-insurance-requirements/" class="text-primary hover:underline font-bold">health insurance for a student visa</a> and <a href="/en/blog/health-insurance-spain-non-lucrative-visa-requirements/" class="text-primary hover:underline font-bold">health insurance for a non-lucrative residence visa</a>. Each guide addresses a particular procedure and does not replace its current official instructions.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Compare for your stay',
+        ctaTitle: 'Looking for cover while living in Spain?',
+        ctaDescription: 'Compare health insurance options for your situation and review the product documents before buying.',
+        ctaButtonText: 'Compare health insurance',
+        ctaLink: '/wizard/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Frequently asked questions about travel and health insurance'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Can travel insurance cover an extended stay in Spain?</strong>: It depends on the contract, dates and cover you need. Check the limits and what happens if the trip duration changes.',
+          '<strong>Does travel insurance cover routine medical appointments?</strong>: Do not assume it does. Check whether non-emergency consultations, follow-up care and tests are included, or whether assistance is limited to specific situations.',
+          '<strong>Does private health insurance also cover baggage or trip cancellation?</strong>: Not necessarily. Travel-related incidents depend on benefits expressly included or purchased.',
+          '<strong>Can I have both types of insurance?</strong>: It may be possible, but check how assistance and claims are coordinated, which exclusions apply and whether benefits overlap.',
+          '<strong>Which policy should I submit for a visa?</strong>: It depends on the procedure and the official instructions that apply to your case. Confirm requirements with the relevant authority and review the specific product before buying.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Official sources and scope of this guide'
+      },
+      {
+        type: 'paragraph',
+        text: 'We reviewed the public information available on 2 November 2026: product pages from <a href="https://heymondo.es/seguro-de-viaje-temporal/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Heymondo</a>, <a href="https://www.sanitas.es/seguros/seguros-medicos-privados" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas</a> and <a href="https://www.asisa.es/seguros-medicos" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA</a>. These are provider sources, not an independent comparison of contracts. Always check the current quote and policy terms.'
+      },
+      {
+        type: 'paragraph',
+        text: 'For a general comparison of medical cover, see our <a href="/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/" class="text-primary hover:underline font-bold">guide to comparing health insurance</a>.'
+      }
+    ]
+  },
+  {
+    slug: 'seguro-medico-familiar-espana-comparar-precios-coberturas',
+    alternateSlug: 'family-health-insurance-spain-compare-costs',
+    title: 'Seguro médico familiar en España: comparar precios y coberturas',
+    category: 'salud',
+    categoryLabel: 'Consejos de Salud',
+    readTime: '8 min de lectura',
+    date: '2 Noviembre 2026',
+    publishDate: '2026-11-02',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Especialista en Seguros de Salud y Visados',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Aprende a comparar un seguro médico familiar en España: perfiles asegurados, cuadro médico, copagos, carencias y coste total, sin asumir descuentos o coberturas.',
+    featuredImage: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?q=80&w=800&auto=format&fit=crop',
+    lang: 'es',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Comparar un seguro de salud para varias personas requiere revisar algo más que una cuota mensual o la etiqueta «familiar». Las edades, el lugar donde vive cada asegurado, las coberturas que necesita y la modalidad elegida pueden cambiar la oferta. Para hacer una comparación útil, pide presupuestos con la misma composición familiar y comprueba las condiciones de cada persona.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Esta guía se centra en cómo preparar esa comparación comercial. No publica tarifas ni presenta una compañía como ganadora: los precios, la aceptación y las condiciones deben confirmarse en la oferta y la documentación vigente del producto.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Qué datos reunir antes de pedir un presupuesto familiar'
+      },
+      {
+        type: 'paragraph',
+        text: 'Prepara una ficha por cada persona que quieras asegurar. Así podrás pedir a todas las compañías una simulación comparable y detectar si la propuesta cubre a todos los miembros que indicaste.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Personas y edades</strong>: indica quiénes se incluirían y confirma por separado la elegibilidad y las condiciones aplicables a cada asegurado.',
+          '<strong>Zona de uso</strong>: facilita el código postal y comprueba los médicos, centros y hospitales que realmente te interesan en el cuadro médico local.',
+          '<strong>Necesidades de cobertura</strong>: concreta si buscas consultas, pediatría, especialistas, pruebas diagnósticas, urgencias, hospitalización u otros servicios; verifica qué incluye el producto y con qué límites.',
+          '<strong>Uso previsto</strong>: estima qué servicios podría utilizar cada miembro. No es una predicción médica; sirve para comparar una prima con los posibles copagos.',
+          '<strong>Situación de cada solicitante</strong>: responde con veracidad a las preguntas de contratación y solicita por escrito cualquier aceptación, exclusión o condición particular.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Cómo comparar precios, copagos y condiciones'
+      },
+      {
+        type: 'paragraph',
+        text: 'Pide presupuestos para la misma lista de personas y la misma cobertura. Compara el coste total de la familia, no solo el precio destacado de una persona o de una promoción inicial. Si se ofrece un descuento familiar, comprueba a quién se aplica, cuánto dura y qué precio se pagaría al renovar.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['Qué comparar', 'Qué preguntar o comprobar'],
+        tableRows: [
+          ['Prima y coste total', '¿Cuál es la cuota para todas las personas y el coste anual? ¿Qué precio se aplicará después de una promoción?'],
+          ['Copagos', '¿Qué servicios tienen copago, cuánto cuesta cada uso y hay límites o tramos?'],
+          ['Cobertura', '¿Qué servicios están incluidos para cada asegurado y qué exclusiones o límites se aplican?'],
+          ['Cuadro médico', '¿Están los profesionales y centros que necesito en mi zona y aceptan pacientes con este producto?'],
+          ['Carencias', '¿Qué periodos de espera se aplican a cada servicio y desde qué fecha puede utilizarse?'],
+          ['Contratación y renovación', '¿La oferta se emite en una póliza o en contratos separados? ¿Cuándo empieza la cobertura y cómo se renueva?']
+        ]
+      },
+      {
+        type: 'paragraph',
+        text: 'Un producto con copagos puede tener una prima distinta de otro sin copagos; no es suficiente comparar solo la cuota. ASISA presenta distintas modalidades de salud, y Sanitas explica modalidades con copago, sin copago y de reembolso. Revisa las condiciones del producto exacto y calcula escenarios de uso razonables para tu hogar, sin asumir que una modalidad será siempre la más económica.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Comprueba la red y los servicios que utilizará cada persona'
+      },
+      {
+        type: 'paragraph',
+        text: 'La disponibilidad de médicos y centros depende de la zona y del cuadro médico correspondiente al producto. Busca los profesionales que ya utilizas y confirma que aparecen en la red actual. Si un servicio es importante para tu familia —por ejemplo, pediatría o determinadas pruebas— comprueba que esté incluido y revisa sus límites, autorizaciones y carencias.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Hogares con menores</strong>: confirma la cobertura pediátrica, las urgencias y los servicios preventivos que te interesen en las condiciones del producto.',
+          '<strong>Uso médico frecuente</strong>: compara el coste anual incluyendo los copagos que podrían corresponder a cada persona.',
+          '<strong>Médicos o centros concretos</strong>: revisa el cuadro médico de la provincia y confirma la disponibilidad antes de contratar.',
+          '<strong>Familiares con distintas edades o necesidades</strong>: solicita que la oferta detalle la prima y las condiciones individuales, además del total familiar.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Pasos para comparar pólizas familiares'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>1. Define quién necesita cobertura</strong> y prepara los mismos datos para cada aseguradora.',
+          '<strong>2. Elige coberturas comparables</strong>: no compares una póliza ambulatoria con otra que incluya hospitalización como si fueran equivalentes.',
+          '<strong>3. Pide la oferta completa</strong>: solicita el precio por persona y el total, modalidad, copagos, servicios cubiertos, carencias, exclusiones y condiciones de renovación.',
+          '<strong>4. Verifica los detalles por escrito</strong>: confirma la aceptación de todos los miembros y cualquier descuento o condición especial antes de pagar.',
+          '<strong>5. Compara el coste para tu caso</strong>: suma la prima de todos los asegurados y considera los copagos previsibles, sin tratar una estimación como una garantía.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '<strong>Importante:</strong> que una oferta se describa como familiar no significa que todas las personas tengan idénticas coberturas, aceptación, copagos o carencias. Comprueba el nombre de cada asegurado y sus condiciones en la documentación contractual.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Comparación familiar',
+        ctaTitle: '¿Quieres comparar opciones para tu familia?',
+        ctaDescription: 'Prepara los datos de las personas que deseas asegurar y revisa las condiciones de cada propuesta antes de elegir.',
+        ctaButtonText: 'Comparar seguros de salud',
+        ctaLink: '/wizard/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas frecuentes sobre seguros médicos familiares'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>¿Existe un precio único para un seguro médico familiar?</strong>: No hay una tarifa que pueda aplicarse a todos los hogares. Solicita una oferta con las edades, personas y coberturas de tu caso y comprueba su vigencia.',
+          '<strong>¿Asegurar a toda la familia incluye siempre un descuento?</strong>: No lo des por hecho. Pide que el descuento, sus beneficiarios, duración y precio de renovación aparezcan en la oferta.',
+          '<strong>¿Todos los familiares tienen las mismas condiciones?</strong>: No necesariamente. Comprueba la aceptación, cobertura, copagos, carencias y exclusiones de cada persona en la documentación contractual.',
+          '<strong>¿Qué conviene más: con copago o sin copago?</strong>: Depende del precio ofertado, los copagos aplicables y el uso que prevea cada hogar. Compara el coste anual total en lugar de decidir solo por la cuota.',
+          '<strong>¿Un seguro familiar sirve automáticamente para un trámite de residencia?</strong>: No. Los requisitos dependen del procedimiento y de la situación personal. Consulta la <a href="/blog/seguro-salud-reagrupacion-familiar-espana/" class="text-primary hover:underline font-bold">guía sobre seguro médico para reagrupación familiar</a> y verifica las instrucciones oficiales de tu trámite.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Fuentes oficiales y alcance de la guía'
+      },
+      {
+        type: 'paragraph',
+        text: 'Revisamos la información pública disponible el 2 de noviembre de 2026. Puedes consultar las modalidades y productos en las páginas oficiales de <a href="https://www.asisa.es/seguros-medicos" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA</a> y <a href="https://www.sanitas.es/seguros/seguros-medicos-privados" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas</a>. Las condiciones particulares, el cuestionario y la oferta vigente de la aseguradora prevalecen; esta guía no sustituye la lectura del contrato.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si estás comparando varias compañías, puedes ampliar la información en nuestra <a href="/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-comparativa-seguros-salud/" class="text-primary hover:underline font-bold">comparativa de seguros de salud</a>. Esa comparativa tampoco sustituye la cotización individual ni las condiciones oficiales.'
+      }
+    ]
+  },
+  {
+    slug: 'family-health-insurance-spain-compare-costs',
+    alternateSlug: 'seguro-medico-familiar-espana-comparar-precios-coberturas',
+    title: 'Family Health Insurance in Spain: Compare Costs and Cover',
+    category: 'salud',
+    categoryLabel: 'Health Insurance Guides',
+    readTime: '8 min read',
+    date: '2 November 2026',
+    publishDate: '2026-11-02',
+    author: {
+      name: 'Lucía Delgado',
+      role: 'Health Insurance & Visa Specialist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop',
+      verified: true,
+      linkedIn: 'https://linkedin.com'
+    },
+    excerpt: 'Compare family health insurance in Spain by insured profile, provider network, copayments, waiting periods and total cost—without assuming discounts or cover.',
+    featuredImage: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?q=80&w=800&auto=format&fit=crop',
+    lang: 'en',
+    sections: [
+      {
+        type: 'paragraph',
+        text: 'Comparing health insurance for several people involves more than looking at a monthly premium or a plan labelled “family”. The insured people’s ages, where they live, the cover they need and the plan selected can all affect an offer. To make a useful comparison, request quotes for the same household members and check the terms for each person.'
+      },
+      {
+        type: 'paragraph',
+        text: 'This guide focuses on how to prepare that commercial comparison. It does not publish rates or name a universal winner: prices, acceptance and terms must be confirmed in the current quote and product documents.'
+      },
+      {
+        type: 'heading-2',
+        text: 'What to prepare before requesting a family quote'
+      },
+      {
+        type: 'paragraph',
+        text: 'Prepare a profile for each person you want to insure. This lets you request comparable quotes and check that every proposal covers all the household members you listed.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>People and ages</strong>: list everyone to be insured and confirm each person’s eligibility and applicable terms separately.',
+          '<strong>Where you will use the cover</strong>: provide the postcode and check that the local medical network includes the doctors, clinics and hospitals you need.',
+          '<strong>Cover requirements</strong>: specify whether you need consultations, paediatrics, specialists, diagnostic tests, emergency care, hospitalisation or other services; verify what the plan includes and any limits.',
+          '<strong>Expected use</strong>: estimate which services each household member may use. This is not a medical prediction; it helps compare the premium with possible copayments.',
+          '<strong>Each applicant’s circumstances</strong>: answer application questions accurately and request written confirmation of any acceptance, exclusion or special term.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'How to compare prices, copayments and terms'
+      },
+      {
+        type: 'paragraph',
+        text: 'Request quotes for the same list of people and the same cover. Compare the household’s total cost, not just a price shown for one person or an introductory promotion. If a family discount is offered, check who qualifies, how long it lasts and what the renewal price will be.'
+      },
+      {
+        type: 'table',
+        tableHeader: ['What to compare', 'What to ask or check'],
+        tableRows: [
+          ['Premium and total cost', 'What is the premium for everyone and the annual cost? What price applies after a promotion?'],
+          ['Copayments', 'Which services have a copayment, how much is each use and are there limits or tiers?'],
+          ['Cover', 'Which services are included for each insured person, and what exclusions or limits apply?'],
+          ['Medical network', 'Are the doctors and facilities you need in your area included, and are they accepting patients under this plan?'],
+          ['Waiting periods', 'Which waiting periods apply to each service and from what date can it be used?'],
+          ['Policy and renewal', 'Will cover be issued under one policy or separate contracts? When does it start and how does it renew?']
+        ]
+      },
+      {
+        type: 'paragraph',
+        text: 'A plan with copayments may have a different premium from one without them, so comparing the monthly payment alone is not enough. ASISA lists different health insurance options, and Sanitas explains plans with copayments, without copayments and with reimbursement. Review the exact product terms and calculate reasonable use scenarios for your household; do not assume one option will always cost less.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Check the medical network and services each person will use'
+      },
+      {
+        type: 'paragraph',
+        text: 'Doctors and facilities available to you depend on your location and the product’s medical network. Search for professionals you already use and confirm that they appear in the current network. If a service matters to your family—such as paediatrics or specific diagnostic tests—check that it is included and review its limits, authorisations and waiting periods.'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Households with children</strong>: check the paediatric cover, emergency care and preventive services you need in the product terms.',
+          '<strong>Frequent medical use</strong>: compare the annual cost, including the copayments that may apply to each person.',
+          '<strong>Specific doctors or facilities</strong>: check the provincial medical network and confirm availability before buying.',
+          '<strong>Family members with different ages or needs</strong>: ask for a quote that shows each person’s premium and terms as well as the household total.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Steps for comparing family health plans'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>1. Decide who needs cover</strong> and prepare the same information for each insurer.',
+          '<strong>2. Choose comparable cover</strong>: do not compare an outpatient-only plan with a plan that includes hospitalisation as if they were equivalent.',
+          '<strong>3. Request the full offer</strong>: ask for the premium per person and household total, plan type, copayments, covered services, waiting periods, exclusions and renewal terms.',
+          '<strong>4. Verify the details in writing</strong>: confirm acceptance for every household member and any discount or special term before paying.',
+          '<strong>5. Compare the cost for your situation</strong>: add the premiums for everyone insured and consider likely copayments without treating an estimate as a guarantee.'
+        ]
+      },
+      {
+        type: 'callout',
+        text: '<strong>Important:</strong> a plan described as family cover does not mean everyone has identical cover, acceptance, copayments or waiting periods. Check each insured person’s name and terms in the policy documents.'
+      },
+      {
+        type: 'cta-wizard',
+        ctaBadge: 'Family comparison',
+        ctaTitle: 'Would you like to compare options for your family?',
+        ctaDescription: 'Prepare the details of the people you want to insure and review the terms of each quote before choosing.',
+        ctaButtonText: 'Compare health insurance',
+        ctaLink: '/wizard/'
+      },
+      {
+        type: 'heading-2',
+        text: 'Frequently asked questions about family health insurance'
+      },
+      {
+        type: 'list',
+        items: [
+          '<strong>Is there one standard price for family health insurance?</strong>: There is no single rate that applies to every household. Request a quote based on your household members, ages and cover, and check how long it is valid.',
+          '<strong>Does insuring the whole family always include a discount?</strong>: Do not assume so. Ask for the discount, eligible people, duration and renewal price to be shown in the offer.',
+          '<strong>Does every family member have the same terms?</strong>: Not necessarily. Check each person’s acceptance, cover, copayments, waiting periods and exclusions in the policy documents.',
+          '<strong>Which is better: a plan with or without copayments?</strong>: It depends on the quoted premium, applicable copayments and expected use by each household member. Compare the total annual cost rather than deciding by the premium alone.',
+          '<strong>Does family health insurance automatically meet residence application requirements?</strong>: No. Requirements depend on the procedure and personal circumstances. Read our <a href="/en/blog/spain-family-reunification-health-insurance-requirements/" class="text-primary hover:underline font-bold">guide to health insurance for family reunification</a> and check the official instructions for your application.'
+        ]
+      },
+      {
+        type: 'heading-2',
+        text: 'Official sources and scope of this guide'
+      },
+      {
+        type: 'paragraph',
+        text: 'We reviewed the public information available on 2 November 2026. You can check the products and plan types on the official <a href="https://www.asisa.es/seguros-medicos" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA</a> and <a href="https://www.sanitas.es/seguros/seguros-medicos-privados" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas</a> websites. The insurer’s current quote and policy terms take precedence; this guide does not replace reading the contract.'
+      },
+      {
+        type: 'paragraph',
+        text: 'If you are comparing several insurers, see our <a href="/en/blog/sanitas-vs-adeslas-vs-asisa-vs-dkv-health-insurance-spain/" class="text-primary hover:underline font-bold">health insurance comparison</a>. It also does not replace an individual quote or official policy terms.'
+      }
+    ]
+  },
+  {
     slug: 'periodos-de-carencia-embarazo-parto-seguro-medico',
     alternateSlug: 'pregnancy-maternity-waiting-periods-health-insurance-spain',
     title: 'Periodos de Carencia en Embarazo y Parto en España (2026)',
