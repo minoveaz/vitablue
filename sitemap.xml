@@ -344,6 +344,24 @@
     <priority>0.80</priority>
   </url>
   <url>
+    <loc>https://www.vitablue.es/blog/seguro-medico-familiar-espana-comparar-precios-coberturas/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-familiar-espana-comparar-precios-coberturas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/family-health-insurance-spain-compare-costs/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-familiar-espana-comparar-precios-coberturas/" />
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://www.vitablue.es/en/blog/family-health-insurance-spain-compare-costs/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/family-health-insurance-spain-compare-costs/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/seguro-medico-familiar-espana-comparar-precios-coberturas/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.vitablue.es/blog/seguro-medico-familiar-espana-comparar-precios-coberturas/" />
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
     <loc>https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.vitablue.es/blog/periodos-de-carencia-embarazo-parto-seguro-medico/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.vitablue.es/en/blog/pregnancy-maternity-waiting-periods-health-insurance-spain/" />
