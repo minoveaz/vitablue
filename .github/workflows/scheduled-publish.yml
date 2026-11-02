@@ -2,7 +2,7 @@ name: Scheduled Blog Publishing & Indexing
 
 on:
   schedule:
-    # Runs every Monday at 08:00 UTC (10:00 CEST)
+    # Runs every Monday at 08:00 UTC (09:00 CET / 10:00 CEST)
     - cron: '0 8 * * 1'
   workflow_dispatch:
     # Allows manual trigger at any time from GitHub Actions UI
