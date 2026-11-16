@@ -118,7 +118,7 @@ La ejecución automática del lunes 2 ya pasó; por eso la pareja familiar requi
 |---|---|---|
 | 2 nov (manual) | 2 nov | Publicar la nueva pareja de seguro familiar; comprobar deploy, sitemap, canonicals y alternates. La indexación no está garantizada. |
 | 9 nov | Vie 6 nov | Publicar la nueva pareja sobre seguro de viaje vs. seguro de salud para vivir en España; comprobar deploy, sitemap, canonicals y alternates. |
-| 16 nov | Vie 13 nov, fuera de `main` | Preparar la actualización de mayores de 65; conservar fechas originales, registrar `updatedAt` y verificar claims. Integrar y desplegar manualmente el día 16. |
+| 16 nov | 16 nov, en la rama de trabajo | Actualización ES/EN de mayores de 65 preparada en `utils/blogData.ts`; conserva las fechas originales y registra `updatedAt`. Pendiente integrar en `main` y desplegar manualmente. |
 | 23 nov | Vie 20 nov, fuera de `main` | Preparar las referencias de repatriación en guías existentes ES/EN. Integrar y desplegar manualmente el día 23. |
 
 El workflow semanal compila desde `main`, aplica la visibilidad según `publishDate`, regenera el sitemap, ejecuta controles de calidad y build/prerender, y despliega. Las parejas nuevas pueden integrarse por adelantado con fecha futura. Las actualizaciones de artículos existentes no deben recibir un `publishDate` nuevo y no se pueden dejar en `main` antes de tiempo: conservar su fecha original, preparar los cambios fuera de `main` e integrarlos el día acordado; usar `updatedAt` solo cuando el cambio editorial lo justifique. La notificación automática del workflow no equivale a una solicitud de indexación URL por URL.

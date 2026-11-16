@@ -679,11 +679,12 @@ export const blogPosts: BlogPostData[] = [
     slug: 'seguro-salud-mayores-65-anos-espana-precios',
     alternateSlug: 'health-insurance-spain-seniors-over-65-prices',
 
-    title: 'Seguro Médico para Mayores de 65 Años en España: Guía 2026',
+    title: 'Seguro médico para mayores de 65 en España: cómo comparar',
     category: 'salud',
     categoryLabel: 'Consejos de Salud',
     readTime: '7 min de lectura',
     date: '24 Agosto 2026',
+    updatedAt: '2026-11-16',
     author: {
       name: 'Lucía Delgado',
       role: 'Especialista en Seguros de Salud y Visados',
@@ -691,97 +692,84 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Guía completa de seguros médicos para mayores de 65 años y jubilados en España: límites de edad, precios reales y opciones válidas para residencia y visados.',
+    excerpt: 'Qué revisar al contratar un seguro de salud a partir de los 65: edad de alta, coberturas, declaración de salud y coste total, sin asumir límites ni precios universales.',
     featuredImage: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=800&auto=format&fit=crop',
     lang: 'es',
     sections: [
       {
         type: 'paragraph',
-        text: 'Encontrar un seguro médico privado en España a partir de los 65 años solía ser un desafío complejo debido a las restricciones de edad impuestas por muchas entidades tradicionales, que cerraban la contratación a los 64 años. Sin embargo, en 2026 el panorama ha cambiado radicalmente gracias a la aparición de <strong>pólizas de salud senior especializadas</strong> diseñadas para ofrecer atención médica rápida, sin listas de espera y con coberturas adaptadas a la madurez.'
+        text: 'Contratar un seguro de salud a partir de los 65 años requiere comparar las condiciones de cada producto. La edad máxima de alta, la cobertura, el precio y la evaluación médica pueden variar entre pólizas; cumplir 65 u 80 años no determina por sí solo si una compañía aceptará la solicitud.'
       },
       {
         type: 'paragraph',
-        text: 'En <a href="/" class="text-primary hover:underline font-bold">VitaBlue</a> asesoramos a cientos de personas jubiladas y a familias que buscan la mejor protección sanitaria para sus padres. Te explicamos los precios reales del mercado, los límites de contratación y por qué <strong>Asisa y Sanitas</strong> son las dos compañías líderes en este segmento.'
+        text: 'Las fichas oficiales muestran por qué no conviene generalizar: <a href="https://www.sanitas.es/seguros/seguro-de-salud-sanitas-unico" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas Único</a> se presenta para personas mayores de 60 años sin límite de edad de contratación, mientras que la página de <a href="https://dkv.es/particulares/seguros-para-seniors" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">seguros para mayores de DKV</a> publica una edad máxima de contratación de hasta 75 años. Son ejemplos de productos concretos, no una regla para todo el mercado. Información revisada el 16 de noviembre de 2026; confirma siempre las condiciones vigentes antes de contratar.'
       },
       {
         type: 'heading-2',
-        text: 'Límites de edad para contratar seguro de salud en España'
+        text: 'Edad máxima de alta y renovación: no son lo mismo'
       },
       {
         type: 'paragraph',
-        text: 'En el sector asegurador español existen dos conceptos clave que es fundamental diferenciar:'
+        text: 'La edad máxima para incorporarse a una póliza es distinta de las condiciones para renovarla una vez contratada. Revisa la ficha del producto, la propuesta y las condiciones de la póliza concreta; no des por hecho que la edad de permanencia, las coberturas o la aceptación médica sean iguales entre productos de una misma compañía.'
       },
       {
         type: 'list',
         items: [
-          '<strong>Edad máxima de contratación inicial</strong>: Es la edad límite en la que una persona puede contratar una nueva póliza por primera vez. En pólizas convencionales suele fijarse entre los 64 y 69 años, mientras que en productos senior especializados (como Asisa Senior o Sanitas Senior) el límite se amplía habitualmente hasta los <strong>75 u 84 años</strong>.',
-          '<strong>Garantía de permanencia vitalicia</strong>: Una vez suscrita la póliza, la ley de contrato de seguro en España y las condiciones de las principales aseguradoras garantizan que la compañía <strong>no puede cancelar tu seguro unilateralmente por razones de edad</strong>. Podrás mantener tu seguro médico de forma vitalicia independientemente de los años que cumplas.'
+          '<strong>Sanitas Único</strong>: la página oficial lo describe como un producto para mayores de 60 años sin límite de edad de contratación. Comprueba qué servicios incluye y sus límites en la <a href="https://www.sanitas.es/seguros/seguro-de-salud-sanitas-unico" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ficha oficial</a>.',
+          '<strong>DKV para mayores</strong>: su página de producto indica una edad máxima de contratación de hasta 75 años. Verifica la edad aplicable y las condiciones de la modalidad que te ofrezcan en la <a href="https://dkv.es/particulares/seguros-para-seniors" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">información oficial de DKV</a>.',
+          '<strong>Renovación y permanencia</strong>: consulta la duración, las reglas de renovación y cualquier condición o excepción en los documentos contractuales. La edad máxima de alta, por sí sola, no responde a estas preguntas.'
         ]
       },
       {
         type: 'heading-2',
-        text: 'Precios reales del seguro médico para mayores en 2026'
+        text: 'Qué comparar antes de elegir'
       },
       {
         type: 'paragraph',
-        text: 'Las primas de los seguros para mayores de 65 años varían en función de la edad exacta y de si se prefiere una modalidad sin copagos o con copagos reducidos con techo de gasto anual para abaratar la cuota mensual:'
+        text: 'Pide propuestas para el mismo perfil y compara el coste total y las condiciones, no solo el nombre del producto o una prima promocional. Por ejemplo, <a href="https://www.asisa.es/preguntas-frecuentes/seguros-asisa/asisa-salud/contratar/como-puedo-calcular-el-precio-de-mi-seguro-de-salud" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA indica que su precio depende, entre otros factores, de la edad, la provincia y la cobertura elegida</a>.'
       },
       {
         type: 'table',
-        tableHeader: ['Tramo de Edad', 'Modalidad Recomendada', 'Precio Estimado Mensual', 'Hospitalización & Cirugía', 'Urgencias y Especialistas'],
+        tableHeader: ['Qué revisar', 'Qué confirmar en la oferta y la póliza'],
         tableRows: [
-          ['65 a 69 años', 'Asisa Salud / Sanitas Más Salud (Sin Copago)', '85€ - 125€ / mes', 'Incluida 100% (Habitación individual)', 'Acceso directo sin listas de espera'],
-          ['70 a 74 años', 'Asisa Senior / Póliza Modular Especializada', '120€ - 165€ / mes', 'Incluida en centros concertados/HLA', 'Consultas, analíticas y pruebas complejas'],
-          ['75 a 79 años', 'Póliza Senior con Copago Reducido', '150€ - 210€ / mes', 'Cobertura completa según cuestionario', 'Especialidades geriátricas y cardiología'],
-          ['Mayores de 80 años', 'Pólizas de Asistencia Ambulatoria y Chequeos', 'Consultar según historial médico', 'Acceso a cuadro médico con tarifas preferentes', 'Telemedicina 24/7 y videoconsultas']
+          ['Edad de alta y renovación', 'Edad límite de entrada, fecha en que se calcula y condiciones de renovación.'],
+          ['Cobertura y red médica', 'Consultas, pruebas, hospitalización, cirugía, copagos, límites y centros disponibles en tu zona.'],
+          ['Declaración de salud', 'Si se solicita cuestionario, cómo se evalúan las condiciones preexistentes y qué exclusiones o límites figuran por escrito.'],
+          ['Precio total', 'Prima para tu edad y provincia, modalidad, copagos, forma de pago y cambios de precio previstos en el contrato.'],
+          ['Visado o residencia', 'Si necesitas la póliza para un trámite, contrasta sus documentos y condiciones con los requisitos oficiales aplicables a tu caso.']
         ]
       },
       {
         type: 'cta-wizard',
-        ctaBadge: 'Calculadora Senior 2026',
-        ctaTitle: '¿Buscas seguro médico para ti o para tus padres mayores?',
-        ctaDescription: 'Calcula en 30 segundos las opciones de seguro disponibles para mayores de 65 años con las mejores aseguradoras de España.',
-        ctaButtonText: 'Calcular precio seguro senior',
+        ctaBadge: 'Compara condiciones',
+        ctaTitle: '¿Buscas un seguro de salud para una persona mayor?',
+        ctaDescription: 'Solicita una simulación para el perfil y la cobertura que necesitas. La aceptación y las condiciones finales deben confirmarse con la aseguradora.',
+        ctaButtonText: 'Consultar opciones de seguro',
         ctaLink: '/wizard/'
       },
       {
         type: 'heading-2',
-        text: '¿Por qué Asisa es la opción más recomendada para mayores de 65 años?'
+        text: 'Declaración de salud y enfermedades preexistentes'
       },
       {
         type: 'paragraph',
-        text: 'Entre todas las opciones del mercado español, <strong>Asisa es la aseguradora más recomendada por nuestros asesores para el segmento senior</strong> por tres ventajas determinantes:'
+        text: 'Algunas pólizas piden una declaración o cuestionario de salud; otras pueden tener requisitos distintos. Responde con información completa y solicita que te expliquen por escrito cómo afecta a la aceptación, las exclusiones, los límites y el precio. No se puede asumir que una enfermedad concreta siempre impida contratar ni que vaya a quedar cubierta.'
+      },
+      {
+        type: 'paragraph',
+        text: 'Si tienes una enfermedad previa, consulta también nuestra guía sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>. La decisión final depende del producto y de la evaluación de la compañía.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Preguntas frecuentes sobre seguros de salud para mayores'
       },
       {
         type: 'list',
         items: [
-          '<strong>Primas más estables</strong>: Al pertenecer a la cooperativa médica Lavinia, Asisa no aplica incrementos abusivos de prima en las renovaciones de usuarios de edad avanzada.',
-          '<strong>Red hospitalaria propia Grupo HLA</strong>: Con 18 hospitales propios de primer nivel (como el Hospital HLA Universitario Moncloa en Madrid o HLA Vistahermosa en Alicante), garantiza habitaciones individuales para el paciente y su acompañante sin esperas.',
-          '<strong>Coberturas geriátricas de alto valor</strong>: Incluye sesiones de podología preventiva, fisioterapia para rehabilitación osteoarticular, revisiones cardiológicas periódicas y servicio de urgencias médicas a domicilio.'
-        ]
-      },
-      {
-        type: 'heading-2',
-        text: 'Cuestionario de salud y enfermedades preexistentes'
-      },
-      {
-        type: 'paragraph',
-        text: 'Al solicitar un seguro a partir de los 65 años, la compañía solicitará cumplimentar una declaración de salud. Es importante saber que condiciones médicas habituales y bien controladas como la <em>hipertensión leve o el colesterol</em> no impiden la contratación en la mayoría de los casos.'
-      },
-      {
-        type: 'paragraph',
-        text: 'Para patologías más complejas, la compañía puede aplicar una exclusión de cobertura específica sobre dicha dolencia manteniendo el resto del cuerpo 100% asegurado. Conoce todos los detalles en nuestro artículo sobre <a href="/blog/preexistencias-medicas-seguro-salud/" class="text-primary hover:underline font-bold">preexistencias médicas en el seguro</a>.'
-      },
-      {
-        type: 'heading-2',
-        text: 'Preguntas Frecuentes sobre Seguros para Mayores (FAQ)'
-      },
-      {
-        type: 'list',
-        items: [
-          '<strong>¿Puedo contratar el seguro para un familiar extranjero mayor de 65 años que viene a residir a España?</strong>: Sí. Para trámites de residencia no lucrativa o reagrupación familiar, disponemos de pólizas anuales sin copagos aceptadas por Extranjería. Consulta nuestra guía sobre <a href="/blog/seguro-medico-residencia-no-lucrativa-espana/" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
-          '<strong>¿Se pueden eliminar los periodos de carencia si ya vengo de otro seguro?</strong>: Sí. Si el asegurado ya disponía de seguro de salud en otra compañía durante al menos 12 meses, Asisa y Sanitas eliminan las carencias en la nueva póliza aportando el certificado de antigüedad.',
-          '<strong>¿Incluye asistencia médica en viajes al extranjero?</strong>: Sí. Todas las pólizas completas incorporan cobertura de urgencias médicas en el extranjero de hasta 12.000€ o 15.000€ por viaje.'
+          '<strong>¿Se puede contratar un seguro después de los 80?</strong>: No hay una respuesta general para todas las compañías y pólizas. Algunos productos publican que no tienen límite máximo de contratación, mientras que otros sí lo establecen. Comprueba la ficha y las condiciones de la opción concreta.',
+          '<strong>¿La edad máxima de alta indica hasta cuándo se renueva?</strong>: No necesariamente. Son cuestiones distintas; revisa la duración, las reglas de renovación y las condiciones particulares antes de firmar.',
+          '<strong>¿Una póliza sirve automáticamente para un visado o residencia?</strong>: No. Comprueba los requisitos oficiales del trámite y coteja cada prestación y documento con la póliza concreta. Puedes consultar nuestra guía de <a href="/blog/seguro-medico-residencia-no-lucrativa-espana/" class="text-primary hover:underline font-bold">seguro médico para residencia no lucrativa</a>.',
+          '<strong>¿Cuánto cuesta?</strong>: El precio depende del perfil, la provincia y las condiciones del producto. Pide una oferta personalizada y compara prima, copagos y coste total; no tomes un ejemplo de precio como cotización.'
         ]
       }
     ]
@@ -2266,11 +2254,12 @@ export const blogPosts: BlogPostData[] = [
   {
     slug: 'health-insurance-spain-seniors-over-65-prices',
     alternateSlug: 'seguro-salud-mayores-65-anos-espana-precios',
-    title: 'Health Insurance in Spain for Expats & Seniors Over 65',
+    title: 'Health Insurance for Seniors Over 65 in Spain: How to Compare',
     category: 'salud',
     categoryLabel: 'Senior & Expat Care',
     readTime: '8 min read',
     date: '24 August 2026',
+    updatedAt: '2026-11-16',
     author: {
       name: 'Lucía Delgado',
       role: 'Health Insurance & Visa Specialist',
@@ -2278,62 +2267,76 @@ export const blogPosts: BlogPostData[] = [
       verified: true,
       linkedIn: 'https://linkedin.com'
     },
-    excerpt: 'Guide for retirees and expats over 65 moving to Spain: age limits, underwriting rules, visa-compliant policies and specialist healthcare plans from top insurers.',
+    excerpt: 'What to check when comparing health insurance after 65 in Spain: enrolment age, benefits, health declarations and total cost, without assuming universal limits or prices.',
     featuredImage: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?q=80&w=800&auto=format&fit=crop',
     lang: 'en',
     sections: [
       {
         type: 'paragraph',
-        text: 'Spain is renowned as one of the world\'s best retirement havens, boasting pleasant year-round weather, the Mediterranean diet, and world-class healthcare. However, for expats aged 65 and older who are applying for the <strong>Non-Lucrative Visa (NLV) or Golden Visa</strong>, contracting private health insurance can present unique underwriting hurdles.'
+        text: 'Taking out health insurance after age 65 means comparing each product on its own terms. Entry age, benefits, price and medical underwriting can differ between policies; turning 65 or 80 does not by itself determine whether an insurer will accept an application.'
       },
       {
         type: 'paragraph',
-        text: 'Most Spanish insurers set maximum age limits for new policyholders (usually between 64 and 69 years old). Fortunately, dedicated senior healthcare policies exist that accommodate applicants up to 75 or even 80 years old.'
+        text: 'Official product pages show why broad age rules can be misleading: <a href="https://www.sanitas.es/seguros/seguro-de-salud-sanitas-unico" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">Sanitas Único</a> is presented for people over 60 with no maximum enrolment age, while <a href="https://eng.dkv.es/particulares/seguros-para-seniors" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">DKV\'s senior health insurance page</a> states a maximum enrolment age of up to 75. These are examples of specific products, not a rule for the whole market. Information checked on 16 November 2026; confirm current terms before applying.'
       },
       {
         type: 'heading-2',
-        text: 'Maximum Age Limits by Major Spanish Insurers'
+        text: 'Enrolment age and renewal are different questions'
       },
       {
         type: 'list',
         items: [
-          '<strong>Standard Policies (No Copay)</strong>: Usually admit new policyholders up to age 64. Some exceptions allow entry up to age 67 with special medical approval.',
-          '<strong>Specialized Senior Plans (e.g. Sanitas Más Salud Senior / Asisa Senior)</strong>: Accept new enrollees between ages 65 and 75 or 80, with tailor-made geriatric care and specialized health advisors.',
-          '<strong>Pre-Existing Conditions</strong>: Chronic conditions (e.g. hypertension, diabetes) must be declared on the medical questionnaire. Some insurers will cover routine maintenance while excluding specific pre-existing acute treatments.'
+          '<strong>Sanitas Único</strong>: Sanitas describes this product for people over 60 with no maximum enrolment age. Check the exact benefits and limitations in the <a href="https://www.sanitas.es/seguros/seguro-de-salud-sanitas-unico" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">official product information</a>.',
+          '<strong>DKV senior health insurance</strong>: DKV\'s product page states an enrolment age limit of up to 75. Check which age and terms apply to the specific option offered in the <a href="https://eng.dkv.es/particulares/seguros-para-seniors" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">official DKV information</a>.',
+          '<strong>Renewal and continuation</strong>: Review the policy duration, renewal provisions and any conditions or exceptions in the contract documents. An entry-age limit alone does not answer these questions.'
         ]
       },
       {
         type: 'heading-2',
-        text: 'Estimated Cost Benchmarks for Seniors in Spain (2026)'
+        text: 'What to compare before choosing'
+      },
+      {
+        type: 'paragraph',
+        text: 'Request quotes using the same profile and compare the total cost and terms, not just the product name or an introductory premium. For example, <a href="https://www.asisa.es/preguntas-frecuentes/seguros-asisa/asisa-salud/contratar/como-puedo-calcular-el-precio-de-mi-seguro-de-salud" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-bold">ASISA says its health-insurance price depends, among other factors, on age, province and selected cover</a>.'
       },
       {
         type: 'table',
-        tableHeader: ['Age Bracket', 'Average Monthly Cost', 'Average Annual Cost', 'Visa Compliance'],
+        tableHeader: ['What to check', 'Questions to confirm in the quote and policy'],
         tableRows: [
-          ['Ages 60 - 64', '€75 - €110 / month', '€900 - €1,320 / year', '100% Compliant (No Copays)'],
-          ['Ages 65 - 69', '€120 - €175 / month', '€1,440 - €2,100 / year', '100% Compliant (Senior Plans)'],
-          ['Ages 70 - 75', '€180 - €260 / month', '€2,160 - €3,120 / year', 'Compliant under specialized underwriting'],
-          ['Ages 75+', 'Custom Quote', 'Custom Quote', 'Consultation required with broker']
+          ['Enrolment age and renewal', 'Entry-age limit, how age is calculated and renewal conditions.'],
+          ['Benefits and provider network', 'Consultations, tests, hospitalisation, surgery, copayments, limits and providers available in your area.'],
+          ['Health declaration', 'Whether a health questionnaire is required and how pre-existing conditions affect acceptance, exclusions or limits.'],
+          ['Total cost', 'Premium for your age and province, plan, copayments, payment schedule and any price changes stated in the contract.'],
+          ['Visa or residence application', 'If you need insurance for an application, compare its documents and terms with the official requirements for your case.']
         ]
       },
       {
         type: 'cta-wizard',
-        ctaBadge: 'Senior Healthcare Specialist',
-        ctaTitle: 'Need Senior Health Insurance in Spain?',
-        ctaDescription: 'Our senior specialists evaluate your medical profile and match you with the best insurer accepting applicants over 65.',
-        ctaButtonText: 'Consult a Senior Health Advisor →',
-        ctaLink: '/contacto/'
+        ctaBadge: 'Compare policy terms',
+        ctaTitle: 'Looking for health insurance for an older adult?',
+        ctaDescription: 'Request an illustration for the profile and cover you need. The insurer must confirm final acceptance and policy terms.',
+        ctaButtonText: 'Ask about available options',
+        ctaLink: '/en/contact/'
       },
       {
         type: 'heading-2',
-        text: 'Frequently Asked Questions (FAQ)'
+        text: 'Health declarations and pre-existing conditions'
+      },
+      {
+        type: 'paragraph',
+        text: 'Some policies require a health declaration or questionnaire; others may have different requirements. Answer fully and ask the insurer to explain in writing how the information affects acceptance, exclusions, limits and price. Do not assume that a particular condition will always prevent enrolment or will be covered.'
+      },
+      {
+        type: 'heading-2',
+        text: 'Frequently asked questions about health insurance for seniors'
       },
       {
         type: 'list',
         items: [
-          '<strong>Can an insurer cancel my policy when I get older?</strong>: No. Under Spanish Insurance Law (Ley 50/1980 de Contrato de Seguro), once enrolled, insurers cannot cancel your policy due to aging or high medical claims.',
-          '<strong>What medical documentation do seniors need to provide?</strong>: You will complete a health declaration. If you take medication for hypertension or cholesterol, you may submit a recent medical report to expedite underwriting.',
-          '<strong>Is prescription medicine covered?</strong>: Medications administered during hospitalization are 100% covered. Outpatient pharmacy prescriptions in Spain are paid out-of-pocket at highly subsidized Spanish generic drug prices.'
+          '<strong>Can I take out insurance after age 80?</strong>: There is no single answer for every insurer and policy. Some products publish no maximum enrolment age, while others set a limit. Check the product information and terms for the specific option.',
+          '<strong>Does the enrolment age limit tell me how long a policy can be renewed?</strong>: Not necessarily. These are separate questions; review the duration, renewal provisions and policy terms before signing.',
+          '<strong>Will a policy automatically meet visa or residence requirements?</strong>: No. Check the official requirements for your application and compare each benefit and document with the specific policy. See our guide to <a href="/en/blog/non-lucrative-visa-spain-health-insurance-requirements/" class="text-primary hover:underline font-bold">health insurance for Spain\'s non-lucrative visa</a>.',
+          '<strong>How much does it cost?</strong>: The price depends on your profile, province and policy terms. Request a personalised quote and compare premiums, copayments and total cost; do not treat an example price as a quote.'
         ]
       }
     ]

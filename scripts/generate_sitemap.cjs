@@ -46,18 +46,22 @@ const blogPostsRaw = postEntries
     let isoDate = '2026-08-03';
     const rawDate = (updatedAtMatch && updatedAtMatch[1]) || (dateMatch && dateMatch[1]);
     if (rawDate) {
-      const months = {
-        'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
-        'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
-        'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06',
-        'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12'
-      };
-      const parts = rawDate.toLowerCase().split(/\s+/);
-      if (parts.length === 3) {
-        const day = parts[0].padStart(2, '0');
-        const month = months[parts[1]] || '08';
-        const year = parts[2];
-        isoDate = `${year}-${month}-${day}`;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+        isoDate = rawDate;
+      } else {
+        const months = {
+          'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
+          'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
+          'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06',
+          'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12'
+        };
+        const parts = rawDate.toLowerCase().split(/\s+/);
+        if (parts.length === 3) {
+          const day = parts[0].padStart(2, '0');
+          const month = months[parts[1]] || '08';
+          const year = parts[2];
+          isoDate = `${year}-${month}-${day}`;
+        }
       }
     }
 
